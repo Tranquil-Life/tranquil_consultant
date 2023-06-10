@@ -1,0 +1,39 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+
+class ColorPalette {
+  static const red = Colors.red;
+  static const white = Color(0xFFF7F8FC);
+  static const grey = Color(0xFFD9D9D9);
+  static const green = MaterialColor(
+    0xff43A95D,
+    {
+      100: Color(0xffDDE8E0),
+      200: Color(0xffD9EEDF),
+      500: Color(0xff43A95D),
+      800: Color(0xff2D713E),
+    },
+  );
+  static const blue = MaterialColor(
+    0xff056B9C,
+    {
+      500: Color(0xff056B9C),
+      800: Color(0xff04557D)
+    },
+  );
+  static const yellow = MaterialColor(
+      0xFFEDC24D,
+      {
+        // 300: Color(0xFFFFCF2B),
+        500: Color(0xFFEDC24D),
+      });
+  static const black = Color(0xFF363740);
+}
+
+class LightMode {
+  LightMode();
+}
+
+class DarkMode {
+  DarkMode();
+}
