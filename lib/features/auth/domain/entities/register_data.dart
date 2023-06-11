@@ -12,6 +12,7 @@ class RegisterData extends QueryParams {
   String birthDate = '';
   String cvUrl='';
   String identityUrl = '';
+  String currentLocation = '';
   String linkedinUrl = '';
 
   @override
@@ -25,6 +26,7 @@ class RegisterData extends QueryParams {
     'birth_date': birthDate,
     'cv_url': cvUrl,
     'identity_front_url': identityUrl,
+    'location': currentLocation,
     'linkedin_url': linkedinUrl,
   };
 }

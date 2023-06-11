@@ -61,6 +61,9 @@ dependencies:
   uuid: ^3.0.6
   expandable_page_view: ^1.0.17
 
+  geolocator: ^9.0.2
+  geocoding: ^2.1.0
+
   device_info_plus: ^4.1.2
   dotted_line: ^3.1.0
   draggable_widget: ^2.0.0

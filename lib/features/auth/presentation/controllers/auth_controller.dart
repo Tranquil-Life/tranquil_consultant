@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:tl_consultant/app/presentation/routes/app_pages.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
@@ -27,6 +28,8 @@ class AuthController extends GetxController{
   TextEditingController passwordTEC = TextEditingController(text: "password");
 
   TextEditingController cvTEC = TextEditingController();
+  TextEditingController identityTEC = TextEditingController();
+  TextEditingController currLocationTEC = TextEditingController();
 
   final dateTEC = TextEditingController();
 
@@ -37,9 +40,13 @@ class AuthController extends GetxController{
 
   RxBool uploading = false.obs;
   RxString fileSize = "0 KB".obs;
+  String uploadType = "";
 
   var call = 0.obs;
   Timer? callTimer;
+
+  String? currentAddress;
+  Position? currentPosition;
 
   Future signIn(String email, String password) async {
     var result = await AuthRepoImpl()
@@ -142,8 +149,8 @@ class AuthController extends GetxController{
 
   RxString uploadUrl = "".obs;
 
-  uploadFile(File file) async{
-    await getFileSize(file.path, 1).then((value) async{
+  uploadCv({File? file}) async{
+    await getFileSize(file!.path, 1).then((value) async{
       if(value == "Too large"){
         CustomSnackBar.showSnackBar(
             context: Get.context!,
@@ -153,13 +160,12 @@ class AuthController extends GetxController{
       }else{
         uploading.value = true;
         var result = await userInfoRepoImpl
-            .uploadCv(file, "cv");
+            .uploadCv(file);
 
         if(result.isRight()){
           result.map((r){
             params.cvUrl = r;
             uploadUrl.value = params.cvUrl;
-            print("RIGHT:${AuthController.instance.params.cvUrl}");
           });
         }
         else{
@@ -171,10 +177,33 @@ class AuthController extends GetxController{
                 backgroundColor: ColorPalette.red
             );
           });
-        }      }
+        }
+      }
     });
+  }
 
+  uploadID({File? file}) async{
+    uploading.value = true;
 
+    var result = await userInfoRepoImpl
+        .uploadID(file!);
+
+    if(result.isRight()){
+      result.map((r){
+        params.identityUrl = r;
+        uploadUrl.value = params.identityUrl;
+      });
+    }
+    else{
+      result.leftMap((l){
+        CustomSnackBar.showSnackBar(
+            context: Get.context!,
+            title: "Error",
+            message: l.message.toString(),
+            backgroundColor: ColorPalette.red
+        );
+      });
+    }
   }
 
   Future getFileSize(String filepath, int decimals) async {
@@ -196,6 +225,10 @@ class AuthController extends GetxController{
   }
 
   clearData(){
+    emailTEC.clear();
+    passwordTEC.clear();
+    cvTEC.clear();
+    identityTEC.clear();
     dateTEC.clear();
     params.email = '';
     params.password = '';

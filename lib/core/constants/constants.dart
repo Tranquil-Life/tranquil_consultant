@@ -13,6 +13,8 @@ const pusherKey = '39b14815ce63a5589bf0';
 const agoraAppId = 'a2782460e26a405cb9ffda0ae62e8038';
 
 const fileMaxSize = "File must be less than 2 MB";
+const emptyCvField = "Your resumé is required";
+const emptyIdField = "A means of identification is required";
 
 const cardAspectRatio = 1.586;
 

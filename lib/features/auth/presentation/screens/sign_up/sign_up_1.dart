@@ -1,24 +1,14 @@
-import 'dart:io';
-
-import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tl_consultant/app/presentation/routes/app_pages.dart';
-import 'package:tl_consultant/app/presentation/theme/colors.dart';
-import 'package:tl_consultant/app/presentation/theme/fonts.dart';
 import 'package:tl_consultant/app/presentation/widgets/buttons.dart';
-import 'package:tl_consultant/app/presentation/widgets/custom_snackbar.dart';
-import 'package:tl_consultant/app/presentation/widgets/dialogs.dart';
-import 'package:tl_consultant/core/utils/services/media_service.dart';
 import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';
-import 'package:tl_consultant/app/presentation/routes/app_pages.dart';
-import 'package:tl_consultant/app/presentation/widgets/buttons.dart';
 import 'package:tl_consultant/core/utils/extensions/date_time_extension.dart';
 import 'package:tl_consultant/core/utils/functions.dart';
-import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:tl_consultant/features/auth/presentation/widgets/bg.dart';
 import 'package:tl_consultant/features/auth/presentation/widgets/c_vitae_field.dart';
 import 'package:tl_consultant/features/auth/presentation/widgets/form_fields.dart';
+import 'package:tl_consultant/features/auth/presentation/widgets/means_of_id_field.dart';
 
 class SignUpScreen1 extends StatefulWidget {
   const SignUpScreen1({Key? key}) : super(key: key);
@@ -105,8 +95,19 @@ class _SignUpScreen1State extends State<SignUpScreen1> {
                     ),
                   ),
 
+                  //linkedin
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8.0),
+                      child: linkedinField(),
+                    ),
+                  ),
                   //attach resumé
-                  CurriculumVitaeField()
+                  CurriculumVitaeField(),
+
+                  //Attach ID
+                  MeansOfIdField()
                 ],
               ),
             ),
@@ -114,9 +115,12 @@ class _SignUpScreen1State extends State<SignUpScreen1> {
             CustomButton(
                 text: 'Next',
                 onPressed: (){
-                  if (_formKey.currentState!.validate()) {
-                    Get.toNamed(Routes.SIGN_UP_2);
-                  }
+                  // if (_formKey.currentState!.validate()) {
+                  //   Get.toNamed(Routes.SIGN_UP_2);
+                  // }
+
+                  Get.toNamed(Routes.SIGN_UP_2);
+
                 })
           ],
         ),

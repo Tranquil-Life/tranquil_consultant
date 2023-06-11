@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:tl_consultant/features/auth/presentation/screens/sign_in/sign_in.dart';
 import 'package:tl_consultant/features/auth/presentation/screens/sign_up/sign_up_0.dart';
 import 'package:tl_consultant/features/auth/presentation/screens/sign_up/sign_up_1.dart';
+import 'package:tl_consultant/features/auth/presentation/screens/sign_up/sign_up_2.dart';
 import 'package:tl_consultant/features/dashboard/presentation/screens/dashboard.dart';
 import 'package:tl_consultant/features/onboarding/presentation/screens/onboarding.dart';
 import 'package:tl_consultant/features/onboarding/presentation/screens/splash.dart';
@@ -21,7 +22,7 @@ class AppPages{
     GetPage(name: Routes.ONBOARDING, page: ()=> const OnBoardingScreen()),
     GetPage(name: Routes.SIGN_UP_0, page: ()=> SignUpScreen0()),
     GetPage(name: Routes.SIGN_UP_1, page: () => SignUpScreen1()),
-    //GetPage(name: Routes.SIGN_UP_2, page: () => SignUpScreen2()),
+    GetPage(name: Routes.SIGN_UP_2, page: () => SignUpScreen2()),
     GetPage(name: Routes.SIGN_IN, page: () => SignInScreen()),
     GetPage(name: Routes.DASHBOARD, page: () => const Dashboard()),
     // GetPage(name: Routes.HOME_SCREEN, page: () => const HomeTab()),
