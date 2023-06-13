@@ -22,6 +22,8 @@ class MeansOfIdField extends StatefulWidget {
 }
 
 class _MeansOfIdFieldState extends State<MeansOfIdField> {
+  AuthController authController = Get.put(AuthController());
+
   String dLicense = "Driver’s License";
   String passport = "Passport";
 

@@ -14,7 +14,7 @@ import 'package:tl_consultant/features/auth/presentation/widgets/form_fields.dar
 class CurriculumVitaeField extends StatelessWidget {
   CurriculumVitaeField({Key? key}) : super(key: key);
 
-  final authController = AuthController.instance;
+  AuthController authController = Get.put(AuthController());
 
   @override
   Widget build(BuildContext context) {
@@ -89,7 +89,7 @@ class CurriculumVitaeField extends StatelessWidget {
                                                       [
                                                         const Icon(Icons.upload, color: ColorPalette.green, size: 40),
                                                         const SizedBox(height: 8),
-                                                        const Text("Uploading...")
+                                                        const Text("Uploading...\n\nThis may take 5 seconds", textAlign: TextAlign.center,)
                                                       ] :
                                                       [
                                                         const Icon(Icons.upload, color: ColorPalette.green),
