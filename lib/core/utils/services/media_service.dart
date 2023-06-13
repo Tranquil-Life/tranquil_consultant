@@ -12,6 +12,19 @@ abstract class MediaService {
   static final _imagePicker = ImagePicker();
   static final _imageCropper = ImageCropper();
 
+  static Future<File?> openCamera([
+    ImageSource source = ImageSource.camera,
+  ]) async {
+    final XFile? capturedFile = await _imagePicker.pickImage(
+      source: source,
+      imageQuality: 75,
+      maxHeight: 720,
+      maxWidth: 720,
+    );
+    if (capturedFile == null) return null;
+    return _cropImage(File(capturedFile.path));
+  }
+
   static Future<File?> selectImage([
     ImageSource source = ImageSource.gallery,
   ]) async {

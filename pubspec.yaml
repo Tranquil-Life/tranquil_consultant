@@ -51,6 +51,7 @@ dependencies:
   path_provider: ^2.0.13
   path_provider_ios: ^2.0.9
   path: ^1.8.3
+  language_picker: ^0.4.1
 
   intl: ^0.17.0
   intl_phone_field: ^3.1.0
@@ -72,7 +73,6 @@ dependencies:
   flutter_cache_manager: ^3.3.0
   swipe_to: ^1.0.2
   dotted_border: ^2.0.0+3
-
   add_2_calendar: ^2.1.3
 
   cupertino_icons: ^1.0.2

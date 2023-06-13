@@ -23,9 +23,11 @@ class _CustomWebViewState extends State<CustomWebView> {
 
   //late String url;
   late bool completed = false;
+  bool isLoading=true;
 
   @override
   void initState() {
+    print("UPLOAD_URL: ${widget.url}");
     // #docregion platform_features
     late final PlatformWebViewControllerCreationParams params;
     if (WebViewPlatform.instance is WebKitWebViewPlatform) {
@@ -57,7 +59,10 @@ class _CustomWebViewState extends State<CustomWebView> {
               //     .then((value) async=> Get.back());
 
             },
-            onPageFinished: (String url) async{
+            onPageFinished: (String url){
+              setState(() {
+                isLoading = false;
+              });
               // if(url.contains("status=completed")){
               //   WalletController.instance.balance.value += double.parse(WalletController.instance.amountController.text);
               //   await Future.delayed(Duration(seconds: 2));
@@ -96,7 +101,10 @@ class _CustomWebViewState extends State<CustomWebView> {
             body:Column(
               children: [
                 Expanded(
-                  child: WebViewWidget(
+                  child: isLoading ? Center(
+                    child: CircularProgressIndicator(color: Theme.of(context).primaryColor,),
+                  ) :
+                  WebViewWidget(
                     controller: _controller,
                   ),
                 ),

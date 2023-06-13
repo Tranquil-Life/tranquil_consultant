@@ -95,14 +95,6 @@ class _SignUpScreen1State extends State<SignUpScreen1> {
                     ),
                   ),
 
-                  //linkedin
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(8.0),
-                      child: linkedinField(),
-                    ),
-                  ),
                   //attach resumé
                   CurriculumVitaeField(),
 

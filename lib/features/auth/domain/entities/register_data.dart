@@ -1,4 +1,5 @@
 import 'package:tl_consultant/app/domain/query_params.dart';
+import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';
 
 class RegisterData extends QueryParams {
   RegisterData();
@@ -6,7 +7,6 @@ class RegisterData extends QueryParams {
   String email = '';
   String password = '';
   String phone = '';
-  String displayName = '';
   String firstName = '';
   String lastName = '';
   String birthDate = '';
@@ -14,19 +14,24 @@ class RegisterData extends QueryParams {
   String identityUrl = '';
   String currentLocation = '';
   String linkedinUrl = '';
+  String yearsOfExperience = '';
+  List<String> languages = [];
+  List<String> expertise = [];
 
   @override
   Map<String, dynamic> toJson()=><String, dynamic>{
-    'email': email,
-    'password': password,
+    'email': email.isEmpty ? AuthController.instance.emailTEC.text : email,
+    'password': password.isEmpty ? AuthController.instance.passwordTEC.text : password,
     'phone': phone,
-    'display_name': displayName,
     'f_name': firstName,
     'l_name': lastName,
     'birth_date': birthDate,
     'cv_url': cvUrl,
     'identity_front_url': identityUrl,
-    'location': currentLocation,
+    'location': currentLocation.isEmpty ? AuthController.instance.currLocationTEC.text : currentLocation,
     'linkedin_url': linkedinUrl,
+    'specialties': AuthController.instance.specialtiesArr,
+    'years': yearsOfExperience.isEmpty ? AuthController.instance.yearsOfExperienceTEC.text : yearsOfExperience,
+    "languages": AuthController.instance.languagesArr
   };
 }

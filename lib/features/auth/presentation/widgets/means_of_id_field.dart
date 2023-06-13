@@ -132,7 +132,11 @@ class _MeansOfIdFieldState extends State<MeansOfIdField> {
             CustomButton(
               text: "Take Photo",
               onPressed: () {
-                //Open camera
+                Get.back();
+
+                MediaService.openCamera()
+                    .then((value) => showDialog(context: context, builder: (_)=>UploadDialog()));
+
               },
             ),
 
@@ -153,13 +157,10 @@ class _MeansOfIdFieldState extends State<MeansOfIdField> {
   }
 }
 
-
-
-
-
-
 class UploadDialog extends StatelessWidget {
-  const UploadDialog({Key? key}) : super(key: key);
+  UploadDialog({Key? key}) : super(key: key);
+
+  final authController = Get.put(AuthController());
 
   @override
   Widget build(BuildContext context) {
@@ -184,7 +185,7 @@ class UploadDialog extends StatelessWidget {
                             child: ClipRRect(
                               borderRadius: BorderRadius.all(Radius.circular(12)),
                               child: GestureDetector(
-                                child: Container(
+                                child: SizedBox(
                                   height: 200,
                                   child: CustomWebView(url: value.uploadUrl.value),
                                   //child: SizedBox(),
@@ -283,7 +284,7 @@ class UploadDialog extends StatelessWidget {
                                       text: "Done",
                                       onPressed: (){
                                         authController.uploading.value = false;
-                                        authController.uploadUrl.value = "";
+                                        value.uploadUrl.value = "";
                                         authController.identityTEC.text = authController.params.identityUrl;
 
                                         Get.back();

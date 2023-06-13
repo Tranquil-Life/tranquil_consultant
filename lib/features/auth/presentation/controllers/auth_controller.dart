@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -9,6 +8,7 @@ import 'package:tl_consultant/app/presentation/routes/app_pages.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/widgets/custom_snackbar.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
+import 'package:tl_consultant/core/utils/functions.dart';
 import 'package:tl_consultant/core/utils/services/app_data_store.dart';
 import 'package:tl_consultant/features/auth/data/repos/auth_repo.dart';
 import 'package:tl_consultant/features/auth/domain/entities/register_data.dart';
@@ -24,12 +24,17 @@ class AuthController extends GetxController{
   UserDataStore userDataStore = UserDataStore();
   UserInfoRepoImpl userInfoRepoImpl = UserInfoRepoImpl();
 
-  TextEditingController emailTEC = TextEditingController(text: "ayomideseaz@gmail.com");
-  TextEditingController passwordTEC = TextEditingController(text: "password");
+  TextEditingController emailTEC = TextEditingController();
+  TextEditingController passwordTEC = TextEditingController();
 
   TextEditingController cvTEC = TextEditingController();
   TextEditingController identityTEC = TextEditingController();
   TextEditingController currLocationTEC = TextEditingController();
+  TextEditingController areaOfExpertiseTEC = TextEditingController();
+  TextEditingController yearsOfExperienceTEC = TextEditingController();
+  TextEditingController languagesTEC = TextEditingController();
+
+  TextEditingController aoeSearchController = TextEditingController();
 
   final dateTEC = TextEditingController();
 
@@ -47,6 +52,15 @@ class AuthController extends GetxController{
 
   String? currentAddress;
   Position? currentPosition;
+
+  List workStatusList = ['Self-employed', 'Employed'];
+
+  RxList<String> languagesArr = <String>[].obs;
+  RxList<String> specialtiesArr = <String>[].obs;
+
+  Future signUp() async{
+    print(params.toJson());
+  }
 
   Future signIn(String email, String password) async {
     var result = await AuthRepoImpl()
@@ -113,7 +127,6 @@ class AuthController extends GetxController{
             callTimer?.cancel();
             timer.cancel();
 
-            print(l.message);
             if(l.message == "User has not been authenticated"){
               Get.offAllNamed(Routes.ONBOARDING);
             }
@@ -159,25 +172,36 @@ class AuthController extends GetxController{
             backgroundColor: ColorPalette.red);
       }else{
         uploading.value = true;
-        var result = await userInfoRepoImpl
-            .uploadCv(file);
 
-        if(result.isRight()){
-          result.map((r){
-            params.cvUrl = r;
-            uploadUrl.value = params.cvUrl;
-          });
-        }
-        else{
-          result.leftMap((l){
-            CustomSnackBar.showSnackBar(
-                context: Get.context!,
-                title: "Error",
-                message: l.message.toString(),
-                backgroundColor: ColorPalette.red
-            );
-          });
-        }
+        Timer.periodic(const Duration(seconds: 1), (timer) async{
+          var result = await userInfoRepoImpl
+              .uploadCv(file);
+
+          if(result.isRight()){
+            callTimer?.cancel();
+            timer.cancel();
+
+            result.map((r){
+              params.cvUrl = r;
+              uploadUrl.value = params.cvUrl;
+            });
+          }
+          else{
+            result.leftMap((l){
+              if(call.value>=6){
+                callTimer?.cancel();
+                timer.cancel();
+
+                CustomSnackBar.showSnackBar(
+                    context: Get.context!,
+                    title: "Error",
+                    message: l.message.toString(),
+                    backgroundColor: ColorPalette.red
+                );
+              }
+            });
+          }
+        });
       }
     });
   }
@@ -188,40 +212,33 @@ class AuthController extends GetxController{
     var result = await userInfoRepoImpl
         .uploadID(file!);
 
-    if(result.isRight()){
-      result.map((r){
-        params.identityUrl = r;
-        uploadUrl.value = params.identityUrl;
-      });
-    }
-    else{
-      result.leftMap((l){
-        CustomSnackBar.showSnackBar(
-            context: Get.context!,
-            title: "Error",
-            message: l.message.toString(),
-            backgroundColor: ColorPalette.red
-        );
-      });
-    }
-  }
+    Timer.periodic(Duration(seconds: 1), (timer) {
+      if(result.isRight()){
+        callTimer?.cancel();
+        timer.cancel();
 
-  Future getFileSize(String filepath, int decimals) async {
-    var file = File(filepath);
-    int bytes = await file.length();
-    if (bytes <= 0) return "0 B";
-    const suffixes = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
-    var i = (log(bytes) / log(1024)).floor();
-
-    if(suffixes[i] != "B" && suffixes[i] !="KB"){
-      if((bytes / pow(1024, i)) > 2){
-        return "Too large";
-      }else{
-        return '${(bytes / pow(1024, i)).toStringAsFixed(decimals)} ${suffixes[i]}';
+        result.map((r){
+          params.identityUrl = r;
+          uploadUrl.value = params.identityUrl;
+        });
       }
-    }else{
-      return '${(bytes / pow(1024, i)).toStringAsFixed(decimals)} ${suffixes[i]}';
-    }
+      else{
+        result.leftMap((l){
+          if(call.value>=6){
+            callTimer?.cancel();
+            timer.cancel();
+
+            CustomSnackBar.showSnackBar(
+                context: Get.context!,
+                title: "Error",
+                message: l.message.toString(),
+                backgroundColor: ColorPalette.red
+            );
+          }
+        });
+      }
+    });
+
   }
 
   clearData(){
@@ -242,4 +259,5 @@ class AuthController extends GetxController{
 
     super.onClose();
   }
+
 }

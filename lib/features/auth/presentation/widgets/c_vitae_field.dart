@@ -147,7 +147,7 @@ class CurriculumVitaeField extends StatelessWidget {
                                                     text: "Done",
                                                     onPressed: (){
                                                       authController.uploading.value = false;
-                                                      authController.uploadUrl.value = "";
+                                                      value.uploadUrl.value = "";
                                                       authController.cvTEC.text = authController.params.cvUrl;
 
                                                       Get.back();

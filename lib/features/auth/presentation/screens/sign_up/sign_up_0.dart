@@ -124,7 +124,7 @@ class _SignUpScreen0State extends State<SignUpScreen0> {
 
                 },),
 
-              const SizedBox(height: 8),
+              const SizedBox(height: 64),
 
               //privacy policy and agreement
               RichText(
