@@ -9,6 +9,14 @@ abstract class AuthEndPoints {
   static const logOut = 'consultant/logOut';
 }
 
+abstract class ConsultationEndPoints{
+  static const getSlots = 'consultant/getSlots';
+  static const saveSlots = 'consultant/saveSlots';
+  static const deleteSlot = 'client/deleteSlot';
+  static const getMeetings = 'client/getMeetings';
+
+}
+
 abstract class MediaEndpoints{
   static const uploadFile = 'consultant/uploadFile';
 }

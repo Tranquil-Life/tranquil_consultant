@@ -110,7 +110,7 @@ class _TitleState extends State<Title> {
                         arguments: {"canGoBack": false});
                   },
                   icon: const Icon(
-                    TranquilIcons.users,
+                    Icons.schedule,
                     size: 28,
                     color: ColorPalette.green,
                   ),
@@ -146,7 +146,7 @@ class _TitleState extends State<Title> {
 
         Obx(()=>
             Text(
-              DashboardController.instance.displayName.value,
+              DashboardController.instance.firstName.value,
               style: TextStyle(
                 color: themeColor,
                 fontSize: 30,

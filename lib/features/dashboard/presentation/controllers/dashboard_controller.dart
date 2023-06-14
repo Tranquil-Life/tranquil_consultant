@@ -17,7 +17,8 @@ class DashboardController extends GetxController{
   var ongoingMeetingId = 1.obs;
 
   var authToken = "".obs;
-  var displayName = "".obs;
+  var firstName = "".obs;
+  var lastName = "".obs;
 
   Future<void> onTap(int index) async{
     currentIndex.value = index;

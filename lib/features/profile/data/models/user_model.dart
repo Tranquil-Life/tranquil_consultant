@@ -6,10 +6,9 @@ part 'user_model.g.dart';
 class UserModel extends User{
   UserModel({
     //super.email,
-    //required super.firstName,
-    //required super.lastName,
+    required super.firstName,
+    required super.lastName,
     super.id,
-    required super.displayName,
     required super.authToken,
     //required super.phoneNumber,
     //required super.usesBitmoji,

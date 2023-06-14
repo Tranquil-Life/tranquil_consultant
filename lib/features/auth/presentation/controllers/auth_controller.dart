@@ -24,8 +24,8 @@ class AuthController extends GetxController{
   UserDataStore userDataStore = UserDataStore();
   UserInfoRepoImpl userInfoRepoImpl = UserInfoRepoImpl();
 
-  TextEditingController emailTEC = TextEditingController();
-  TextEditingController passwordTEC = TextEditingController();
+  TextEditingController emailTEC = TextEditingController(text: "apple@gmail.com");
+  TextEditingController passwordTEC = TextEditingController(text: "password");
 
   TextEditingController cvTEC = TextEditingController();
   TextEditingController identityTEC = TextEditingController();
@@ -72,7 +72,10 @@ class AuthController extends GetxController{
       User user = UserModel.fromJson(userDataStore.user);
 
       DashboardController.instance.authToken.value = user.authToken.toString();
-      DashboardController.instance.displayName.value = user.displayName.toString();
+      DashboardController.instance.firstName.value = user.firstName.toString();
+      DashboardController.instance.lastName.value = user.lastName.toString();
+
+      print(DashboardController.instance.firstName.value);
 
       emailTEC.clear();
       passwordTEC.clear();
@@ -106,7 +109,10 @@ class AuthController extends GetxController{
       User user = UserModel.fromJson(userDataStore.user);
 
       DashboardController.instance.authToken.value = user.authToken.toString();
-      DashboardController.instance.displayName.value = user.displayName.toString();
+      DashboardController.instance.firstName.value = user.firstName.toString();
+      DashboardController.instance.lastName.value = user.lastName.toString();
+
+      print(DashboardController.instance.firstName.value);
 
       emailTEC.clear();
       passwordTEC.clear();
@@ -147,7 +153,10 @@ class AuthController extends GetxController{
         User user = UserModel.fromJson(userDataStore.user);
 
         DashboardController.instance.authToken.value = user.authToken.toString();
-        DashboardController.instance.displayName.value = user.displayName.toString();
+        DashboardController.instance.firstName.value = user.firstName.toString();
+        DashboardController.instance.lastName.value = user.lastName.toString();
+
+        print(DashboardController.instance.firstName.value);
 
         Get.offAllNamed(Routes.DASHBOARD);
       }

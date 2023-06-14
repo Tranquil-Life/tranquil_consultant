@@ -1,0 +1,1 @@
+enum DaySectionOption{day, night}

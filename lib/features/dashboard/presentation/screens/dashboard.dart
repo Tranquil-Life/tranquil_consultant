@@ -5,6 +5,7 @@ import 'package:tl_consultant/app/presentation/theme/tranquil_icons.dart';
 import 'package:tl_consultant/core/utils/functions.dart';
 import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
 import 'package:tl_consultant/features/dashboard/presentation/widgets/nav_item.dart';
+import 'package:tl_consultant/features/home/presentation/screens/home_tab.dart';
 import 'package:tl_consultant/features/home/presentation/widgets/count_indicator.dart';
 import 'package:tl_consultant/features/journal/presentation/controllers/notes_controller.dart';
 
@@ -52,7 +53,7 @@ class _DashboardState extends State<Dashboard> {
                       index: dashboardController.currentIndex.value,
                       sizing: StackFit.expand,
                       children: const [
-                        // HomeTab(),
+                        HomeTab(),
                         // WalletTab(),
                         // NotesTab(),
                         // ProfileScreen()
