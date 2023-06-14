@@ -59,7 +59,36 @@ class AuthController extends GetxController{
   RxList<String> specialtiesArr = <String>[].obs;
 
   Future signUp() async{
-    print(params.toJson());
+    var result = await AuthRepoImpl()
+        .register(params);
+
+    if(result.isRight()){
+      result.map((r){
+        userDataStore.user = r;
+        print(userDataStore.user);
+      });
+
+      AppData.isSignedIn = true;
+      User user = UserModel.fromJson(userDataStore.user);
+
+      DashboardController.instance.authToken.value = user.authToken.toString();
+      DashboardController.instance.displayName.value = user.displayName.toString();
+
+      emailTEC.clear();
+      passwordTEC.clear();
+
+      if(user.authToken!.isNotEmpty){
+        Get.offAllNamed(Routes.DASHBOARD);
+      }
+    }else{
+      result.leftMap((l)=>
+          CustomSnackBar.showSnackBar(
+              context: Get.context!,
+              title: "Error",
+              message: l.message.toString(),
+              backgroundColor: ColorPalette.red
+          ));
+    }
   }
 
   Future signIn(String email, String password) async {
@@ -97,6 +126,8 @@ class AuthController extends GetxController{
           ));
     }
   }
+
+
 
   Future isUserAuthenticated() async{
     Timer.periodic(const Duration(seconds: 1), (timer) async{

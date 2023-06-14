@@ -15,6 +15,7 @@ class RegisterData extends QueryParams {
   String currentLocation = '';
   String linkedinUrl = '';
   String yearsOfExperience = '';
+  String employmentStatus = '';
   List<String> languages = [];
   List<String> expertise = [];
 
@@ -30,8 +31,9 @@ class RegisterData extends QueryParams {
     'identity_front_url': identityUrl,
     'location': currentLocation.isEmpty ? AuthController.instance.currLocationTEC.text : currentLocation,
     'linkedin_url': linkedinUrl,
-    'specialties': AuthController.instance.specialtiesArr,
+    'specialties': expertise.isEmpty ? AuthController.instance.areaOfExpertiseTEC.text.split(', ') : expertise,
     'years': yearsOfExperience.isEmpty ? AuthController.instance.yearsOfExperienceTEC.text : yearsOfExperience,
-    "languages": AuthController.instance.languagesArr
+    "languages": AuthController.instance.languagesArr,
+    "employment_status": "employed"
   };
 }

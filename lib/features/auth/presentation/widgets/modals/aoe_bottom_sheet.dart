@@ -72,6 +72,7 @@ class _AreaOfExpertiseModalSheetState extends State<AreaOfExpertiseModalSheet> {
 
     authController.specialtiesArr.value = holder_1;
 
+    print(authController.specialtiesArr.value);
     authController.areaOfExpertiseTEC.text = holder_1.join(', ');
 
     // Clear array after use.
