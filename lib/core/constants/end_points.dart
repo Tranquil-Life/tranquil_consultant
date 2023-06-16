@@ -1,5 +1,5 @@
 //const baseUrl = 'https://tranquil-api.herokuapp.com/api/';
-const baseUrl = 'https://9191-197-210-79-91.ngrok-free.app/api/';
+const baseUrl = 'https://fc31-102-36-148-254.ngrok-free.app/api/';
 
 abstract class AuthEndPoints {
   static const login = 'consultant/login';
@@ -14,7 +14,10 @@ abstract class ConsultationEndPoints{
   static const saveSlots = 'consultant/saveSlots';
   static const deleteSlot = 'client/deleteSlot';
   static const getMeetings = 'client/getMeetings';
+}
 
+abstract class JournalEndPoints{
+  static const getNotes = 'consultant/listNotes';
 }
 
 abstract class MediaEndpoints{

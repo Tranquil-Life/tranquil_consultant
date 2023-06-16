@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tl_consultant/app/presentation/routes/app_pages.dart';
+import 'package:tl_consultant/app/presentation/theme/fonts.dart';
 import 'package:tl_consultant/app/presentation/widgets/buttons.dart';
 
 
@@ -20,9 +21,13 @@ class NoMeetingsWidget extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           const Text(
-            'No meeting',
+            'You have no meetings yet',
             textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: AppFonts.defaultSize
+            ),
           ),
+          SizedBox(height: 20)
         ],
       ),
     );

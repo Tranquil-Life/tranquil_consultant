@@ -105,9 +105,7 @@ class _TitleState extends State<Title> {
                 //Questionnaire
                 CustomIconButton(
                   onPressed: () {
-                    Get.toNamed(
-                        Routes.QUESTIONNAIRE,
-                        arguments: {"canGoBack": false});
+                    Get.toNamed(Routes.EDIT_SLOTS);
                   },
                   icon: const Icon(
                     Icons.schedule,

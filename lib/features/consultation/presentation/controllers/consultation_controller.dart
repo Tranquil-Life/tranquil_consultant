@@ -39,13 +39,13 @@ class ConsultationController extends GetxController{
     }
   }
 
-  selectedSlot(String? time, DaySectionOption? initial, DaySectionOption? current){
-    if(initial == current){
-      return time.toString();
-    }else{
-      return null;
-    }
-  }
+  // selectedSlot(String? time, DaySectionOption? initial, DaySectionOption? current){
+  //   if(initial == current){
+  //     return time.toString();
+  //   }else{
+  //     return null;
+  //   }
+  // }
 
   Future getAllSlots() async {
     timeSlots.clear();

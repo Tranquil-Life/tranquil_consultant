@@ -43,16 +43,14 @@ class _HomeTabState extends State<HomeTab> {
       fit: StackFit.expand,
       children: [
         const _BG(),
-        SafeArea(
-          bottom: false,
-          child: Column(
-            children: [
-              const AppBar(),
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      Padding(
+        Column(
+          children: [
+            const AppBar(),
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Padding(
                         padding: const EdgeInsets.fromLTRB(22, 8, 22, 28),
                         child: Column(
                           children: [
@@ -67,14 +65,13 @@ class _HomeTabState extends State<HomeTab> {
                             //TODO: Add edit slots button
                           ],
                         )
-                      )
-                    ],
-                  ),
+                    )
+                  ],
                 ),
-              )
-            ],
-          ),
-        )
+              ),
+            )
+          ],
+        ),
       ],
     );
   }
