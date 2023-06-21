@@ -58,7 +58,7 @@ class _HomeTabState extends State<HomeTab> {
                             const SizedBox(height: 24),
                             SizedBox(
                               height:
-                              MediaQuery.of(context).size.height * 0.42,
+                              MediaQuery.of(context).size.height * 0.58,
                               child: Meetings(),
                             ),
                             const SizedBox(height: 32),

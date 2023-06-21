@@ -39,13 +39,8 @@ class ConsultationController extends GetxController{
     }
   }
 
-  // selectedSlot(String? time, DaySectionOption? initial, DaySectionOption? current){
-  //   if(initial == current){
-  //     return time.toString();
-  //   }else{
-  //     return null;
-  //   }
-  // }
+  addToSlots(String time)=>ConsultationController.instance.timeSlots.add(time);
+  removeFromSlots(String time)=>ConsultationController.instance.timeSlots.remove(time);
 
   Future getAllSlots() async {
     timeSlots.clear();

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/widgets/my_default_text_theme.dart';
 import 'package:tl_consultant/core/utils/helpers/day_section_option.dart';
@@ -20,6 +21,7 @@ class TimePickerWidget extends StatefulWidget {
 }
 
 class _TimePickerWidgetState extends State<TimePickerWidget> {
+  final controller = Get.put(ConsultationController());
   int selectedIndex = -1;
 
   @override
@@ -58,9 +60,20 @@ class _TimePickerWidgetState extends State<TimePickerWidget> {
                         height: 40,
                         child: TimeWidget(
                           text: time,
+                          onSelected: (){
+                            if(ConsultationController.instance.timeSlots.contains(time)){
+                              ConsultationController.instance.removeFromSlots(time);
+                            }else{
+                              ConsultationController.instance.addToSlots(time);
+                            }
+                            setState(() {});
+
+                            print(ConsultationController.instance.timeSlots);
+                          },
+                          selectedSlots: ConsultationController.instance.timeSlots,
                           // isSelected: ConsultationController.instance.daySectionStatus
                           //   (widget.initialDayOption, widget.currentDayOption, selectedIndex) == i,
-                        ),
+                        )
                       )
                   );
                 },
@@ -74,26 +87,41 @@ class _TimePickerWidgetState extends State<TimePickerWidget> {
 }
 
 class TimeWidget extends StatelessWidget {
-  const TimeWidget({Key? key, required this.text, this.isSelected = false})
+  TimeWidget({
+    Key? key,
+    required this.text,
+    required this.selectedSlots,
+    this.onSelected
+  })
       : super(key: key);
 
-  final bool isSelected;
   final String text;
+  Function()? onSelected;
+  List selectedSlots;
 
   @override
   Widget build(BuildContext context) {
-    return VxBox(
-      child:  Text(
-        text,
-        style: TextStyle(color: isSelected ? Colors.white : null),
+    return GestureDetector(
+      onTap: onSelected,
+      child: Container(
+          decoration: BoxDecoration(
+              color: selectedSlots.contains(text) ? ColorPalette.green : Colors.white,
+              borderRadius: BorderRadius.circular(16.0),
+              border: selectedSlots.contains(text)
+                  ? Border.all(width: 2, color: ColorPalette.white)
+                  : null,
+              boxShadow: selectedSlots.contains(text) ? [
+                BoxShadow(
+                    blurRadius: 6, color: Colors.black12, offset: Offset(0, 3)),
+              ] : null
+          ),
+          child: Center(
+            child: Text(
+              text,
+              style: TextStyle(color: selectedSlots.contains(text) ? Colors.white : null),
+            ),
+          )
       ),
-    )
-        .rounded.p8
-        .alignCenter
-        .neumorphic(
-        color: isSelected ? ColorPalette.green : Colors.white,
-        elevation: 12,
-        curve: VxCurve.emboss
-    ).make();
+    );
   }
 }

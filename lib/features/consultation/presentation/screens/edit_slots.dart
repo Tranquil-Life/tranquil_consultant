@@ -46,7 +46,7 @@ class _EditSlotsState extends State<EditSlots> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const CustomAppBar(title: 'Edit Availability'),
-      backgroundColor: Colors.grey[100],
+      backgroundColor: Colors.grey[200],
       body: Padding(
         padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
         child: Column(

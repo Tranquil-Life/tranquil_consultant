@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 class DaySectionWidget extends StatefulWidget {
@@ -30,7 +31,17 @@ class DaySectionWidgetState extends State<DaySectionWidget> {
         containedInkWell: true,
         highlightShape: BoxShape.rectangle,
         onTap: widget.isSelected ? null : widget.onPressed,
-        child: VxBox(
+        child: Container(
+          decoration: BoxDecoration(
+            color: widget.isSelected ? ColorPalette.green : ColorPalette.white,
+            borderRadius: BorderRadius.circular(16.0),
+            border: widget.isSelected ? Border.all(width: 2, color: ColorPalette.white) : null,
+
+            boxShadow: widget.isSelected ? [
+              BoxShadow(
+                  blurRadius: 6, color: Colors.black12, offset: Offset(0, 3)),
+            ] : null
+          ),
           child: Padding(
             padding: const EdgeInsets.all(12),
             child: Center(
@@ -58,13 +69,7 @@ class DaySectionWidgetState extends State<DaySectionWidget> {
               ),
             ),
           ),
-        ).rounded.p8
-            .alignCenter
-            .neumorphic(
-            color: widget.isSelected ? Colors.green: Colors.white,
-            elevation: 12,
-            curve: VxCurve.emboss
-        ).make(),
+        ),
       ),
     );
   }
