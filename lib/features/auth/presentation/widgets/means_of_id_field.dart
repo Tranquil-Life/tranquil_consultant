@@ -189,7 +189,7 @@ class UploadDialog extends StatelessWidget {
                               child: GestureDetector(
                                 child: SizedBox(
                                   height: 200,
-                                  child: CustomWebView(url: value.uploadUrl.value),
+                                  //child: CustomWebView(url: value.uploadUrl.value),
                                   //child: SizedBox(),
                                 ),
                               ),

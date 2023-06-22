@@ -43,7 +43,7 @@ dependencies:
   http: any
 
   get_storage: ^2.1.1
-  flutter_secure_storage: ^6.0.0
+  #flutter_secure_storage: ^6.0.0
 
   velocity_x: ^3.6.0
   file_picker:
@@ -79,7 +79,6 @@ dependencies:
   cupertino_icons: ^1.0.2
   fluttertoast: ^8.1.1
   emoji_picker_flutter: ^1.5.1
-  webview_flutter: ^4.0.7
 
 dev_dependencies:
   flutter_test:

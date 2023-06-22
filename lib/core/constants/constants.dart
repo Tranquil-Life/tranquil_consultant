@@ -1,5 +1,4 @@
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:fluttermoji/fluttermoji.dart';
 import 'package:uuid/uuid.dart';
 
@@ -24,5 +23,5 @@ const uidGenerator = Uuid();
 final deviceInfoPlugin = DeviceInfoPlugin();
 num? androidVersion;
 
-const secureStore = FlutterSecureStorage();
+// const secureStore = FlutterSecureStorage();
 final fluttermojiFunctions = FluttermojiFunctions();
