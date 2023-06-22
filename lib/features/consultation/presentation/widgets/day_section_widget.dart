@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
-import 'package:velocity_x/velocity_x.dart';
 
 class DaySectionWidget extends StatefulWidget {
   const DaySectionWidget({

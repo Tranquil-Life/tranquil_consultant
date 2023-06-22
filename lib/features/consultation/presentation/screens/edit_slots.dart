@@ -11,7 +11,6 @@ import 'package:tl_consultant/features/consultation/presentation/controllers/con
 import 'package:tl_consultant/features/consultation/presentation/widgets/day_card.dart';
 import 'package:tl_consultant/features/consultation/presentation/widgets/day_section_picker.dart';
 import 'package:tl_consultant/features/consultation/presentation/widgets/time_widget.dart';
-import 'package:velocity_x/velocity_x.dart';
 
 class EditSlots extends StatefulWidget {
   const EditSlots({Key? key}) : super(key: key);
@@ -39,8 +38,7 @@ class _EditSlotsState extends State<EditSlots> {
     "Wednesday",
     "Thursday",
     "Friday",
-    "Saturday",
-    "Sunday"
+    "Saturday"
   ];
 
   @override
@@ -76,7 +74,6 @@ class _EditSlotsState extends State<EditSlots> {
                   child: TimePickerWidget(
                     onTimeChosen: (newTime, index) {
                       time = newTime;
-                      controller.selectedTime.value = time!;
                     },
                     times: times,
                   ),
@@ -92,12 +89,13 @@ class _EditSlotsState extends State<EditSlots> {
             Align(
               alignment: Alignment.bottomCenter,
               child: Wrap(
+                alignment: WrapAlignment.start,
                 children: [
                   const Padding(
-                    padding: EdgeInsets.only(left: 24, bottom: 24),
+                    padding: EdgeInsets.only(bottom: 24),
                     child: Text(
-                      'Select a date',
-                      style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
+                      'Select unavailable days (If any)',
+                      style: TextStyle(fontSize: AppFonts.defaultSize, fontFamily: AppFonts.josefinSansSemiBold),
                     ),
                   ),
                   SizedBox(
@@ -105,7 +103,7 @@ class _EditSlotsState extends State<EditSlots> {
                     child: ListView.builder(
                       itemCount: days.length,
                       scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      padding: const EdgeInsets.only(right: 16),
                       itemBuilder: (_, index) {
                         final day = days[index];
                         return Padding(
@@ -126,16 +124,20 @@ class _EditSlotsState extends State<EditSlots> {
                       },
                     ),
                   ),
-                  Obx(()=> CustomButton(
-                      child:  controller.loading.value
-                          ? const CircularProgressIndicator(color: Colors.white)
-                          :const Text("Save", style: TextStyle(fontSize: AppFonts.defaultSize)),
-                      onPressed: (){
-                        //..
-                      }))
+                  Padding(
+                    padding: const EdgeInsets.only(top: 16, bottom: 32),
+                    child: Obx(()=> CustomButton(
+                        child:  controller.loading.value
+                            ? const CircularProgressIndicator(color: Colors.white)
+                            :const Text("Save", style: TextStyle(fontSize: AppFonts.defaultSize)),
+                        onPressed: (){
+                          print(controller.listInUtc);
+                        })),
+                  )
                 ],
               ),
-            )
+            ),
+
           ],
         ),
       ),

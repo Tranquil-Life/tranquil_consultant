@@ -7,7 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:tl_consultant/app/config.dart';
 import 'package:tl_consultant/app/presentation/widgets/IOSDatePicker.dart';
-import 'package:velocity_x/velocity_x.dart';
+import 'package:tl_consultant/core/utils/extensions/date_time_extension.dart';
 
 void setStatusBarBrightness(bool dark, [Duration? delayedTime]) async {
   await Future.delayed(delayedTime ?? const Duration(milliseconds: 300));
@@ -17,20 +17,18 @@ void setStatusBarBrightness(bool dark, [Duration? delayedTime]) async {
   ));
 }
 
-final now = DateTime.now();
-String currentDate = "${now.year}-${now.month.length==1 ? "0${now.month}" : now.month}-${now.day.length==1 ? "0${now.day}" : now.day}";
-
 List timeOfDayRange(){
   return List.generate(19, (index) {
-    if(index >= 6 && index <=18) return "${index.length ==1 ? "0$index" : index}:00";
+    if(index >= 6 && index <=18) return "${index.toString().padLeft(2, "0")}:00";
   }).where((element) => element !=null).toList();
 }
 
 List timeOfNightRange(){
   return List.generate(24, (index) {
-    if(index <= 5 || index >=19) return "${index.length ==1 ? "0$index" : index}:00";
+    if(index <= 5 || index >=19) return "${index.toString().padLeft(2, "0")}:00";
   }).where((element) => element !=null).toList();
 }
+
 
 Future<bool> addMeetingToCalendar(DateTime time,
     {required String c_fname, required String c_lname}) {

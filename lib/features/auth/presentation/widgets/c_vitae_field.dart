@@ -48,10 +48,9 @@ class CurriculumVitaeField extends StatelessWidget {
                                             child: ClipRRect(
                                               borderRadius: BorderRadius.all(Radius.circular(12)),
                                               child: GestureDetector(
-                                                child: Container(
+                                                child: SizedBox(
                                                   height: 200,
-                                                  //child: CustomWebView(url: value.uploadUrl.value),
-                                                  //child: SizedBox(),
+                                                  child: CustomWebView(url: value.uploadUrl.value),
                                                 ),
                                               ),
                                             )

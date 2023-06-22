@@ -1,5 +1,5 @@
 //const baseUrl = 'https://tranquil-api.herokuapp.com/api/';
-const baseUrl = 'https://42d2-197-210-78-170.ngrok-free.app/api/';
+const baseUrl = 'https://a0f3-197-210-79-144.ngrok-free.app/api/';
 
 abstract class AuthEndPoints {
   static const login = 'consultant/login';

@@ -2,22 +2,21 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/widgets/custom_snackbar.dart';
 import 'package:tl_consultant/core/utils/extensions/date_time_extension.dart';
+import 'package:tl_consultant/core/utils/functions.dart';
 import 'package:tl_consultant/features/consultation/data/models/meeting_model.dart';
 import 'package:tl_consultant/features/consultation/data/repos/consultation_repo.dart';
 import 'package:tl_consultant/features/consultation/domain/entities/meeting.dart';
 import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
-import 'package:tl_consultant/core/utils/helpers/day_section_option.dart';
 
 class ConsultationController extends GetxController{
   static ConsultationController instance = Get.find();
 
   final meetingsStreamController = StreamController<Map<String, dynamic>>.broadcast();
   Stream<Map<String, dynamic>> get meetingsStream => meetingsStreamController.stream;
-
-  var now = DateTime.now();
 
   var call = 0.obs;
   Timer? callTimer;
@@ -28,19 +27,22 @@ class ConsultationController extends GetxController{
   var timeSlots = [].obs;
   var loading = false.obs;
 
-  var selectedTime = "".obs;
-  var selectedDate = "".obs;
+  addToSlots(String time)=>instance.timeSlots.add(time);
+  removeFromSlots(String time)=>instance.timeSlots.remove(time);
 
-  int daySectionStatus(DaySectionOption? initial, DaySectionOption? current, int selectedIndex) {
-    if(initial == current){
-      return selectedIndex;
-    }else{
-      return -1;
+  List get listInUtc {
+    List utcSlots = [];
+    for (var element in instance.timeSlots) {
+      var newTime = DateTime.parse(
+          "${DateTimeExtension.now.year}"
+              "-${DateTimeExtension.now.month.toString().padLeft(2, "0")}"
+              "-${DateTimeExtension.now.day.toString().padLeft(2, "0")} $element")
+          .toUtc();
+      utcSlots.add("${newTime.hour.toString().padLeft(2, "0")}"
+          ":${newTime.minute.toString().padLeft(2, "0")}");
     }
+    return utcSlots;
   }
-
-  addToSlots(String time)=>ConsultationController.instance.timeSlots.add(time);
-  removeFromSlots(String time)=>ConsultationController.instance.timeSlots.remove(time);
 
   Future getAllSlots() async {
     timeSlots.clear();
@@ -85,8 +87,9 @@ class ConsultationController extends GetxController{
             Meeting meeting = MeetingModel.fromJson(element);
             meetings.add(meeting);
 
-            if(meeting.endAt.isAfter(now)
-                && (meeting.startAt.isBefore(now) || meeting.startAt == now))
+            if(meeting.endAt.isAfter(DateTimeExtension.now)
+                && (meeting.startAt.isBefore(DateTimeExtension.now)
+                    || meeting.startAt == DateTimeExtension.now))
             {
               DashboardController.instance.ongoingMeetingCount.value = 1;
 
@@ -132,10 +135,4 @@ class ConsultationController extends GetxController{
       }
     });
   }
-
-
-  void clearData() {
-    //...
-  }
-
 }

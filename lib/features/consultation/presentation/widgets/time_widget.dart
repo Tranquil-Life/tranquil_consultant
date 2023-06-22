@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/widgets/my_default_text_theme.dart';
-import 'package:tl_consultant/core/utils/helpers/day_section_option.dart';
 import 'package:tl_consultant/features/consultation/presentation/controllers/consultation_controller.dart';
-import 'package:velocity_x/velocity_x.dart';
 
 class TimePickerWidget extends StatefulWidget {
   TimePickerWidget(
