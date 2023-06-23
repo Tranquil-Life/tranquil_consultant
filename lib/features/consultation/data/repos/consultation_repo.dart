@@ -18,7 +18,7 @@ class ConsultationRepoImpl extends ConsultantRepo {
           ConsultationEndPoints.getSlots);
 
       if (response.body['error'] == false) {
-        var data = response.body['data'];
+        var data = response.body;
 
         return Right(data);
       } else {
@@ -33,9 +33,40 @@ class ConsultationRepoImpl extends ConsultantRepo {
   }
 
   @override
-  Future<Either<ApiError, dynamic>> saveSlots() {
-    // TODO: implement editSlots
-    throw UnimplementedError();
+  Future<Either<ApiError, dynamic>> saveSlots({List? slots, List? unavailableDays})
+  async{
+    httpClient.baseUrl = baseUrl;
+
+    var body = {
+      "available_time": slots,
+      "unavailable_days": unavailableDays
+    };
+
+    try{
+      Response response = await postReq(
+          ConsultationEndPoints.saveSlots,
+          body: body
+      );
+
+      if(response.body['error'] == false){
+        var data = response.body;
+
+        return Right(data);
+      }
+      else {
+        return Left(
+          ApiError(message: response.body['message'].toString()),
+        );
+      }
+    }on SocketException catch (e) {
+      return Left(ApiError(
+          message: 'Error: $e'));
+    }catch (e, stack) {
+      debugPrintStack(stackTrace: stack);
+      return Left(ApiError(
+        message: e.toString(),
+      ));
+    }
   }
 
   @override

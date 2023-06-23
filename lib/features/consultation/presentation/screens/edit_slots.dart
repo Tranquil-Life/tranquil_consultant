@@ -43,11 +43,12 @@ class _EditSlotsState extends State<EditSlots> {
 
   @override
   void initState() {
+    controller.getAllSlots();
     getDaySlots();
     super.initState();
   }
 
-  getDaySlots() {
+  getDaySlots() async{
     sortTime(false);
   }
 
@@ -131,7 +132,9 @@ class _EditSlotsState extends State<EditSlots> {
                             ? const CircularProgressIndicator(color: Colors.white)
                             :const Text("Save", style: TextStyle(fontSize: AppFonts.defaultSize)),
                         onPressed: (){
-                          print(controller.listInUtc);
+                          controller.saveSlots(
+                              unavailableDays: selectedDays
+                          );
                         })),
                   )
                 ],

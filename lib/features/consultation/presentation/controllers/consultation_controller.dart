@@ -14,6 +14,7 @@ import 'package:tl_consultant/features/dashboard/presentation/controllers/dashbo
 
 class ConsultationController extends GetxController{
   static ConsultationController instance = Get.find();
+  final repo = ConsultationRepoImpl();
 
   final meetingsStreamController = StreamController<Map<String, dynamic>>.broadcast();
   Stream<Map<String, dynamic>> get meetingsStream => meetingsStreamController.stream;
@@ -26,6 +27,8 @@ class ConsultationController extends GetxController{
   DateTime? meetingDate;
   var timeSlots = [].obs;
   var loading = false.obs;
+
+  var apiSlots = [];
 
   addToSlots(String time)=>instance.timeSlots.add(time);
   removeFromSlots(String time)=>instance.timeSlots.remove(time);
@@ -44,29 +47,93 @@ class ConsultationController extends GetxController{
     return utcSlots;
   }
 
-  Future getAllSlots() async {
-    timeSlots.clear();
-    loading.value = true;
+  // RxList dayTimeSlots = [].obs;
+  // RxList nightTimeSlots = [].obs;
 
-    var either = await ConsultationRepoImpl().getSlots();
-    if(either.isRight()){
-      loading.value = false;
-      either.map((r){
-        timeSlots.value = r;
-      });
+  getSlotsInLocal(){
+    for (var element in apiSlots) {
+      var dateTime = DateFormat("yyyy-MM-dd HH:mm:ss").parse("${DateTimeExtension.now.year}"
+          "-${DateTimeExtension.now.month.toString().padLeft(2, "0")}"
+          "-${DateTimeExtension.now.day.toString().padLeft(2, "0")} $element", true);
+      var dateLocal = dateTime.toLocal();
+      // var dayTimeMax = DateFormat("yyyy-MM-dd HH:mm:ss").parse("${DateTimeExtension.now.year}"
+      //     "-${DateTimeExtension.now.month.toString().padLeft(2, "0")}"
+      //     "-${DateTimeExtension.now.day.toString().padLeft(2, "0")} 18:00:00", true);
+      //
+      // var dayTimeMin = DateFormat("yyyy-MM-dd HH:mm:ss").parse("${DateTimeExtension.now.year}"
+      //     "-${DateTimeExtension.now.month.toString().padLeft(2, "0")}"
+      //     "-${DateTimeExtension.now.day.toString().padLeft(2, "0")} 06:00:00", true);
 
+      timeSlots.add("${dateLocal.hour.toString().padLeft(2, "0")}"
+          ":${dateLocal.minute.toString().padLeft(2, "0")}");
+
+      print(timeSlots);
+    }
+
+  }
+
+  Future saveSlots({List? unavailableDays}) async{
+    var result = await repo.saveSlots(
+        slots: listInUtc,
+        unavailableDays: unavailableDays
+    );
+
+    if(result.isRight()){
+      CustomSnackBar.showSnackBar(
+          context: Get.context!,
+          title: "Success",
+          message: "Saved",
+          backgroundColor: ColorPalette.green);
     }
     else{
-      either.leftMap((l){
-        loading.value = false;
-
-        CustomSnackBar.showSnackBar(
-            context: Get.context,
-            title: "Error",
-            message: l.message.toString(),
-            backgroundColor: ColorPalette.green);
-      });
+      CustomSnackBar.showSnackBar(
+          context: Get.context!,
+          title: "Error",
+          message: "Couldn't save slots",
+          backgroundColor: ColorPalette.red);
     }
+  }
+
+  Future getAllSlots() async {
+    // loading.value = true;
+    Timer.periodic(Duration(seconds: 1), (timer) async{
+      var result = await ConsultationRepoImpl().getSlots();
+
+      callTimer = timer;
+      call.value++;
+
+      if(result.isRight()){
+        callTimer?.cancel();
+        timer.cancel();
+        // loading.value = false;
+        result.map((r){
+          //timeSlots.value = r['slots'];
+          apiSlots = r['slots'];
+          getSlotsInLocal();
+        });
+        //print(utcToLocal);
+
+      }
+      else{
+        result.leftMap((l){
+          // loading.value = false;
+          if(call.value>=6){
+            callTimer?.cancel();
+            timer.cancel();
+
+            CustomSnackBar.showSnackBar(
+                context: Get.context,
+                title: "Error",
+                message: l.message.toString(),
+                backgroundColor: ColorPalette.green);
+          }
+
+
+        });
+      }
+    });
+
+
   }
 
   Future getMeetings() async{

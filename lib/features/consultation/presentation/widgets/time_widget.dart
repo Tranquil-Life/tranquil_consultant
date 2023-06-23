@@ -56,22 +56,21 @@ class _TimePickerWidgetState extends State<TimePickerWidget> {
                       child: SizedBox(
                         width: 100,
                         height: 40,
-                        child: TimeWidget(
-                          text: time,
-                          onSelected: (){
-                            if(ConsultationController.instance.timeSlots.contains(time)){
-                              ConsultationController.instance.removeFromSlots(time);
-                            }else{
-                              ConsultationController.instance.addToSlots(time);
-                            }
-                            setState(() {});
-
-                            print(ConsultationController.instance.timeSlots);
-                          },
-                          selectedSlots: ConsultationController.instance.timeSlots,
-                          // isSelected: ConsultationController.instance.daySectionStatus
-                          //   (widget.initialDayOption, widget.currentDayOption, selectedIndex) == i,
-                        )
+                        child: Obx(()=>
+                            TimeWidget(
+                              text: time,
+                              onSelected: (){
+                                if(ConsultationController.instance.timeSlots.contains(time)){
+                                  ConsultationController.instance.removeFromSlots(time);
+                                }else{
+                                  ConsultationController.instance.addToSlots(time);
+                                }
+                                setState(() {});
+                              },
+                              selectedSlots: ConsultationController.instance.timeSlots.value,
+                              // isSelected: ConsultationController.instance.daySectionStatus
+                              //   (widget.initialDayOption, widget.currentDayOption, selectedIndex) == i,
+                            ))
                       )
                   );
                 },
@@ -83,6 +82,7 @@ class _TimePickerWidgetState extends State<TimePickerWidget> {
     );
   }
 }
+
 
 class TimeWidget extends StatelessWidget {
   TimeWidget({
