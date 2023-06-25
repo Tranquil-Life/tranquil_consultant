@@ -50,6 +50,7 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
       setState(() {
         authController.currentAddress =
         '${place.administrativeArea}, ${place.country}';
+        AuthController.instance.currLocationTEC.text = authController.currentAddress!;
       });
     }).catchError((e) {
       debugPrint(e.toString());

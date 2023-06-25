@@ -59,39 +59,49 @@ class AuthController extends GetxController{
   RxList<String> specialtiesArr = <String>[].obs;
 
   Future signUp() async{
-    var result = await AuthRepoImpl()
-        .register(params);
+    Timer.periodic(Duration(seconds: 1), (timer) async{
+      var result = await AuthRepoImpl().register(params);
 
-    if(result.isRight()){
-      result.map((r){
-        userDataStore.user = r;
-        print(userDataStore.user);
-      });
+      callTimer = timer;
+      call.value++;
 
-      AppData.isSignedIn = true;
-      User user = UserModel.fromJson(userDataStore.user);
+      if(result.isRight()){
+        callTimer?.cancel();
+        timer.cancel();
 
-      DashboardController.instance.authToken.value = user.authToken.toString();
-      DashboardController.instance.firstName.value = user.firstName.toString();
-      DashboardController.instance.lastName.value = user.lastName.toString();
+        result.map((r){
+          userDataStore.user = r;
+          print(userDataStore.user);
+        });
 
-      print(DashboardController.instance.firstName.value);
+        AppData.isSignedIn = true;
+        User user = UserModel.fromJson(userDataStore.user);
 
-      emailTEC.clear();
-      passwordTEC.clear();
+        DashboardController.instance.authToken.value = user.authToken.toString();
+        DashboardController.instance.firstName.value = user.firstName.toString();
+        DashboardController.instance.lastName.value = user.lastName.toString();
 
-      if(user.authToken!.isNotEmpty){
-        Get.offAllNamed(Routes.DASHBOARD);
+        print(DashboardController.instance.firstName.value);
+
+        emailTEC.clear();
+        passwordTEC.clear();
+
+        if(user.authToken!.isNotEmpty){
+          Get.offAllNamed(Routes.DASHBOARD);
+        }
       }
-    }else{
-      result.leftMap((l)=>
-          CustomSnackBar.showSnackBar(
-              context: Get.context!,
-              title: "Error",
-              message: l.message.toString(),
-              backgroundColor: ColorPalette.red
-          ));
-    }
+      else{
+        result.leftMap((l){
+
+          if(call.value>=10) {
+            callTimer?.cancel();
+            timer.cancel();
+          }}
+        );
+      }
+    });
+
+
   }
 
   Future signIn(String email, String password) async {
@@ -132,8 +142,6 @@ class AuthController extends GetxController{
           ));
     }
   }
-
-
 
   Future isUserAuthenticated() async{
     Timer.periodic(const Duration(seconds: 1), (timer) async{

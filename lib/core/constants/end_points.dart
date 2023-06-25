@@ -1,4 +1,5 @@
-const baseUrl = 'https://d6e7-102-90-43-164.ngrok-free.app/api/';
+//const baseUrl = 'https://tranquil-api.herokuapp.com/api/';
+const baseUrl = 'https://fuzzy-frogs-notice.loca.lt/api/';
 
 abstract class AuthEndPoints {
   static const login = 'consultant/login';
