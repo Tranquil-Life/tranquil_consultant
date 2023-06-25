@@ -10,8 +10,6 @@ import 'package:tl_consultant/features/auth/presentation/widgets/forgot_password
 import 'package:tl_consultant/features/auth/presentation/widgets/form_fields.dart';
 
 class SignInScreen extends StatefulWidget {
-  static const routeName = 'sign_in_screen';
-
   const SignInScreen({Key? key}) : super(key: key);
 
   @override

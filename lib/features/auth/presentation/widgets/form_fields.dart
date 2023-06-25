@@ -8,6 +8,7 @@ import 'package:tl_consultant/app/presentation/theme/fonts.dart';
 import 'package:tl_consultant/app/presentation/theme/properties.dart';
 import 'package:tl_consultant/app/presentation/widgets/custom_form_field.dart';
 import 'package:tl_consultant/app/presentation/widgets/dialogs.dart';
+import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 import 'package:tl_consultant/core/utils/services/media_service.dart';
 import 'package:tl_consultant/core/utils/services/validators.dart';
@@ -170,20 +171,121 @@ CustomFormField dateOfBirthField(){
 CustomFormField cvField({Function()? onTap}){
   return CustomFormField(
     textEditingController: AuthController.instance.cvTEC,
-    hint: 'Staff ID',
-    textInputType: TextInputType.name,
+    hint: 'Upload your CV',
+    textInputType: TextInputType.text,
     textCapitalization: TextCapitalization.words,
     readOnly: true,
-    suffix: GestureDetector(
-      onTap: onTap,
-      child:  const Icon(Icons.attach_file, color: Colors.black,),
-    ),
+    onTap: onTap,
     validator: (val) {
       if (AuthController.instance.params.cvUrl.isEmpty) return null;
-      if (val!.isEmpty) return 'Your resumé is required';
+      if (val!.isEmpty) return emptyCvField;
       return null;
     },
     onChanged: (text)=>AuthController.instance.params.cvUrl = text,
+  );
+}
+
+//Attach ID
+CustomFormField meansOfIdField({Function()? onTap}){
+  return CustomFormField(
+    textEditingController: AuthController.instance.identityTEC,
+    hint: 'Upload a means of identification',
+    textInputType: TextInputType.text,
+    textCapitalization: TextCapitalization.words,
+    readOnly: true,
+    onTap: onTap,
+    validator: (val) {
+      if (AuthController.instance.params.identityUrl.isEmpty) return null;
+      if (val!.isEmpty) return emptyIdField;
+      return null;
+    },
+    onChanged: (text)=>AuthController.instance.params.identityUrl = text,
+  );
+}
+
+CustomFormField currentRegion(){
+  return CustomFormField(
+    hint: 'Country/region',
+    textEditingController: AuthController.instance.currLocationTEC,
+    textInputType: TextInputType.text,
+    textInputAction: TextInputAction.next,
+    textCapitalization: TextCapitalization.words,
+    readOnly: true,
+    validator: (val) {
+      if (val!.isEmpty) {
+        return 'What is your current location?';
+      }
+      return null;
+    },
+    onChanged: (text)=> AuthController.instance.params.currentLocation = text);
+}
+
+CustomFormField linkedinField(){
+  return CustomFormField(
+    hint: 'LinkedIn profile URL',
+    initialValue: AuthController.instance.params.linkedinUrl,
+    textInputType: TextInputType.text,
+    textInputAction: TextInputAction.next,
+    textCapitalization: TextCapitalization.words,
+    validator: (val) {
+      if (val!.isEmpty) {
+        return 'Paste your LinkedIn profile URL';
+      }
+      return null;
+    },
+    onChanged: (text)=> AuthController.instance.params.linkedinUrl = text,
+  );
+}
+
+CustomFormField expertiseField({Function()? onTap}){
+  return CustomFormField(
+    hint: "Area of Expertise",
+    textEditingController: AuthController.instance.areaOfExpertiseTEC,
+    textInputType: TextInputType.text,
+    readOnly: true,
+    onTap: onTap,
+    validator: (val) {
+      if (AuthController.instance.params.expertise.isEmpty) return null;
+      if (val!.isEmpty) return emptyIdField;
+      return null;
+    },
+    onChanged: (text){
+      AuthController.instance.params.expertise.clear();
+
+      AuthController.instance.params.expertise.add(text);
+    },
+  );
+}
+
+CustomFormField yearsOfExperienceField({Function()? onTap}){
+  return CustomFormField(
+    hint: "Years of Experience",
+    textEditingController: AuthController.instance.yearsOfExperienceTEC,
+    readOnly: true,
+    onTap: onTap,
+    validator: (val) {
+      if (AuthController.instance.params.yearsOfExperience.isEmpty) return null;
+      if (val!.isEmpty) return emptyIdField;
+      return null;
+    },
+    onChanged: (text){
+      AuthController.instance.params.yearsOfExperience = text;
+      print("OnChanged:YEARS: ${AuthController.instance.params.yearsOfExperience}");
+    },
+  );
+}
+
+CustomFormField pLanguageField({Function()? onTap}){
+  return CustomFormField(
+    hint: "Preferred Languages",
+    textEditingController: AuthController.instance.languagesTEC,
+    readOnly: true,
+    onTap: onTap,
+    validator: (val) {
+      if (AuthController.instance.params.languages.isEmpty) return null;
+      if (val!.isEmpty) return emptyIdField;
+      return null;
+    },
   );
 }
 

@@ -10,9 +10,6 @@ class User {
 
   final String? email;
 
-  @JsonKey(name: 'display_name')
-  String? displayName;
-
   @JsonKey(name: 'f_name')
   final String firstName;
 
@@ -42,7 +39,6 @@ class User {
     this.firstName = "",
     this.lastName = "",
     this.phoneNumber = "",
-    this.displayName= "",
     this.authToken,
     this.usesBitmoji,
     this.birthDate,
@@ -56,7 +52,6 @@ class User {
     String? fname,
     int? id,
     String? phoneNumber,
-    String? displayName,
     String? birthDate,
   }) =>
       User(
@@ -64,7 +59,6 @@ class User {
           lastName: lastName,
           id: id ?? this.id,
           phoneNumber: phoneNumber ?? this.phoneNumber,
-          displayName: displayName ?? this.displayName,
           birthDate: birthDate ?? this.birthDate,
           usesBitmoji: usesBitmoji);
 

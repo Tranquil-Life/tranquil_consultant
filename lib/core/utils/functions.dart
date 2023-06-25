@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:add_2_calendar/add_2_calendar.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:tl_consultant/app/config.dart';
 import 'package:tl_consultant/app/presentation/widgets/IOSDatePicker.dart';
+import 'package:tl_consultant/core/utils/extensions/date_time_extension.dart';
 
 void setStatusBarBrightness(bool dark, [Duration? delayedTime]) async {
   await Future.delayed(delayedTime ?? const Duration(milliseconds: 300));
@@ -15,33 +17,18 @@ void setStatusBarBrightness(bool dark, [Duration? delayedTime]) async {
   ));
 }
 
-List timeOfDayRange(List slots){
-  List newArray = [];
-  final format = DateFormat('HH:mm');
-
-  for (int i = 1; i < slots.length; i++) {
-    if(slots[i].hour >= 6 && slots[i].hour <=18){
-
-      newArray.add(format.format(slots[i]));
-    }
-  }
-
-  return newArray;
+List timeOfDayRange(){
+  return List.generate(19, (index) {
+    if(index >= 6 && index <=18) return "${index.toString().padLeft(2, "0")}:00";
+  }).where((element) => element !=null).toList();
 }
 
-List timeOfNightRange(List slots){
-  List newArray = [];
-  final format = DateFormat('HH:mm');
-
-  for (var element in slots) {
-    if(element.hour <= 5 || element.hour >=19){
-
-      newArray.add(format.format(element));
-    }
-  }
-
-  return newArray;
+List timeOfNightRange(){
+  return List.generate(24, (index) {
+    if(index <= 5 || index >=19) return "${index.toString().padLeft(2, "0")}:00";
+  }).where((element) => element !=null).toList();
 }
+
 
 Future<bool> addMeetingToCalendar(DateTime time,
     {required String c_fname, required String c_lname}) {
@@ -105,5 +92,23 @@ String strMsgType(String messageType){
       return 'audio';
     default:
       return 'text';
+  }
+}
+
+Future getFileSize(String filepath, int decimals) async {
+  var file = File(filepath);
+  int bytes = await file.length();
+  if (bytes <= 0) return "0 B";
+  const suffixes = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+  var i = (log(bytes) / log(1024)).floor();
+
+  if(suffixes[i] != "B" && suffixes[i] !="KB"){
+    if((bytes / pow(1024, i)) > 2){
+      return "Too large";
+    }else{
+      return '${(bytes / pow(1024, i)).toStringAsFixed(decimals)} ${suffixes[i]}';
+    }
+  }else{
+    return '${(bytes / pow(1024, i)).toStringAsFixed(decimals)} ${suffixes[i]}';
   }
 }

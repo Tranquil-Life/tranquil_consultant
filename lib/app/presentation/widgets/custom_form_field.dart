@@ -46,6 +46,7 @@ class CustomFormField extends StatelessWidget {
       textInputAction: textInputAction,
       textCapitalization: textCapitalization,
       onChanged: onChanged,
+      onTap: onTap,
       decoration: InputDecoration(
         hintText: hint,
         hintStyle:

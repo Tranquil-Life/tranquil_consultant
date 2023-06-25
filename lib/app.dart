@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tl_consultant/app/config.dart';
 import 'package:tl_consultant/app/presentation/routes/app_pages.dart';
 import 'package:tl_consultant/app/presentation/routes/bindings/controllers_binding.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
@@ -13,7 +14,7 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      title: 'Tranquil Life',
+      title: AppConfig.appName,
       debugShowCheckedModeBanner: true,
       theme: ThemeData(
         fontFamily: AppFonts.josefinSansRegular,

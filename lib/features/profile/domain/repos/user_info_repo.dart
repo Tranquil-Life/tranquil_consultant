@@ -8,7 +8,7 @@ import 'package:tl_consultant/core/utils/services/API/api_service.dart';
 abstract class UserInfoRepo<T, F extends QueryParams> extends ApiService {
   UserInfoRepo();
 
-  Future<Either<ApiError, dynamic>> uploadCv(File file, String fileType);
-  Future<Either<ApiError, dynamic>> uploadID(String filePath);
+  Future<Either<ApiError, dynamic>> uploadCv(File file);
+  Future<Either<ApiError, dynamic>> uploadID(File file);
   Future<Either<ApiError, dynamic>> updateInfo(String filePath);
 }

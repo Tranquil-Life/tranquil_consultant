@@ -1,13 +1,14 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:tl_consultant/app/presentation/routes/app_pages.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/widgets/custom_snackbar.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
+import 'package:tl_consultant/core/utils/functions.dart';
 import 'package:tl_consultant/core/utils/services/app_data_store.dart';
 import 'package:tl_consultant/features/auth/data/repos/auth_repo.dart';
 import 'package:tl_consultant/features/auth/domain/entities/register_data.dart';
@@ -23,10 +24,17 @@ class AuthController extends GetxController{
   UserDataStore userDataStore = UserDataStore();
   UserInfoRepoImpl userInfoRepoImpl = UserInfoRepoImpl();
 
-  TextEditingController emailTEC = TextEditingController(text: "ayomideseaz@gmail.com");
+  TextEditingController emailTEC = TextEditingController(text: "apple@gmail.com");
   TextEditingController passwordTEC = TextEditingController(text: "password");
 
   TextEditingController cvTEC = TextEditingController();
+  TextEditingController identityTEC = TextEditingController();
+  TextEditingController currLocationTEC = TextEditingController();
+  TextEditingController areaOfExpertiseTEC = TextEditingController();
+  TextEditingController yearsOfExperienceTEC = TextEditingController();
+  TextEditingController languagesTEC = TextEditingController();
+
+  TextEditingController aoeSearchController = TextEditingController();
 
   final dateTEC = TextEditingController();
 
@@ -37,9 +45,54 @@ class AuthController extends GetxController{
 
   RxBool uploading = false.obs;
   RxString fileSize = "0 KB".obs;
+  String uploadType = "";
 
   var call = 0.obs;
   Timer? callTimer;
+
+  String? currentAddress;
+  Position? currentPosition;
+
+  List workStatusList = ['Self-employed', 'Employed'];
+
+  RxList<String> languagesArr = <String>[].obs;
+  RxList<String> specialtiesArr = <String>[].obs;
+
+  Future signUp() async{
+    var result = await AuthRepoImpl()
+        .register(params);
+
+    if(result.isRight()){
+      result.map((r){
+        userDataStore.user = r;
+        print(userDataStore.user);
+      });
+
+      AppData.isSignedIn = true;
+      User user = UserModel.fromJson(userDataStore.user);
+
+      DashboardController.instance.authToken.value = user.authToken.toString();
+      DashboardController.instance.firstName.value = user.firstName.toString();
+      DashboardController.instance.lastName.value = user.lastName.toString();
+
+      print(DashboardController.instance.firstName.value);
+
+      emailTEC.clear();
+      passwordTEC.clear();
+
+      if(user.authToken!.isNotEmpty){
+        Get.offAllNamed(Routes.DASHBOARD);
+      }
+    }else{
+      result.leftMap((l)=>
+          CustomSnackBar.showSnackBar(
+              context: Get.context!,
+              title: "Error",
+              message: l.message.toString(),
+              backgroundColor: ColorPalette.red
+          ));
+    }
+  }
 
   Future signIn(String email, String password) async {
     var result = await AuthRepoImpl()
@@ -56,7 +109,10 @@ class AuthController extends GetxController{
       User user = UserModel.fromJson(userDataStore.user);
 
       DashboardController.instance.authToken.value = user.authToken.toString();
-      DashboardController.instance.displayName.value = user.displayName.toString();
+      DashboardController.instance.firstName.value = user.firstName.toString();
+      DashboardController.instance.lastName.value = user.lastName.toString();
+
+      print(DashboardController.instance.firstName.value);
 
       emailTEC.clear();
       passwordTEC.clear();
@@ -77,6 +133,8 @@ class AuthController extends GetxController{
     }
   }
 
+
+
   Future isUserAuthenticated() async{
     Timer.periodic(const Duration(seconds: 1), (timer) async{
       var result = await AuthRepoImpl().isUserAuthenticated();
@@ -95,7 +153,10 @@ class AuthController extends GetxController{
         User user = UserModel.fromJson(userDataStore.user);
 
         DashboardController.instance.authToken.value = user.authToken.toString();
-        DashboardController.instance.displayName.value = user.displayName.toString();
+        DashboardController.instance.firstName.value = user.firstName.toString();
+        DashboardController.instance.lastName.value = user.lastName.toString();
+
+        print(DashboardController.instance.firstName.value);
 
         Get.offAllNamed(Routes.DASHBOARD);
       }
@@ -106,7 +167,6 @@ class AuthController extends GetxController{
             callTimer?.cancel();
             timer.cancel();
 
-            print(l.message);
             if(l.message == "User has not been authenticated"){
               Get.offAllNamed(Routes.ONBOARDING);
             }
@@ -142,8 +202,8 @@ class AuthController extends GetxController{
 
   RxString uploadUrl = "".obs;
 
-  uploadFile(File file) async{
-    await getFileSize(file.path, 1).then((value) async{
+  uploadCv({File? file}) async{
+    await getFileSize(file!.path, 1).then((value) async{
       if(value == "Too large"){
         CustomSnackBar.showSnackBar(
             context: Get.context!,
@@ -152,50 +212,80 @@ class AuthController extends GetxController{
             backgroundColor: ColorPalette.red);
       }else{
         uploading.value = true;
-        var result = await userInfoRepoImpl
-            .uploadCv(file, "cv");
 
-        if(result.isRight()){
-          result.map((r){
-            params.cvUrl = r;
-            uploadUrl.value = params.cvUrl;
-            print("RIGHT:${AuthController.instance.params.cvUrl}");
-          });
-        }
-        else{
-          result.leftMap((l){
+        Timer.periodic(const Duration(seconds: 1), (timer) async{
+          var result = await userInfoRepoImpl
+              .uploadCv(file);
+
+          if(result.isRight()){
+            callTimer?.cancel();
+            timer.cancel();
+
+            result.map((r){
+              params.cvUrl = r;
+              uploadUrl.value = params.cvUrl;
+            });
+          }
+          else{
+            result.leftMap((l){
+              if(call.value>=6){
+                callTimer?.cancel();
+                timer.cancel();
+
+                CustomSnackBar.showSnackBar(
+                    context: Get.context!,
+                    title: "Error",
+                    message: l.message.toString(),
+                    backgroundColor: ColorPalette.red
+                );
+              }
+            });
+          }
+        });
+      }
+    });
+  }
+
+  uploadID({File? file}) async{
+    uploading.value = true;
+
+    var result = await userInfoRepoImpl
+        .uploadID(file!);
+
+    Timer.periodic(Duration(seconds: 1), (timer) {
+      if(result.isRight()){
+        callTimer?.cancel();
+        timer.cancel();
+
+        result.map((r){
+          params.identityUrl = r;
+          uploadUrl.value = params.identityUrl;
+        });
+      }
+      else{
+        result.leftMap((l){
+          if(call.value>=6){
+            callTimer?.cancel();
+            timer.cancel();
+
             CustomSnackBar.showSnackBar(
                 context: Get.context!,
                 title: "Error",
                 message: l.message.toString(),
                 backgroundColor: ColorPalette.red
             );
-          });
-        }      }
+          }
+        });
+      }
     });
 
-
-  }
-
-  Future getFileSize(String filepath, int decimals) async {
-    var file = File(filepath);
-    int bytes = await file.length();
-    if (bytes <= 0) return "0 B";
-    const suffixes = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
-    var i = (log(bytes) / log(1024)).floor();
-
-    if(suffixes[i] != "B" && suffixes[i] !="KB"){
-      if((bytes / pow(1024, i)) > 2){
-        return "Too large";
-      }else{
-        return '${(bytes / pow(1024, i)).toStringAsFixed(decimals)} ${suffixes[i]}';
-      }
-    }else{
-      return '${(bytes / pow(1024, i)).toStringAsFixed(decimals)} ${suffixes[i]}';
-    }
   }
 
   clearData(){
+    emailTEC.clear();
+    passwordTEC.clear();
+    cvTEC.clear();
+    identityTEC.clear();
     dateTEC.clear();
     params.email = '';
     params.password = '';
@@ -209,4 +299,5 @@ class AuthController extends GetxController{
 
     super.onClose();
   }
+
 }

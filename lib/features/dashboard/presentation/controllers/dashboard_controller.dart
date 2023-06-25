@@ -17,7 +17,8 @@ class DashboardController extends GetxController{
   var ongoingMeetingId = 1.obs;
 
   var authToken = "".obs;
-  var displayName = "".obs;
+  var firstName = "".obs;
+  var lastName = "".obs;
 
   Future<void> onTap(int index) async{
     currentIndex.value = index;
@@ -31,7 +32,6 @@ class DashboardController extends GetxController{
   clearAllData(){
     AuthController.instance.clearData();
     HomeController.instance.clearData();
-    ConsultationController.instance.clearData();
     NotesController.instance.clearData();
     clearData();
   }

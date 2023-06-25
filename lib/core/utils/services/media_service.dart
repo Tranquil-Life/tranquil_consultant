@@ -12,6 +12,19 @@ abstract class MediaService {
   static final _imagePicker = ImagePicker();
   static final _imageCropper = ImageCropper();
 
+  static Future<File?> openCamera([
+    ImageSource source = ImageSource.camera,
+  ]) async {
+    final XFile? capturedFile = await _imagePicker.pickImage(
+      source: source,
+      imageQuality: 75,
+      maxHeight: 720,
+      maxWidth: 720,
+    );
+    if (capturedFile == null) return null;
+    return _cropImage(File(capturedFile.path));
+  }
+
   static Future<File?> selectImage([
     ImageSource source = ImageSource.gallery,
   ]) async {
@@ -27,8 +40,8 @@ abstract class MediaService {
 
   static Future<File?> selectAudio() => _selectFile(type: FileType.audio);
 
-  static Future<File?> selectDocument([List<String>? allowedExtensions]) =>
-      _selectFile(type: FileType.any, allowedExtensions: allowedExtensions);
+  static Future<File?> selectDocument({List<String>? allowedExtensions, String? uploadTpe}) =>
+      _selectFile(type: FileType.any, allowedExtensions: allowedExtensions, uploadType: uploadTpe);
 
   ///Returns a jpg image file
   static Future<File?> generateVideoThumb(
@@ -59,6 +72,7 @@ abstract class MediaService {
   static Future<File?> _selectFile({
     FileType type = FileType.any,
     List<String>? allowedExtensions,
+    String? uploadType,
   }) async {
     FilePickerResult? result = await _filePicker.pickFiles(
       type: type,
@@ -66,7 +80,10 @@ abstract class MediaService {
     );
     if (result == null) return null;
 
-    AuthController.instance.uploadFile(File(result.files.first.path!));
+    if(uploadType=="cv"){
+      AuthController.instance.uploadCv(file: File(result.files.first.path!));
+    }
+
 
     return File(result.files.first.path!);
   }
@@ -75,6 +92,7 @@ abstract class MediaService {
     var croppedFile = await _imageCropper.cropImage(
         sourcePath: file.path, compressQuality: 75);
     if (croppedFile == null) return null;
+    AuthController.instance.uploadID(file: File(croppedFile.path));
     return File(croppedFile.path);
   }
 }

@@ -1,7 +1,6 @@
 part of 'user.dart';
 
 Map<String, dynamic> _$UserToJson(User instance) =><String, dynamic>{
-  'display_name': instance.displayName,
   'avatar_url': instance.avatarUrl,
   'id': instance.id,
   'f_name': instance.firstName,
