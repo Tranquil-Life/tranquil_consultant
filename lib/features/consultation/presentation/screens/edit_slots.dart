@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/theme/fonts.dart';
 import 'package:tl_consultant/app/presentation/widgets/buttons.dart';
 import 'package:tl_consultant/app/presentation/widgets/custom_app_bar.dart';
@@ -24,7 +25,6 @@ class _EditSlotsState extends State<EditSlots> {
   ClientUser? clientUser;
 
   List times = [];
-  List selectedDays = [];
   String? time;
 
   DateTime? dateTime = DateTime.now();
@@ -59,19 +59,20 @@ class _EditSlotsState extends State<EditSlots> {
       backgroundColor: Colors.grey[200],
       body: Padding(
         padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
-        child: Stack(
-          children: [
-            Column(
+        child: Obx(()=>
+            Stack(
               children: [
                 DaySectionPicker(onDaySelected: (isNightSelected)
                 {
                   sortTime(isNightSelected);
                 }),
 
-                const SizedBox(height: 48),
-
-                Align(
-                  alignment: Alignment.centerLeft,
+                controller.loading.value ? Center(
+                  child: CircularProgressIndicator(color: ColorPalette.green),
+                ) :
+                Container(
+                  height: 400,
+                  margin: EdgeInsets.only(top: selectedSection == DaySectionOption.day ? 48 : 18),
                   child: TimePickerWidget(
                     onTimeChosen: (newTime, index) {
                       time = newTime;
@@ -80,69 +81,60 @@ class _EditSlotsState extends State<EditSlots> {
                   ),
                 ),
 
-                const SizedBox(
-                  height: 16,
+                controller.loading.value ? Center(child: CircularProgressIndicator(color: ColorPalette.green)) :
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Wrap(
+                    alignment: WrapAlignment.start,
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.only(bottom: 24),
+                        child: Text(
+                          'Select unavailable days (If any)',
+                          style: TextStyle(fontSize: AppFonts.defaultSize, fontFamily: AppFonts.josefinSansSemiBold),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 80,
+                        child: ListView.builder(
+                          itemCount: days.length,
+                          scrollDirection: Axis.horizontal,
+                          padding: const EdgeInsets.only(right: 16),
+                          itemBuilder: (_, index) {
+                            final day = days[index];
+                            return Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 8),
+                                child: Obx(()=>DayCard(
+                                  day,
+                                  selected: controller.selectedDays.contains(day),
+                                  onChosen: (){
+                                    if(controller.selectedDays.contains(day)){
+                                      controller.selectedDays.remove(day);
+                                    }else{
+                                      controller.selectedDays.add(day);
+                                    }
+                                  },
+                                ))
+                            );
+                          },
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 48, bottom: 32),
+                        child: CustomButton(
+                            child: const Text("Save", style: TextStyle(fontSize: AppFonts.defaultSize)),
+                            onPressed: (){
+                              controller.saveSlots(
+                                  unavailableDays: controller.selectedDays.value
+                              );
+                            }),
+                      )
+                    ],
+                  ),
                 ),
 
               ],
-            ),
-
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Wrap(
-                alignment: WrapAlignment.start,
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.only(bottom: 24),
-                    child: Text(
-                      'Select unavailable days (If any)',
-                      style: TextStyle(fontSize: AppFonts.defaultSize, fontFamily: AppFonts.josefinSansSemiBold),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 80,
-                    child: ListView.builder(
-                      itemCount: days.length,
-                      scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.only(right: 16),
-                      itemBuilder: (_, index) {
-                        final day = days[index];
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8),
-                          child: DayCard(
-                            day,
-                            selected: selectedDays.contains(day),
-                            onChosen: (){
-                              if(selectedDays.contains(day)){
-                                selectedDays.remove(day);
-                              }else{
-                                selectedDays.add(day);
-                              }
-                              setState((){});
-                            },
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 16, bottom: 32),
-                    child: Obx(()=> CustomButton(
-                        child:  controller.loading.value
-                            ? const CircularProgressIndicator(color: Colors.white)
-                            :const Text("Save", style: TextStyle(fontSize: AppFonts.defaultSize)),
-                        onPressed: (){
-                          controller.saveSlots(
-                              unavailableDays: selectedDays
-                          );
-                        })),
-                  )
-                ],
-              ),
-            ),
-
-          ],
-        ),
+            )),
       ),
     );
   }
@@ -150,10 +142,13 @@ class _EditSlotsState extends State<EditSlots> {
   void sortTime(bool isNightHours) {
     if (isNightHours) {
       times = timeOfNightRange();
+      selectedSection = DaySectionOption.night;
     } else {
       times = timeOfDayRange();
+      selectedSection = DaySectionOption.day;
     }
     setState(() {});
+
   }
 
 }

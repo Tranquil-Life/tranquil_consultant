@@ -2,11 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:intl/intl.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/widgets/custom_snackbar.dart';
 import 'package:tl_consultant/core/utils/extensions/date_time_extension.dart';
-import 'package:tl_consultant/core/utils/functions.dart';
 import 'package:tl_consultant/features/consultation/data/models/meeting_model.dart';
 import 'package:tl_consultant/features/consultation/data/repos/consultation_repo.dart';
 import 'package:tl_consultant/features/consultation/domain/entities/meeting.dart';
@@ -26,6 +26,8 @@ class ConsultationController extends GetxController{
 
   DateTime? meetingDate;
   var timeSlots = [].obs;
+  RxList selectedDays = [].obs;
+
   var loading = false.obs;
 
   var apiSlots = [];
@@ -47,29 +49,16 @@ class ConsultationController extends GetxController{
     return utcSlots;
   }
 
-  // RxList dayTimeSlots = [].obs;
-  // RxList nightTimeSlots = [].obs;
-
   getSlotsInLocal(){
     for (var element in apiSlots) {
       var dateTime = DateFormat("yyyy-MM-dd HH:mm:ss").parse("${DateTimeExtension.now.year}"
           "-${DateTimeExtension.now.month.toString().padLeft(2, "0")}"
           "-${DateTimeExtension.now.day.toString().padLeft(2, "0")} $element", true);
       var dateLocal = dateTime.toLocal();
-      // var dayTimeMax = DateFormat("yyyy-MM-dd HH:mm:ss").parse("${DateTimeExtension.now.year}"
-      //     "-${DateTimeExtension.now.month.toString().padLeft(2, "0")}"
-      //     "-${DateTimeExtension.now.day.toString().padLeft(2, "0")} 18:00:00", true);
-      //
-      // var dayTimeMin = DateFormat("yyyy-MM-dd HH:mm:ss").parse("${DateTimeExtension.now.year}"
-      //     "-${DateTimeExtension.now.month.toString().padLeft(2, "0")}"
-      //     "-${DateTimeExtension.now.day.toString().padLeft(2, "0")} 06:00:00", true);
 
       timeSlots.add("${dateLocal.hour.toString().padLeft(2, "0")}"
           ":${dateLocal.minute.toString().padLeft(2, "0")}");
-
-      print(timeSlots);
     }
-
   }
 
   Future saveSlots({List? unavailableDays}) async{
@@ -95,45 +84,37 @@ class ConsultationController extends GetxController{
   }
 
   Future getAllSlots() async {
-    // loading.value = true;
-    Timer.periodic(Duration(seconds: 1), (timer) async{
+    loading.value = true;
+    Timer.periodic(const Duration(seconds: 1), (timer) async{
       var result = await ConsultationRepoImpl().getSlots();
 
       callTimer = timer;
       call.value++;
 
       if(result.isRight()){
+        loading.value = false;
+
         callTimer?.cancel();
         timer.cancel();
-        // loading.value = false;
+
         result.map((r){
-          //timeSlots.value = r['slots'];
           apiSlots = r['slots'];
+          unavailableDays(r['days']);
+
           getSlotsInLocal();
         });
-        //print(utcToLocal);
-
       }
       else{
+        loading.value = false;
+        instance.timeSlots.clear();
         result.leftMap((l){
-          // loading.value = false;
           if(call.value>=6){
             callTimer?.cancel();
             timer.cancel();
-
-            CustomSnackBar.showSnackBar(
-                context: Get.context,
-                title: "Error",
-                message: l.message.toString(),
-                backgroundColor: ColorPalette.green);
           }
-
-
         });
       }
     });
-
-
   }
 
   Future getMeetings() async{
@@ -165,10 +146,6 @@ class ConsultationController extends GetxController{
               DashboardController.instance.clientDp.value = meeting.client.firstName;
               DashboardController.instance.ongoingMeetingST.value = meeting.startAt.formatDate;
               DashboardController.instance.ongoingMeetingET.value = meeting.endAt.formatDate;
-
-              print("ONGOING: ${DashboardController.instance.ongoingMeetingId.value}");
-
-              print("CLIENT_NAME: ${DashboardController.instance.clientName.value}");
             }
           }
         });
@@ -186,20 +163,26 @@ class ConsultationController extends GetxController{
       }
       else{
         result.leftMap((l){
-          print("MEETINGS: calls: ${call.value}");
           if(call.value>=10) {
             callTimer?.cancel();
             timer.cancel();
-
-            // CustomSnackBar.showSnackBar(
-            //     context: Get.context!,
-            //     title: "Error",
-            //     message: l.message!,
-            //     backgroundColor: ColorPalette.red
-            // );
           }}
         );
       }
     });
+  }
+
+  unavailableDays(Map<String, dynamic> daysMap) {
+    selectedDays.value = daysMap.keys.map((e){
+      if(daysMap[e] == false) return e.capitalizeFirst;
+    }).toList().where((element) => element != null).toList();
+  }
+
+
+  @override
+  void onClose() {
+    callTimer?.cancel();
+
+    super.onClose();
   }
 }

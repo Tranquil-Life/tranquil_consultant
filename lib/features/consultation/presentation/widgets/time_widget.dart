@@ -29,31 +29,29 @@ class _TimePickerWidgetState extends State<TimePickerWidget> {
       alignment: Alignment.center,
       child: MyDefaultTextStyle(
         style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-        child: Padding(
-          padding: const EdgeInsets.only(bottom: 48),
-          child: Center(
-            child: Wrap(
-              spacing: 10,
-              runSpacing: 20,
-              children: List.generate(
-                widget.times.length,
-                    (i) {
-                  var time = widget.times[i];
-                  return GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          widget.onTimeChosen(time,i);
+        child:Center(
+          child: Wrap(
+            spacing: 10,
+            runSpacing: 20,
+            children: List.generate(
+              widget.times.length,
+                  (i) {
+                var time = widget.times[i];
+                return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        widget.onTimeChosen(time,i);
 
-                          selectedIndex = i;
-                          // if(widget.currentDayOption == DaySectionOption.day){
-                          //   widget.initialDayOption = DaySectionOption.day;
-                          // }else{
-                          //   widget.initialDayOption = DaySectionOption.night;
-                          // }
-                        });
+                        selectedIndex = i;
+                        // if(widget.currentDayOption == DaySectionOption.day){
+                        //   widget.initialDayOption = DaySectionOption.day;
+                        // }else{
+                        //   widget.initialDayOption = DaySectionOption.night;
+                        // }
+                      });
 
-                      },
-                      child: SizedBox(
+                    },
+                    child: SizedBox(
                         width: 100,
                         height: 40,
                         child: Obx(()=>
@@ -68,13 +66,10 @@ class _TimePickerWidgetState extends State<TimePickerWidget> {
                                 setState(() {});
                               },
                               selectedSlots: ConsultationController.instance.timeSlots.value,
-                              // isSelected: ConsultationController.instance.daySectionStatus
-                              //   (widget.initialDayOption, widget.currentDayOption, selectedIndex) == i,
                             ))
-                      )
-                  );
-                },
-              ),
+                    )
+                );
+              },
             ),
           ),
         ),
