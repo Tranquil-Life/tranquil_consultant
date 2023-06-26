@@ -59,47 +59,44 @@ class AuthController extends GetxController{
   RxList<String> specialtiesArr = <String>[].obs;
 
   Future signUp() async{
-    Timer.periodic(Duration(seconds: 1), (timer) async{
-      var result = await AuthRepoImpl().register(params);
+    var result = await AuthRepoImpl().register(params);
 
-      callTimer = timer;
-      call.value++;
+    // callTimer = timer;
+    // call.value++;
 
-      if(result.isRight()){
-        callTimer?.cancel();
-        timer.cancel();
+    if(result.isRight()){
+      // callTimer?.cancel();
+      // timer.cancel();
 
-        result.map((r){
-          userDataStore.user = r;
-          print(userDataStore.user);
-        });
+      result.map((r){
+        userDataStore.user = r;
+        print(userDataStore.user);
+      });
 
-        AppData.isSignedIn = true;
-        User user = UserModel.fromJson(userDataStore.user);
+      AppData.isSignedIn = true;
+      User user = UserModel.fromJson(userDataStore.user);
 
-        DashboardController.instance.authToken.value = user.authToken.toString();
-        DashboardController.instance.firstName.value = user.firstName.toString();
-        DashboardController.instance.lastName.value = user.lastName.toString();
+      DashboardController.instance.authToken.value = user.authToken.toString();
+      DashboardController.instance.firstName.value = user.firstName.toString();
+      DashboardController.instance.lastName.value = user.lastName.toString();
 
-        print(DashboardController.instance.firstName.value);
+      print(DashboardController.instance.firstName.value);
 
-        emailTEC.clear();
-        passwordTEC.clear();
+      emailTEC.clear();
+      passwordTEC.clear();
 
-        if(user.authToken!.isNotEmpty){
-          Get.offAllNamed(Routes.DASHBOARD);
-        }
+      if(user.authToken!.isNotEmpty){
+        Get.offAllNamed(Routes.DASHBOARD);
       }
-      else{
-        result.leftMap((l){
-
-          if(call.value>=10) {
-            callTimer?.cancel();
-            timer.cancel();
-          }}
-        );
-      }
-    });
+    }
+    else{
+      result.leftMap((l) {
+        // if(call.value>=10) {
+        //   callTimer?.cancel();
+        //   //timer.cancel();
+        // }}
+      });
+    }
 
 
   }
@@ -218,94 +215,76 @@ class AuthController extends GetxController{
           title: "Error",
           message: fileMaxSize,
           backgroundColor: ColorPalette.red);
-    }else{
-      var result = await userInfoRepoImpl
-          .uploadCv(file);
-
-      if(result.isRight()){
-        result.map((r)=>print(r.toString()));
-      }
     }
+    else{
+      uploading.value = true;
 
-    // await getFileSize(file!.path, 1).then((value) async{
-    //   // if(value == "Too large"){
-    //   //   CustomSnackBar.showSnackBar(
-    //   //       context: Get.context!,
-    //   //       title: "Error",
-    //   //       message: fileMaxSize,
-    //   //       backgroundColor: ColorPalette.red);
-    //   // }
-    //   // else{
-    //   //   uploading.value = true;
-    //   //
-    //   //   Timer.periodic(const Duration(seconds: 1), (timer) async{
-    //   //     var result = await userInfoRepoImpl
-    //   //         .uploadCv(file);
-    //   //
-    //   //     if(result.isRight()){
-    //   //       callTimer?.cancel();
-    //   //       timer.cancel();
-    //   //
-    //   //       result.map((r){
-    //   //         params.cvUrl = r;
-    //   //         uploadUrl.value = params.cvUrl;
-    //   //       });
-    //   //     }
-    //   //     else{
-    //   //       result.leftMap((l){
-    //   //         if(call.value>=6){
-    //   //           callTimer?.cancel();
-    //   //           timer.cancel();
-    //   //
-    //   //           CustomSnackBar.showSnackBar(
-    //   //               context: Get.context!,
-    //   //               title: "Error",
-    //   //               message: l.message.toString(),
-    //   //               backgroundColor: ColorPalette.red
-    //   //           );
-    //   //         }
-    //   //       });
-    //   //     }
-    //   //   });
-    //   // }
-    // });
+      Timer.periodic(const Duration(seconds: 1), (timer) async{
+        var result = await userInfoRepoImpl
+            .uploadCv(file);
 
+        if(result.isRight()){
+          callTimer?.cancel();
+          timer.cancel();
+
+          result.map((r){
+            params.cvUrl = r;
+            uploadUrl.value = params.cvUrl;
+          });
+        }
+        else{
+          result.leftMap((l){
+            if(call.value>=6){
+              callTimer?.cancel();
+              timer.cancel();
+
+              CustomSnackBar.showSnackBar(
+                  context: Get.context!,
+                  title: "Error",
+                  message: l.message.toString(),
+                  backgroundColor: ColorPalette.red
+              );
+            }
+          });
+        }
+      });
+    }
   }
 
-  // uploadID({File? file}) async{
-  //   uploading.value = true;
-  //
-  //   var result = await userInfoRepoImpl
-  //       .uploadID(file!);
-  //
-  //   Timer.periodic(Duration(seconds: 1), (timer) {
-  //     if(result.isRight()){
-  //       callTimer?.cancel();
-  //       timer.cancel();
-  //
-  //       result.map((r){
-  //         params.identityUrl = r;
-  //         uploadUrl.value = params.identityUrl;
-  //       });
-  //     }
-  //     else{
-  //       result.leftMap((l){
-  //         if(call.value>=6){
-  //           callTimer?.cancel();
-  //           timer.cancel();
-  //
-  //           CustomSnackBar.showSnackBar(
-  //               context: Get.context!,
-  //               title: "Error",
-  //               message: l.message.toString(),
-  //               backgroundColor: ColorPalette.red
-  //           );
-  //         }
-  //       });
-  //     }
-  //   });
-  //
-  // }
+  uploadID({File? file}) async{
+    uploading.value = true;
+
+    var result = await userInfoRepoImpl
+        .uploadID(file!);
+
+    Timer.periodic(const Duration(seconds: 1), (timer) {
+      if(result.isRight()){
+        callTimer?.cancel();
+        timer.cancel();
+
+        result.map((r){
+          params.identityUrl = r;
+          uploadUrl.value = params.identityUrl;
+        });
+      }
+      else{
+        result.leftMap((l){
+          if(call.value>=6){
+            callTimer?.cancel();
+            timer.cancel();
+
+            CustomSnackBar.showSnackBar(
+                context: Get.context!,
+                title: "Error",
+                message: l.message.toString(),
+                backgroundColor: ColorPalette.red
+            );
+          }
+        });
+      }
+    });
+
+  }
 
   clearData(){
     emailTEC.clear();

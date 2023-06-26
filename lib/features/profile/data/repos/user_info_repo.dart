@@ -45,6 +45,7 @@ class UserInfoRepoImpl extends UserInfoRepo{
       var streamedResponse = await request.send();
       var response = await http.Response.fromStream(streamedResponse);
 
+      print(response.body);
       if(response.statusCode == 200){
         return Right(jsonDecode(response.body)['storage_url']);
       }else {
@@ -60,39 +61,35 @@ class UserInfoRepoImpl extends UserInfoRepo{
   @override
   Future<Either<ApiError, dynamic>> uploadID(File file) async{
     try{
-      var request = http.MultipartRequest('POST',
-          Uri.parse(baseUrl+MediaEndpoints.uploadFile));
+      var stream  = http.ByteStream(file.openRead());
+      stream.cast();
 
-      request.files.add(
-        http.MultipartFile(
-          'file',
-          file.readAsBytes().asStream(),
-          file.lengthSync(),
-          filename: p.basename(file.path),
-          contentType: MediaType('application', 'x-tar'),
-        ),
+      var uri = Uri.parse(baseUrl+MediaEndpoints.uploadFile);
+
+      var request = http.MultipartRequest('POST', uri);
+
+      request.fields['username'] = "${AuthController.instance.params.firstName}_${AuthController.instance.params.lastName}" ;
+      request.fields['upload_type'] = "photo_id" ;
+
+      var multiport = http.MultipartFile(
+        'file',
+        file.readAsBytes().asStream(),
+        file.lengthSync(),
+        filename: p.basename(file.path),
+        contentType: MediaType('application', 'x-tar'),
       );
 
-      Map<String,String> headers={
-        "Content-type": "multipart/form-data"
-      };
-
-      request.headers.addAll(headers);
-
-      request.fields.addAll({
-        "username": "${AuthController.instance.params.firstName}_${AuthController.instance.params.lastName}",
-        "upload_type": "photo_id",
-      });
+      request.files.add(multiport);
 
       var streamedResponse = await request.send();
-
       var response = await http.Response.fromStream(streamedResponse);
+
       if(response.statusCode == 200){
         return Right(jsonDecode(response.body)['storage_url']);
-      }else{
-        return Left(ApiError(
-            message: jsonDecode(response.body)['message'].toString()));
+      }else {
+        return Left(ApiError(message: jsonDecode(response.body)['message'].toString()));
       }
+
     }
     on SocketException catch(e) {
       return Left(ApiError(
