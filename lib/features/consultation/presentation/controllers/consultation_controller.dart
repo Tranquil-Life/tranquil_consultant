@@ -101,12 +101,12 @@ class ConsultationController extends GetxController{
           apiSlots = r['slots'];
           availableDays(r['days']);
 
+          print(r['days']);
           getSlotsInLocal();
         });
       }
       else{
         loading.value = false;
-        instance.timeSlots.clear();
         result.leftMap((l){
           if(call.value>=6){
             callTimer?.cancel();
@@ -174,7 +174,7 @@ class ConsultationController extends GetxController{
 
   availableDays(Map<String, dynamic> daysMap) {
     selectedDays.value = daysMap.keys.map((e){
-      if(daysMap[e] == false) return e.capitalizeFirst;
+      if(daysMap[e] == true) return e.capitalizeFirst;
     }).toList().where((element) => element != null).toList();
   }
 
