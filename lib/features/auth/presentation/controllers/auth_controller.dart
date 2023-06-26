@@ -211,83 +211,101 @@ class AuthController extends GetxController{
   RxString uploadUrl = "".obs;
 
   uploadCv({File? file}) async{
-    await getFileSize(file!.path, 1).then((value) async{
-      if(value == "Too large"){
-        CustomSnackBar.showSnackBar(
-            context: Get.context!,
-            title: "Error",
-            message: fileMaxSize,
-            backgroundColor: ColorPalette.red);
-      }else{
-        uploading.value = true;
+    var fileSize = await getFileSize(file!.path, 1);
+    if(fileSize == "Too large"){
+      CustomSnackBar.showSnackBar(
+          context: Get.context!,
+          title: "Error",
+          message: fileMaxSize,
+          backgroundColor: ColorPalette.red);
+    }else{
+      var result = await userInfoRepoImpl
+          .uploadCv(file);
 
-        Timer.periodic(const Duration(seconds: 1), (timer) async{
-          var result = await userInfoRepoImpl
-              .uploadCv(file);
-
-          if(result.isRight()){
-            callTimer?.cancel();
-            timer.cancel();
-
-            result.map((r){
-              params.cvUrl = r;
-              uploadUrl.value = params.cvUrl;
-            });
-          }
-          else{
-            result.leftMap((l){
-              if(call.value>=6){
-                callTimer?.cancel();
-                timer.cancel();
-
-                CustomSnackBar.showSnackBar(
-                    context: Get.context!,
-                    title: "Error",
-                    message: l.message.toString(),
-                    backgroundColor: ColorPalette.red
-                );
-              }
-            });
-          }
-        });
-      }
-    });
-  }
-
-  uploadID({File? file}) async{
-    uploading.value = true;
-
-    var result = await userInfoRepoImpl
-        .uploadID(file!);
-
-    Timer.periodic(Duration(seconds: 1), (timer) {
       if(result.isRight()){
-        callTimer?.cancel();
-        timer.cancel();
-
-        result.map((r){
-          params.identityUrl = r;
-          uploadUrl.value = params.identityUrl;
-        });
+        result.map((r)=>print(r.toString()));
       }
-      else{
-        result.leftMap((l){
-          if(call.value>=6){
-            callTimer?.cancel();
-            timer.cancel();
+    }
 
-            CustomSnackBar.showSnackBar(
-                context: Get.context!,
-                title: "Error",
-                message: l.message.toString(),
-                backgroundColor: ColorPalette.red
-            );
-          }
-        });
-      }
-    });
+    // await getFileSize(file!.path, 1).then((value) async{
+    //   // if(value == "Too large"){
+    //   //   CustomSnackBar.showSnackBar(
+    //   //       context: Get.context!,
+    //   //       title: "Error",
+    //   //       message: fileMaxSize,
+    //   //       backgroundColor: ColorPalette.red);
+    //   // }
+    //   // else{
+    //   //   uploading.value = true;
+    //   //
+    //   //   Timer.periodic(const Duration(seconds: 1), (timer) async{
+    //   //     var result = await userInfoRepoImpl
+    //   //         .uploadCv(file);
+    //   //
+    //   //     if(result.isRight()){
+    //   //       callTimer?.cancel();
+    //   //       timer.cancel();
+    //   //
+    //   //       result.map((r){
+    //   //         params.cvUrl = r;
+    //   //         uploadUrl.value = params.cvUrl;
+    //   //       });
+    //   //     }
+    //   //     else{
+    //   //       result.leftMap((l){
+    //   //         if(call.value>=6){
+    //   //           callTimer?.cancel();
+    //   //           timer.cancel();
+    //   //
+    //   //           CustomSnackBar.showSnackBar(
+    //   //               context: Get.context!,
+    //   //               title: "Error",
+    //   //               message: l.message.toString(),
+    //   //               backgroundColor: ColorPalette.red
+    //   //           );
+    //   //         }
+    //   //       });
+    //   //     }
+    //   //   });
+    //   // }
+    // });
 
   }
+
+  // uploadID({File? file}) async{
+  //   uploading.value = true;
+  //
+  //   var result = await userInfoRepoImpl
+  //       .uploadID(file!);
+  //
+  //   Timer.periodic(Duration(seconds: 1), (timer) {
+  //     if(result.isRight()){
+  //       callTimer?.cancel();
+  //       timer.cancel();
+  //
+  //       result.map((r){
+  //         params.identityUrl = r;
+  //         uploadUrl.value = params.identityUrl;
+  //       });
+  //     }
+  //     else{
+  //       result.leftMap((l){
+  //         if(call.value>=6){
+  //           callTimer?.cancel();
+  //           timer.cancel();
+  //
+  //           CustomSnackBar.showSnackBar(
+  //               context: Get.context!,
+  //               title: "Error",
+  //               message: l.message.toString(),
+  //               backgroundColor: ColorPalette.red
+  //           );
+  //         }
+  //       });
+  //     }
+  //   });
+  //
+  // }
 
   clearData(){
     emailTEC.clear();

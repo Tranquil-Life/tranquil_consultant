@@ -81,6 +81,7 @@ abstract class MediaService {
     if (result == null) return null;
 
     if(uploadType=="cv"){
+
       AuthController.instance.uploadCv(file: File(result.files.first.path!));
     }
 
@@ -92,7 +93,7 @@ abstract class MediaService {
     var croppedFile = await _imageCropper.cropImage(
         sourcePath: file.path, compressQuality: 75);
     if (croppedFile == null) return null;
-    AuthController.instance.uploadID(file: File(croppedFile.path));
+    //AuthController.instance.uploadID(file: File(croppedFile.path));
     return File(croppedFile.path);
   }
 }
