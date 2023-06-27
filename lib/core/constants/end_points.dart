@@ -1,4 +1,4 @@
-const baseUrl = 'https://forty-deer-read.loca.lt/api/';
+const baseUrl = 'https://718b-197-210-55-237.ngrok-free.app/api/';
 //const baseUrl = 'https://wet-knives-drum.loca.lt/api/';
 
 abstract class AuthEndPoints {

@@ -121,6 +121,7 @@ class AuthRepoImpl extends AuthRepo{
       Response response = await postReq(
           AuthEndPoints.login, body: data);
 
+      print(response.body);
       if (!jsonEncode(response.body).contains('error')) {
         return Left(ApiError(
           message: response.body['message'],

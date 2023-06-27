@@ -134,6 +134,7 @@ CustomFormField firstNameField(){
   );
 }
 
+//last name
 CustomFormField lastNameField(){
   return CustomFormField(
     hint: 'Last Name',
@@ -203,6 +204,7 @@ CustomFormField meansOfIdField({Function()? onTap}){
   );
 }
 
+//current region
 CustomFormField currentRegion(){
   return CustomFormField(
     hint: 'Country/region',
@@ -220,6 +222,7 @@ CustomFormField currentRegion(){
     onChanged: (text)=> AuthController.instance.params.currentLocation = text);
 }
 
+//linkedin
 CustomFormField linkedinField(){
   return CustomFormField(
     hint: 'LinkedIn profile URL',

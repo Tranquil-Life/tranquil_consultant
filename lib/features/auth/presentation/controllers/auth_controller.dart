@@ -24,7 +24,7 @@ class AuthController extends GetxController{
   UserDataStore userDataStore = UserDataStore();
   UserInfoRepoImpl userInfoRepoImpl = UserInfoRepoImpl();
 
-  TextEditingController emailTEC = TextEditingController(text: "apple@gmail.com");
+  TextEditingController emailTEC = TextEditingController(text: "apple1@gmail.com");
   TextEditingController passwordTEC = TextEditingController(text: "password");
 
   TextEditingController cvTEC = TextEditingController();
