@@ -6,6 +6,7 @@ import 'package:tl_consultant/features/consultation/presentation/controllers/con
 import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
 import 'package:tl_consultant/features/journal/presentation/controllers/notes_controller.dart';
 import 'package:tl_consultant/features/onboarding/presentation/controllers/onboarding_controller.dart';
+import 'package:tl_consultant/features/wallet/presentation/controllers/earnings_controller.dart';
 
 class AllControllerBindings extends Bindings{
   @override
@@ -14,6 +15,7 @@ class AllControllerBindings extends Bindings{
     Get.lazyPut(() => AuthController());
     Get.lazyPut(() => DashboardController());
     Get.lazyPut(() => ActivityController());
+    Get.lazyPut(() => EarningsController());
     Get.lazyPut(() => NotesController());
     Get.lazyPut(() => ConsultationController());
     Get.lazyPut(() => NetworkController());

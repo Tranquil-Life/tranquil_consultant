@@ -61,10 +61,10 @@ class ConsultationController extends GetxController{
     }
   }
 
-  Future saveSlots({List? unavailableDays}) async{
+  Future saveSlots({List? availableDays}) async{
     var result = await repo.saveSlots(
         slots: listInUtc,
-        unavailableDays: unavailableDays
+        availableDays: availableDays
     );
 
     if(result.isRight()){
@@ -99,14 +99,14 @@ class ConsultationController extends GetxController{
 
         result.map((r){
           apiSlots = r['slots'];
-          unavailableDays(r['days']);
+          availableDays(r['days']);
 
+          print(r['days']);
           getSlotsInLocal();
         });
       }
       else{
         loading.value = false;
-        instance.timeSlots.clear();
         result.leftMap((l){
           if(call.value>=6){
             callTimer?.cancel();
@@ -172,9 +172,9 @@ class ConsultationController extends GetxController{
     });
   }
 
-  unavailableDays(Map<String, dynamic> daysMap) {
+  availableDays(Map<String, dynamic> daysMap) {
     selectedDays.value = daysMap.keys.map((e){
-      if(daysMap[e] == false) return e.capitalizeFirst;
+      if(daysMap[e] == true) return e.capitalizeFirst;
     }).toList().where((element) => element != null).toList();
   }
 

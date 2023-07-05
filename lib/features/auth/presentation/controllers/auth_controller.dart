@@ -24,7 +24,7 @@ class AuthController extends GetxController{
   UserDataStore userDataStore = UserDataStore();
   UserInfoRepoImpl userInfoRepoImpl = UserInfoRepoImpl();
 
-  TextEditingController emailTEC = TextEditingController(text: "apple@gmail.com");
+  TextEditingController emailTEC = TextEditingController(text: "apple1@gmail.com");
   TextEditingController passwordTEC = TextEditingController(text: "password");
 
   TextEditingController cvTEC = TextEditingController();
@@ -59,10 +59,15 @@ class AuthController extends GetxController{
   RxList<String> specialtiesArr = <String>[].obs;
 
   Future signUp() async{
-    var result = await AuthRepoImpl()
-        .register(params);
+    var result = await AuthRepoImpl().register(params);
+
+    // callTimer = timer;
+    // call.value++;
 
     if(result.isRight()){
+      // callTimer?.cancel();
+      // timer.cancel();
+
       result.map((r){
         userDataStore.user = r;
         print(userDataStore.user);
@@ -83,15 +88,17 @@ class AuthController extends GetxController{
       if(user.authToken!.isNotEmpty){
         Get.offAllNamed(Routes.DASHBOARD);
       }
-    }else{
-      result.leftMap((l)=>
-          CustomSnackBar.showSnackBar(
-              context: Get.context!,
-              title: "Error",
-              message: l.message.toString(),
-              backgroundColor: ColorPalette.red
-          ));
     }
+    else{
+      result.leftMap((l) {
+        // if(call.value>=10) {
+        //   callTimer?.cancel();
+        //   //timer.cancel();
+        // }}
+      });
+    }
+
+
   }
 
   Future signIn(String email, String password) async {
@@ -132,8 +139,6 @@ class AuthController extends GetxController{
           ));
     }
   }
-
-
 
   Future isUserAuthenticated() async{
     Timer.periodic(const Duration(seconds: 1), (timer) async{
@@ -203,47 +208,47 @@ class AuthController extends GetxController{
   RxString uploadUrl = "".obs;
 
   uploadCv({File? file}) async{
-    await getFileSize(file!.path, 1).then((value) async{
-      if(value == "Too large"){
-        CustomSnackBar.showSnackBar(
-            context: Get.context!,
-            title: "Error",
-            message: fileMaxSize,
-            backgroundColor: ColorPalette.red);
-      }else{
-        uploading.value = true;
+    var fileSize = await getFileSize(file!.path, 1);
+    if(fileSize == "Too large"){
+      CustomSnackBar.showSnackBar(
+          context: Get.context!,
+          title: "Error",
+          message: fileMaxSize,
+          backgroundColor: ColorPalette.red);
+    }
+    else{
+      uploading.value = true;
 
-        Timer.periodic(const Duration(seconds: 1), (timer) async{
-          var result = await userInfoRepoImpl
-              .uploadCv(file);
+      Timer.periodic(const Duration(seconds: 1), (timer) async{
+        var result = await userInfoRepoImpl
+            .uploadCv(file);
 
-          if(result.isRight()){
-            callTimer?.cancel();
-            timer.cancel();
+        if(result.isRight()){
+          callTimer?.cancel();
+          timer.cancel();
 
-            result.map((r){
-              params.cvUrl = r;
-              uploadUrl.value = params.cvUrl;
-            });
-          }
-          else{
-            result.leftMap((l){
-              if(call.value>=6){
-                callTimer?.cancel();
-                timer.cancel();
+          result.map((r){
+            params.cvUrl = r;
+            uploadUrl.value = params.cvUrl;
+          });
+        }
+        else{
+          result.leftMap((l){
+            if(call.value>=6){
+              callTimer?.cancel();
+              timer.cancel();
 
-                CustomSnackBar.showSnackBar(
-                    context: Get.context!,
-                    title: "Error",
-                    message: l.message.toString(),
-                    backgroundColor: ColorPalette.red
-                );
-              }
-            });
-          }
-        });
-      }
-    });
+              CustomSnackBar.showSnackBar(
+                  context: Get.context!,
+                  title: "Error",
+                  message: l.message.toString(),
+                  backgroundColor: ColorPalette.red
+              );
+            }
+          });
+        }
+      });
+    }
   }
 
   uploadID({File? file}) async{
@@ -252,7 +257,7 @@ class AuthController extends GetxController{
     var result = await userInfoRepoImpl
         .uploadID(file!);
 
-    Timer.periodic(Duration(seconds: 1), (timer) {
+    Timer.periodic(const Duration(seconds: 1), (timer) {
       if(result.isRight()){
         callTimer?.cancel();
         timer.cancel();

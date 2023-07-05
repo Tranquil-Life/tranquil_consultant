@@ -13,7 +13,7 @@ class MeetingModel extends Meeting{
     required super.status,
     // super.reason,
     // super.createdAt,
-    super.updatedAt,
+    //super.updatedAt,
     // required super.participants
   });
 

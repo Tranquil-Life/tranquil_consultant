@@ -1,4 +1,4 @@
-const baseUrl = 'https://d6e7-102-90-43-164.ngrok-free.app/api/';
+const baseUrl = 'https://3509-197-210-78-22.ngrok-free.app/api/';
 
 abstract class AuthEndPoints {
   static const login = 'consultant/login';
@@ -13,6 +13,11 @@ abstract class ConsultationEndPoints{
   static const saveSlots = 'consultant/saveSlots';
   static const deleteSlot = 'consultant/deleteSlot';
   static const getMeetings = 'consultant/getMeetings';
+}
+
+abstract class EarningsEndpoints {
+  static const getInfo = 'consultant/getEarnings';
+  static const getTransactions = 'consultant/getEarnings';
 }
 
 abstract class JournalEndPoints{
