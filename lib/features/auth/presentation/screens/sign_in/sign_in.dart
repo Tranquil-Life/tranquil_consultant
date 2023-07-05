@@ -103,14 +103,11 @@ class _SignInScreenState extends State<SignInScreen> {
                     CustomButton(
                         text: 'Sign In',
                         onPressed:()async{
+                          //Get.toNamed(Routes.DASHBOARD);
                           await authController.signIn(
                             authController.emailTEC.text,
                             authController.passwordTEC.text,
                           );
-
-                          // if(userDataStore.user!.authToken!.isNotEmpty){
-                          //   Get.offAllNamed(Routes.DASHBOARD);
-                          // }
                         }),
 
                   ],

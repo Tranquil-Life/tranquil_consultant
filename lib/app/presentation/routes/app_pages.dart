@@ -16,7 +16,7 @@ part 'app_routes.dart';
 class AppPages{
   AppPages._();
 
-  static const INITIAL = Routes.SPLASH_SCREEN;
+  static const INITIAL = Routes.SIGN_IN;
 
   static final routes = [
     GetPage(name: Routes.SPLASH_SCREEN, page: ()=> SplashScreen()),

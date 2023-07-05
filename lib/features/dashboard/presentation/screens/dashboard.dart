@@ -8,6 +8,7 @@ import 'package:tl_consultant/features/dashboard/presentation/widgets/nav_item.d
 import 'package:tl_consultant/features/home/presentation/screens/home_tab.dart';
 import 'package:tl_consultant/features/home/presentation/widgets/count_indicator.dart';
 import 'package:tl_consultant/features/journal/presentation/controllers/notes_controller.dart';
+import 'package:tl_consultant/features/wallet/presentation/screens/earnings_tab.dart';
 
 part 'package:tl_consultant/features/dashboard/presentation/widgets/nav_bar.dart';
 
@@ -54,7 +55,7 @@ class _DashboardState extends State<Dashboard> {
                       sizing: StackFit.expand,
                       children: const [
                         HomeTab(),
-                        // WalletTab(),
+                        EarningsTab(),
                         // NotesTab(),
                         // ProfileScreen()
                       ],
