@@ -1,6 +1,7 @@
 library app_pages;
 
 import 'package:get/get.dart';
+import 'package:tl_consultant/features/auth/presentation/screens/lock_screen/lock_screen.dart';
 import 'package:tl_consultant/features/auth/presentation/screens/sign_in/sign_in.dart';
 import 'package:tl_consultant/features/auth/presentation/screens/sign_up/sign_up_0.dart';
 import 'package:tl_consultant/features/auth/presentation/screens/sign_up/sign_up_1.dart';
@@ -24,7 +25,8 @@ class AppPages{
     GetPage(name: Routes.SIGN_UP_0, page: ()=> SignUpScreen0()),
     GetPage(name: Routes.SIGN_UP_1, page: () => SignUpScreen1()),
     GetPage(name: Routes.SIGN_UP_2, page: () => SignUpScreen2()),
-    GetPage(name: Routes.SIGN_IN, page: () => SignInScreen()),
+    // GetPage(name: Routes.SIGN_IN, page: () => SignInScreen()),
+    GetPage(name: Routes.SIGN_IN, page: () => LockScreen()),
     GetPage(name: Routes.DASHBOARD, page: () => const Dashboard()),
     GetPage(name: Routes.EDIT_SLOTS, page: () => EditSlots()),
     // GetPage(name: Routes.HOME_SCREEN, page: () => const HomeTab()),
