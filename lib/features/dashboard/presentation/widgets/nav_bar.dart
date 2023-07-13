@@ -66,7 +66,7 @@ class _NavBarState extends State<NavBar> {
             child: GestureDetector(
               onTap: () async{
                 if(DashboardController.instance.ongoingMeetingCount.value ==1){
-                  //Get.toNamed(Routes.CHAT_SCREEN);
+                  Get.toNamed(Routes.CHAT_SCREEN);
                 }
               },
               behavior: HitTestBehavior.opaque,

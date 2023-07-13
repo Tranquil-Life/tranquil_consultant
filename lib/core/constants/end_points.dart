@@ -27,3 +27,10 @@ abstract class JournalEndPoints{
 abstract class MediaEndpoints{
   static const uploadFile = 'consultant/uploadFile';
 }
+
+abstract class ChatEndPoints{
+  static const uploadChat = 'client/send-message';
+  static const uploadFile = 'client/uploadFile';
+
+  static getChats({required int meetingId}) => 'client/get-messages/$meetingId';
+}
