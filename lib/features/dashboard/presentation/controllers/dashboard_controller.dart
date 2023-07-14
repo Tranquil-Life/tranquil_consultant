@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';
+import 'package:tl_consultant/features/consultation/domain/entities/participant.dart';
 import 'package:tl_consultant/features/consultation/presentation/controllers/consultation_controller.dart';
 import 'package:tl_consultant/features/home/presentation/controllers/home_controller.dart';
 import 'package:tl_consultant/features/journal/presentation/controllers/notes_controller.dart';
@@ -19,6 +20,8 @@ class DashboardController extends GetxController{
   var authToken = "".obs;
   var firstName = "".obs;
   var lastName = "".obs;
+
+  var participants = <Participant>[].obs;
 
   Future<void> onTap(int index) async{
     currentIndex.value = index;

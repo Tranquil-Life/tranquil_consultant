@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tl_consultant/app/presentation/theme/properties.dart';
+import 'package:tl_consultant/features/chat/presentation/widgets/dialogs/rate_consultation_dialog.dart';
 
 class EndSessionBottomSheet extends StatefulWidget {
   const EndSessionBottomSheet({Key? key}) : super(key: key);
@@ -43,12 +44,11 @@ class _EndSessionBottomSheetState extends State<EndSessionBottomSheet> {
                   child: ElevatedButton(
                       onPressed: () {
                         Get.back();
-                        //TODO: Display rate client dialog
 
-                        // showDialog(
-                        //   context: context,
-                        //   builder: (_) => const RateClientDialog(),
-                        // );
+                        showDialog(
+                          context: context,
+                          builder: (_) => const RateConsultationDialog(),
+                        );
                       }, child: const Text('End Session')))
             ],
           )

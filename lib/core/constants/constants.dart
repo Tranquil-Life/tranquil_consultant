@@ -25,3 +25,7 @@ num? androidVersion;
 
 // const secureStore = FlutterSecureStorage();
 final fluttermojiFunctions = FluttermojiFunctions();
+
+//User types
+const consultant = "consultant";
+const client = "client";

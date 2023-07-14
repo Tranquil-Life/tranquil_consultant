@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:intl/intl.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/widgets/custom_snackbar.dart';
@@ -10,6 +9,7 @@ import 'package:tl_consultant/core/utils/extensions/date_time_extension.dart';
 import 'package:tl_consultant/features/consultation/data/models/meeting_model.dart';
 import 'package:tl_consultant/features/consultation/data/repos/consultation_repo.dart';
 import 'package:tl_consultant/features/consultation/domain/entities/meeting.dart';
+import 'package:tl_consultant/features/consultation/domain/entities/participant.dart';
 import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
 
 class ConsultationController extends GetxController{
@@ -101,7 +101,6 @@ class ConsultationController extends GetxController{
           apiSlots = r['slots'];
           availableDays(r['days']);
 
-          print(r['days']);
           getSlotsInLocal();
         });
       }
@@ -146,6 +145,11 @@ class ConsultationController extends GetxController{
               DashboardController.instance.clientDp.value = meeting.client.firstName;
               DashboardController.instance.ongoingMeetingST.value = meeting.startAt.formatDate;
               DashboardController.instance.ongoingMeetingET.value = meeting.endAt.formatDate;
+              for(var element in meeting.participants){
+                Participant participant = ParticipantModel.fromJson(element as Map<String, dynamic>);
+                DashboardController.instance.participants.add(participant);
+              }
+
             }
           }
         });

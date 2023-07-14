@@ -13,11 +13,11 @@ class _EndSessionDialog extends StatelessWidget {
         'End Session',
         onPressed: () {
           Get.back();
-          //TODO: Display rate client dialog
-          // showDialog(
-          //   context: context,
-          //   builder: (_) => const RateClientDialog(),
-          // );
+
+          showDialog(
+            context: context,
+            builder: (_) => const RateConsultationDialog(),
+          );
         },
       ),
     );

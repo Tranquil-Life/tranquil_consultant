@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:tl_consultant/core/utils/extensions/date_time_extension.dart';
 import 'package:tl_consultant/features/consultation/data/models/client_model.dart';
+import 'package:tl_consultant/features/consultation/domain/entities/participant.dart';
 
 class Meeting {
   final int id;
@@ -11,7 +12,7 @@ class Meeting {
   final String reason;
   final String status;
   bool isExpired;
-  // final List participants;
+  final List<Participant> participants;
   final DateTime startAt;
   final DateTime endAt;
   // final DateTime? createdAt;
@@ -36,7 +37,7 @@ class Meeting {
         this.updatedAt,
         this.isExpired = false,
         this.reason = "",
-        // required this.participants,
+        required this.participants,
         this.status = ""
       });
 
