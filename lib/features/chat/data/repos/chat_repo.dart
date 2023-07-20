@@ -76,6 +76,7 @@ class ChatRepoImpl extends ChatRepo{
           body: data
       );
 
+      print(response.body);
       if(response.body['error'] == false){
         var data = response.body['chat'];
 
@@ -134,5 +135,34 @@ class ChatRepoImpl extends ChatRepo{
   Future<Either<ApiError, dynamic>> rateClient() {
     // TODO: implement rateClient
     throw UnimplementedError();
+  }
+
+  @override
+  Future<Either<ApiError, dynamic>> getClientName({required int clientId}) async{
+    try{
+      httpClient.baseUrl = baseUrl;
+
+      Response response = await getReq(
+          ChatEndPoints.clientName(clientId: clientId));
+
+      if(response.body['error'] == false){
+        var data = response.body['name'];
+
+        return Right(data);
+      }
+      else{
+        return Left(
+          ApiError(message: response.body['message'].toString()),
+        );
+      }
+    }on SocketException catch (e) {
+      return Left(ApiError(
+          message: e.toString()));
+    } catch (e, stack) {
+      debugPrintStack(stackTrace: stack);
+      return Left(ApiError(
+        message: e.toString(),
+      ));
+    }
   }
 }

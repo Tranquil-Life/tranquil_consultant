@@ -29,3 +29,5 @@ final fluttermojiFunctions = FluttermojiFunctions();
 //User types
 const consultant = "consultant";
 const client = "client";
+
+const MEETING_COLLECTION = "meetings";

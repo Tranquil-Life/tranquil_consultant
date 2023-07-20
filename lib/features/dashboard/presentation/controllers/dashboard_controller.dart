@@ -10,12 +10,12 @@ class DashboardController extends GetxController{
 
   RxInt currentIndex = 0.obs;
 
-  RxInt ongoingMeetingCount = 0.obs;
+  RxInt currentMeetingCount = 0.obs;
   var clientName = "".obs;
   var clientDp = "".obs;
-  var ongoingMeetingET = "".obs;
-  var ongoingMeetingST = "".obs;
-  var ongoingMeetingId = 1.obs;
+  var currentMeetingET = "".obs;
+  var currentMeetingST = "".obs;
+  var currentMeetingId = 1.obs;
 
   var authToken = "".obs;
   var firstName = "".obs;

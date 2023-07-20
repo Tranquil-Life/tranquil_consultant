@@ -36,6 +36,22 @@ class _ChatScreenState extends State<ChatScreen> {
   final chatController = Get.put(ChatController());
 
   @override
+  void initState() {
+    chatController.getChatMessages();
+    super.initState();
+  }
+
+  // getMesages(){
+  //   var seen = Set<Message>();
+  //   List<String> data = [];
+  //   chatController.messages.where((message) => seen.add(message)).toList().forEach((element) {
+  //     data.add(element.message!);
+  //   });
+  //   print(data);
+  //
+  // }
+
+  @override
   Widget build(BuildContext context) {
     setStatusBarBrightness(false);
     return Scaffold(
@@ -56,8 +72,13 @@ class _ChatScreenState extends State<ChatScreen> {
               child: Column(
                 children: [
                   _TitleBar(),
-                  Expanded(child: _Messages(chatController: chatController)),
-                  SafeArea(top: false, child: _InputBar()),
+                  GetBuilder<ChatController>(
+                    global: false,
+                    init: chatController,
+                    builder: (controller) =>
+                        _Messages(messages: chatController.messages),
+                  ),
+                  const SafeArea(top: false, child: _InputBar()),
                 ],
               ),
             ),
@@ -70,8 +91,9 @@ class _ChatScreenState extends State<ChatScreen> {
 }
 
 class _Messages extends StatefulWidget {
-  const _Messages({Key? key, required this.chatController}) : super(key: key);
-  final ChatController chatController;
+  final List<Message>? messages;
+
+  const _Messages({this.messages});
 
   @override
   State<_Messages> createState() => _MessagesState();
@@ -84,18 +106,8 @@ class _MessagesState extends State<_Messages>
   late final AnimationController animController;
   late final Animation<double> highlightAnim;
 
-  Timer? callTimer;
-
-  getMessages() async{
-    Timer.periodic(const Duration(seconds: 3), (timer) {
-      callTimer = timer;
-      chatController.getMessages();
-    });
-  }
-
   @override
   void initState() {
-    getMessages();
     animController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1500),
@@ -108,19 +120,8 @@ class _MessagesState extends State<_Messages>
   }
 
   @override
-  void didChangeDependencies() {
-    // Timer.periodic(Duration(minutes: 20), (timer) {
-    //   getMessages();
-    // });
-    super.didChangeDependencies();
-  }
-
-  @override
   void dispose() {
     try{
-      callTimer?.cancel();
-      chatController.chatsStreamController.close();
-
       animController.dispose();
     }catch(e){
       log("DISPOSE: Error: $e");
@@ -128,80 +129,28 @@ class _MessagesState extends State<_Messages>
     super.dispose();
   }
 
-  Future handleRefresh() async {
-    getMessages();
-  }
-
-
   @override
   Widget build(BuildContext context) {
-    return UnFocusWidget(
-        child: StreamBuilder<List<Message>>(
-          stream: chatController.chatStream,
-          builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-            print("SNAPSOT: ${snapshot.data}");
-            if (snapshot.hasError) {
-              return Text(snapshot.error.toString());
-            }
-            else{
-              switch(snapshot.connectionState){
-                case ConnectionState.waiting:
-                  return const Center(
-                    child: CircularProgressIndicator(color: ColorPalette.green,),
-                  );
-                case ConnectionState.active:
-                case ConnectionState.done:
-                  if(!snapshot.hasData || (snapshot.data is List && (snapshot.data as List).isEmpty)){
-                    return const Center(
-                      child: Padding(
-                        padding: EdgeInsets.all(8),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              'No messages here yet.\nTalk to your client!',
-                              style: TextStyle(
-                                color: Colors.white,
-                                height: 1.5,
-                                fontSize: 20,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                            SizedBox(height: 16),
-                            Text('👋', style: TextStyle(fontSize: 64)),
-                          ],
-                        ),
-                      ),
-                    );
-                  }
-                  else{
-                    List<Message> messages = snapshot.data;
-                    return ScrollablePositionedList.builder(
-                      reverse: true,
-                      itemCount: snapshot.data.length,
-                      physics: const BouncingScrollPhysics(),
-                      itemScrollController:
-                      widget.chatController.scrollController,
-                      padding: EdgeInsets.only(
-                        bottom: MediaQuery.of(context).viewPadding.bottom,
-                      ),
-                      itemBuilder: (_, index) => ChatItem(
-                        //key: ValueKey(messages[index].id ?? 'sending-$index'),
-                        snapshot.data[index],
-                        highlightAnim: highlightAnim,
-                        animate: index == -1,
-                      ),
-                    );
-                  }
-                case ConnectionState.none:
-                default:
-                  return const Center(
-                    child: CircularProgressIndicator(color: ColorPalette.green),
-                  );
-              }
-            }
-          },
-        )
+    return Expanded(
+      child: UnFocusWidget(
+          child: ScrollablePositionedList.builder(
+            reverse: true,
+            itemCount: widget.messages!.length,
+            physics: const BouncingScrollPhysics(),
+            itemScrollController:
+            chatController.scrollController,
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewPadding.bottom,
+            ),
+            itemBuilder: (_, index){
+              return ChatItem(
+                widget.messages![index],
+                highlightAnim: highlightAnim,
+                animate: index == -1,
+              );
+            },
+          )
+      ),
     );
   }
 }

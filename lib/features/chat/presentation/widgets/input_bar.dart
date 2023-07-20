@@ -15,10 +15,10 @@ class _InputBarState extends State<_InputBar> {
     sendBtnClicked = true;
 
     await chatController.handleTextUpload();
-    await Future.delayed(Duration(seconds: 3));
     sendBtnClicked = false;
 
     setState(() {});
+
 
     // if (chatController.showMic) return;
     // File? file;
@@ -168,7 +168,7 @@ class _InputBarState extends State<_InputBar> {
                           : null,
                     ),
                     child: GestureDetector(
-                      onTap: sendBtnClicked ? null : _handleUpload,
+                      onTap: sendBtnClicked==true ? null : _handleUpload,
                       child: AnimatedCrossFade(
                         duration: kThemeChangeDuration,
                         crossFadeState: chatController.showMic
@@ -203,7 +203,8 @@ class _InputBarState extends State<_InputBar> {
 }
 
 class QuoteInputBarExt extends StatelessWidget {
-  const QuoteInputBarExt({super.key});
+  QuoteInputBarExt({super.key});
+  ChatController controller = Get.put(ChatController());
 
 
   @override
@@ -230,7 +231,7 @@ class QuoteInputBarExt extends StatelessWidget {
                     size: 20,
                   ),
                   onTap: () {
-                    ChatController.instance.isExpanded.value = false;
+                    controller.isExpanded.value = false;
                     ChatController.instance.parentId.value = 0;
                   },
                 ))

@@ -17,6 +17,7 @@ class Message {
   String caption;
   int? parentId;
   String parentMessage;
+  String? displayName;
 
   Message({
     this.id,
@@ -31,9 +32,10 @@ class Message {
     this.reaction='',
     this.caption='',
     this.parentId,
-    this.parentMessage = ''
+    this.parentMessage = '',
+    this.displayName
   });
 
 
-  Map<String, dynamic> toJson() => _$NoteToJson(this);
+  Map<String, dynamic> toJson() => _$MessageToJson(this);
 }

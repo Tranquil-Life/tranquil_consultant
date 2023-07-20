@@ -6,7 +6,9 @@ import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/core/utils/extensions/chat_message_extension.dart';
 import 'package:tl_consultant/features/chat/domain/entities/message.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/chat_controller.dart';
+import 'package:tl_consultant/features/chat/presentation/widgets/chat_boxes/receiver/text.dart';
 import 'package:tl_consultant/features/chat/presentation/widgets/chat_boxes/sender/image.dart';
+import 'package:tl_consultant/features/chat/presentation/widgets/chat_boxes/sender/text.dart';
 import 'package:tl_consultant/features/chat/presentation/widgets/chat_boxes/sender/video.dart';
 import 'package:tl_consultant/features/chat/presentation/widgets/chat_boxes/sender/voice_note.dart';
 import 'package:tl_consultant/features/chat/presentation/widgets/chat_boxes/shared/chat_box.dart';
@@ -49,12 +51,18 @@ class ChatItemState extends State<ChatItem> {
   final itemWidgetKey = GlobalKey();
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: widget.animate ? widget.highlightAnim : const AlwaysStoppedAnimation(0),
       builder: (context, _) =>
           SwipeTo(
-            onLeftSwipe: () {
+            onRightSwipe: () {
               chatController.quoteMsg.value = widget.message.message!;
               chatController.parentId.value = widget.message.id!;
               chatController.isExpanded.value = true;
@@ -77,56 +85,20 @@ class ChatItemState extends State<ChatItem> {
                       case MessageType.audio:
                         return SenderChatVoiceNote(widget.message);
                       default:
-                        return ChatBox(
-                          time: widget.message.timeSent ?? 'Sending',
-                          color: ColorPalette.green,
-                          axisAlignment: CrossAxisAlignment.end,
-                          child: GestureDetector(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-
-                                Visibility(
-                                  visible: widget.message.parentMessage.isNotEmpty,
-                                  child:  Container(
-                                      width: 244,
-                                      margin: EdgeInsets.only(bottom: 8),
-                                      padding: EdgeInsets.all(8),
-                                      decoration: BoxDecoration(
-                                          color: ColorPalette.green[800],
-                                          borderRadius: BorderRadius.circular(8.0)
-                                      ),
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(widget.message.fromYou
-                                              ? "You" : "",
-                                            style: TextStyle(color: ColorPalette.green[200]),),
-
-                                          Text(
-                                            widget.message.parentMessage,
-                                            style: const TextStyle(color: Colors.white),
-                                          ),
-                                        ],
-                                      )
-                                  ),
-                                ),
-                                // ClipRRect(
-                                //   child: Container(
-                                //     width: 244,
-                                //     color: Colors.red,
-                                //   ),
-                                // ),
-
-                                TextLayout(message: widget.message),
-                              ],
-                            ),
-                          ),
-                        );
+                        return SenderChatText(widget.message);
                     }
                   }
                   else{
-                    //TODO: Receiver widget
+                    switch (widget.message.type) {
+                      // case MessageType.image:
+                      //   return ReceiverChatImage(widget.message);
+                      // case MessageType.video:
+                      //   return ReceiverChatVideo(widget.message);
+                      // case MessageType.audio:
+                       // return ReceiverChatVoiceNote(widget.message);
+                      default:
+                        return ReceiverChatText(widget.message);
+                    }
                   }
                 }(),
               ),
