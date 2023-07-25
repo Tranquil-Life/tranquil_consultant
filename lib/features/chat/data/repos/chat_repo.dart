@@ -76,7 +76,6 @@ class ChatRepoImpl extends ChatRepo{
           body: data
       );
 
-      print(response.body);
       if(response.body['error'] == false){
         var data = response.body['chat'];
 

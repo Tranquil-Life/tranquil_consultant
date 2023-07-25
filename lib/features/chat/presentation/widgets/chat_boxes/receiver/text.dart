@@ -4,6 +4,7 @@ import 'package:tl_consultant/core/utils/extensions/chat_message_extension.dart'
 import 'package:tl_consultant/features/chat/domain/entities/message.dart';
 import 'package:tl_consultant/features/chat/presentation/widgets/chat_boxes/shared/chat_box.dart';
 import 'package:tl_consultant/features/chat/presentation/widgets/chat_boxes/shared/text_layout.dart';
+import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 
 class ReceiverChatText extends StatelessWidget {
   const ReceiverChatText(this.message, {Key? key}) : super(key: key);
@@ -11,6 +12,8 @@ class ReceiverChatText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String username = "${userDataStore.user['f_name']} ${userDataStore.user['l_name']}";
+
     return ChatBox(
       time: message.timeSent,
       color: ColorPalette.white,
@@ -19,30 +22,27 @@ class ReceiverChatText extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Visibility(
-              visible: message.parentId!=0,
-              child:  Container(
-                  width: 244,
-                  margin: EdgeInsets.only(bottom: 8),
-                  padding: EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                      color: Color(0xffE1DFDF),
-                      borderRadius: BorderRadius.circular(8.0)
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(message.displayName ?? "",
-                          style: TextStyle(color: ColorPalette.green)),
+            message.replyMessage != null ? Container(
+                width: 244,
+                margin: EdgeInsets.only(bottom: 8),
+                padding: EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                    color: Color(0xffE1DFDF),
+                    borderRadius: BorderRadius.circular(8.0)
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(message.replyMessage!.username == username ? "You" : message.replyMessage!.username!,
+                        style: TextStyle(color: ColorPalette.green)),
 
-                      Text(
-                        message.parentMessage,
-                        style: TextStyle(color: ColorPalette.black.withOpacity(.6)),
-                      ),
-                    ],
-                  )
-              ),
-            ),
+                    Text(
+                      message.replyMessage!.message!,
+                      style: TextStyle(color: ColorPalette.black.withOpacity(.6)),
+                    ),
+                  ],
+                )
+            ) : const SizedBox(),
 
             TextLayout(message: message),
           ],

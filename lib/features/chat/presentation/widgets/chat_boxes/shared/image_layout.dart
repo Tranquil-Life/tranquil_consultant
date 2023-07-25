@@ -33,7 +33,7 @@ class ChatImageLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final heroTag = '${message.id}-${message.data}';
+    final heroTag = '${message.messageId}-${message.data}';
     return SizedBox(
       height: MediaQuery.of(context).size.width * 0.6,
       child: GestureDetector(

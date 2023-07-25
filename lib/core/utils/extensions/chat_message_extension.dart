@@ -5,7 +5,7 @@ import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 enum MessageType { text, image, video, audio }
 
 extension ChatMessageExtension on Message {
-  bool get fromYou => from == userDataStore.user['id'];
+  bool get fromYou => userId == userDataStore.user['id'];
 
   bool get isSent => false;
 
@@ -28,7 +28,7 @@ extension ChatMessageExtension on Message {
     }
   }
 
-  String get timeSent => createdAt!.formattedTime;
+  String get timeSent => createdAt!.toDate().formattedTime;
 
   String? get data => message;
 }

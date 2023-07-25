@@ -1,41 +1,37 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 
 part 'message.g.dart';
 
 class Message {
-  int? id;
-
-  int? from;
-  String? userType;
   int? meetingId;
+  int? messageId;
   String? message;
-  List? read;
   String? messageType;
-  DateTime? createdAt;
+  Message? replyMessage;
+  String? username;
+  String? caption;
+  int? userId;
+  String? userType;
+  List<int>? seen;
+  Timestamp? createdAt;
   DateTime? updatedAt;
-  String reaction;
-  String caption;
-  int? parentId;
-  String parentMessage;
-  String? displayName;
+
 
   Message({
-    this.id,
-    this.from,
-    this.userType,
     this.meetingId,
+    this.messageId,
     this.message,
-    this.read,
     this.messageType,
+    this.replyMessage,
+    this.username,
+    this.caption,
+    this.userId,
+    this.userType,
+    this.seen,
     this.createdAt,
     this.updatedAt,
-    this.reaction='',
-    this.caption='',
-    this.parentId,
-    this.parentMessage = '',
-    this.displayName
   });
-
 
   Map<String, dynamic> toJson() => _$MessageToJson(this);
 }

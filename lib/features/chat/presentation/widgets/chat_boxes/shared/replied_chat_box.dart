@@ -30,7 +30,7 @@ class RepliedChatBox extends StatelessWidget {
         children: [
           _Header(fromYou: true),
           SizedBox(height: 3),
-          Obx(()=>Text(chatController.quoteMsg.value,
+          Obx(()=>Text(chatController.replyMessage.value.message!,
             style: TextStyle(color: ColorPalette.black),
           ),)
         ],

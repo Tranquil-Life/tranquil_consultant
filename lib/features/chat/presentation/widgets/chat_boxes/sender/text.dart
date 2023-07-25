@@ -4,6 +4,7 @@ import 'package:tl_consultant/core/utils/extensions/chat_message_extension.dart'
 import 'package:tl_consultant/features/chat/domain/entities/message.dart';
 import 'package:tl_consultant/features/chat/presentation/widgets/chat_boxes/shared/chat_box.dart';
 import 'package:tl_consultant/features/chat/presentation/widgets/chat_boxes/shared/text_layout.dart';
+import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 
 
 class SenderChatText extends StatelessWidget {
@@ -12,6 +13,8 @@ class SenderChatText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String username = "${userDataStore.user['f_name']} ${userDataStore.user['l_name']}";
+
     return ChatBox(
       time: message.timeSent ?? 'Sending',
       color: ColorPalette.green,
@@ -20,31 +23,27 @@ class SenderChatText extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Visibility(
-              visible: message.parentId!=0,
-              child:  Container(
-                  width: 244,
-                  margin: EdgeInsets.only(bottom: 8),
-                  padding: EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                      color: ColorPalette.green[800],
-                      borderRadius: BorderRadius.circular(8.0)
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(message.displayName!,
-                          style: TextStyle(color: ColorPalette.green[200])),
+            message.replyMessage != null ? Container(
+                width: 244,
+                margin: EdgeInsets.only(bottom: 8),
+                padding: EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                    color: ColorPalette.green[800],
+                    borderRadius: BorderRadius.circular(8.0)
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(message.replyMessage!.username == username ? "You" : message.replyMessage!.username!,
+                        style: TextStyle(color: ColorPalette.green[200])),
 
-                      Text(
-                        message.parentMessage,
-                        style: const TextStyle(color: Colors.white),
-                      ),
-                    ],
-                  )
-              ),
-            ),
-
+                    Text(
+                      message.replyMessage!.message!,
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ],
+                )
+            ) : const SizedBox(),
             TextLayout(message: message),
           ],
         ),

@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:swipe_to/swipe_to.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/core/utils/extensions/chat_message_extension.dart';
+import 'package:tl_consultant/features/chat/data/models/message_model.dart';
 import 'package:tl_consultant/features/chat/domain/entities/message.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/chat_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/widgets/chat_boxes/receiver/text.dart';
@@ -62,10 +63,24 @@ class ChatItemState extends State<ChatItem> {
       animation: widget.animate ? widget.highlightAnim : const AlwaysStoppedAnimation(0),
       builder: (context, _) =>
           SwipeTo(
-            onRightSwipe: () {
-              chatController.quoteMsg.value = widget.message.message!;
-              chatController.parentId.value = widget.message.id!;
+            onLeftSwipe: () {
               chatController.isExpanded.value = true;
+
+              // print(Timestamp.fromDate(widget.message.createdAt!));
+              Map<String, dynamic> map = {
+                "id": widget.message.messageId,
+                "from":widget.message.userId,
+                'meeting_id':widget.message.meetingId,
+                "user_type": widget.message.userType,
+                "display_name": widget.message.username,
+                'message': widget.message.message,
+                'message_type':widget.message.messageType,
+                'caption':widget.message.caption,
+                'reply_message':widget.message.replyMessage == null ? null : widget.message.replyMessage!.toJson(),
+                "created_at": widget.message.createdAt!,
+              };
+
+              chatController.replyMessage.value =  MessageModel.fromJson(map);
             },
             iconColor: ColorPalette.white,
             child: Container(
@@ -91,11 +106,11 @@ class ChatItemState extends State<ChatItem> {
                   else{
                     switch (widget.message.type) {
                       // case MessageType.image:
-                      //   return ReceiverChatImage(widget.message);
+                      // return ReceiverChatImage(widget.message);
                       // case MessageType.video:
-                      //   return ReceiverChatVideo(widget.message);
+                      // return ReceiverChatVideo(widget.message);
                       // case MessageType.audio:
-                       // return ReceiverChatVoiceNote(widget.message);
+                      // return ReceiverChatVoiceNote(widget.message);
                       default:
                         return ReceiverChatText(widget.message);
                     }

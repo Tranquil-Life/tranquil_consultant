@@ -14,10 +14,9 @@ class _InputBarState extends State<_InputBar> {
   _handleUpload() async {
     sendBtnClicked = true;
 
-    await chatController.handleTextUpload();
+    await chatController.handleUpload(
+        quotedMessage: chatController.replyMessage.value);
     sendBtnClicked = false;
-
-    setState(() {});
 
 
     // if (chatController.showMic) return;
@@ -232,7 +231,7 @@ class QuoteInputBarExt extends StatelessWidget {
                   ),
                   onTap: () {
                     controller.isExpanded.value = false;
-                    ChatController.instance.parentId.value = 0;
+                    controller.replyMessage.value = Message();
                   },
                 ))
 

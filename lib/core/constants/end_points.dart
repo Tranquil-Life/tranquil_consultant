@@ -1,4 +1,4 @@
-const baseUrl = 'https://c7a1-197-210-79-253.ngrok-free.app/api/';
+const baseUrl = 'https://1ece-197-210-55-243.ngrok-free.app/api/';
 
 abstract class AuthEndPoints {
   static const login = 'consultant/login';

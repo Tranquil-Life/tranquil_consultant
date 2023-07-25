@@ -29,24 +29,15 @@ class ChatController extends GetxController{
   final recorder = AudioRecorder();
 
   bool micMode = true, isRecording = false;
-
   bool get showMic => micMode && !isRecording;
 
   StreamSubscription? isRecordingStreamSub;
 
-  RxString messageReaction = "".obs;
+
   RxBool isExpanded = false.obs;
-  RxInt parentId = 0.obs;
-  RxBool hasCaption = false.obs;
-
   RxString messageType = MessageType.text.toString().obs;
-
-  var quoteMsg = "".obs;
-
+  Rx<Message> replyMessage = Message().obs;
   RxList<Message> messages = <Message>[].obs;
-  List<Message> tempMessages = [];
-
-  List res = [];
 
   getChatMessages() async{
     var participant = {
@@ -54,140 +45,96 @@ class ChatController extends GetxController{
       "display_name": "${userDataStore.user['f_name']} ${userDataStore.user['l_name']}",
       "user_type": consultant
     };
-
-    DocumentReference documentReference = firebaseFireStore
-        .collection(MEETING_COLLECTION).doc(DashboardController.instance.currentMeetingId.value.toString());
-
-    try{
-      await documentReference.get().then((snapshot) async{
-        if(snapshot.exists){
-
-          Map map = snapshot.data() as Map;
-          if(!map.containsKey("participants")){
-            await firebaseFireStore
-                .collection(MEETING_COLLECTION)
-                .doc(DashboardController.instance.currentMeetingId.value.toString())
-                .update({
-              'participants': [participant],
-              'updated_at': FieldValue.serverTimestamp()
-            });
-          }
-          else{
-            res = snapshot.get("participants");
-            bool exists = true;
-            for (var element in res) {
-
-              if(element['display_name'] != participant['display_name']){
-                exists = false;
-              }else{
-                exists = true;
-              }
-            }
-
-            if(exists == false){
-              res.add(participant);
-
-              await firebaseFireStore
+    await firebaseFireStore
+        .collection(MEETING_COLLECTION)
+        .doc(DashboardController.instance.currentMeetingId.value.toString())
+        .get()
+        .then((snapshot){
+      if(snapshot.data().isNull){
+        firebaseFireStore
+            .collection(MEETING_COLLECTION)
+            .doc(DashboardController.instance.currentMeetingId.value.toString())
+            .set({
+          'participants': [participant],
+          'updated_at': FieldValue.serverTimestamp(),
+          'meeting_id': DashboardController.instance.currentMeetingId.value
+        });
+      }else{
+        if(snapshot.data()!.containsKey("participants")){
+          for (var element in (snapshot.data()!["participants"] as List)) {
+            if (element['display_name'] != participant['display_name']) {
+              firebaseFireStore
                   .collection(MEETING_COLLECTION)
-                  .doc(DashboardController.instance.currentMeetingId.value.toString())
+                  .doc(DashboardController.instance.currentMeetingId.value
+                  .toString())
                   .update({
-                'participants': res,
-                'updated_at': FieldValue.serverTimestamp(),
+                'participants': [participant],
               });
             }
           }
-
-          firebaseFireStore
-              .collection(MEETING_COLLECTION)
-              .doc(DashboardController.instance.currentMeetingId.value.toString())
-              .collection("messages")
-              .orderBy('created_at', descending: true)
-              .snapshots()
-              .listen((event) async{
-            res.clear();
-
-            res = await documentReference.get().then((value) => (value.data() as Map)['participants']);
-
-            messages.value ??= <Message>[];
-            messages.clear();
-            tempMessages.clear();
-            tempMessages.addAll(event.docs.map((e) => MessageModel.fromDocumentSnapshot(doc: e)));
-
-            for (var element in tempMessages) {
-              Map<String, dynamic> map = <String, dynamic>{
-                "id": element.id,
-                "from": element.from,
-                "display_name": getClientName().toString(),
-                'meeting_id':element.meetingId,
-                "user_type": element.userType,
-                'message':element.message,
-                'message_type':element.messageType,
-                'caption':element.caption,
-                'parent_id':element.parentId,
-                'parent_message':element.parentMessage,
-                'created_at': element.createdAt,
-              };
-
-              messages.add(MessageModel.fromJson(map));
-            }
-            update();
-          });
         }
-
-      });
-    }catch (error) {
-      CustomSnackBar.showSnackBar(
-        context: Get.context,
-        title: "Error getting messages",
-        message: error.toString(),
-        backgroundColor: ColorPalette.red,
-      );
-    }
-  }
-
-  String getClientName(){
-    String name = "";
-    for (var i in res) {
-      if(i['user_type']==client){
-        name = i['display_name'];
-
-        print(i);
       }
-    }
 
-    print("$name");
-
-    return name;
+      getMessages();
+    });
   }
 
-  Future handleTextUpload() async {
+  getMessages(){
+    firebaseFireStore
+        .collection(MEETING_COLLECTION)
+        .doc(DashboardController.instance.currentMeetingId.value.toString())
+        .collection("messages")
+        .orderBy('created_at', descending: true)
+        .snapshots()
+        .listen((event) async{
+      messages.value ??= <Message>[];
+      messages.clear();
+      messages.addAll(event.docs.map((e) => MessageModel.fromJson(e.data())));
+
+      update();
+    });
+  }
+
+  Future handleUpload({Message? quotedMessage}) async {
     final message = textController.text.trim();
     if (message.isEmpty) return;
     var result = await repo.uploadChat(
         meetingId: DashboardController.instance.currentMeetingId.value,
         message: message,
         messageType: strMsgType(messageType.value),
-        parentId: parentId.value,
-        caption: hasCaption.value ? message : ""
+        parentId: quotedMessage!.messageId ?? 0,
+        caption: strMsgType(messageType.value)!="text" ? message : ""
     );
 
     if(result.isRight()){
+      textController.clear();
+
+      CustomSnackBar.showSnackBar(
+          context: Get.context!,
+          title: "Success",
+          message: "Success",
+          backgroundColor: ColorPalette.green);
+
       Map messageMap = {};
       result.map((r) => messageMap = r);
+      var messageType = messageMap['message_type'];
 
-      sendMessage(
+      await sendMessage(
         meetingId: DashboardController.instance.currentMeetingId.value,
-        userType: messageMap['user_type'],
         messageId: messageMap['id'],
-        message: message,
-        messageType: messageMap['message_type'],
-        parentId: messageMap['parent_id'],
-        parentMessage: quoteMsg.value,
-        caption: hasCaption.value ? message : null,
+        message: messageMap['message'],
+        messageType: messageType,
+        replyMessage: quotedMessage,
+        userType: messageMap['user_type'],
+        caption: messageType!="text" ? message : null,
       );
+
+      replyMessage.value = Message();
+      update();
     }
     else{
       result.leftMap((l){
+        print(l.message);
         CustomSnackBar.showSnackBar(
             context: Get.context!,
             title: "Error",
@@ -196,9 +143,6 @@ class ChatController extends GetxController{
       });
     }
     isExpanded.value = false;
-    parentId.value = 0;
-    quoteMsg.value = "";
-    hasCaption.value = false;
 
     textController.clear();
   }
@@ -208,24 +152,44 @@ class ChatController extends GetxController{
     required int messageId,
     required String message,
     required String messageType,
+    Message? replyMessage,
     String? caption,
-    int? parentId,
-    String? parentMessage,
     required String userType,
   }) async{
+    var userId = userDataStore.user['id'];
+    var username = "${userDataStore.user['f_name']} ${userDataStore.user['l_name']}";
+
     try{
-      var messageObject = Message(
-        id: messageId,
-        meetingId: meetingId,
-        parentId: parentId ?? 0,
-        parentMessage: parentMessage ?? "",
-        from: userDataStore.user['id'],
-        message: message.trim(),
-        caption: caption ?? "",
-        userType: userType,
-        messageType: messageType,
-        createdAt: DateTime.now(),
-      );
+      Map<String, dynamic> newMessage = {};
+
+      if(replyMessage!.message !=null){
+        newMessage = {
+            'meeting_id':meetingId,
+            "id": messageId,
+            'message':message,
+            'message_type':messageType,
+            "from": userId,
+            "display_name": username,
+            "user_type": userType,
+            'caption': caption,
+            'reply_message': replyMessage.toJson(),
+            "created_at": DateTime.now(),
+        };
+      }
+      else{
+        newMessage = {
+          'meeting_id':meetingId,
+          "id": messageId,
+          'message':message,
+          'message_type':messageType,
+          "from": userId,
+          "display_name": username,
+          "user_type": userType,
+          'caption': caption,
+          'reply_message': null,
+          "created_at": DateTime.now(),
+        };
+      }
 
       update();
 
@@ -234,8 +198,7 @@ class ChatController extends GetxController{
           .doc(meetingId.toString());
 
       room.collection("messages").doc(messageId.toString())
-          .set(messageObject.toJson());
-
+          .set(newMessage);
     }catch (error) {
       CustomSnackBar.showSnackBar(
         context: Get.context,
@@ -256,7 +219,6 @@ class ChatController extends GetxController{
 
   @override
   void onClose() {
-    messageReaction.value = "";
     isExpanded.value = false;
     super.onClose();
   }
