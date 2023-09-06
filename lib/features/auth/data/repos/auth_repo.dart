@@ -10,85 +10,73 @@ import 'package:tl_consultant/core/constants/end_points.dart';
 import 'package:tl_consultant/core/errors/api_error.dart';
 import 'package:tl_consultant/features/auth/domain/repos/auth_repo.dart';
 
-class AuthRepoImpl extends AuthRepo{
+class AuthRepoImpl extends AuthRepo {
   @override
-  Future<Either<ApiError, dynamic>> isUserAuthenticated() async{
-    try{
+  Future<Either<ApiError, dynamic>> isUserAuthenticated() async {
+    try {
       httpClient.baseUrl = baseUrl;
 
-      Response response = await postReq(
-          AuthEndPoints.isAuthenticated);
+      Response response = await postReq(AuthEndPoints.isAuthenticated);
 
       if (!jsonEncode(response.body).contains('error')) {
         return Left(ApiError(
           message: response.body['message'],
         ));
-      }
-      else{
+      } else {
         if (response.body['user'] != null) {
           return Right(response.body['user']);
-        }
-        else if (response.body['errors'] is List) {
-          final List<String>? errors = (response.body['errors'] as List?)?.cast();
+        } else if (response.body['errors'] is List) {
+          final List<String>? errors =
+              (response.body['errors'] as List?)?.cast();
           return Left(ApiError(
             message: errors?.fold('', (prev, next) => '$prev\n$next').trim(),
           ));
-        }
-        else {
+        } else {
           return Left(ApiError(
             message: response.body['message'],
           ));
         }
       }
-    }
-    on SocketException catch(e) {
-      return Left(ApiError(
-          message: e.toString()));
+    } on SocketException catch (e) {
+      return Left(ApiError(message: e.toString()));
     }
   }
 
   @override
-  Future<Either<ApiError, dynamic>> register(QueryParams params) async{
+  Future<Either<ApiError, dynamic>> register(QueryParams params) async {
     try {
       httpClient.baseUrl = baseUrl;
 
-      Response response = await postReq(
-          AuthEndPoints.register,
-          body: params.toJson());
+      Response response =
+          await postReq(AuthEndPoints.register, body: params.toJson());
       print(response.body);
 
       if (!jsonEncode(response.body).contains('error')) {
-        return Left(
-            ApiError(
-              message: response.body['message'],
-            ));
-      }
-      else{
+        return Left(ApiError(
+          message: response.body['message'],
+        ));
+      } else {
         if (response.body['user'] != null) {
           return Right(response.body['user']);
-        }
-        else if (response.body['errors'] is List) {
-          final List<String>? errors = (response.body['errors'] as List?)?.cast();
+        } else if (response.body['errors'] is List) {
+          final List<String>? errors =
+              (response.body['errors'] as List?)?.cast();
           return Left(ApiError(
             message: errors?.fold('', (prev, next) => '$prev\n$next').trim(),
           ));
-        }
-        else {
+        } else {
           return Left(ApiError(
             message: response.body['message'],
           ));
         }
       }
-
-    }
-    on SocketException catch(e) {
-      return Left(ApiError(
-          message: e.toString()));
+    } on SocketException catch (e) {
+      return Left(ApiError(message: e.toString()));
     }
   }
 
   @override
-  Future<Either<ApiError, dynamic>> resetPassword(String email) async{
+  Future<Either<ApiError, dynamic>> resetPassword(String email) async {
     try {
       final response = await postReq(
         AuthEndPoints.passwordReset,
@@ -110,49 +98,43 @@ class AuthRepoImpl extends AuthRepo{
   }
 
   @override
-  Future<Either<ApiError, dynamic>> signIn(String email, String password) async{
+  Future<Either<ApiError, dynamic>> signIn(
+      String email, String password) async {
     try {
       httpClient.baseUrl = baseUrl;
 
-      final data = {
-        "email": email,
-        "password": password};
+      final data = {"email": email, "password": password};
 
-      Response response = await postReq(
-          AuthEndPoints.login, body: data);
+      Response response = await postReq(AuthEndPoints.login, body: data);
 
-      print(response.body);
+      print(response);
       if (!jsonEncode(response.body).contains('error')) {
         return Left(ApiError(
           message: response.body['message'],
         ));
-      }
-      else{
+      } else {
         if (response.body['user'] != null) {
           return Right(response.body['user']);
-        }
-        else if (response.body['errors'] is List) {
-          final List<String>? errors = (response.body['errors'] as List?)?.cast();
+        } else if (response.body['errors'] is List) {
+          final List<String>? errors =
+              (response.body['errors'] as List?)?.cast();
           return Left(ApiError(
             message: errors?.fold('', (prev, next) => '$prev\n$next').trim(),
           ));
-        }
-        else {
+        } else {
           return Left(ApiError(
             message: response.body['message'],
           ));
         }
       }
-
     } on SocketException catch (e) {
-      return Left(ApiError(
-          message: '$e'));
+      return Left(ApiError(message: '$e'));
     }
   }
 
   @override
-  Future<Either<ApiError, dynamic>> signOut() async{
-    try{
+  Future<Either<ApiError, dynamic>> signOut() async {
+    try {
       httpClient.baseUrl = baseUrl;
 
       Response response = await postReq(AuthEndPoints.logOut);
@@ -162,10 +144,9 @@ class AuthRepoImpl extends AuthRepo{
       } else {
         return Left(ApiError(message: response.body['message']));
       }
-    } on SocketException catch (e) {
+    } on SocketException {
       return const Left(ApiError(
           message: 'An Error Occurred Please check you network and retry'));
     }
   }
-
 }

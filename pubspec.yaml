@@ -78,6 +78,8 @@ dependencies:
   fluttertoast: ^8.1.1
   emoji_picker_flutter: ^1.5.1
   webview_flutter: ^4.2.2
+  google_ml_kit: ^0.16.2
+  firebase_core: ^2.15.1
 
 dev_dependencies:
   flutter_test:
