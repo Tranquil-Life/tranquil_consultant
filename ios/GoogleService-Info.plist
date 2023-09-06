@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>16125004014-c86uh2d6lug1tdj2nqrd56atfjucijqi.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.16125004014-c86uh2d6lug1tdj2nqrd56atfjucijqi</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCtbq-0IH3PRSDFI5KxjqspwxOAqpc9ZR4</string>
+	<key>GCM_SENDER_ID</key>
+	<string>16125004014</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.tranquilLifellc.consultant</string>
+	<key>PROJECT_ID</key>
+	<string>tranquil-life-llc</string>
+	<key>STORAGE_BUCKET</key>
+	<string>tranquil-life-llc.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:16125004014:ios:00cc81dc647145a45f8bff</string>
+	<key>DATABASE_URL</key>
+	<string>https://tranquil-life-llc-default-rtdb.firebaseio.com</string>
+</dict>
+</plist>

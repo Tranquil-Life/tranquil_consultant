@@ -9,5 +9,5 @@ MeetingModel _$MeetingModelFromJson(Map<String, dynamic> json) => MeetingModel(
   //updatedAt: DateTime.parse(json['updated_at'])  ?? DateTime.now(),
   rescheduled: json['rescheduled'] ?? false,
   status: json['status'] ?? "",
-  // participants: json['participants'] ?? [],
+  participants: json['participants'] ?? [],
 );

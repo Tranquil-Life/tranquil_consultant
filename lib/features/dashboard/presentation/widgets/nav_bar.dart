@@ -65,8 +65,8 @@ class _NavBarState extends State<NavBar> {
             top: false,
             child: GestureDetector(
               onTap: () async{
-                if(DashboardController.instance.ongoingMeetingCount.value ==1){
-                  //Get.toNamed(Routes.CHAT_SCREEN);
+                if(DashboardController.instance.currentMeetingCount.value == 1){
+                  Get.toNamed(Routes.CHAT_SCREEN);
                 }
               },
               behavior: HitTestBehavior.opaque,
@@ -93,7 +93,7 @@ class _NavBarState extends State<NavBar> {
                           child: SizedBox.square(
                             dimension: 28,
                             child: CountIndicator(
-                                DashboardController.instance.ongoingMeetingCount.value
+                                DashboardController.instance.currentMeetingCount.value
                             ),
                           )
                       )

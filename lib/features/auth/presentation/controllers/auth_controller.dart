@@ -47,9 +47,6 @@ class AuthController extends GetxController{
   RxString fileSize = "0 KB".obs;
   String uploadType = "";
 
-  var call = 0.obs;
-  Timer? callTimer;
-
   String? currentAddress;
   Position? currentPosition;
 
@@ -61,16 +58,9 @@ class AuthController extends GetxController{
   Future signUp() async{
     var result = await AuthRepoImpl().register(params);
 
-    // callTimer = timer;
-    // call.value++;
-
     if(result.isRight()){
-      // callTimer?.cancel();
-      // timer.cancel();
-
       result.map((r){
         userDataStore.user = r;
-        print(userDataStore.user);
       });
 
       AppData.isSignedIn = true;
@@ -80,22 +70,12 @@ class AuthController extends GetxController{
       DashboardController.instance.firstName.value = user.firstName.toString();
       DashboardController.instance.lastName.value = user.lastName.toString();
 
-      print(DashboardController.instance.firstName.value);
-
       emailTEC.clear();
       passwordTEC.clear();
 
       if(user.authToken!.isNotEmpty){
         Get.offAllNamed(Routes.DASHBOARD);
       }
-    }
-    else{
-      result.leftMap((l) {
-        // if(call.value>=10) {
-        //   callTimer?.cancel();
-        //   //timer.cancel();
-        // }}
-      });
     }
 
 
@@ -107,9 +87,7 @@ class AuthController extends GetxController{
 
     if(result.isRight()){
       result.map((r){
-        //User user = UserModel.fromJson(r);
         userDataStore.user = r;
-        //print("USER DATA: ${userDataStore.user}");
       });
 
       AppData.isSignedIn = true;
@@ -119,11 +97,8 @@ class AuthController extends GetxController{
       DashboardController.instance.firstName.value = user.firstName.toString();
       DashboardController.instance.lastName.value = user.lastName.toString();
 
-      print(DashboardController.instance.firstName.value);
-
       emailTEC.clear();
       passwordTEC.clear();
-
 
       if(user.authToken!.isNotEmpty){
         Get.offAllNamed(Routes.DASHBOARD);
@@ -141,51 +116,36 @@ class AuthController extends GetxController{
   }
 
   Future isUserAuthenticated() async{
-    Timer.periodic(const Duration(seconds: 1), (timer) async{
-      var result = await AuthRepoImpl().isUserAuthenticated();
+    var result = await AuthRepoImpl().isUserAuthenticated();
 
-      callTimer = timer;
-      call.value++;
+    if(result.isRight()){
+      result.map((r){
+        userDataStore.user = r;
+      });
 
-      if(result.isRight()){
-        callTimer?.cancel();
-        timer.cancel();
+      User user = UserModel.fromJson(userDataStore.user);
 
-        result.map((r){
-          userDataStore.user = r;
-        });
+      DashboardController.instance.authToken.value = user.authToken.toString();
+      DashboardController.instance.firstName.value = user.firstName.toString();
+      DashboardController.instance.lastName.value = user.lastName.toString();
 
-        User user = UserModel.fromJson(userDataStore.user);
+      Get.offAllNamed(Routes.DASHBOARD);
+    }
+    else{
+      result.leftMap((l){
 
-        DashboardController.instance.authToken.value = user.authToken.toString();
-        DashboardController.instance.firstName.value = user.firstName.toString();
-        DashboardController.instance.lastName.value = user.lastName.toString();
+        if(l.message == "User has not been authenticated"){
+          Get.offAllNamed(Routes.ONBOARDING);
+        }
 
-        print(DashboardController.instance.firstName.value);
-
-        Get.offAllNamed(Routes.DASHBOARD);
-      }
-      else{
-        result.leftMap((l){
-
-          if(call.value>=6){
-            callTimer?.cancel();
-            timer.cancel();
-
-            if(l.message == "User has not been authenticated"){
-              Get.offAllNamed(Routes.ONBOARDING);
-            }
-
-            CustomSnackBar.showSnackBar(
-                context: Get.context!,
-                title: "Error",
-                message: l.message.toString(),
-                backgroundColor: ColorPalette.red
-            );
-          }
-        });
-      }
-    });
+        CustomSnackBar.showSnackBar(
+            context: Get.context!,
+            title: "Error",
+            message: l.message.toString(),
+            backgroundColor: ColorPalette.red
+        );
+      });
+    }
   }
 
   Future resetPassword() async{
@@ -219,35 +179,25 @@ class AuthController extends GetxController{
     else{
       uploading.value = true;
 
-      Timer.periodic(const Duration(seconds: 1), (timer) async{
-        var result = await userInfoRepoImpl
-            .uploadCv(file);
+      var result = await userInfoRepoImpl
+          .uploadCv(file);
 
-        if(result.isRight()){
-          callTimer?.cancel();
-          timer.cancel();
-
-          result.map((r){
-            params.cvUrl = r;
-            uploadUrl.value = params.cvUrl;
-          });
-        }
-        else{
-          result.leftMap((l){
-            if(call.value>=6){
-              callTimer?.cancel();
-              timer.cancel();
-
-              CustomSnackBar.showSnackBar(
-                  context: Get.context!,
-                  title: "Error",
-                  message: l.message.toString(),
-                  backgroundColor: ColorPalette.red
-              );
-            }
-          });
-        }
-      });
+      if(result.isRight()){
+        result.map((r){
+          params.cvUrl = r;
+          uploadUrl.value = params.cvUrl;
+        });
+      }
+      else{
+        result.leftMap((l){
+          CustomSnackBar.showSnackBar(
+              context: Get.context!,
+              title: "Error",
+              message: l.message.toString(),
+              backgroundColor: ColorPalette.red
+          );
+        });
+      }
     }
   }
 
@@ -257,32 +207,22 @@ class AuthController extends GetxController{
     var result = await userInfoRepoImpl
         .uploadID(file!);
 
-    Timer.periodic(const Duration(seconds: 1), (timer) {
-      if(result.isRight()){
-        callTimer?.cancel();
-        timer.cancel();
-
-        result.map((r){
-          params.identityUrl = r;
-          uploadUrl.value = params.identityUrl;
-        });
-      }
-      else{
-        result.leftMap((l){
-          if(call.value>=6){
-            callTimer?.cancel();
-            timer.cancel();
-
-            CustomSnackBar.showSnackBar(
-                context: Get.context!,
-                title: "Error",
-                message: l.message.toString(),
-                backgroundColor: ColorPalette.red
-            );
-          }
-        });
-      }
-    });
+    if(result.isRight()){
+      result.map((r){
+        params.identityUrl = r;
+        uploadUrl.value = params.identityUrl;
+      });
+    }
+    else{
+      result.leftMap((l){
+        CustomSnackBar.showSnackBar(
+            context: Get.context!,
+            title: "Error",
+            message: l.message.toString(),
+            backgroundColor: ColorPalette.red
+        );
+      });
+    }
 
   }
 
@@ -294,12 +234,10 @@ class AuthController extends GetxController{
     dateTEC.clear();
     params.email = '';
     params.password = '';
-    call.value = 0;
   }
 
   @override
   void onClose() {
-    callTimer?.cancel();
     clearData();
 
     super.onClose();

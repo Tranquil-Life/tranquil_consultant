@@ -48,7 +48,7 @@ class CustomBGWidget extends StatelessWidget {
               Expanded(
                 child: SafeArea(
                   top: false,
-                  child: UnfocusWidget(
+                  child: UnFocusWidget(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 24),
                       child: MyDefaultTextStyle(

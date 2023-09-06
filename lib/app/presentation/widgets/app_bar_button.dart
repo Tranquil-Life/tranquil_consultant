@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tl_consultant/app/presentation/theme/colors.dart';
 
 class AppBarButton extends StatelessWidget {
   const AppBarButton({
@@ -43,6 +44,29 @@ class AppBarButton extends StatelessWidget {
               ),
             )
         ],
+      ),
+    );
+  }
+}
+
+class BackButtonWhite extends StatelessWidget {
+  const BackButtonWhite({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Hero(
+      tag: 'back_button',
+      child: AppBarButton(
+        backgroundColor: Colors.white,
+        icon: const Padding(
+          padding: EdgeInsets.all(1),
+          child: Icon(
+            Icons.arrow_back_ios_new,
+            color: ColorPalette.green,
+            size: 20,
+          ),
+        ),
+        onPressed: () => Navigator.of(context).pop(),
       ),
     );
   }

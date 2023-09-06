@@ -8,5 +8,4 @@ import 'package:tl_consultant/features/journal/domain/entities/note.dart';
 
 abstract class JournalRepo<T, F extends QueryParams> extends ApiService {
   Future<Either<ApiError, dynamic>> getJournal();
-
 }

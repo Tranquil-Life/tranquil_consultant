@@ -5,6 +5,7 @@ import 'package:tl_consultant/features/auth/presentation/screens/sign_in/sign_in
 import 'package:tl_consultant/features/auth/presentation/screens/sign_up/sign_up_0.dart';
 import 'package:tl_consultant/features/auth/presentation/screens/sign_up/sign_up_1.dart';
 import 'package:tl_consultant/features/auth/presentation/screens/sign_up/sign_up_2.dart';
+import 'package:tl_consultant/features/chat/presentation/screens/chat_screen.dart';
 import 'package:tl_consultant/features/consultation/presentation/screens/edit_slots.dart';
 import 'package:tl_consultant/features/dashboard/presentation/screens/dashboard.dart';
 import 'package:tl_consultant/features/onboarding/presentation/screens/onboarding.dart';
@@ -32,7 +33,7 @@ class AppPages{
     // GetPage(name: Routes.CONSULTANT_LIST, page: () => const ConsultantsListPage()),
     // GetPage(name: Routes.QUESTIONNAIRE, page: () => const QuestionsScreen()),
     // GetPage(name: Routes.QUESTIONS_DETAILS, page: () => const QuestionDetailsScreen()),
-    // GetPage(name: Routes.CHAT_SCREEN, page: () => const ChatScreen()),
+    GetPage(name: Routes.CHAT_SCREEN, page: () => const ChatScreen()),
     // GetPage(name: Routes.NOTE_SCREEN, page: () => const NotesTab()),
     // GetPage(name: Routes.WALLET, page: () => WalletTab()),
     // GetPage(name: Routes.CUSTOMIZE_CARD, page: () => const CustomizeCardScreen()),

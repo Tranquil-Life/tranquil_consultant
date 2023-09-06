@@ -1,4 +1,4 @@
-const baseUrl = 'https://3509-197-210-78-22.ngrok-free.app/api/';
+const baseUrl = 'https://1ece-197-210-55-243.ngrok-free.app/api/';
 
 abstract class AuthEndPoints {
   static const login = 'consultant/login';
@@ -26,4 +26,12 @@ abstract class JournalEndPoints{
 
 abstract class MediaEndpoints{
   static const uploadFile = 'consultant/uploadFile';
+}
+
+abstract class ChatEndPoints{
+  static const uploadChat = 'consultant/send-message';
+  static const uploadFile = 'consultant/uploadFile';
+  static clientName({required int clientId}) => 'consultant/getClientName/$clientId';
+
+  static getChats({required int meetingId}) => 'consultant/get-messages/$meetingId';
 }

@@ -5,5 +5,4 @@ abstract class IJournalDataStore{
 
   set updateJournal(List<Note> journal);
   List<Note> get getJournal;
-
 }
