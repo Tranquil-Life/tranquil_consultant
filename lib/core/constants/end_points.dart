@@ -1,4 +1,4 @@
-const baseUrl = 'https://1ece-197-210-55-243.ngrok-free.app/api/';
+const baseUrl = 'https://tranquil-api.herokuapp.com/api/';
 
 abstract class AuthEndPoints {
   static const login = 'consultant/login';
@@ -8,7 +8,7 @@ abstract class AuthEndPoints {
   static const logOut = 'consultant/logOut';
 }
 
-abstract class ConsultationEndPoints{
+abstract class ConsultationEndPoints {
   static const getSlots = 'consultant/getSlots';
   static const saveSlots = 'consultant/saveSlots';
   static const deleteSlot = 'consultant/deleteSlot';
@@ -20,18 +20,20 @@ abstract class EarningsEndpoints {
   static const getTransactions = 'consultant/getEarnings';
 }
 
-abstract class JournalEndPoints{
+abstract class JournalEndPoints {
   static const getNotes = 'consultant/listNotes';
 }
 
-abstract class MediaEndpoints{
+abstract class MediaEndpoints {
   static const uploadFile = 'consultant/uploadFile';
 }
 
-abstract class ChatEndPoints{
+abstract class ChatEndPoints {
   static const uploadChat = 'consultant/send-message';
   static const uploadFile = 'consultant/uploadFile';
-  static clientName({required int clientId}) => 'consultant/getClientName/$clientId';
+  static clientName({required int clientId}) =>
+      'consultant/getClientName/$clientId';
 
-  static getChats({required int meetingId}) => 'consultant/get-messages/$meetingId';
+  static getChats({required int meetingId}) =>
+      'consultant/get-messages/$meetingId';
 }
