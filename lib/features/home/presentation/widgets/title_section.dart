@@ -48,12 +48,11 @@ class _AppBarState extends State<AppBar> {
             ),
           ),
         ),
-
         const Spacer(),
         PopupMenuButton(
           icon: const Icon(Icons.more_vert),
           shape:
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           itemBuilder: (_) => [
             const PopupMenuItem(value: 0, child: Text('Our blog')),
           ],
@@ -125,7 +124,7 @@ class _TitleState extends State<Title> {
                   child: Stack(
                     alignment: AlignmentDirectional.topEnd,
                     children: [
-                      CustomIconButton(
+                      const CustomIconButton(
                         icon: Icon(
                           TranquilIcons.bell,
                           size: 28,
@@ -141,9 +140,7 @@ class _TitleState extends State<Title> {
             ),
           ],
         ),
-
-        Obx(()=>
-            Text(
+        Obx(() => Text(
               DashboardController.instance.firstName.value,
               style: TextStyle(
                 color: themeColor,

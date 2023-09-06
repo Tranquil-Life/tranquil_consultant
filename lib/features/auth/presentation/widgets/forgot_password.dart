@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/theme/properties.dart';
+import 'package:tl_consultant/app/presentation/widgets/buttons.dart';
 import 'package:tl_consultant/core/utils/services/validators.dart';
 import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';
 
@@ -15,6 +17,8 @@ class ForgotPasswordBottomSheet extends StatefulWidget {
 class _ForgotPasswordBottomSheetState extends State<ForgotPasswordBottomSheet> {
   String email = '';
   String error = '';
+
+  Color backToLogInColor = const Color(0xff2D713E);
 
   void _continue() {
     if (Validator.isEmail(email)) {
@@ -46,21 +50,29 @@ class _ForgotPasswordBottomSheetState extends State<ForgotPasswordBottomSheet> {
             ),
             const SizedBox(height: 30),
             Padding(
-              padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-              child: TextField(
-                autocorrect: false,
-                keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(
-                  hintText: "Your account's email address",
+              padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom),
+              child: Container(
+                decoration: BoxDecoration(
+                    color: const Color(0xffF1F1F1),
+                    borderRadius: BorderRadius.circular(8)),
+                child: TextField(
+                  autocorrect: false,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: const InputDecoration(
+                    filled: true,
+                    border: InputBorder.none,
+                    hintText: "Email",
+                  ),
+                  onChanged: (val) {
+                    setState(() => email = val);
+                    if (val.isEmpty) {
+                      setState(() => error = 'Please input your email address');
+                    } else if (error.isNotEmpty) {
+                      setState(() => error = '');
+                    }
+                  },
                 ),
-                onChanged: (val) {
-                  setState(() => email = val);
-                  if (val.isEmpty) {
-                    setState(() => error = 'Please input your email address');
-                  } else if (error.isNotEmpty) {
-                    setState(() => error = '');
-                  }
-                },
               ),
             ),
             const SizedBox(height: 8),
@@ -72,15 +84,29 @@ class _ForgotPasswordBottomSheetState extends State<ForgotPasswordBottomSheet> {
               ),
             ),
             const SizedBox(height: 16),
-            SizedBox(
-              height: 56,
-              child: Center(
-                child: ElevatedButton(
-                  onPressed: email.isEmpty ? null : _continue,
-                  child: const Text('Reset Password'),
-                )
+            CustomButton(
+                text: 'Reset Password',
+                onPressed: email.isEmpty ? null : _continue),
+            const SizedBox(height: 40),
+            GestureDetector(
+              onTap: () => Get.back(),
+              child: Text(
+                'Back to the log in page.',
+                style: TextStyle(
+                  decoration: TextDecoration.underline,
+                  color: backToLogInColor,
+                ),
               ),
-            ),
+            )
+
+            // SizedBox(
+            //   height: 56,
+            //   child: Center(
+            //       child: ElevatedButton(
+            //     onPressed: email.isEmpty ? null : _continue,
+            //     child: const Text('Reset Password'),
+            //   )),
+            // ),
           ],
         ),
       ),

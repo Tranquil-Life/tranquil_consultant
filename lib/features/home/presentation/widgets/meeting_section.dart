@@ -1,6 +1,8 @@
 part of 'package:tl_consultant/features/home/presentation/screens/home_tab.dart';
 
 class Meetings extends StatefulWidget {
+  const Meetings({super.key});
+
   @override
   State<Meetings> createState() => MeetingsState();
 }
@@ -13,7 +15,7 @@ class MeetingsState extends State<Meetings> {
 
   final ValueNotifier<DateTime> _timeNotifier = ValueNotifier(DateTime.now());
 
-  getMeetings() async{
+  getMeetings() async {
     await Future.delayed(const Duration(seconds: 1));
     consultationController.getMeetings();
   }
@@ -40,7 +42,6 @@ class MeetingsState extends State<Meetings> {
   Future handleRefresh() async {
     getMeetings();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -72,74 +73,78 @@ class MeetingsState extends State<Meetings> {
                     borderRadius: BorderRadius.circular(24),
                   ),
                   child: Center(
-                    child: Obx(()=>
-                        Text(
-                          consultationController.meetingsCount.value.toString() ?? '--',
-                          style:
-                          const TextStyle(color: Colors.white, fontSize: 19),
+                    child: Obx(() => Text(
+                          consultationController.meetingsCount.value
+                                  .toString() ??
+                              '--',
+                          style: const TextStyle(
+                              color: Colors.white, fontSize: 19),
                         )),
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 8),
-
             Expanded(
                 child: StreamBuilder<Map<String, dynamic>>(
                     stream: consultationController.meetingsStream,
-                    builder: ( context, snapshot) {
+                    builder: (context, snapshot) {
                       if (snapshot.hasError) {
                         return Text(snapshot.error.toString());
-                      }else{
+                      } else {
                         switch (snapshot.connectionState) {
                           case ConnectionState.waiting:
                             return const Center(
-                              child: CircularProgressIndicator(color: ColorPalette.green,),
+                              child: CircularProgressIndicator(
+                                color: ColorPalette.green,
+                              ),
                             );
                           case ConnectionState.active:
                           case ConnectionState.done:
-                            if (!snapshot.hasData || (snapshot.data!["meetings"] is List && (snapshot.data!["meetings"] as List).isEmpty)) {
-                              return NoMeetingsWidget();
-                            }
-                            else {
-                              List<Meeting> meetings = snapshot.data!['meetings'];
+                            if (!snapshot.hasData ||
+                                (snapshot.data!["meetings"] is List &&
+                                    (snapshot.data!["meetings"] as List)
+                                        .isEmpty)) {
+                              return const NoMeetingsWidget();
+                            } else {
+                              List<Meeting> meetings =
+                                  snapshot.data!['meetings'];
 
                               return Scrollbar(
                                   child: RefreshIndicator(
-                                    color: ColorPalette.green,
-                                    onRefresh: () async => getMeetings(),
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(right: 10),
-                                      child: ValueListenableBuilder<DateTime>(
-                                        valueListenable: _timeNotifier,
-                                        builder: (context, time, child) {
-                                          return ListView.builder(
-                                            physics: const AlwaysScrollableScrollPhysics(),
-                                            itemCount: meetings.length,
-                                            padding: EdgeInsets.zero,
-                                            itemBuilder: (_, index) => MeetingTile(
-                                                meeting: meetings[index]
-                                                  ..setIsExpired(_timeNotifier.value)),
-                                          );
-                                        },
-                                      ),
-                                    ),
-                                  )
-                              );
-
+                                color: ColorPalette.green,
+                                onRefresh: () async => getMeetings(),
+                                child: Padding(
+                                  padding: const EdgeInsets.only(right: 10),
+                                  child: ValueListenableBuilder<DateTime>(
+                                    valueListenable: _timeNotifier,
+                                    builder: (context, time, child) {
+                                      return ListView.builder(
+                                        physics:
+                                            const AlwaysScrollableScrollPhysics(),
+                                        itemCount: meetings.length,
+                                        padding: EdgeInsets.zero,
+                                        itemBuilder: (_, index) => MeetingTile(
+                                            meeting: meetings[index]
+                                              ..setIsExpired(
+                                                  _timeNotifier.value)),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ));
                             }
                           case ConnectionState.none:
                           default:
                             return const Center(
-                              child: CircularProgressIndicator(color: ColorPalette.green,),
+                              child: CircularProgressIndicator(
+                                color: ColorPalette.green,
+                              ),
                             );
                         }
                       }
-                    })
-
-            ),
+                    })),
           ],
-        )
-    );
+        ));
   }
 }
