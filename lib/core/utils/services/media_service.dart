@@ -119,39 +119,48 @@ abstract class MediaService {
         for (TextBlock textBlock in visionText.blocks) {
           for (TextLine textLine in textBlock.lines) {
             for (TextElement textElement in textLine.elements) {
-              extractedText = extractedText + textElement.text + ' ';
+              extractedText = extractedText + textElement.text;
             }
           }
-          print(extractExpiryDate(extractedText));
         }
+        // var found = extractSubstring(extractedText);
+        // print(findLastExpSubstring(extractedText));
+        // print(found);
         print('extractedText: $extractedText');
+        var next35 =
+            extractCharAfterLastExp(extractedText.toString().toLowerCase());
+        print(next35);
       } catch (e) {
         Get.snackbar("Error", e.toString(), backgroundColor: ColorPalette.red);
       }
     }
   }
 
-  static extractExpiryDate(String comment) {
-    // Define a regular expression pattern to match date formats.
-    final RegExp datePattern = RegExp(r'\b\d{2}[-/]\d{2}[-/]\d{4}\b');
+  static String extractCharAfterLastExp(String input) {
+    List<String> wordsAndSentences = input.split(' ');
 
-    // Find all matches of the date pattern in the comment.
-    final Iterable<Match> matches = datePattern.allMatches(comment);
+    String result = '';
+    int lastExpIndex = -1;
 
-    // Iterate through the matches to find the expiry date.
-    for (final match in matches) {
-      final dateStr = match.group(0);
-      final DateTime? date = DateTime.tryParse(dateStr!.replaceAll('-', '/'));
+    for (int i = 0; i < wordsAndSentences.length; i++) {
+      String wordOrSentence = wordsAndSentences[i];
 
-      if (date != null) {
-        // Check if the date is in the future (valid expiry date).
-        if (date.isAfter(DateTime.now())) {
-          return 'Valid Expiry Date: $dateStr';
-        } else {
-          return 'Expired: $dateStr';
+      if (wordOrSentence.contains('exp')) {
+        lastExpIndex = wordOrSentence.lastIndexOf('exp');
+
+        if (lastExpIndex + 35 < wordOrSentence.length) {
+          result =
+              wordOrSentence.substring(lastExpIndex + 3, lastExpIndex + 38);
+
+          if (i + 1 < wordsAndSentences.length) {
+            result += ' ${wordsAndSentences[i + 1]}';
+          }
+          break;
         }
       }
     }
+
+    return result;
   }
 }
 //"FEDERAL REPUBLIC OF NIGERIA NATIONAL DRIVERS LICENCE LINO AKWO6968AA2 L1 SAMPLE QLami Sample SAMPLE, JELANI 123 MAIN STREET LEGAL DEPT, FRSC HQTRS WUSE ZONE 7, ABUJA SEX M DofB 06-11-1974EXP06-11-2014 BG A+ PRIVATE END M,1 Nof K 000-000-0000 HOLDER'S HT 1.75M FIMARKs N SIGNATURE LAGOS STATE CLASS B BISs 24-04-2009 DATE OF 1st ISS 24-04-2009 1st iSs ST FCT GL N REP0 REN 0 AUTHoRISED SIGNATORY 1,024 x 568 "

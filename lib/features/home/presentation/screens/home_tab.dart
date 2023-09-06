@@ -10,6 +10,7 @@ import 'package:tl_consultant/app/presentation/theme/tranquil_icons.dart';
 import 'package:tl_consultant/app/presentation/widgets/my_default_text_theme.dart';
 import 'package:tl_consultant/app/presentation/widgets/user_avatar.dart';
 import 'package:tl_consultant/core/utils/extensions/date_time_extension.dart';
+import 'package:tl_consultant/core/utils/services/prevent_screenshot.dart';
 import 'package:tl_consultant/features/activity/presentation/controllers/activity_controller.dart';
 import 'package:tl_consultant/features/consultation/domain/entities/meeting.dart';
 import 'package:tl_consultant/features/consultation/presentation/controllers/consultation_controller.dart';
@@ -36,6 +37,13 @@ class HomeTab extends StatefulWidget {
 
 class _HomeTabState extends State<HomeTab> {
   final dashboardController = Get.put(DashboardController());
+  static final PreventScreenShot _preventScreenshot = Get.find();
+
+  @override
+  void initState() {
+    super.initState();
+    _preventScreenshot.secureScreen();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,18 +62,16 @@ class _HomeTabState extends State<HomeTab> {
                         padding: const EdgeInsets.fromLTRB(22, 8, 22, 28),
                         child: Column(
                           children: [
-                            Title(),
+                            const Title(),
                             const SizedBox(height: 24),
                             SizedBox(
-                              height:
-                              MediaQuery.of(context).size.height * 0.58,
-                              child: Meetings(),
+                              height: MediaQuery.of(context).size.height * 0.58,
+                              child: const Meetings(),
                             ),
                             const SizedBox(height: 32),
                             //TODO: Add edit slots button
                           ],
-                        )
-                    )
+                        ))
                   ],
                 ),
               ),
@@ -89,4 +95,3 @@ class _BG extends StatelessWidget {
     );
   }
 }
-

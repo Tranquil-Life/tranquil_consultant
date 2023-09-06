@@ -49,8 +49,7 @@ class _DashboardState extends State<Dashboard> {
           children: [
             Positioned.fill(
                 bottom: MediaQuery.of(context).padding.bottom + 62,
-                child: Obx(()=>
-                    IndexedStack(
+                child: Obx(() => IndexedStack(
                       index: dashboardController.currentIndex.value,
                       sizing: StackFit.expand,
                       children: const [
@@ -59,8 +58,7 @@ class _DashboardState extends State<Dashboard> {
                         // NotesTab(),
                         // ProfileScreen()
                       ],
-                    ))
-            ),
+                    ))),
             const NavBar(),
           ],
         ),
