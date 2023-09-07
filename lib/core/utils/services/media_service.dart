@@ -38,7 +38,24 @@ abstract class MediaService {
       maxWidth: 720,
     );
     if (pickedFile == null) return null;
-    return _cropImage(File(pickedFile.path));
+    // return null;
+    // return _cropImage(File(pickedFile.path));
+    bool? isValid = await recognizedText(pickedFile.path);
+
+    if (isValid != null) {
+      if (isValid) {
+        // print('Valid date.');
+        Get.snackbar("Accepted", "ID is Valid",
+            backgroundColor: ColorPalette.green);
+      } else {
+        Get.snackbar("Error", "ID has Expired",
+            backgroundColor: ColorPalette.red);
+      }
+    } else {
+      Get.snackbar("Error", "Image is not clear",
+          backgroundColor: ColorPalette.red);
+    }
+    return null;
   }
 
   static Future<File?> selectAudio() => _selectFile(type: FileType.audio);
@@ -98,13 +115,15 @@ abstract class MediaService {
     var croppedFile = await _imageCropper.cropImage(
         sourcePath: file.path, compressQuality: 75);
     if (croppedFile == null) return null;
-    recognizedText(croppedFile.path);
-    AuthController.instance.uploadID(file: File(croppedFile.path));
-    return File(croppedFile.path);
+    return null;
+    // var val = recognizedText(croppedFile.path);
+    // print(val);
+    // AuthController.instance.uploadID(file: File(croppedFile.path));
+    // return File(croppedFile.path);
   }
 
   //Recognize image text method
-  static Future<void> recognizedText(String pickedImage) async {
+  static Future<bool?> recognizedText(String pickedImage) async {
     var extractedText;
     if (pickedImage == null) {
       Get.snackbar("Error", "image is not selected",
@@ -130,11 +149,12 @@ abstract class MediaService {
             extractCountryName(extractedText.toString().toLowerCase());
         // print(next35);
         // print(country);
-        parseDateByCountry(next35, country);
+        return parseDateByCountry(next35, country);
       } catch (e) {
         Get.snackbar("Error", e.toString(), backgroundColor: ColorPalette.red);
       }
     }
+    return null;
   }
 
   static bool isDateValid(String inputMonth, dynamic inputYear) {
@@ -202,7 +222,7 @@ abstract class MediaService {
     return false;
   }
 
-  static void parseUSDate(String inputString) {
+  static bool? parseUSDate(String inputString) {
     final monthYearMatches =
         RegExp(r"(\d{2})([a-zA-Z]{3})(\d{4})").allMatches(inputString);
     final englishMonths = [
@@ -241,10 +261,12 @@ abstract class MediaService {
       final newerDate = parsedDates.first;
       final isValid = isDateValid(newerDate.month.toString(), newerDate.year);
       print('This is Valid $isValid');
+      return isValid;
     }
+    return false;
   }
 
-  static void parseNigerianDate(String inputString) {
+  static bool? parseNigerianDate(String inputString) {
     final monthYearMatches =
         RegExp(r"(\d{2})-(\d{2})-(\d{4})").firstMatch(inputString);
 
@@ -257,23 +279,22 @@ abstract class MediaService {
       print("Year: $year");
       final isValid = isDateValid(month!, year);
       print('This is Valid $isValid');
+      return isValid;
     }
+    return false;
   }
 
-  static void parseDateByCountry(String inputString, String country) {
+  static bool? parseDateByCountry(String inputString, String country) {
     switch (country.toLowerCase()) {
       case 'united kingdom':
-        parseBritishDate(inputString);
-        break;
+        return parseBritishDate(inputString);
       case 'united states':
-        parseUSDate(inputString);
-        break;
+        return parseUSDate(inputString);
       case 'nigeria':
-        parseNigerianDate(inputString);
-        break;
+        return parseNigerianDate(inputString);
       default:
         print("Unsupported country: $country");
-        break;
+        return null;
     }
   }
 
