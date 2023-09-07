@@ -38,9 +38,7 @@ abstract class MediaService {
       maxWidth: 720,
     );
     if (pickedFile == null) return null;
-    // return _cropImage(File(pickedFile.path));
-    recognizedText(pickedFile.path);
-    return null;
+    return _cropImage(File(pickedFile.path));
   }
 
   static Future<File?> selectAudio() => _selectFile(type: FileType.audio);
@@ -100,6 +98,7 @@ abstract class MediaService {
     var croppedFile = await _imageCropper.cropImage(
         sourcePath: file.path, compressQuality: 75);
     if (croppedFile == null) return null;
+    recognizedText(croppedFile.path);
     AuthController.instance.uploadID(file: File(croppedFile.path));
     return File(croppedFile.path);
   }
@@ -123,16 +122,172 @@ abstract class MediaService {
             }
           }
         }
-        // var found = extractSubstring(extractedText);
-        // print(findLastExpSubstring(extractedText));
-        // print(found);
-        print('extractedText: $extractedText');
+
+        // print('extractedText: $extractedText');
         var next35 =
             extractCharAfterLastExp(extractedText.toString().toLowerCase());
-        print(next35);
+        var country =
+            extractCountryName(extractedText.toString().toLowerCase());
+        // print(next35);
+        // print(country);
+        parseDateByCountry(next35, country);
       } catch (e) {
         Get.snackbar("Error", e.toString(), backgroundColor: ColorPalette.red);
       }
+    }
+  }
+
+  static bool isDateValid(String inputMonth, dynamic inputYear) {
+    final currentYear = DateTime.now().year;
+    final currentMonth = DateTime.now().month;
+
+    final monthMapping = {
+      'jan': 1,
+      'january': 1,
+      'feb': 2,
+      'february': 2,
+      'mar': 3,
+      'march': 3,
+      'apr': 4,
+      'april': 4,
+      'may': 5,
+      'jun': 6,
+      'june': 6,
+      'jul': 7,
+      'july': 7,
+      'aug': 8,
+      'august': 8,
+      'sep': 9,
+      'september': 9,
+      'oct': 10,
+      'october': 10,
+      'nov': 11,
+      'november': 11,
+      'dec': 12,
+      'december': 12,
+    };
+
+    final normalizedInputMonth = inputMonth.toLowerCase();
+    final numericInputMonth = monthMapping[normalizedInputMonth] ??
+        int.tryParse(normalizedInputMonth);
+
+    if (numericInputMonth != null &&
+        inputYear is int &&
+        inputYear >= currentYear) {
+      if (inputYear > currentYear ||
+          (inputYear == currentYear && numericInputMonth >= currentMonth)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  static bool? parseBritishDate(String inputString) {
+    final monthYearMatches = RegExp(r"(\d{2})([a-zA-Z]+)\/([a-zA-Z]+)(\d{2})")
+        .firstMatch(inputString);
+
+    if (monthYearMatches != null) {
+      final day = monthYearMatches.group(1);
+      final englishMonth = monthYearMatches.group(2)!.toLowerCase();
+      // final frenchMonth = monthYearMatches.group(3)!.toLowerCase();
+      final year = monthYearMatches.group(4);
+
+      print("English: $day $englishMonth 20$year");
+      final isValid = isDateValid(englishMonth, '20$year');
+      print('This is Valid $isValid');
+
+      return isValid;
+    }
+    return false;
+  }
+
+  static void parseUSDate(String inputString) {
+    final monthYearMatches =
+        RegExp(r"(\d{2})([a-zA-Z]{3})(\d{4})").allMatches(inputString);
+    final englishMonths = [
+      "jan",
+      "feb",
+      "mar",
+      "apr",
+      "may",
+      "jun",
+      "jul",
+      "aug",
+      "sep",
+      "oct",
+      "nov",
+      "dec"
+    ];
+
+    List<DateTime> parsedDates = [];
+
+    for (var match in monthYearMatches) {
+      final day = int.parse(match.group(1)!);
+      final monthShortForm = match.group(2)!.toLowerCase();
+      final year = int.parse(match.group(3)!);
+
+      final englishIndex = englishMonths.indexOf(monthShortForm);
+
+      if (englishIndex != -1) {
+        final parsedDate = DateTime(year, englishIndex + 1, day);
+        parsedDates.add(parsedDate);
+      }
+    }
+
+    if (parsedDates.isNotEmpty) {
+      parsedDates.sort((a, b) =>
+          b.compareTo(a)); // Sort in descending order (newest date first)
+      final newerDate = parsedDates.first;
+      final isValid = isDateValid(newerDate.month.toString(), newerDate.year);
+      print('This is Valid $isValid');
+    }
+  }
+
+  static void parseNigerianDate(String inputString) {
+    final monthYearMatches =
+        RegExp(r"(\d{2})-(\d{2})-(\d{4})").firstMatch(inputString);
+
+    if (monthYearMatches != null) {
+      // final day = monthYearMatches.group(1);
+      final month = monthYearMatches.group(2);
+      final year = monthYearMatches.group(3);
+
+      print("Month: $month");
+      print("Year: $year");
+      final isValid = isDateValid(month!, year);
+      print('This is Valid $isValid');
+    }
+  }
+
+  static void parseDateByCountry(String inputString, String country) {
+    switch (country.toLowerCase()) {
+      case 'united kingdom':
+        parseBritishDate(inputString);
+        break;
+      case 'united states':
+        parseUSDate(inputString);
+        break;
+      case 'nigeria':
+        parseNigerianDate(inputString);
+        break;
+      default:
+        print("Unsupported country: $country");
+        break;
+    }
+  }
+
+  static String extractCountryName(String input) {
+    if (input.contains("nigeria")) {
+      return "Nigeria";
+    } else if (input.contains("unitedkingdom") ||
+        input.contains("britishcitizen")) {
+      return "United Kingdom";
+    } else if (input.contains("unitedstates") ||
+        input.contains("nationalityusa")) {
+      return "United States";
+    } else {
+      return "Country not found";
     }
   }
 
@@ -163,7 +318,3 @@ abstract class MediaService {
     return result;
   }
 }
-//"FEDERAL REPUBLIC OF NIGERIA NATIONAL DRIVERS LICENCE LINO AKWO6968AA2 L1 SAMPLE QLami Sample SAMPLE, JELANI 123 MAIN STREET LEGAL DEPT, FRSC HQTRS WUSE ZONE 7, ABUJA SEX M DofB 06-11-1974EXP06-11-2014 BG A+ PRIVATE END M,1 Nof K 000-000-0000 HOLDER'S HT 1.75M FIMARKs N SIGNATURE LAGOS STATE CLASS B BISs 24-04-2009 DATE OF 1st ISS 24-04-2009 1st iSs ST FCT GL N REP0 REN 0 AUTHoRISED SIGNATORY 1,024 x 568 "
-//"JNITED KINGDOM OF GREAT BRITAIN AND NORTH PASSPORT PASSEPORT Type/Type P Surname/Nom (1) Code/Code GBR Given names/Prénoms (2) Nationality/Nationalité (3) BRITISH CITIZEN Date of birth/Date de naissance (4) Passpor Sex/Sexe (5) Place of birth/Lieu de naissance (6) F 0CC. PALESTINIAN T. Date of issue/Date de délivrance (7) 08 JUN /JUIN 21 Date of expiry/Date d'expiration (9) 08 JUN /JUIN 31 Authority/ Autorité HMPO "
-//"UNITED STATES OF AMIERICA *PASPORT CAAD * M6131821-07 Nation ality USA Surname TRAVELER Given Names HAPPY Passport Card ho C03005988 EXEMPLAR Sex Date of Birth M1 JAN 1981 Ptace ot Birth NEW YORK. U.S.A. Jasued On Expires On 30 NOV 2009 29 NOV 2019 1-02781-0 UNITED STATrEe DEPARTMENT OF BTATE Mi Sprinie "
-//PASSPORT PASSEPORT TypeType me/Nom MARTIN SARAH Natio CANADA Issuing CountrylPays emeteur CAN mes/Prenoms lationalité CANADIAN/CANADIENNE 01 AUG/AOÛT 1990 Place of bitl OTTAWA CAN halssac 14 JANlJAN 2023 Date d'expiration AuthoritylAutorité delivrance 14JAN/JAN 2033 GATINEAU PPCANMARTINK<SARAH<<<<«<««< P123456A A0CAN9008010F3301144< Passport No.IN de passeport P123456AA SexiSexe Sex 01081990 N2033+01AI K<<<<<<<<06 1,000 x 658
