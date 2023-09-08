@@ -120,6 +120,12 @@ class _TitleState extends State<Title> {
                   onTap: () {
                     // Navigator.of(context)
                     //     .pushNamed(NotificationScreen.routeName);
+                    DynamicLinkGenerator().createLink('userId').then((val) =>
+                        Clipboard.setData(ClipboardData(text: val)).then((_) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text("Link copied to clipboard")));
+                        }));
                   },
                   child: Stack(
                     alignment: AlignmentDirectional.topEnd,

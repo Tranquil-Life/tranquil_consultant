@@ -12,12 +12,14 @@ import 'package:tl_consultant/features/consultation/domain/entities/meeting.dart
 import 'package:tl_consultant/features/consultation/domain/entities/participant.dart';
 import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
 
-class ConsultationController extends GetxController{
+class ConsultationController extends GetxController {
   static ConsultationController instance = Get.find();
   final repo = ConsultationRepoImpl();
 
-  final meetingsStreamController = StreamController<Map<String, dynamic>>.broadcast();
-  Stream<Map<String, dynamic>> get meetingsStream => meetingsStreamController.stream;
+  final meetingsStreamController =
+      StreamController<Map<String, dynamic>>.broadcast();
+  Stream<Map<String, dynamic>> get meetingsStream =>
+      meetingsStreamController.stream;
 
   var meetingsCount = 0.obs;
 
@@ -29,14 +31,13 @@ class ConsultationController extends GetxController{
 
   var apiSlots = [];
 
-  addToSlots(String time)=>instance.timeSlots.add(time);
-  removeFromSlots(String time)=>instance.timeSlots.remove(time);
+  addToSlots(String time) => instance.timeSlots.add(time);
+  removeFromSlots(String time) => instance.timeSlots.remove(time);
 
   List get listInUtc {
     List utcSlots = [];
     for (var element in instance.timeSlots) {
-      var newTime = DateTime.parse(
-          "${DateTimeExtension.now.year}"
+      var newTime = DateTime.parse("${DateTimeExtension.now.year}"
               "-${DateTimeExtension.now.month.toString().padLeft(2, "0")}"
               "-${DateTimeExtension.now.day.toString().padLeft(2, "0")} $element")
           .toUtc();
@@ -46,11 +47,13 @@ class ConsultationController extends GetxController{
     return utcSlots;
   }
 
-  getSlotsInLocal(){
+  getSlotsInLocal() {
     for (var element in apiSlots) {
-      var dateTime = DateFormat("yyyy-MM-dd HH:mm:ss").parse("${DateTimeExtension.now.year}"
+      var dateTime = DateFormat("yyyy-MM-dd HH:mm:ss").parse(
+          "${DateTimeExtension.now.year}"
           "-${DateTimeExtension.now.month.toString().padLeft(2, "0")}"
-          "-${DateTimeExtension.now.day.toString().padLeft(2, "0")} $element", true);
+          "-${DateTimeExtension.now.day.toString().padLeft(2, "0")} $element",
+          true);
       var dateLocal = dateTime.toLocal();
 
       timeSlots.add("${dateLocal.hour.toString().padLeft(2, "0")}"
@@ -58,20 +61,19 @@ class ConsultationController extends GetxController{
     }
   }
 
-  Future saveSlots({List? availableDays}) async{
-    var result = await repo.saveSlots(
-        slots: listInUtc,
-        availableDays: availableDays
-    );
+  Future saveSlots({List? availableDays}) async {
+    var result =
+        await repo.saveSlots(slots: listInUtc, availableDays: availableDays);
 
-    if(result.isRight()){
+    print(result);
+
+    if (result.isRight()) {
       CustomSnackBar.showSnackBar(
           context: Get.context!,
           title: "Success",
           message: "Saved",
           backgroundColor: ColorPalette.green);
-    }
-    else{
+    } else {
       CustomSnackBar.showSnackBar(
           context: Get.context!,
           title: "Error",
@@ -84,48 +86,56 @@ class ConsultationController extends GetxController{
     loading.value = true;
     var result = await ConsultationRepoImpl().getSlots();
 
-    if(result.isRight()){
-      loading.value = false;
+    print(result);
 
-      result.map((r){
+    if (result.isRight()) {
+      loading.value = false;
+      print(result);
+
+      result.map((r) {
+        print(r);
         apiSlots = r['slots'];
         availableDays(r['days']);
 
         getSlotsInLocal();
       });
-    }
-    else{
+    } else {
       loading.value = false;
     }
   }
 
-  Future getMeetings() async{
+  Future getMeetings() async {
     var result = await ConsultationRepoImpl().getMeetings();
 
-    if(result.isRight()){
+    print(result);
+
+    if (result.isRight()) {
       List<Meeting> meetings = [];
 
-      result.map((r){
+      result.map((r) {
         for (var element in r) {
           Meeting meeting = MeetingModel.fromJson(element);
           meetings.add(meeting);
 
-          if(meeting.endAt.isAfter(DateTimeExtension.now)
-              && (meeting.startAt.isBefore(DateTimeExtension.now)
-                  || meeting.startAt == DateTimeExtension.now))
-          {
+          if (meeting.endAt.isAfter(DateTimeExtension.now) &&
+              (meeting.startAt.isBefore(DateTimeExtension.now) ||
+                  meeting.startAt == DateTimeExtension.now)) {
             DashboardController.instance.currentMeetingCount.value = 1;
 
             DashboardController.instance.currentMeetingId.value = meeting.id;
-            DashboardController.instance.clientDp.value = meeting.client.avatarUrl;
-            DashboardController.instance.clientName.value = meeting.client.displayName;
-            DashboardController.instance.currentMeetingST.value = meeting.startAt.formatDate;
-            DashboardController.instance.currentMeetingET.value = meeting.endAt.formatDate;
-            for(var element in meeting.participants){
-              Participant participant = ParticipantModel.fromJson(element as Map<String, dynamic>);
+            DashboardController.instance.clientDp.value =
+                meeting.consultant.avatarUrl;
+            DashboardController.instance.clientName.value =
+                meeting.consultant.displayName;
+            DashboardController.instance.currentMeetingST.value =
+                meeting.startAt.formatDate;
+            DashboardController.instance.currentMeetingET.value =
+                meeting.endAt.formatDate;
+            for (var element in meeting.participants) {
+              Participant participant =
+                  ParticipantModel.fromJson(element as Map<String, dynamic>);
               DashboardController.instance.participants.add(participant);
             }
-
           }
         }
       });
@@ -137,14 +147,19 @@ class ConsultationController extends GetxController{
 
       meetingsCount.value = meetings.length;
 
-      if (!meetingsStreamController.isClosed) meetingsStreamController.sink.add(values);
+      if (!meetingsStreamController.isClosed) {
+        meetingsStreamController.sink.add(values);
+      }
     }
   }
 
   availableDays(Map<String, dynamic> daysMap) {
-    selectedDays.value = daysMap.keys.map((e){
-      if(daysMap[e] == true) return e.capitalizeFirst;
-    }).toList().where((element) => element != null).toList();
+    selectedDays.value = daysMap.keys
+        .map((e) {
+          if (daysMap[e] == true) return e.capitalizeFirst;
+        })
+        .toList()
+        .where((element) => element != null)
+        .toList();
   }
-
 }

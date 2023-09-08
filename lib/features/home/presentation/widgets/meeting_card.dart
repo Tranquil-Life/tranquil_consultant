@@ -7,12 +7,12 @@ class MeetingCard extends StatelessWidget {
   final now = DateTime.now();
 
   String lastName() {
-    if (meeting.client.lastName.length >= 10) {
+    if (meeting.consultant.lastName.length >= 10) {
       String newVal =
-          "${meeting.client.lastName.substring(0, meeting.client.lastName.length - 2)}...";
+          "${meeting.consultant.lastName.substring(0, meeting.consultant.lastName.length - 2)}...";
       return newVal;
     } else {
-      return meeting.client.lastName;
+      return meeting.consultant.lastName;
     }
   }
 
@@ -45,7 +45,7 @@ class MeetingCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(28)),
               child: Center(
                 child: UserAvatar(
-                  imageUrl: meeting.client.id < 2
+                  imageUrl: meeting.consultant.id < 2
                       ? "https://pbs.twimg.com/media/E4CvFPVWYAA-0vi.jpg"
                       : "https://media.istockphoto.com/id/1354524757/photo/casual-african-american-woman-smiling-in-purple-studio-isolated-background.jpg?b=1&s=170667a&w=0&k=20&c=8MxQbHDUExcyfLm9RvxITgGWMyfqCftOv5is8p426lE=",
                 ),
@@ -160,7 +160,7 @@ class MeetingCard extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Expanded(
-              child: Text(meeting.client.displayName,
+              child: Text(meeting.consultant.displayName,
                   style: const TextStyle(fontWeight: FontWeight.w600))),
           const SizedBox(width: 4),
           Text(meeting.startAt.formattedTime),
@@ -174,7 +174,7 @@ class MeetingCard extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Expanded(
-              child: Text(meeting.client.displayName,
+              child: Text(meeting.consultant.displayName,
                   style: const TextStyle(
                       color: ColorPalette.red,
                       decoration: TextDecoration.lineThrough,
@@ -197,7 +197,7 @@ class MeetingCard extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Expanded(
-              child: Text(meeting.client.displayName,
+              child: Text(meeting.consultant.displayName,
                   style: const TextStyle(
                       color: ColorPalette.red, fontWeight: FontWeight.w600))),
           const SizedBox(width: 4),
@@ -214,7 +214,7 @@ class MeetingCard extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Expanded(
-              child: Text(meeting.client.displayName,
+              child: Text(meeting.consultant.displayName,
                   style: const TextStyle(fontWeight: FontWeight.w600))),
           const SizedBox(width: 4),
           Text(meeting.startAt.formattedTime),
@@ -226,7 +226,7 @@ class MeetingCard extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Expanded(
-            child: Text(meeting.client.displayName,
+            child: Text(meeting.consultant.displayName,
                 style: const TextStyle(fontWeight: FontWeight.w600))),
         const SizedBox(width: 4),
         Text(meeting.startAt.formattedTime),

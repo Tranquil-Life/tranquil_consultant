@@ -3,12 +3,15 @@ import 'dart:developer';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:tl_consultant/app/presentation/routes/app_pages.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/theme/tranquil_icons.dart';
 import 'package:tl_consultant/app/presentation/widgets/my_default_text_theme.dart';
 import 'package:tl_consultant/app/presentation/widgets/user_avatar.dart';
+import 'package:tl_consultant/core/utils/dynamic_link_generator.dart';
 import 'package:tl_consultant/core/utils/extensions/date_time_extension.dart';
 import 'package:tl_consultant/core/utils/services/prevent_screenshot.dart';
 import 'package:tl_consultant/features/activity/presentation/controllers/activity_controller.dart';

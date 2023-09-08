@@ -3,10 +3,10 @@ import 'package:tl_consultant/features/consultation/domain/entities/meeting.dart
 
 part 'meeting_model.g.dart';
 
-class MeetingModel extends Meeting{
+class MeetingModel extends Meeting {
   MeetingModel({
     required super.id,
-    required super.client,
+    required super.consultant,
     required super.startAt,
     required super.endAt,
     required super.rescheduled,
@@ -17,5 +17,6 @@ class MeetingModel extends Meeting{
     //super.updatedAt,
   });
 
-  factory MeetingModel.fromJson(Map<String, dynamic> json) => _$MeetingModelFromJson(json);
+  factory MeetingModel.fromJson(Map<String, dynamic> json) =>
+      _$MeetingModelFromJson(json);
 }

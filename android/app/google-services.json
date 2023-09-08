@@ -1,0 +1,83 @@
+{
+  "project_info": {
+    "project_number": "16125004014",
+    "firebase_url": "https://tranquil-life-llc-default-rtdb.firebaseio.com",
+    "project_id": "tranquil-life-llc",
+    "storage_bucket": "tranquil-life-llc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:16125004014:android:bd46a25b6f00c92b5f8bff",
+        "android_client_info": {
+          "package_name": "com.tranquilLifellc.client"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "16125004014-rbbu97j7ood6cd9jkeefjfu028bjjpi7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyClTFHWv1jMnt1gllX9CTjr28GudL-npaQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "16125004014-rbbu97j7ood6cd9jkeefjfu028bjjpi7.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "16125004014-1is6hqjp3ocu89hifp0bkqi52ruqgdcq.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.tranquillife.client"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:16125004014:android:6294b5361bf3c8025f8bff",
+        "android_client_info": {
+          "package_name": "com.tranquilLifellc.consultant"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "16125004014-rbbu97j7ood6cd9jkeefjfu028bjjpi7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyClTFHWv1jMnt1gllX9CTjr28GudL-npaQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "16125004014-rbbu97j7ood6cd9jkeefjfu028bjjpi7.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "16125004014-1is6hqjp3ocu89hifp0bkqi52ruqgdcq.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.tranquillife.client"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

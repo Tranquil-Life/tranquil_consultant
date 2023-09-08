@@ -7,11 +7,9 @@ import 'package:tl_consultant/app.dart';
 
 late final FirebaseFirestore firebaseFireStore;
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await GetStorage.init();
-
-  runApp(const App());
 
   await Future.wait([
     if (kIsWeb)
@@ -32,4 +30,6 @@ void main() async{
   ]);
   firebaseFireStore = FirebaseFirestore.instance
     ..settings = const Settings(persistenceEnabled: false);
+
+  runApp(const App());
 }

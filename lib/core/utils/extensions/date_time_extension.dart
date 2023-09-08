@@ -18,15 +18,14 @@ extension DateTimeExtension on DateTime {
   }
 
   String get formatDate {
-
     return _dateFormat.format(this);
   }
-  String get toDateString {
 
+  String get toDateString {
     return _dateStringFormat.format(this);
   }
-  String get formattedTime{
 
+  String get formattedTime {
     return _timeFormat.format(this);
   }
 }

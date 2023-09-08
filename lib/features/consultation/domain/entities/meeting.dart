@@ -6,7 +6,7 @@ import 'package:tl_consultant/features/consultation/domain/entities/participant.
 
 class Meeting {
   final int id;
-  final ClientModel client;
+  final ClientModel consultant;
   //
   final bool rescheduled;
   final String reason;
@@ -29,22 +29,21 @@ class Meeting {
 
   Meeting(
       {required this.id,
-        required this.client,
-        required this.startAt,
-        required this.endAt,
-        required this.rescheduled,
-        // this.createdAt,
-        this.updatedAt,
-        this.isExpired = false,
-        this.reason = "",
-        required this.participants,
-        this.status = ""
-      });
+      required this.consultant,
+      required this.startAt,
+      required this.endAt,
+      required this.rescheduled,
+      // this.createdAt,
+      this.updatedAt,
+      this.isExpired = false,
+      this.reason = "",
+      required this.participants,
+      this.status = ""});
 
   Map<String, dynamic> toJson() => {
-    "id": id,
-    "rescheduled": rescheduled,
-    "status": status,
-    "reason": reason,
-  };
+        "id": id,
+        "rescheduled": rescheduled,
+        "status": status,
+        "reason": reason,
+      };
 }

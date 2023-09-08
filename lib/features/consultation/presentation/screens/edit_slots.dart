@@ -48,7 +48,7 @@ class _EditSlotsState extends State<EditSlots> {
     super.initState();
   }
 
-  getDaySlots() async{
+  getDaySlots() async {
     sortTime(false);
   }
 
@@ -59,80 +59,92 @@ class _EditSlotsState extends State<EditSlots> {
       backgroundColor: Colors.grey[200],
       body: Padding(
         padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
-        child: Obx(()=>
-            Stack(
+        child: Obx(() => Stack(
               children: [
-                DaySectionPicker(onDaySelected: (isNightSelected)
-                {
+                DaySectionPicker(onDaySelected: (isNightSelected) {
                   sortTime(isNightSelected);
                 }),
-
-                controller.loading.value ? Center(
-                  child: CircularProgressIndicator(color: ColorPalette.green),
-                ) :
-                Container(
-                  height: 400,
-                  margin: EdgeInsets.only(top: selectedSection == DaySectionOption.day ? 48 : 18),
-                  child: TimePickerWidget(
-                    onTimeChosen: (newTime, index) {
-                      time = newTime;
-                    },
-                    times: times,
-                  ),
-                ),
-
-                controller.loading.value ? Center(child: CircularProgressIndicator(color: ColorPalette.green)) :
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Wrap(
-                    alignment: WrapAlignment.start,
-                    children: [
-                      const Padding(
-                        padding: EdgeInsets.only(bottom: 24),
-                        child: Text(
-                          'Select available days',
-                          style: TextStyle(fontSize: AppFonts.defaultSize, fontFamily: AppFonts.josefinSansSemiBold),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 80,
-                        child: ListView.builder(
-                          itemCount: days.length,
-                          scrollDirection: Axis.horizontal,
-                          padding: const EdgeInsets.only(right: 16),
-                          itemBuilder: (_, index) {
-                            final day = days[index];
-                            return Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 8),
-                                child: Obx(()=>DayCard(
-                                  day,
-                                  selected: controller.selectedDays.contains(day),
-                                  onChosen: (){
-                                    if(controller.selectedDays.contains(day)){
-                                      controller.selectedDays.remove(day);
-                                    }else{
-                                      controller.selectedDays.add(day);
-                                    }
-                                  },
-                                ))
-                            );
-                          },
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 48, bottom: 32),
-                        child: CustomButton(
-                            child: const Text("Save", style: TextStyle(fontSize: AppFonts.defaultSize)),
-                            onPressed: (){
-                              controller.saveSlots(
-                                  availableDays: controller.selectedDays.value
-                              );
-                            }),
+                controller.loading.value
+                    ? const Center(
+                        child: CircularProgressIndicator(
+                            color: ColorPalette.green),
                       )
-                    ],
-                  ),
-                ),
-
+                    : Container(
+                        height: 400,
+                        margin: EdgeInsets.only(
+                            top: selectedSection == DaySectionOption.day
+                                ? 48
+                                : 18),
+                        child: TimePickerWidget(
+                          onTimeChosen: (newTime, index) {
+                            time = newTime;
+                          },
+                          times: times,
+                        ),
+                      ),
+                controller.loading.value
+                    ? const Center(
+                        child: CircularProgressIndicator(
+                            color: ColorPalette.green))
+                    : Align(
+                        alignment: Alignment.bottomCenter,
+                        child: Wrap(
+                          alignment: WrapAlignment.start,
+                          children: [
+                            const Padding(
+                              padding: EdgeInsets.only(bottom: 24),
+                              child: Text(
+                                'Select available days',
+                                style: TextStyle(
+                                    fontSize: AppFonts.defaultSize,
+                                    fontFamily: AppFonts.josefinSansSemiBold),
+                              ),
+                            ),
+                            SizedBox(
+                              height: 80,
+                              child: ListView.builder(
+                                itemCount: days.length,
+                                scrollDirection: Axis.horizontal,
+                                padding: const EdgeInsets.only(right: 16),
+                                itemBuilder: (_, index) {
+                                  final day = days[index];
+                                  return Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8),
+                                      child: Obx(() => DayCard(
+                                            day,
+                                            selected: controller.selectedDays
+                                                .contains(day),
+                                            onChosen: () {
+                                              if (controller.selectedDays
+                                                  .contains(day)) {
+                                                controller.selectedDays
+                                                    .remove(day);
+                                              } else {
+                                                controller.selectedDays
+                                                    .add(day);
+                                              }
+                                            },
+                                          )));
+                                },
+                              ),
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.only(top: 48, bottom: 32),
+                              child: CustomButton(
+                                  child: const Text("Save",
+                                      style: TextStyle(
+                                          fontSize: AppFonts.defaultSize)),
+                                  onPressed: () {
+                                    controller.saveSlots(
+                                        availableDays:
+                                            controller.selectedDays.value);
+                                  }),
+                            )
+                          ],
+                        ),
+                      ),
               ],
             )),
       ),
@@ -148,9 +160,5 @@ class _EditSlotsState extends State<EditSlots> {
       selectedSection = DaySectionOption.day;
     }
     setState(() {});
-
   }
-
 }
-
-

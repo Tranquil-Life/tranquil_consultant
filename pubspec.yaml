@@ -85,9 +85,11 @@ dependencies:
   firebase_core: ^2.15.1
   flutter_windowmanager: ^0.2.0
 
-  firebase_core: ^2.15.0
   firebase_messaging: ^14.6.5
   cloud_firestore: ^4.8.3
+  firebase_dynamic_links: ^5.3.5
+  share_plus: ^6.3.4
+  flutter_svg: ^2.0.7
 
 dev_dependencies:
   flutter_test:
