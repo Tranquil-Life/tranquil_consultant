@@ -6,6 +6,7 @@ import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
+import 'package:tl_consultant/app/presentation/widgets/custom_snackbar.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
@@ -107,8 +108,11 @@ abstract class MediaService {
   //Recognize image text method
   static Future<void> recognizedText(String pickedImage) async {
     var extractedText;
-    if (pickedImage == null) {
-      Get.snackbar("Error", "image is not selected",
+    if (pickedImage.isNotEmpty) {
+      CustomSnackBar.showSnackBar(
+          context: Get.context,
+          title: "Error",
+          message: "image is not selected",
           backgroundColor: ColorPalette.red);
     } else {
       extractedText = '';
