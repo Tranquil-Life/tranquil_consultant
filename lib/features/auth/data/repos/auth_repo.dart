@@ -1,15 +1,15 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
-
 import 'package:dartz/dartz.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:tl_consultant/app/domain/query_params.dart';
 import 'package:tl_consultant/core/constants/end_points.dart';
 import 'package:tl_consultant/core/errors/api_error.dart';
 import 'package:tl_consultant/features/auth/domain/repos/auth_repo.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
+final FirebaseMessaging _messaging = FirebaseMessaging.instance;
 class AuthRepoImpl extends AuthRepo{
   @override
   Future<Either<ApiError, dynamic>> isUserAuthenticated() async{
@@ -113,15 +113,20 @@ class AuthRepoImpl extends AuthRepo{
   Future<Either<ApiError, dynamic>> signIn(String email, String password) async{
     try {
       httpClient.baseUrl = baseUrl;
-
+      
       final data = {
         "email": email,
         "password": password};
 
       Response response = await postReq(
           AuthEndPoints.login, body: data);
-
       print(response.body);
+      // Refreshes FCM token whenever a user logs in
+      String? newToken = await _messaging.getToken();
+      print('Current FCM Token: $newToken');
+
+      // Sends the current token to the endpoint
+      await sendTokenToEndpoint(newToken!);
       if (!jsonEncode(response.body).contains('error')) {
         return Left(ApiError(
           message: response.body['message'],
@@ -167,5 +172,24 @@ class AuthRepoImpl extends AuthRepo{
           message: 'An Error Occurred Please check you network and retry'));
     }
   }
+  Future<Either<ApiError, dynamic>> sendTokenToEndpoint(String newToken) async {
+    try {
+      httpClient.baseUrl = baseUrl;
+      Response response = await postReq(AuthEndPoints.fcmToken, body: {'token': newToken},);
 
+      if (response.statusCode == 200 ) {
+        // Token sent successfully
+        print('Token sent to database: $newToken');
+                return Right('Token recorded successfully');
+      } else {
+        final errorMessage = 'Failed to update token: ${response.statusCode}';
+        print(errorMessage);
+        return Left(ApiError(message: errorMessage));
+      }
+    } on SocketException catch (e) {
+      final errorMessage = 'Error sending token: $e';
+      print(errorMessage);
+      return Left(ApiError(message: errorMessage));
+    }
+  }
 }

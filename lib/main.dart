@@ -4,15 +4,15 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:tl_consultant/app.dart';
-
+import 'package:firebase_messaging/firebase_messaging.dart';
 late final FirebaseFirestore firebaseFireStore;
-
+final FirebaseMessaging _messaging = FirebaseMessaging.instance;
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await GetStorage.init();
-
+ 
   runApp(const App());
-
+  
   await Future.wait([
     if (kIsWeb)
       Firebase.initializeApp(

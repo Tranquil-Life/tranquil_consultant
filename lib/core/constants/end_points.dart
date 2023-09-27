@@ -6,6 +6,7 @@ abstract class AuthEndPoints {
   static const isAuthenticated = 'consultant/isAuthenticated';
   static const passwordReset = 'consultant/requestPasswordReset';
   static const logOut = 'consultant/logOut';
+  static const fcmToken = 'consultant/generate-device-id';
 }
 
 abstract class ConsultationEndPoints{
