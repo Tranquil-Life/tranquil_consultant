@@ -12,15 +12,14 @@ import 'package:tl_consultant/features/onboarding/presentation/screens/onboardin
 import 'package:tl_consultant/features/onboarding/presentation/screens/splash.dart';
 import 'package:tl_consultant/features/profile/presentation/screens/profile_tab.dart';
 import 'package:tl_consultant/features/settings/presentation/screens/settings_screen.dart';
-import 'package:tl_consultant/features/wallet/presentation/screens/wallet_screen.dart';
-
+import 'package:tl_consultant/features/wallet/presentation/screens/earnings_tab.dart';
 
 part 'app_routes.dart';
 
 class AppPages{
   AppPages._();
 
-  static const INITIAL = Routes.SPLASH_SCREEN;
+  static const INITIAL = Routes.SIGN_IN;
 
   static final routes = [
     GetPage(name: Routes.SPLASH_SCREEN, page: ()=> SplashScreen()),
@@ -38,7 +37,7 @@ class AppPages{
     // GetPage(name: Routes.QUESTIONS_DETAILS, page: () => const QuestionDetailsScreen()),
     // GetPage(name: Routes.CHAT_SCREEN, page: () => const ChatScreen()),
     GetPage(name: Routes.NOTES_SCREEN, page: () => const JournalTab()),
-    GetPage(name: Routes.WALLET, page: () => WalletTab()),
+    GetPage(name: Routes.WALLET, page: () => EarningsTab()),
     // GetPage(name: Routes.CUSTOMIZE_CARD, page: () => const CustomizeCardScreen()),
     GetPage(name: Routes.PROFILE, page: () => ProfileScreen()),
     GetPage(name: Routes.SETTINGS, page: () => SettingsScreen()),

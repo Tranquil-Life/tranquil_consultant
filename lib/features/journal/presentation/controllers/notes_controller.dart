@@ -52,15 +52,14 @@ class NotesController extends GetxController{
           return notes;
         }
         else{
-          result.leftMap((l)
-          => CustomSnackBar.showSnackBar(
-              context: Get.context!,
-              title: "Error",
-              message: l.message.toString(),
-              backgroundColor: ColorPalette.red)
-          );
-
-
+          ///commented out because it was returning snackbar eeror in on start of chat screen
+          // result.leftMap((l)
+          // => CustomSnackBar.showSnackBar(
+          //     context: Get.context!,
+          //     title: "Error",
+          //     message: l.message.toString(),
+          //     backgroundColor: ColorPalette.red)
+          // );
           return <Note>[];
         }
       }catch(e){

@@ -49,9 +49,6 @@ class AuthController extends GetxController{
   RxString uploadUrl = "".obs;
 
 
-  var call = 0.obs;
-  Timer? callTimer;
-
   String? currentAddress;
   Position? currentPosition;
 
@@ -59,7 +56,6 @@ class AuthController extends GetxController{
 
   RxList<String> languagesArr = <String>[].obs;
   RxList<String> specialtiesArr = <String>[].obs;
-
 
   Future signUp()async{
     var either = await AuthRepoImpl().register(params);
@@ -70,6 +66,7 @@ class AuthController extends GetxController{
 
       AppData.isSignedIn = true;
       User user = UserModel.fromJson(userDataStore.user);
+
 
       if(user.authToken!.isNotEmpty){
         Get.offAllNamed(Routes.DASHBOARD);
@@ -87,6 +84,8 @@ class AuthController extends GetxController{
               backgroundColor: ColorPalette.red
           ));
     }
+
+
   }
 
   Future signIn(String email, String password) async {
@@ -116,7 +115,6 @@ class AuthController extends GetxController{
               backgroundColor: ColorPalette.red
           ));
     }
-
   }
 
   Future resetPassword() async{
@@ -182,47 +180,37 @@ class AuthController extends GetxController{
   }
 
   uploadCv({File? file}) async{
-    await getFileSize(file!.path, 1).then((value) async{
-      if(value == "Too large"){
-        CustomSnackBar.showSnackBar(
-            context: Get.context!,
-            title: "Error",
-            message: fileMaxSize,
-            backgroundColor: ColorPalette.red);
-      }else{
-        uploading.value = true;
+    var fileSize = await getFileSize(file!.path, 1);
+    if(fileSize == "Too large"){
+      CustomSnackBar.showSnackBar(
+          context: Get.context!,
+          title: "Error",
+          message: fileMaxSize,
+          backgroundColor: ColorPalette.red);
+    }
+    else{
+      uploading.value = true;
 
-        Timer.periodic(const Duration(seconds: 1), (timer) async{
-          var result = await userInfoRepoImpl
-              .uploadCv(file);
+      var result = await userInfoRepoImpl
+          .uploadCv(file);
 
-          if(result.isRight()){
-            callTimer?.cancel();
-            timer.cancel();
-
-            result.map((r){
-              params.cvUrl = r;
-              uploadUrl.value = params.cvUrl;
-            });
-          }
-          else{
-            result.leftMap((l){
-              if(call.value>=6){
-                callTimer?.cancel();
-                timer.cancel();
-
-                CustomSnackBar.showSnackBar(
-                    context: Get.context!,
-                    title: "Error",
-                    message: l.message.toString(),
-                    backgroundColor: ColorPalette.red
-                );
-              }
-            });
-          }
+      if(result.isRight()){
+        result.map((r){
+          params.cvUrl = r;
+          uploadUrl.value = params.cvUrl;
         });
       }
-    });
+      else{
+        result.leftMap((l){
+          CustomSnackBar.showSnackBar(
+              context: Get.context!,
+              title: "Error",
+              message: l.message.toString(),
+              backgroundColor: ColorPalette.red
+          );
+        });
+      }
+    }
   }
 
   uploadID({File? file}) async{
@@ -231,32 +219,22 @@ class AuthController extends GetxController{
     var result = await userInfoRepoImpl
         .uploadID(file!);
 
-    Timer.periodic(Duration(seconds: 1), (timer) {
-      if(result.isRight()){
-        callTimer?.cancel();
-        timer.cancel();
-
-        result.map((r){
-          params.identityUrl = r;
-          uploadUrl.value = params.identityUrl;
-        });
-      }
-      else{
-        result.leftMap((l){
-          if(call.value>=6){
-            callTimer?.cancel();
-            timer.cancel();
-
-            CustomSnackBar.showSnackBar(
-                context: Get.context!,
-                title: "Error",
-                message: l.message.toString(),
-                backgroundColor: ColorPalette.red
-            );
-          }
-        });
-      }
-    });
+    if(result.isRight()){
+      result.map((r){
+        params.identityUrl = r;
+        uploadUrl.value = params.identityUrl;
+      });
+    }
+    else{
+      result.leftMap((l){
+        CustomSnackBar.showSnackBar(
+            context: Get.context!,
+            title: "Error",
+            message: l.message.toString(),
+            backgroundColor: ColorPalette.red
+        );
+      });
+    }
 
   }
 
@@ -268,12 +246,10 @@ class AuthController extends GetxController{
     dateTEC.clear();
     params.email = '';
     params.password = '';
-    call.value = 0;
   }
 
   @override
   void onClose() {
-    callTimer?.cancel();
     clearData();
 
     super.onClose();

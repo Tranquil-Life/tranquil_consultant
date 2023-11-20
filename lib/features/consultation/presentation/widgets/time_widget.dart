@@ -5,7 +5,7 @@ import 'package:tl_consultant/app/presentation/widgets/my_default_text_theme.dar
 import 'package:tl_consultant/features/consultation/presentation/controllers/consultation_controller.dart';
 
 class TimePickerWidget extends StatefulWidget {
-  TimePickerWidget(
+  const TimePickerWidget(
       {Key? key,
         required this.onTimeChosen,
         required this.times,
@@ -43,11 +43,6 @@ class _TimePickerWidgetState extends State<TimePickerWidget> {
                         widget.onTimeChosen(time,i);
 
                         selectedIndex = i;
-                        // if(widget.currentDayOption == DaySectionOption.day){
-                        //   widget.initialDayOption = DaySectionOption.day;
-                        // }else{
-                        //   widget.initialDayOption = DaySectionOption.night;
-                        // }
                       });
 
                     },

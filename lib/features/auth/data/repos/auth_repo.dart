@@ -19,11 +19,12 @@ class AuthRepoImpl extends AuthRepo{
       Response response = await postReq(
           AuthEndPoints.register,
           body: params.toJson());
+      print(response.body);
 
       if (!jsonEncode(response.body).contains('error')) {
-        return const Left(
+        return Left(
             ApiError(
-              message: "An Error Occurred Please check your network and retry",
+              message: response.body['message'],
             ));
       }
       else{
@@ -84,10 +85,9 @@ class AuthRepoImpl extends AuthRepo{
       Response response = await postReq(
           AuthEndPoints.login, body: data);
 
-
       if (!jsonEncode(response.body).contains('error')) {
-        return const Left(ApiError(
-          message: "An Error Occurred Please check you network and retry",
+        return Left(ApiError(
+          message: response.body['message'],
         ));
       }
       else{

@@ -33,13 +33,13 @@ class ConsultationRepoImpl extends ConsultantRepo {
   }
 
   @override
-  Future<Either<ApiError, dynamic>> saveSlots({List? slots, List? unavailableDays})
+  Future<Either<ApiError, dynamic>> saveSlots({List? slots, List? availableDays})
   async{
     httpClient.baseUrl = baseUrl;
 
     var body = {
       "available_time": slots,
-      "unavailable_days": unavailableDays
+      "available_days": availableDays
     };
 
     try{

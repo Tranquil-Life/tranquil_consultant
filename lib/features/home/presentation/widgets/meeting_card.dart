@@ -167,7 +167,7 @@ class MeetingCard extends StatelessWidget {
         children: [
           Expanded(
               child: Text(
-                  '${meeting.client.firstName} ${lastName()}',
+                  meeting.client.displayName,
                   style: const TextStyle(
                       fontWeight: FontWeight.w600
                   )
@@ -185,7 +185,7 @@ class MeetingCard extends StatelessWidget {
         children: [
           Expanded(
               child: Text(
-                  '${meeting.client.firstName} ${lastName()}',
+                  meeting.client.displayName,
                   style: const TextStyle(
                       color: ColorPalette.red,
                       decoration: TextDecoration.lineThrough,
@@ -209,7 +209,7 @@ class MeetingCard extends StatelessWidget {
         children: [
           Expanded(
               child: Text(
-                  '${meeting.client.firstName} ${lastName()}',
+                  meeting.client.displayName,
                   style: const TextStyle(
                       color: ColorPalette.red,
                       fontWeight: FontWeight.w600
@@ -234,7 +234,7 @@ class MeetingCard extends StatelessWidget {
         children: [
           Expanded(
               child: Text(
-                  '${meeting.client.firstName} ${lastName()}',
+                  meeting.client.displayName,
                   style: const TextStyle(
                       fontWeight: FontWeight.w600
                   )
@@ -250,7 +250,7 @@ class MeetingCard extends StatelessWidget {
       children: [
         Expanded(
             child: Text(
-                '${meeting.client.firstName} ${lastName()}',
+                meeting.client.displayName,
                 style: const TextStyle(
                     fontWeight: FontWeight.w600
                 )

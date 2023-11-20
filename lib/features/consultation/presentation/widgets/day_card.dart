@@ -19,12 +19,12 @@ class DayCard extends StatelessWidget {
           width: 80,
           height: 40,
           decoration: BoxDecoration(
-              color: selected ? ColorPalette.grey : Colors.white,
+              color: selected ? ColorPalette.green : ColorPalette.grey,
               borderRadius: BorderRadius.circular(16.0),
-              border: selected
+              border: !selected
                   ? Border.all(width: 2, color: ColorPalette.white)
                   : null,
-              boxShadow: selected ? [
+              boxShadow: !selected ? [
                 BoxShadow(
                     blurRadius: 6, color: Colors.black12, offset: Offset(0, 3)),
               ] : null
@@ -32,7 +32,7 @@ class DayCard extends StatelessWidget {
           child: Center(
             child: Text(
               day.substring(0, 3),
-              style: TextStyle(color: selected ? Colors.white : null, fontSize: AppFonts.defaultSize),
+              style: TextStyle(color: Colors.white, fontSize: AppFonts.defaultSize),
             ),
           )
       ),

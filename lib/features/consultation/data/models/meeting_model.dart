@@ -11,10 +11,10 @@ class MeetingModel extends Meeting{
     required super.endAt,
     required super.rescheduled,
     required super.status,
+    required super.participants,
     // super.reason,
     // super.createdAt,
-    super.updatedAt,
-    // required super.participants
+    //super.updatedAt,
   });
 
   factory MeetingModel.fromJson(Map<String, dynamic> json) => _$MeetingModelFromJson(json);

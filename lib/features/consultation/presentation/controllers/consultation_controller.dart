@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:intl/intl.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/widgets/custom_snackbar.dart';
@@ -10,6 +9,7 @@ import 'package:tl_consultant/core/utils/extensions/date_time_extension.dart';
 import 'package:tl_consultant/features/consultation/data/models/meeting_model.dart';
 import 'package:tl_consultant/features/consultation/data/repos/consultation_repo.dart';
 import 'package:tl_consultant/features/consultation/domain/entities/meeting.dart';
+import 'package:tl_consultant/features/consultation/domain/entities/participant.dart';
 import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
 
 class ConsultationController extends GetxController{
@@ -21,7 +21,7 @@ class ConsultationController extends GetxController{
 
   var meetingsCount = 0.obs;
 
-  var now = DateTime.now();
+  var now = DateTimeExtension.now;
   DateTime? meetingDate;
   var timeSlots = [].obs;
   RxList selectedDays = [].obs;
@@ -59,10 +59,10 @@ class ConsultationController extends GetxController{
     }
   }
 
-  Future saveSlots({List? unavailableDays}) async{
+  Future saveSlots({List? availableDays}) async{
     var result = await repo.saveSlots(
         slots: listInUtc,
-        unavailableDays: unavailableDays
+        availableDays: availableDays
     );
 
     if(result.isRight()){
@@ -91,7 +91,7 @@ class ConsultationController extends GetxController{
 
       result.map((r){
         apiSlots = r['slots'];
-        unavailableDays(r['days']);
+        availableDays(r['days']);
 
         getSlotsInLocal();
       });
@@ -132,9 +132,9 @@ class ConsultationController extends GetxController{
               DashboardController.instance.currentMeetingST.value = meeting.startAt.formatDate;
               DashboardController.instance.currentMeetingET.value = meeting.endAt.formatDate;
             }
+
           }
         }
-
       });
 
       Map<String, dynamic> values = {
@@ -145,7 +145,6 @@ class ConsultationController extends GetxController{
       meetingsCount.value = meetings.length;
 
       if (!meetingsStreamController.isClosed) meetingsStreamController.sink.add(values);
-
       debugPrint(meetings.isNotEmpty ? meetings[0].endAt.toString() : null);
     }
     else{
@@ -163,9 +162,9 @@ class ConsultationController extends GetxController{
     update();
   }
 
-  unavailableDays(Map<String, dynamic> daysMap) {
+  availableDays(Map<String, dynamic> daysMap) {
     selectedDays.value = daysMap.keys.map((e){
-      if(daysMap[e] == false) return e.capitalizeFirst;
+      if(daysMap[e] == true) return e.capitalizeFirst;
     }).toList().where((element) => element != null).toList();
   }
 

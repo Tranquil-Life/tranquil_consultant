@@ -90,7 +90,7 @@ class _EditSlotsState extends State<EditSlots> {
                       const Padding(
                         padding: EdgeInsets.only(bottom: 24),
                         child: Text(
-                          'Select unavailable days (If any)',
+                          'Select available days',
                           style: TextStyle(fontSize: AppFonts.defaultSize, fontFamily: AppFonts.josefinSansSemiBold),
                         ),
                       ),
@@ -125,7 +125,7 @@ class _EditSlotsState extends State<EditSlots> {
                             child: const Text("Save", style: TextStyle(fontSize: AppFonts.defaultSize)),
                             onPressed: (){
                               controller.saveSlots(
-                                  unavailableDays: controller.selectedDays.value
+                                  availableDays: controller.selectedDays.value
                               );
                             }),
                       )
