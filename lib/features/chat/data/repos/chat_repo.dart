@@ -52,27 +52,59 @@ class ChatRepoImpl extends ChatRepo{
   }
 
   @override
-  Future<Either<ApiError, dynamic>> uploadChat({
-    required int meetingId,
+  Future<Either<ApiError, dynamic>> getChatMessages({required int chatId})
+  async{
+    try{
+      httpClient.baseUrl = baseUrl;
+
+      Response response = await getReq(
+          ChatEndPoints.getChatMessages(chatId: chatId));
+
+      if(response.body['error'] == false){
+        var data = response.body['data'];
+
+        return Right(data);
+      }
+      else{
+        return Left(
+          ApiError(message: response.body['message'].toString()),
+        );
+      }
+
+    }on SocketException catch (e) {
+      return Left(ApiError(
+          message: e.toString()));
+    } catch (e, stack) {
+      debugPrintStack(stackTrace: stack);
+      return Left(ApiError(
+        message: e.toString(),
+      ));
+    }
+  }
+
+  @override
+  Future<Either<ApiError, dynamic>> sendChat({
+    required int? chatId,
     required String message,
     required String messageType,
-    String caption = '',
-    int parentId = 0}) async
-  {
-
+    String? caption,
+    int? parentId})
+  async {
     final data = {
-      "meeting_id": meetingId,
+      "chat_id": chatId,
       "message": message,
       "message_type": messageType,
       "caption": caption,
-      "parent_id": parentId
+      "parent_id": parentId,
     };
+
+    print("DATA: $data");
 
     try{
       httpClient.baseUrl = baseUrl;
 
       Response response = await postReq(
-          ChatEndPoints.uploadChat,
+          ChatEndPoints.sendChat,
           body: data
       );
 
@@ -99,19 +131,26 @@ class ChatRepoImpl extends ChatRepo{
   }
 
   @override
-  Future<Either<ApiError, dynamic>> getChats({required int meetingId})
-  async{
-
+  Future<Either<ApiError, dynamic>> getChatInfo({
+    required int consultantId,
+    required int clientId})
+  async {
     try{
       httpClient.baseUrl = baseUrl;
 
-      Response response = await getReq(
-          ChatEndPoints.getChats(meetingId: meetingId));
+      var data = {
+        "consultant_id": consultantId,
+        "client_id": clientId,
+      };
 
-      if(response.body['error'] == false){
-        var data = response.body['chats'];
+      Response response = await postReq(
+          ChatEndPoints.getChatInfo,
+          body: data);
 
-        return Right(data);
+      if(response.body['message'] == "Chat already exist"){
+        var res = response.body['data'];
+
+        return Right(res);
       }
       else{
         return Left(
@@ -134,34 +173,5 @@ class ChatRepoImpl extends ChatRepo{
   Future<Either<ApiError, dynamic>> rateClient() {
     // TODO: implement rateClient
     throw UnimplementedError();
-  }
-
-  @override
-  Future<Either<ApiError, dynamic>> getClientName({required int clientId}) async{
-    try{
-      httpClient.baseUrl = baseUrl;
-
-      Response response = await getReq(
-          ChatEndPoints.clientName(clientId: clientId));
-
-      if(response.body['error'] == false){
-        var data = response.body['name'];
-
-        return Right(data);
-      }
-      else{
-        return Left(
-          ApiError(message: response.body['message'].toString()),
-        );
-      }
-    }on SocketException catch (e) {
-      return Left(ApiError(
-          message: e.toString()));
-    } catch (e, stack) {
-      debugPrintStack(stackTrace: stack);
-      return Left(ApiError(
-        message: e.toString(),
-      ));
-    }
   }
 }

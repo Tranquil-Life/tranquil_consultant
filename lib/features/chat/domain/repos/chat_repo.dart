@@ -4,16 +4,21 @@ import 'package:tl_consultant/core/errors/api_error.dart';
 import 'package:tl_consultant/core/utils/services/API/api_service.dart';
 
 abstract class ChatRepo<T, F extends QueryParams> extends ApiService{
-  Future<Either<ApiError, T>> uploadChat({
-    required int meetingId,
+  Future<Either<ApiError, T>> sendChat({
+    required int chatId,
     required String message,
     required String messageType,
-    String caption='',
-    int parentId=0
+    String? caption,
+    int? parentId
   });
 
-  Future<Either<ApiError, T>> getChats({
-    required int meetingId
+  Future<Either<ApiError, T>> getChatMessages({
+    required int chatId
+  });
+
+  Future<Either<ApiError, T>> getChatInfo({
+    required int consultantId,
+    required int clientId
   });
 
   Future<Either<ApiError, T>> react();
@@ -22,7 +27,4 @@ abstract class ChatRepo<T, F extends QueryParams> extends ApiService{
   Future<Either<ApiError, T>> viewParticipants();
   Future<Either<ApiError, T>> onEnding();
   Future<Either<ApiError, T>> rateClient();
-  Future<Either<ApiError, T>> getClientName({
-    required int clientId
-  });
 }

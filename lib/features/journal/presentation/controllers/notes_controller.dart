@@ -19,54 +19,55 @@ class NotesController extends GetxController{
 
   var noNotes = false.obs;
 
-  Future<List<Note>> getJournal()
-  async{
-
-    if(NetworkController.instance.connectionStatus.value == 0){
-      update();
-
-      noNotes.value = journalStore.getJournal.isEmpty ? true : false;
-
-      return journalStore.getJournal;
-    }else{
-      try{
-        await Future.delayed(Duration(seconds: 1));
-        var result = await journalRepo.getJournal();
-
-        if(result.isRight()){
-          List<Note> notes = result.getOrElse(() => NoteModel.fromJson({}));
-          List<Note> arr = [];
-          if(notes.length >= 10){
-            for(int i=0; i < 10; i++){
-              arr.add(notes[i]);
-            }
-            journalStore.updateJournal = arr;
-            noNotes.value = journalStore.getJournal.isEmpty ? true : false;
-
-          }else{
-            journalStore.updateJournal = notes;
-            noNotes.value = journalStore.getJournal.isEmpty ? true : false;
-          }
-          update();
-
-          return notes;
-        }
-        else{
-          ///commented out because it was returning snackbar eeror in on start of chat screen
-          // result.leftMap((l)
-          // => CustomSnackBar.showSnackBar(
-          //     context: Get.context!,
-          //     title: "Error",
-          //     message: l.message.toString(),
-          //     backgroundColor: ColorPalette.red)
-          // );
-          return <Note>[];
-        }
-      }catch(e){
-        return <Note>[];
-      }
-    }
-  }
+  // Future<List<Note>> getJournal()
+  // async{
+  //
+  //   if(NetworkController.instance.connectionStatus.value == 0){
+  //     update();
+  //
+  //     noNotes.value = journalStore.getJournal.isEmpty ? true : false;
+  //
+  //     return journalStore.getJournal;
+  //   }
+  //   else{
+  //     try{
+  //       await Future.delayed(Duration(seconds: 1));
+  //       var result = await journalRepo.getJournal();
+  //
+  //       if(result.isRight()){
+  //         List<Note> notes = result.getOrElse(() => NoteModel.fromJson({}));
+  //         List<Note> arr = [];
+  //         if(notes.length >= 10){
+  //           for(int i=0; i < 10; i++){
+  //             arr.add(notes[i]);
+  //           }
+  //           journalStore.updateJournal = arr;
+  //           noNotes.value = journalStore.getJournal.isEmpty ? true : false;
+  //
+  //         }else{
+  //           journalStore.updateJournal = notes;
+  //           noNotes.value = journalStore.getJournal.isEmpty ? true : false;
+  //         }
+  //         update();
+  //
+  //         return notes;
+  //       }
+  //       else{
+  //         ///commented out because it was returning snackbar eeror in on start of chat screen
+  //         // result.leftMap((l)
+  //         // => CustomSnackBar.showSnackBar(
+  //         //     context: Get.context!,
+  //         //     title: "Error",
+  //         //     message: l.message.toString(),
+  //         //     backgroundColor: ColorPalette.red)
+  //         // );
+  //         return <Note>[];
+  //       }
+  //     }catch(e){
+  //       return <Note>[];
+  //     }
+  //   }
+  // }
 
   clearData(){
     currPageIndex.value = 0;

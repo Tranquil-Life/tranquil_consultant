@@ -67,20 +67,20 @@ class ChatItemState extends State<ChatItem> {
               chatController.isExpanded.value = true;
 
               // print(Timestamp.fromDate(widget.message.createdAt!));
-              Map<String, dynamic> map = {
-                "id": widget.message.messageId,
-                "from":widget.message.userId,
-                'meeting_id':widget.message.meetingId,
-                "user_type": widget.message.userType,
-                "display_name": widget.message.username,
-                'message': widget.message.message,
-                'message_type':widget.message.messageType,
-                'caption':widget.message.caption,
-                'reply_message':widget.message.replyMessage == null ? null : widget.message.replyMessage!.toJson(),
-                "created_at": widget.message.createdAt!,
-              };
+              // Map<String, dynamic> map = {
+              //   "id": widget.message.messageId,
+              //   "from":widget.message.userId,
+              //   'meeting_id':widget.message.meetingId,
+              //   "user_type": widget.message.userType,
+              //   "display_name": widget.message.username,
+              //   'message': widget.message.message,
+              //   'message_type':widget.message.messageType,
+              //   'caption':widget.message.caption,
+              //   'reply_message':widget.message.replyMessage == null ? null : widget.message.replyMessage!.toJson(),
+              //   "created_at": widget.message.createdAt!,
+              // };
 
-              chatController.replyMessage.value =  MessageModel.fromJson(map);
+              //chatController.replyMessage.value =  MessageModel.fromJson(map);
             },
             iconColor: ColorPalette.white,
             child: Container(

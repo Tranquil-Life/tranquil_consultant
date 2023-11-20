@@ -5,16 +5,16 @@ part 'message_model.g.dart';
 class MessageModel extends Message{
   MessageModel({
     required super.messageId,
-    required super.userId,
-    super.userType,
-    super.meetingId,
-    super.replyMessage,
+    required super.senderId,
+    required super.senderType,
+    required super.chatId,
+    super.quoteMessage,
     required super.message,
-    super.username,
-    super.seen,
     required super.messageType,
-    required super.createdAt,
+    super.read,
+    super.reaction,
     super.caption,
+    required super.createdAt,
     super.updatedAt
   });
 

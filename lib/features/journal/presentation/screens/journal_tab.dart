@@ -71,80 +71,80 @@ class _JournalTabState extends State<JournalTab> {
 
                     const SizedBox(height: 8),
 
-                    Obx(()=>Visibility(
-                      visible: value.connectionStatus.value == 0,
-                      child: GestureDetector(
-                        onTap: ()async => await controller.getJournal().then((value) =>setState(() {})),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text("No internet connection", style: TextStyle(color: ColorPalette.red),),
-                            Icon(Icons.signal_wifi_connected_no_internet_4, color: ColorPalette.red)
-                          ],
-                        ),
-                      ),
-                    )),
+                    // Obx(()=>Visibility(
+                    //   visible: value.connectionStatus.value == 0,
+                    //   child: GestureDetector(
+                    //     onTap: ()async => await controller.getJournal().then((value) =>setState(() {})),
+                    //     child: const Row(
+                    //       mainAxisAlignment: MainAxisAlignment.center,
+                    //       children: [
+                    //         Text("No internet connection", style: TextStyle(color: ColorPalette.red),),
+                    //         Icon(Icons.signal_wifi_connected_no_internet_4, color: ColorPalette.red)
+                    //       ],
+                    //     ),
+                    //   ),
+                    // )),
 
-                    Expanded(
-                      child: FutureBuilder<List<Note>>(
-                        future: controller.getJournal(),
-                        builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot){
-                          switch(snapshot.connectionState){
-                            case ConnectionState.waiting:
-                              return const Center(
-                                child:  CircularProgressIndicator(color: ColorPalette.green),
-                              );
-                            case ConnectionState.active:
-                            case ConnectionState.done:
-                              if (!snapshot.hasData || (snapshot.data is List && (snapshot.data as List).isEmpty)) {
-                                return Column(
-                                  mainAxisSize: MainAxisSize.max,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    const Text(
-                                      'You’ll see notes here \nwhen clients share them with you',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                          fontSize: AppFonts.defaultSize
-                                      ),
-                                    ),
-                                    const SizedBox(height: 12),
-                                    Image.asset(
-                                      'assets/images/no_meeting.png',
-                                      height: 300,
-                                      width: 300,
-                                    ),
-                                  ],
-                                );
-                              }
-                              else{
-                                return RefreshIndicator(
-                                  color: ColorPalette.green,
-                                  onRefresh: () async => await controller.getJournal().then((value) =>setState(() {})),
-                                  child: SingleChildScrollView(
-                                    child: Container(
-                                      margin: const EdgeInsets.only(left: 8, right: 8, bottom: 16, top: 16),
-                                      child: StaggeredGrid.count(
-                                          crossAxisCount: 2,
-                                          mainAxisSpacing: 16,
-                                          crossAxisSpacing: 14,
-                                          children: List.generate(
-                                            snapshot.data.length,
-                                                (i) => NoteWidget(note: snapshot.data[i]),
-                                          )),
-                                    ),
-                                  ),
-                                );
-                              }
-                            case ConnectionState.none:
-                            default:
-                              return const Center(
-                                child: CircularProgressIndicator(color: ColorPalette.green),
-                              );
-                          }
-                        },
-                      ),
-                    )
+                    // Expanded(
+                    //   child: FutureBuilder<List<Note>>(
+                    //     future: controller.getJournal(),
+                    //     builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot){
+                    //       switch(snapshot.connectionState){
+                    //         case ConnectionState.waiting:
+                    //           return const Center(
+                    //             child:  CircularProgressIndicator(color: ColorPalette.green),
+                    //           );
+                    //         case ConnectionState.active:
+                    //         case ConnectionState.done:
+                    //           if (!snapshot.hasData || (snapshot.data is List && (snapshot.data as List).isEmpty)) {
+                    //             return Column(
+                    //               mainAxisSize: MainAxisSize.max,
+                    //               mainAxisAlignment: MainAxisAlignment.center,
+                    //               children: [
+                    //                 const Text(
+                    //                   'You’ll see notes here \nwhen clients share them with you',
+                    //                   textAlign: TextAlign.center,
+                    //                   style: TextStyle(
+                    //                       fontSize: AppFonts.defaultSize
+                    //                   ),
+                    //                 ),
+                    //                 const SizedBox(height: 12),
+                    //                 Image.asset(
+                    //                   'assets/images/no_meeting.png',
+                    //                   height: 300,
+                    //                   width: 300,
+                    //                 ),
+                    //               ],
+                    //             );
+                    //           }
+                    //           else{
+                    //             return RefreshIndicator(
+                    //               color: ColorPalette.green,
+                    //               onRefresh: () async => await controller.getJournal().then((value) =>setState(() {})),
+                    //               child: SingleChildScrollView(
+                    //                 child: Container(
+                    //                   margin: const EdgeInsets.only(left: 8, right: 8, bottom: 16, top: 16),
+                    //                   child: StaggeredGrid.count(
+                    //                       crossAxisCount: 2,
+                    //                       mainAxisSpacing: 16,
+                    //                       crossAxisSpacing: 14,
+                    //                       children: List.generate(
+                    //                         snapshot.data.length,
+                    //                             (i) => NoteWidget(note: snapshot.data[i]),
+                    //                       )),
+                    //                 ),
+                    //               ),
+                    //             );
+                    //           }
+                    //         case ConnectionState.none:
+                    //         default:
+                    //           return const Center(
+                    //             child: CircularProgressIndicator(color: ColorPalette.green),
+                    //           );
+                    //       }
+                    //     },
+                    //   ),
+                    // )
 
                   ],
                 )

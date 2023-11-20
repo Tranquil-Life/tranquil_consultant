@@ -11,6 +11,7 @@ class NavBar extends StatefulWidget {
 class _NavBarState extends State<NavBar> {
   final dashboardController = Get.put(DashboardController());
   final notesController = Get.put(NotesController());
+  final chatController = Get.put(ChatController());
 
   @override
   Widget build(BuildContext context) {
@@ -65,8 +66,13 @@ class _NavBarState extends State<NavBar> {
             top: false,
             child: GestureDetector(
               onTap: () async{
-                if(DashboardController.instance.currentMeetingCount.value ==1){
-                  //Get.toNamed(Routes.CHAT_SCREEN);
+                if(DashboardController.instance.currentMeetingCount.value
+                    == 1 && chatController.chatId != null){
+                  Get.toNamed(Routes.CHAT_SCREEN);
+                }else{
+                  await chatController.getChatInfo();
+
+                  Get.toNamed(Routes.CHAT_SCREEN);
                 }
               },
               behavior: HitTestBehavior.opaque,

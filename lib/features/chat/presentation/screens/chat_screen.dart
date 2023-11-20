@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +16,8 @@ import 'package:tl_consultant/core/utils/functions.dart';
 import 'package:tl_consultant/core/utils/services/formatters.dart';
 import 'package:tl_consultant/features/chat/domain/entities/message.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/chat_controller.dart';
+import 'package:tl_consultant/features/chat/presentation/controllers/recording_controller.dart';
+import 'package:tl_consultant/features/chat/presentation/screens/messages_list_widget.dart';
 import 'package:tl_consultant/features/chat/presentation/widgets/attachment_sheet.dart';
 import 'package:tl_consultant/features/chat/presentation/widgets/chat_boxes/chat_item.dart';
 import 'package:tl_consultant/features/chat/presentation/widgets/chat_boxes/shared/replied_chat_box.dart';
@@ -34,26 +37,75 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   final chatController = Get.put(ChatController());
+  final _recordingController = RecordingController()..onInit();
+
+  bool micMode = true;
+  bool get showMic => micMode && !_recordingController.isRecording.value;
+
+  bool sendBtnClicked = false;
+
+  _handleUpload() async {
+    sendBtnClicked = true;
+
+    await chatController.handleNewMsg(
+        quotedMessage: chatController.replyMessage.value);
+    sendBtnClicked = false;
+
+
+    // if (chatController.showMic) return;
+    // File? file;
+    // bool upload = true;
+    // if (chatController.isRecording) file = await chatController.recorder.stop();
+    // if (!AppData.hasShownChatDisableDialog) {
+    //   upload = await showDialog(
+    //     context: context,
+    //     builder: (_) => const DisableAccountDialog(),
+    //   ) ??
+    //       false;
+    // }
+    // if (chatController.isRecording) {
+    //   //handleRecordingUpload(file, upload);
+    // } else {
+    //   chatController.handleTextUpload(upload);
+    // }
+  }
 
   @override
   void initState() {
-    // chatController.getChatMessages();
+    chatController.listenChannel();
+
+    _recordingController.onInit();
+
+    //re-instantiate the controller here to allow reuse after disposal
+    chatController.textController = TextEditingController();
+
+    chatController.textController.addListener(() {
+      setState(() => micMode = chatController.textController.text.trim().isEmpty);
+    });
+
+
     super.initState();
   }
 
-  // getMesages(){
-  //   var seen = Set<Message>();
-  //   List<String> data = [];
-  //   chatController.messages.where((message) => seen.add(message)).toList().forEach((element) {
-  //     data.add(element.message!);
-  //   });
-  //   print(data);
-  //
-  // }
+  Future _startRecording() => _recordingController.record();
+
+  Future _stopRecording() async {
+    await _recordingController.stop();
+    if (_recordingController.localAudioPath != null) {
+      chatController
+          .setVoiceFile(File(_recordingController.localAudioPath!));
+    }
+  }
 
   @override
+  void dispose() {
+    chatController.leaveChatChannel();
+    _recordingController.dispose();
+    chatController.textController.dispose();
+
+    super.dispose();
+  }
   Widget build(BuildContext context) {
-    setStatusBarBrightness(false);
     return Scaffold(
       body: Stack(
         fit: StackFit.expand,
@@ -72,84 +124,151 @@ class _ChatScreenState extends State<ChatScreen> {
               child: Column(
                 children: [
                   _TitleBar(),
-                  GetBuilder<ChatController>(
-                    global: false,
-                    init: chatController,
-                    builder: (controller) =>
-                        _Messages(messages: chatController.messages),
-                  ),
-                  const SafeArea(top: false, child: _InputBar()),
+
+                  //Expanded(child: Container(),),
+                  Messages(messages: chatController.messages),
+
+                  Obx(()=>
+                      SafeArea(
+                        top: false,
+                        child: _InputBar(
+                            chatWidget: Row(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                //display using an animation delete icon while recording
+                                Visibility(
+                                  visible: _recordingController.isRecording.value,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(bottom: 7),
+                                    child: AnimatedCrossFade(
+                                      duration: kTabScrollDuration,
+                                      crossFadeState: _recordingController.isRecording.value
+                                          ? CrossFadeState.showSecond
+                                          : CrossFadeState.showFirst,
+                                      firstChild: IconButton(
+                                        onPressed: () => showModalBottomSheet(
+                                          context: context,
+                                          backgroundColor: Colors.transparent,
+                                          builder: (_) => const AttachmentSheet(),
+                                        ),
+                                        icon: Icon(
+                                          Icons.attach_file,
+                                          color: ColorPalette.green,
+                                          size: 28,
+                                        ),
+                                      ),
+                                      secondChild: IconButton(
+                                        onPressed:(){
+                                          _stopRecording();
+                                        },
+                                        icon: Icon(
+                                          TranquilIcons.trash,
+                                          color: ColorPalette.green,
+                                          size: 27,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+
+                                //Typing text
+                                Expanded(
+                                  child: Builder(builder: (context) {
+                                    if (_recordingController.isRecording.value) {
+                                      return Padding(
+                                          padding: const EdgeInsets.only(left: 4, bottom: 13),
+                                          child: Obx(()=>Text(
+                                            _recordingController.time.value,
+                                            style: const TextStyle(
+                                              color: Colors.black,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          )));
+                                    }
+                                    return TextField(
+                                      minLines: 1,
+                                      maxLines: 5,
+                                      controller: chatController.textController,
+                                      textInputAction: TextInputAction.newline,
+                                      textCapitalization: TextCapitalization.sentences,
+                                      decoration: const InputDecoration(
+                                        filled: false,
+                                        hintText: 'Type something...',
+                                        border: InputBorder.none,
+                                        enabledBorder: InputBorder.none,
+                                        hintStyle: TextStyle(fontWeight: FontWeight.w600),
+                                        contentPadding: EdgeInsets.symmetric(
+                                          vertical: 16,
+                                          horizontal: 4,
+                                        ),
+                                      ),
+                                    );
+                                  }),
+                                ),
+
+                                SwipeableWidget(
+                                  maxOffset: 32,
+                                  enabled: showMic,
+                                  canLongPress: true,
+                                  resetOnRelease: true,
+                                  swipedWidget: const Icon(Icons.mic, color: ColorPalette.red),
+                                  onStateChanged: (isActive) {
+                                    isActive = true;
+                                    if (showMic && isActive){
+                                      //print("RECORDER STARTED");
+                                      _startRecording();
+                                    }
+                                  },
+                                  child: AnimatedContainer(
+                                    duration: kThemeChangeDuration,
+                                    padding: const EdgeInsets.all(6),
+                                    margin:
+                                    EdgeInsets.only(
+                                        right: _recordingController.isRecording.value ? 6 : 8,
+                                        bottom: 5),
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: ColorPalette.green,
+                                      border: _recordingController.isRecording.value
+                                          ? Border.all(color: ColorPalette.blue, width: 2)
+                                          : null,
+                                    ),
+                                    child: GestureDetector(
+                                      onTap: sendBtnClicked ? null : _handleUpload,
+                                      child: AnimatedCrossFade(
+                                        duration: kThemeChangeDuration,
+                                        crossFadeState: showMic
+                                            ? CrossFadeState.showSecond
+                                            : CrossFadeState.showFirst,
+                                        firstChild: Padding(
+                                          padding: _recordingController.isRecording.value
+                                              ? const EdgeInsets.fromLTRB(3, 1, 2, 1)
+                                              : const EdgeInsets.fromLTRB(4, 3, 2, 3),
+                                          child: const Icon(
+                                            Icons.send,
+                                            color: Colors.white,
+                                            size: 22,
+                                          ),
+                                        ),
+                                        secondChild: const Icon(
+                                          Icons.mic,
+                                          color: Colors.white,
+                                          size: 28,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+
+                              ],
+                            )
+                        ),
+                      ))
                 ],
               ),
             ),
-          ),
-
-        ],
-      ),
-    );
-  }
-}
-
-class _Messages extends StatefulWidget {
-  final List<Message>? messages;
-
-  const _Messages({this.messages});
-
-  @override
-  State<_Messages> createState() => _MessagesState();
-}
-
-class _MessagesState extends State<_Messages>
-    with SingleTickerProviderStateMixin {
-  ChatController chatController = Get.put(ChatController());
-
-  late final AnimationController animController;
-  late final Animation<double> highlightAnim;
-
-  @override
-  void initState() {
-    animController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1500),
-    )..animateTo(1, duration: Duration.zero);
-    highlightAnim = animController.drive(TweenSequence([
-      TweenSequenceItem(tween: Tween(begin: 1.0, end: 1.0), weight: 0.8),
-      TweenSequenceItem(tween: Tween(begin: 1.0, end: 0.0), weight: 0.2),
-    ]));
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    try{
-      animController.dispose();
-    }catch(e){
-      log("DISPOSE: Error: $e");
-    }
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: UnFocusWidget(
-          child: ScrollablePositionedList.builder(
-            reverse: true,
-            itemCount: widget.messages!.length,
-            physics: const BouncingScrollPhysics(),
-            itemScrollController:
-            chatController.scrollController,
-            padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).viewPadding.bottom,
-            ),
-            itemBuilder: (_, index){
-              return ChatItem(
-                widget.messages![index],
-                highlightAnim: highlightAnim,
-                animate: index == -1,
-              );
-            },
           )
+        ],
       ),
     );
   }

@@ -35,6 +35,8 @@ dependencies:
   audio_waveforms: ^0.1.4
   flutter_sound: ^9.2.13
   video_thumbnail: ^0.5.2
+  audioplayers: ^1.0.1 # playing of audio recordings or sound
+
 
   dartz: ^0.10.1
   equatable: ^2.0.5
@@ -84,6 +86,15 @@ dependencies:
 
   firebase_core: ^2.15.0
   firebase_messaging: ^14.6.5
+
+  laravel_echo:
+    git:
+      url: https://github.com/kakajansh/echo.git
+      ref: master
+  pusher_client:
+    git:
+      url: https://github.com/DumbDev168/pusher_client.git
+      ref: master
 
 dev_dependencies:
   flutter_test:

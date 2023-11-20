@@ -9,7 +9,6 @@ import 'package:tl_consultant/core/utils/extensions/date_time_extension.dart';
 import 'package:tl_consultant/features/consultation/data/models/meeting_model.dart';
 import 'package:tl_consultant/features/consultation/data/repos/consultation_repo.dart';
 import 'package:tl_consultant/features/consultation/domain/entities/meeting.dart';
-import 'package:tl_consultant/features/consultation/domain/entities/participant.dart';
 import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
 
 class ConsultationController extends GetxController{
@@ -105,7 +104,7 @@ class ConsultationController extends GetxController{
   Future getMeetings() async{
     loading.value = true;
 
-    await Future.delayed(Duration(seconds: 2));
+    await Future.delayed(Duration(seconds: 1));
 
     var result = await ConsultationRepoImpl().getMeetings();
 
@@ -120,6 +119,8 @@ class ConsultationController extends GetxController{
             Meeting meeting = MeetingModel.fromJson(element);
             meetings.add(meeting);
 
+
+
             if(meeting.endAt.isAfter(now)
                 && (meeting.startAt.isBefore(now) || meeting.startAt == now))
             {
@@ -128,9 +129,11 @@ class ConsultationController extends GetxController{
               DashboardController.instance.currentMeetingId.value = meeting.id;
               DashboardController.instance.clientId.value = meeting.client.id;
               DashboardController.instance.clientDp.value = meeting.client.avatarUrl;
-              DashboardController.instance.clientName.value = meeting.client.firstName;
+              DashboardController.instance.clientName.value = meeting.client.displayName;
               DashboardController.instance.currentMeetingST.value = meeting.startAt.formatDate;
               DashboardController.instance.currentMeetingET.value = meeting.endAt.formatDate;
+
+              // print("CLIENT: ${DashboardController.instance.clientName.value}");
             }
 
           }

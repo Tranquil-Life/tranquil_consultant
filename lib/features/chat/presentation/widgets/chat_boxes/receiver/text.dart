@@ -22,27 +22,27 @@ class ReceiverChatText extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            message.replyMessage != null ? Container(
-                width: 244,
-                margin: EdgeInsets.only(bottom: 8),
-                padding: EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                    color: Color(0xffE1DFDF),
-                    borderRadius: BorderRadius.circular(8.0)
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(message.replyMessage!.username == username ? "You" : message.replyMessage!.username!,
-                        style: TextStyle(color: ColorPalette.green)),
-
-                    Text(
-                      message.replyMessage!.message!,
-                      style: TextStyle(color: ColorPalette.black.withOpacity(.6)),
-                    ),
-                  ],
-                )
-            ) : const SizedBox(),
+            // message.replyMessage != null ? Container(
+            //     width: 244,
+            //     margin: EdgeInsets.only(bottom: 8),
+            //     padding: EdgeInsets.all(8),
+            //     decoration: BoxDecoration(
+            //         color: Color(0xffE1DFDF),
+            //         borderRadius: BorderRadius.circular(8.0)
+            //     ),
+            //     child: Column(
+            //       crossAxisAlignment: CrossAxisAlignment.start,
+            //       children: [
+            //         Text(message.quoteMessage!.username == username ? "You" : message.quoteMessage!.username!,
+            //             style: TextStyle(color: ColorPalette.green)),
+            //
+            //         Text(
+            //           message.quoteMessage!.message!,
+            //           style: TextStyle(color: ColorPalette.black.withOpacity(.6)),
+            //         ),
+            //       ],
+            //     )
+            // ) : const SizedBox(),
 
             TextLayout(message: message),
           ],

@@ -1,35 +1,35 @@
-import 'package:equatable/equatable.dart';
-
 part 'message.g.dart';
 
 class Message {
-  int? meetingId;
-  int? messageId;
-  String? message;
-  String? messageType;
-  Message? replyMessage;
-  String? username;
-  String? caption;
-  int? userId;
-  String? userType;
-  List<int>? seen;
-  DateTime? createdAt;
-  DateTime? updatedAt;
+  final int? messageId;
+  final int? chatId;
+  final int? senderId;
+  final int? parentId;
+  final String? senderType;
+  final String? message;
+  final String? messageType;
+  final String? caption;
+  final Message? quoteMessage;
+  final List<Map<String, dynamic>>? read;
+  final String? reaction;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
 
 
   Message({
-    this.meetingId,
     this.messageId,
+    this.chatId,
+    this.senderId,
+    this.parentId,
+    this.senderType,
     this.message,
     this.messageType,
-    this.replyMessage,
-    this.username,
     this.caption,
-    this.userId,
-    this.userType,
-    this.seen,
+    this.quoteMessage,
+    this.read,
+    this.reaction,
     this.createdAt,
-    this.updatedAt,
+    this.updatedAt
   });
 
   Map<String, dynamic> toJson() => _$MessageToJson(this);
