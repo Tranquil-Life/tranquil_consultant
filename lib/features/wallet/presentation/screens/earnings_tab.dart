@@ -27,7 +27,7 @@ class _EarningsTabState extends State<EarningsTab> {
 
   @override
   void initState() {
-    getEarnings();
+    //getEarnings();
 
     super.initState();
   }
@@ -35,7 +35,7 @@ class _EarningsTabState extends State<EarningsTab> {
   @override
   void dispose() {
     try {
-      earningsController.earningsStreamController.close();
+      //earningsController.earningsStreamController.close();
     } catch (e) {
       log("DISPOSE: Error: $e");
     }

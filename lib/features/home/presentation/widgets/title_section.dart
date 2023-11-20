@@ -144,15 +144,14 @@ class _TitleState extends State<Title> {
           ],
         ),
 
-        Obx(()=>
-            Text(
-              therapist.firstName,
-              style: TextStyle(
-                color: themeColor,
-                fontSize: 30,
-                fontWeight: FontWeight.bold,
-              ),
-            ))
+        Text(
+          therapist.firstName,
+          style: TextStyle(
+            color: themeColor,
+            fontSize: 30,
+            fontWeight: FontWeight.bold,
+          ),
+        )
       ],
     );
   }

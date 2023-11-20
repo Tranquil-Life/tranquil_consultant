@@ -57,7 +57,7 @@ class EarningsController extends GetxController{
 
   @override
   void onInit() {
-    getEarningsInfo();
+    //getEarningsInfo();
     super.onInit();
   }
 }
