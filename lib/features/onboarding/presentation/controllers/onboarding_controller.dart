@@ -1,8 +1,9 @@
 import 'package:get/get.dart';
 import 'package:tl_consultant/app/presentation/routes/app_pages.dart';
 import 'package:tl_consultant/core/utils/services/app_data_store.dart';
-import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';
+import 'package:tl_consultant/features/profile/data/models/user_model.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
+import 'package:tl_consultant/features/profile/domain/entities/user.dart';
 
 class OnBoardingController extends GetxController{
   static OnBoardingController instance = Get.find();
@@ -15,26 +16,37 @@ class OnBoardingController extends GetxController{
 
   navigateTo(){
     checkUserIsLogged();
-
   }
+
 
   void checkUserIsLogged() async{
-    if(AppData.isSignedIn == true)
-    {
-      if(userDataStore.user['auth_token'] != null){
+    if(userDataStore.user.isEmpty){
+      AppData.isSignedIn == false;
+      Future.delayed(Duration.zero, () {
+        Get.offAllNamed(Routes.ONBOARDING);
+      });
+    }else{
+      User client = UserModel.fromJson(userDataStore.user);
 
-        await AuthController.instance.isUserAuthenticated();
+      if(AppData.isSignedIn == true)
+      {
+        if(client.authToken!.isNotEmpty){
+          Future.delayed(Duration.zero, () {
+            Get.offAllNamed(Routes.DASHBOARD);
+          });
+        }else{
+          await Future.delayed(const Duration(seconds: 2));
 
+          Get.offAllNamed(Routes.ONBOARDING);
+        }
       }else{
-        await Future.delayed(const Duration(seconds: 3));
+        await Future.delayed(const Duration(seconds: 2));
         Get.offAllNamed(Routes.ONBOARDING);
       }
-    }else{
-      await Future.delayed(const Duration(seconds: 3));
-
-      Get.offAllNamed(Routes.ONBOARDING);
     }
 
+
   }
+
 
 }

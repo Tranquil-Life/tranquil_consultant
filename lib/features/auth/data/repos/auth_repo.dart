@@ -12,42 +12,6 @@ import 'package:tl_consultant/features/auth/domain/repos/auth_repo.dart';
 
 class AuthRepoImpl extends AuthRepo{
   @override
-  Future<Either<ApiError, dynamic>> isUserAuthenticated() async{
-    try{
-      httpClient.baseUrl = baseUrl;
-
-      Response response = await postReq(
-          AuthEndPoints.isAuthenticated);
-
-      if (!jsonEncode(response.body).contains('error')) {
-        return const Left(ApiError(
-          message: "An Error Occurred Please check your network and retry",
-        ));
-      }
-      else{
-        if (response.body['user'] != null) {
-          return Right(response.body['user']);
-        }
-        else if (response.body['errors'] is List) {
-          final List<String>? errors = (response.body['errors'] as List?)?.cast();
-          return Left(ApiError(
-            message: errors?.fold('', (prev, next) => '$prev\n$next').trim(),
-          ));
-        }
-        else {
-          return Left(ApiError(
-            message: response.body['message'],
-          ));
-        }
-      }
-    }
-    on SocketException catch(e) {
-      return Left(ApiError(
-          message: e.toString()));
-    }
-  }
-
-  @override
   Future<Either<ApiError, dynamic>> register(QueryParams params) async{
     try {
       httpClient.baseUrl = baseUrl;
@@ -120,14 +84,15 @@ class AuthRepoImpl extends AuthRepo{
       Response response = await postReq(
           AuthEndPoints.login, body: data);
 
+
       if (!jsonEncode(response.body).contains('error')) {
         return const Left(ApiError(
           message: "An Error Occurred Please check you network and retry",
         ));
       }
       else{
-        if (response.body['user'] != null) {
-          return Right(response.body['user']);
+        if (response.body['data'] != null) {
+          return Right(response.body['data']);
         }
         else if (response.body['errors'] is List) {
           final List<String>? errors = (response.body['errors'] as List?)?.cast();
@@ -165,5 +130,9 @@ class AuthRepoImpl extends AuthRepo{
           message: 'An Error Occurred Please check you network and retry'));
     }
   }
+
+  sendTokenToEndpoint(String fcmToken) {}
+
+  generateFcmToken() {}
 
 }

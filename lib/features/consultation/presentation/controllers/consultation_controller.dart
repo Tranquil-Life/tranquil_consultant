@@ -19,11 +19,9 @@ class ConsultationController extends GetxController{
   final meetingsStreamController = StreamController<Map<String, dynamic>>.broadcast();
   Stream<Map<String, dynamic>> get meetingsStream => meetingsStreamController.stream;
 
-  var call = 0.obs;
-  Timer? callTimer;
-
   var meetingsCount = 0.obs;
 
+  var now = DateTime.now();
   DateTime? meetingDate;
   var timeSlots = [].obs;
   RxList selectedDays = [].obs;
@@ -85,91 +83,84 @@ class ConsultationController extends GetxController{
 
   Future getAllSlots() async {
     loading.value = true;
-    Timer.periodic(const Duration(seconds: 1), (timer) async{
-      var result = await ConsultationRepoImpl().getSlots();
 
-      callTimer = timer;
-      call.value++;
+    var result = await ConsultationRepoImpl().getSlots();
 
-      if(result.isRight()){
-        loading.value = false;
+    if(result.isRight()){
+      loading.value = false;
 
-        callTimer?.cancel();
-        timer.cancel();
+      result.map((r){
+        apiSlots = r['slots'];
+        unavailableDays(r['days']);
 
-        result.map((r){
-          apiSlots = r['slots'];
-          unavailableDays(r['days']);
-
-          getSlotsInLocal();
-        });
-      }
-      else{
-        loading.value = false;
-        instance.timeSlots.clear();
-        result.leftMap((l){
-          if(call.value>=6){
-            callTimer?.cancel();
-            timer.cancel();
-          }
-        });
-      }
-    });
+        getSlotsInLocal();
+      });
+    }
+    else{
+      loading.value = false;
+      instance.timeSlots.clear();
+    }
   }
 
   Future getMeetings() async{
-    Timer.periodic(const Duration(seconds: 1), (timer) async{
-      var result = await ConsultationRepoImpl().getMeetings();
+    loading.value = true;
 
-      callTimer = timer;
-      call.value++;
+    await Future.delayed(Duration(seconds: 2));
 
-      if(result.isRight()){
-        callTimer?.cancel();
-        timer.cancel();
+    var result = await ConsultationRepoImpl().getMeetings();
 
-        List<Meeting> meetings = [];
+    if(result.isRight()){
+      List<Meeting> meetings = [];
 
-        result.map((r){
+      result.map((r){
+        print("RIGHT: $r");
+
+        if(r != null){
           for (var element in r) {
             Meeting meeting = MeetingModel.fromJson(element);
             meetings.add(meeting);
 
-            if(meeting.endAt.isAfter(DateTimeExtension.now)
-                && (meeting.startAt.isBefore(DateTimeExtension.now)
-                    || meeting.startAt == DateTimeExtension.now))
+            if(meeting.endAt.isAfter(now)
+                && (meeting.startAt.isBefore(now) || meeting.startAt == now))
             {
-              DashboardController.instance.ongoingMeetingCount.value = 1;
+              DashboardController.instance.currentMeetingCount.value = 1;
 
-              DashboardController.instance.ongoingMeetingId.value = meeting.id;
+              DashboardController.instance.currentMeetingId.value = meeting.id;
+              DashboardController.instance.clientId.value = meeting.client.id;
               DashboardController.instance.clientDp.value = meeting.client.avatarUrl;
-              DashboardController.instance.clientDp.value = meeting.client.firstName;
-              DashboardController.instance.ongoingMeetingST.value = meeting.startAt.formatDate;
-              DashboardController.instance.ongoingMeetingET.value = meeting.endAt.formatDate;
+              DashboardController.instance.clientName.value = meeting.client.firstName;
+              DashboardController.instance.currentMeetingST.value = meeting.startAt.formatDate;
+              DashboardController.instance.currentMeetingET.value = meeting.endAt.formatDate;
             }
           }
-        });
+        }
 
-        Map<String, dynamic> values = {
-          "meetings": meetings,
-          "num_of_meetings": meetings.length,
-        };
+      });
 
-        meetingsCount.value = meetings.length;
+      Map<String, dynamic> values = {
+        "meetings": meetings,
+        "num_of_meetings": meetings.length,
+      };
 
-        if (!meetingsStreamController.isClosed) meetingsStreamController.sink.add(values);
+      meetingsCount.value = meetings.length;
 
-        debugPrint(meetings.isNotEmpty ? meetings[0].endAt.toString() : null);
-      }
-      else{
-        result.leftMap((l){
-          if(call.value>=10) {
-            callTimer?.cancel();
-            timer.cancel();
-          }}
-        );
-      }
-    });
+      if (!meetingsStreamController.isClosed) meetingsStreamController.sink.add(values);
+
+      debugPrint(meetings.isNotEmpty ? meetings[0].endAt.toString() : null);
+    }
+    else{
+      result.leftMap((l){
+        CustomSnackBar.showSnackBar(
+            context: Get.context!,
+            title: 'Error',
+            message: l.message!,
+            backgroundColor: ColorPalette.red);
+      });
+    }
+
+    loading.value = true;
+
+    update();
   }
 
   unavailableDays(Map<String, dynamic> daysMap) {
@@ -178,11 +169,5 @@ class ConsultationController extends GetxController{
     }).toList().where((element) => element != null).toList();
   }
 
-
-  @override
-  void onClose() {
-    callTimer?.cancel();
-
-    super.onClose();
-  }
+  void clearData() {}
 }

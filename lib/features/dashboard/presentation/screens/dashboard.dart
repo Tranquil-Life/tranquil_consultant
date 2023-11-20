@@ -8,6 +8,9 @@ import 'package:tl_consultant/features/dashboard/presentation/widgets/nav_item.d
 import 'package:tl_consultant/features/home/presentation/screens/home_tab.dart';
 import 'package:tl_consultant/features/home/presentation/widgets/count_indicator.dart';
 import 'package:tl_consultant/features/journal/presentation/controllers/notes_controller.dart';
+import 'package:tl_consultant/features/journal/presentation/screens/journal_tab.dart';
+import 'package:tl_consultant/features/profile/presentation/screens/profile_tab.dart';
+import 'package:tl_consultant/features/wallet/presentation/screens/wallet_screen.dart';
 
 part 'package:tl_consultant/features/dashboard/presentation/widgets/nav_bar.dart';
 
@@ -52,11 +55,11 @@ class _DashboardState extends State<Dashboard> {
                     IndexedStack(
                       index: dashboardController.currentIndex.value,
                       sizing: StackFit.expand,
-                      children: const [
+                      children: [
                         HomeTab(),
-                        // WalletTab(),
-                        // NotesTab(),
-                        // ProfileScreen()
+                        WalletTab(),
+                        JournalTab(),
+                        ProfileScreen()
                       ],
                     ))
             ),

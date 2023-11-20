@@ -20,9 +20,4 @@ class UserDataStore extends IUserDataStore {
   @override
   set user(Map<String, dynamic> val) => getStore.set(_Keys.user, val);
 
-  // @override
-  // Map<String, dynamic>? get user => getStore.get(_Keys.user);
-  // @override
-  // set user(Map<String, dynamic>? val) => getStore.set(_Keys.user, val!);
-
 }

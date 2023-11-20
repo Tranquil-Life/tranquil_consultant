@@ -9,6 +9,5 @@ abstract class AuthRepo<T, F extends QueryParams> extends ApiService{
   Future<Either<ApiError, dynamic>> register(F params);
   Future<Either<ApiError, T>> signIn(String email, String password);
   Future<Either<ApiError, dynamic>> resetPassword(String email);
-  Future<Either<ApiError, dynamic>> isUserAuthenticated();
   Future<Either<ApiError, dynamic>> signOut();
 }

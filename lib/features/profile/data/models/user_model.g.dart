@@ -2,9 +2,9 @@ part of 'user_model.dart';
 
 UserModel _$UserModelFromJson(Map<String, dynamic> json) => UserModel(
   //email: json['email'] as String ?? '',
-  firstName: json['f_name'] as String ?? '',
-  lastName: json['l_name'] as String ?? '',
-  id: json['id'] as int?,
+  firstName: json['f_name'] ?? '',
+  lastName: json['l_name'] ?? '',
+  id: json['id'],
   authToken: json['auth_token'],
   //phoneNumber: json['phone'] as String,
   // isVerified: json['is_verified'] as bool? ?? false,

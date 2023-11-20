@@ -20,6 +20,8 @@ import 'package:tl_consultant/app/presentation/widgets/custom_icon_button.dart';
 import 'package:tl_consultant/app/presentation/widgets/custom_snackbar.dart';
 import 'package:tl_consultant/app/presentation/widgets/dialogs.dart';
 import 'package:tl_consultant/features/home/presentation/widgets/no_meetings.dart';
+import 'package:tl_consultant/features/profile/data/models/user_model.dart';
+import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 import 'package:tl_consultant/features/profile/domain/entities/user.dart';
 
 part 'package:tl_consultant/features/home/presentation/widgets/title_section.dart';

@@ -9,16 +9,14 @@ class DashboardController extends GetxController{
 
   RxInt currentIndex = 0.obs;
 
-  RxInt ongoingMeetingCount = 0.obs;
+  RxInt currentMeetingCount = 0.obs;
+  var clientId = 0.obs;
   var clientName = "".obs;
   var clientDp = "".obs;
-  var ongoingMeetingET = "".obs;
-  var ongoingMeetingST = "".obs;
-  var ongoingMeetingId = 1.obs;
+  var currentMeetingET = "".obs;
+  var currentMeetingST = "".obs;
+  var currentMeetingId = 0.obs;
 
-  var authToken = "".obs;
-  var firstName = "".obs;
-  var lastName = "".obs;
 
   Future<void> onTap(int index) async{
     currentIndex.value = index;
@@ -26,12 +24,12 @@ class DashboardController extends GetxController{
 
   clearData(){
     currentIndex.value = 0;
-    authToken.value = "";
   }
 
   clearAllData(){
     AuthController.instance.clearData();
     HomeController.instance.clearData();
+    ConsultationController.instance.clearData();
     NotesController.instance.clearData();
     clearData();
   }

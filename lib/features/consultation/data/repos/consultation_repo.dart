@@ -70,15 +70,15 @@ class ConsultationRepoImpl extends ConsultantRepo {
   }
 
   @override
-  Future<Either<ApiError, dynamic>> getMeetings() async{
+  Future<Either<ApiError, dynamic>> getMeetings({int page = 1}) async{
     httpClient.baseUrl = baseUrl;
 
     try{
       Response response = await getReq(
-          ConsultationEndPoints.getMeetings);
+          ConsultationEndPoints.getMeetings(page: page));
 
       if (response.body['error'] == false) {
-        var data = response.body['meetings'];
+        var data = response.body['data']['data'];
 
         print("RESPONSE: $data");
 

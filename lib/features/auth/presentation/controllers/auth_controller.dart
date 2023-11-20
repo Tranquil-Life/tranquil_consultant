@@ -24,8 +24,8 @@ class AuthController extends GetxController{
   UserDataStore userDataStore = UserDataStore();
   UserInfoRepoImpl userInfoRepoImpl = UserInfoRepoImpl();
 
-  TextEditingController emailTEC = TextEditingController(text: "apple@gmail.com");
-  TextEditingController passwordTEC = TextEditingController(text: "password");
+  TextEditingController emailTEC = TextEditingController(text: "ona97@example.org");
+  TextEditingController passwordTEC = TextEditingController(text: "12345678");
 
   TextEditingController cvTEC = TextEditingController();
   TextEditingController identityTEC = TextEditingController();
@@ -46,6 +46,8 @@ class AuthController extends GetxController{
   RxBool uploading = false.obs;
   RxString fileSize = "0 KB".obs;
   String uploadType = "";
+  RxString uploadUrl = "".obs;
+
 
   var call = 0.obs;
   Timer? callTimer;
@@ -58,33 +60,26 @@ class AuthController extends GetxController{
   RxList<String> languagesArr = <String>[].obs;
   RxList<String> specialtiesArr = <String>[].obs;
 
-  Future signUp() async{
-    var result = await AuthRepoImpl()
-        .register(params);
 
-    if(result.isRight()){
-      result.map((r){
+  Future signUp()async{
+    var either = await AuthRepoImpl().register(params);
+    if(either.isRight()) {
+      either.map((r){
         userDataStore.user = r;
-        print(userDataStore.user);
       });
 
       AppData.isSignedIn = true;
       User user = UserModel.fromJson(userDataStore.user);
 
-      DashboardController.instance.authToken.value = user.authToken.toString();
-      DashboardController.instance.firstName.value = user.firstName.toString();
-      DashboardController.instance.lastName.value = user.lastName.toString();
-
-      print(DashboardController.instance.firstName.value);
-
-      emailTEC.clear();
-      passwordTEC.clear();
-
       if(user.authToken!.isNotEmpty){
         Get.offAllNamed(Routes.DASHBOARD);
+
+        emailTEC.clear();
+        passwordTEC.clear();
       }
-    }else{
-      result.leftMap((l)=>
+    }
+    else{
+      either.leftMap((l)=>
           CustomSnackBar.showSnackBar(
               context: Get.context!,
               title: "Error",
@@ -97,29 +92,19 @@ class AuthController extends GetxController{
   Future signIn(String email, String password) async {
     var result = await AuthRepoImpl()
         .signIn(email, password);
-
     if(result.isRight()){
       result.map((r){
-        //User user = UserModel.fromJson(r);
         userDataStore.user = r;
-        //print("USER DATA: ${userDataStore.user}");
       });
 
       AppData.isSignedIn = true;
       User user = UserModel.fromJson(userDataStore.user);
 
-      DashboardController.instance.authToken.value = user.authToken.toString();
-      DashboardController.instance.firstName.value = user.firstName.toString();
-      DashboardController.instance.lastName.value = user.lastName.toString();
-
-      print(DashboardController.instance.firstName.value);
-
-      emailTEC.clear();
-      passwordTEC.clear();
-
-
       if(user.authToken!.isNotEmpty){
         Get.offAllNamed(Routes.DASHBOARD);
+
+        emailTEC.clear();
+        passwordTEC.clear();
       }
 
     }else{
@@ -131,56 +116,7 @@ class AuthController extends GetxController{
               backgroundColor: ColorPalette.red
           ));
     }
-  }
 
-
-
-  Future isUserAuthenticated() async{
-    Timer.periodic(const Duration(seconds: 1), (timer) async{
-      var result = await AuthRepoImpl().isUserAuthenticated();
-
-      callTimer = timer;
-      call.value++;
-
-      if(result.isRight()){
-        callTimer?.cancel();
-        timer.cancel();
-
-        result.map((r){
-          userDataStore.user = r;
-        });
-
-        User user = UserModel.fromJson(userDataStore.user);
-
-        DashboardController.instance.authToken.value = user.authToken.toString();
-        DashboardController.instance.firstName.value = user.firstName.toString();
-        DashboardController.instance.lastName.value = user.lastName.toString();
-
-        print(DashboardController.instance.firstName.value);
-
-        Get.offAllNamed(Routes.DASHBOARD);
-      }
-      else{
-        result.leftMap((l){
-
-          if(call.value>=6){
-            callTimer?.cancel();
-            timer.cancel();
-
-            if(l.message == "User has not been authenticated"){
-              Get.offAllNamed(Routes.ONBOARDING);
-            }
-
-            CustomSnackBar.showSnackBar(
-                context: Get.context!,
-                title: "Error",
-                message: l.message.toString(),
-                backgroundColor: ColorPalette.red
-            );
-          }
-        });
-      }
-    });
   }
 
   Future resetPassword() async{
@@ -198,9 +134,52 @@ class AuthController extends GetxController{
               backgroundColor: ColorPalette.red
           ));
     }
+
   }
 
-  RxString uploadUrl = "".obs;
+  Future<String> generateFcmToken() async{
+    var result = await AuthRepoImpl().generateFcmToken();
+    String token = "";
+    if(result.isRight()){
+      result.map((r)=>token = r);
+
+      return token;
+
+    }else{
+      result.leftMap((l)=>
+          CustomSnackBar.showSnackBar(
+              context: Get.context!,
+              title: "Error",
+              message: l.message.toString(),
+              backgroundColor: ColorPalette.red
+          ));
+
+      return "";
+    }
+  }
+
+  Future updateFcmToken() async{
+    String fcmToken = await generateFcmToken();
+
+    if(fcmToken.isNotEmpty){
+      // Sends the current token to the endpoint
+      await sendTokenToEndpoint(fcmToken);
+    }
+  }
+
+  Future sendTokenToEndpoint(String fcmToken) async{
+    var result = await AuthRepoImpl().sendTokenToEndpoint(fcmToken);
+    if(result.isRight()){
+      result.map((r) => print(r.toString()));
+    }else{
+      result.leftMap((l) => CustomSnackBar.showSnackBar(
+          context: Get.context!,
+          title: "Error",
+          message: l.message.toString(),
+          backgroundColor: ColorPalette.red
+      ));
+    }
+  }
 
   uploadCv({File? file}) async{
     await getFileSize(file!.path, 1).then((value) async{

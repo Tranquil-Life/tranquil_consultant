@@ -14,7 +14,6 @@ class MeetingsState extends State<Meetings> {
   final ValueNotifier<DateTime> _timeNotifier = ValueNotifier(DateTime.now());
 
   getMeetings() async{
-    await Future.delayed(const Duration(seconds: 1));
     consultationController.getMeetings();
   }
 

@@ -82,6 +82,8 @@ class _TitleState extends State<Title> {
   final activityController = ActivityController();
   var themeColor = ColorPalette.green;
   DateTime? meetingDate;
+  User therapist = UserModel.fromJson(userDataStore.user);
+
 
   @override
   Widget build(BuildContext context) {
@@ -144,7 +146,7 @@ class _TitleState extends State<Title> {
 
         Obx(()=>
             Text(
-              DashboardController.instance.firstName.value,
+              therapist.firstName,
               style: TextStyle(
                 color: themeColor,
                 fontSize: 30,
