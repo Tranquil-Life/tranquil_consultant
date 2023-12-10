@@ -9,11 +9,14 @@ import 'package:flutter_sound/flutter_sound.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:tl_consultant/features/chat/presentation/controllers/chat_controller.dart';
 import 'package:uuid/uuid.dart';
 import 'package:path/path.dart' as path;
 
 class RecordingController extends GetxController {
   static RecordingController instance = Get.find();
+  final chatController = Get.put(ChatController());
+
   String? localAudioPath;
   File? audioFile;
   RxBool isPlaying = false.obs;
@@ -41,6 +44,8 @@ class RecordingController extends GetxController {
   String get _mPath => '${uuid.v1().substring(0, 16)}.wav';
 
   var time = "00:00".obs;
+  var autoUpload = false.obs;
+
 
   static String formatDuration(Duration duration) {
     String twoDigits(int n) => n.toString().padLeft(2, '0');
@@ -51,14 +56,31 @@ class RecordingController extends GetxController {
     return "$twoDigitHours$twoDigitMinutes:$twoDigitSeconds";
   }
 
+
   Future record() async {
-    if (!recorderInitialize) return;
-    audioRecorder!.startRecorder(toFile: _mPath, codec: _codec);
-    isRecording.value = true;
-    audioRecorder!.setSubscriptionDuration(const Duration(milliseconds: 500));
-    audioRecorder!.onProgress!
-        .listen((event) => time.value = formatDuration(event.duration));
-    update();
+    try {
+      if (!recorderInitialize) return;
+
+      audioRecorder!.startRecorder(toFile: _mPath, codec: _codec);
+      isRecording.value = true;
+      audioRecorder!.setSubscriptionDuration(const Duration(milliseconds: 500));
+
+      audioRecorder!.onProgress!.listen((event) async {
+        time.value = formatDuration(event.duration);
+        // if (formatDuration(event.duration) == "01:01") {
+        //   setAutoUpload(autoUpload.value);
+        // }
+      });
+
+      update();
+    } catch (e) {
+      print('Error during recording or uploading: $e');
+    }
+
+  }
+
+  void setAutoUpload(bool value) {
+    autoUpload.value = !value;
   }
 
   //Stop recording
@@ -116,7 +138,7 @@ class RecordingController extends GetxController {
 
   startTimer() {
     time.value = '00:00';
-    const oneSec = const Duration(milliseconds: 500);
+    const oneSec = Duration(milliseconds: 500);
     _timer = Timer.periodic(oneSec, (timer) {
       time.value = formatDuration(timer.tick.milliseconds * 500);
       update();

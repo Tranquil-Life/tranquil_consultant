@@ -8,6 +8,7 @@ import 'package:tl_consultant/features/chat/data/models/message_model.dart';
 import 'package:tl_consultant/features/chat/domain/entities/message.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/chat_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/widgets/chat_boxes/receiver/text.dart';
+import 'package:tl_consultant/features/chat/presentation/widgets/chat_boxes/receiver/voice_note.dart';
 import 'package:tl_consultant/features/chat/presentation/widgets/chat_boxes/sender/image.dart';
 import 'package:tl_consultant/features/chat/presentation/widgets/chat_boxes/sender/text.dart';
 import 'package:tl_consultant/features/chat/presentation/widgets/chat_boxes/sender/video.dart';
@@ -109,8 +110,8 @@ class ChatItemState extends State<ChatItem> {
                       // return ReceiverChatImage(widget.message);
                       // case MessageType.video:
                       // return ReceiverChatVideo(widget.message);
-                      // case MessageType.audio:
-                      // return ReceiverChatVoiceNote(widget.message);
+                      case MessageType.audio:
+                        return ReceiverChatVoiceNote(widget.message);                    
                       default:
                         return ReceiverChatText(widget.message);
                     }

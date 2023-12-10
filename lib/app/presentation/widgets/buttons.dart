@@ -24,7 +24,11 @@ class CustomButton extends StatelessWidget{
         ),
       ),
       onPressed: onPressed,
-      child: child ?? Text(text!, style: const TextStyle(fontSize: AppFonts.defaultSize)),
+      child: child ?? Text(text!, 
+      style: const TextStyle(
+        fontSize: AppFonts.defaultSize, 
+        color: ColorPalette.white
+      )),
     );
   }
 }

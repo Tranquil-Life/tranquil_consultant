@@ -57,7 +57,7 @@ class _NavBarState extends State<NavBar> {
                         onTap: () async => await dashboardController.onTap(3),
                       ),
                     ],
-                  ),)
+                  ))
           ),
         ),
         Transform.translate(
@@ -66,14 +66,7 @@ class _NavBarState extends State<NavBar> {
             top: false,
             child: GestureDetector(
               onTap: () async{
-                if(DashboardController.instance.currentMeetingCount.value
-                    == 1 && chatController.chatId != null){
-                  Get.toNamed(Routes.CHAT_SCREEN);
-                }else{
-                  await chatController.getChatInfo();
-
-                  Get.toNamed(Routes.CHAT_SCREEN);
-                }
+                await chatController.getChatInfo();
               },
               behavior: HitTestBehavior.opaque,
               child: Obx(()=>

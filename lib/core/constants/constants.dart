@@ -30,4 +30,6 @@ final fluttermojiFunctions = FluttermojiFunctions();
 const consultant = "consultant";
 const client = "client";
 
-const MEETING_COLLECTION = "meetings";
+//firebase vars
+const chatsCollection = "chats";
+const messagesCollection = "chat_messages";

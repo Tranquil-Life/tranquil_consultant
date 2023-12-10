@@ -10,12 +10,6 @@ import 'package:tl_consultant/features/chat/domain/repos/chat_repo.dart';
 
 class ChatRepoImpl extends ChatRepo{
   @override
-  Future<Either<ApiError, dynamic>> uploadFile() {
-    // TODO: implement attach
-    throw UnimplementedError();
-  }
-
-  @override
   Future<Either<ApiError, dynamic>> deleteChat() {
     // TODO: implement deleteChat
     throw UnimplementedError();
@@ -46,19 +40,53 @@ class ChatRepoImpl extends ChatRepo{
   }
 
   @override
-  Future<Either<ApiError, dynamic>> viewParticipants() {
-    // TODO: implement viewParticipants
+  Future<Either<ApiError, dynamic>> rateClient() {
+    // TODO: implement rateClient
     throw UnimplementedError();
   }
 
   @override
-  Future<Either<ApiError, dynamic>> getChatMessages({required int chatId})
+  Future<Either<ApiError, dynamic>> getRecentMessages({required int chatId})
+  async{
+    try{
+      httpClient.baseUrl = baseUrl;
+
+      // debugPrint("recent messages:CHAT_ID: ${chatId.toString()}");
+
+      Response response = await getReq(
+          ChatEndPoints.getRecentMessages(chatId: chatId));
+
+      if(response.body['error'] == false){
+        var data = response.body['data'];
+
+        return Right(data);
+      }
+      else{
+        return Left(
+          ApiError(message: response.body['message'].toString()),
+        );
+      }
+
+    }on SocketException catch (e) {
+      return Left(ApiError(
+          message: e.toString()));
+    } catch (e, stack) {
+      debugPrintStack(stackTrace: stack);
+      return Left(ApiError(
+        message: e.toString(),
+      ));
+    }
+  }
+
+  @override
+  Future<Either<ApiError, dynamic>> getOlderMessages({required int chatId, required int lastMessageId})
   async{
     try{
       httpClient.baseUrl = baseUrl;
 
       Response response = await getReq(
-          ChatEndPoints.getChatMessages(chatId: chatId));
+          ChatEndPoints.getOlderMessages(chatId: chatId, lastMessageId: lastMessageId));
+
 
       if(response.body['error'] == false){
         var data = response.body['data'];
@@ -98,8 +126,6 @@ class ChatRepoImpl extends ChatRepo{
       "parent_id": parentId,
     };
 
-    print("DATA: $data");
-
     try{
       httpClient.baseUrl = baseUrl;
 
@@ -108,8 +134,10 @@ class ChatRepoImpl extends ChatRepo{
           body: data
       );
 
+      await Future.delayed(const Duration(seconds: 1));
+
       if(response.body['error'] == false){
-        var data = response.body['chat'];
+        var data = response.body['data'];
 
         return Right(data);
       }
@@ -169,9 +197,4 @@ class ChatRepoImpl extends ChatRepo{
     }
   }
 
-  @override
-  Future<Either<ApiError, dynamic>> rateClient() {
-    // TODO: implement rateClient
-    throw UnimplementedError();
-  }
 }

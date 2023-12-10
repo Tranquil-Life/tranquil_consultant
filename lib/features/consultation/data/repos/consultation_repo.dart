@@ -80,8 +80,6 @@ class ConsultationRepoImpl extends ConsultantRepo {
       if (response.body['error'] == false) {
         var data = response.body['data']['data'];
 
-        print("RESPONSE: $data");
-
         return Right(data);
       } else {
 

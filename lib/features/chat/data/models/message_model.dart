@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:tl_consultant/features/chat/domain/entities/message.dart';
 
 part 'message_model.g.dart';
@@ -18,6 +19,12 @@ class MessageModel extends Message{
     super.updatedAt
   });
 
-  factory MessageModel.fromJson(Map<String, dynamic>  json) => _$ReplyMessageModelFromJson(json);
+ // Static method for JSON data
+  static MessageModel fromJson(Map<String, dynamic> json) =>
+      _$MessageModelFromJson(json);
+
+  // Static method for Firestore document data
+  static MessageModel fromDoc(Map<String, dynamic> doc) =>
+      _$MessageModelFromDoc(doc);
 }
 

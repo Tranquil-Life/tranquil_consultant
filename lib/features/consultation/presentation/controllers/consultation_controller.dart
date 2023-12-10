@@ -102,9 +102,9 @@ class ConsultationController extends GetxController{
   }
 
   Future getMeetings() async{
-    loading.value = true;
+     loading.value = true;
 
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1));
 
     var result = await ConsultationRepoImpl().getMeetings();
 
@@ -112,30 +112,21 @@ class ConsultationController extends GetxController{
       List<Meeting> meetings = [];
 
       result.map((r){
-        print("RIGHT: $r");
+        for (var element in r) {
+          Meeting meeting = MeetingModel.fromJson(element);
+          meetings.add(meeting);
 
-        if(r != null){
-          for (var element in r) {
-            Meeting meeting = MeetingModel.fromJson(element);
-            meetings.add(meeting);
+          if(meeting.endAt.isAfter(now)
+              && (meeting.startAt.isBefore(now) || meeting.startAt == now))
+          {
+            DashboardController.instance.currentMeetingCount.value = 1;
 
-
-
-            if(meeting.endAt.isAfter(now)
-                && (meeting.startAt.isBefore(now) || meeting.startAt == now))
-            {
-              DashboardController.instance.currentMeetingCount.value = 1;
-
-              DashboardController.instance.currentMeetingId.value = meeting.id;
-              DashboardController.instance.clientId.value = meeting.client.id;
-              DashboardController.instance.clientDp.value = meeting.client.avatarUrl;
-              DashboardController.instance.clientName.value = meeting.client.displayName;
-              DashboardController.instance.currentMeetingST.value = meeting.startAt.formatDate;
-              DashboardController.instance.currentMeetingET.value = meeting.endAt.formatDate;
-
-              // print("CLIENT: ${DashboardController.instance.clientName.value}");
-            }
-
+            DashboardController.instance.currentMeetingId.value = meeting.id;
+            DashboardController.instance.clientId.value = meeting.client.id;
+            DashboardController.instance.clientDp.value = meeting.client.avatarUrl;
+            DashboardController.instance.clientName.value = meeting.client.displayName;
+            DashboardController.instance.currentMeetingST.value = meeting.startAt.formatDate;
+            DashboardController.instance.currentMeetingET.value = meeting.endAt.formatDate;
           }
         }
       });
@@ -148,7 +139,6 @@ class ConsultationController extends GetxController{
       meetingsCount.value = meetings.length;
 
       if (!meetingsStreamController.isClosed) meetingsStreamController.sink.add(values);
-      debugPrint(meetings.isNotEmpty ? meetings[0].endAt.toString() : null);
     }
     else{
       result.leftMap((l){

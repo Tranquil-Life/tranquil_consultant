@@ -12,7 +12,7 @@ class SenderChatVoiceNote extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SenderChatBoxBase(
-      time: message.timeSent,
+      time: message.timeSent ?? 'Sending',
       message: message,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

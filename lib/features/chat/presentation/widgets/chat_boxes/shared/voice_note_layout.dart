@@ -1,10 +1,14 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
+import 'package:audioplayers/audioplayers.dart';
+import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/core/utils/extensions/chat_message_extension.dart';
 import 'package:dotted_line/dotted_line.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
+import 'package:tl_consultant/core/utils/services/formatters.dart';
 import 'package:tl_consultant/features/chat/data/repos/audio_player.dart';
 import 'package:tl_consultant/features/chat/domain/entities/message.dart';
 
@@ -19,40 +23,65 @@ class VoiceNoteLayout extends StatefulWidget {
 
 class _VoiceNoteLayoutState extends State<VoiceNoteLayout>
     with SingleTickerProviderStateMixin {
-  static final audioWidgetSize = Size(chatBoxMaxWidth! - 82, 48);
-
-  // final audioPlayer = AudioWavePlayer();
+  final audioPlayer = AudioPlayer();
 
   late final AnimationController playAnimController;
   StreamSubscription? _playStateStreamSub;
 
+  final _durTextStream = StreamController<String>.broadcast();
+
+  Stream<String> get onDurationText => _durTextStream.stream;
+
   bool loadingAudio = true;
 
-  // Future _preparePlayer() async {
-  //   late final String path;
-  //   if (widget.message.isSent) {
-  //     final file =
-  //     await DefaultCacheManager().getSingleFile(widget.message.data);
-  //     path = file.path;
-  //   } else {
-  //     final file = File(widget.message.data);
-  //     await DefaultCacheManager().putFile(
-  //       path = file.path,
-  //       await file.readAsBytes(),
-  //       key: file.path,
-  //       maxAge: const Duration(hours: 5),
-  //     );
-  //   }
-  //   await audioPlayer.init(path);
-  //   setState(() => loadingAudio = false);
-  //   _playStateStreamSub = audioPlayer.onStateChanged.listen((event) {
-  //     if (event == PlayerState.paused) {
-  //       playAnimController.reverse();
-  //     } else if (event == PlayerState.playing) {
-  //       playAnimController.forward();
-  //     }
-  //   });
-  // }
+  Duration _position = const Duration();
+  Duration totalDuration = const Duration(seconds: 0);
+
+
+  void getAudioDuration(String audioUrl) async{
+    // Fetch the audio duration from the URL without playing it
+    audioPlayer.setSourceUrl(audioUrl);
+    audioPlayer.onDurationChanged.listen((Duration duration) {
+      totalDuration = duration;
+
+      String durationString =
+          TimeFormatter.toTimerString(duration.inMilliseconds);
+      _durTextStream.add(durationString);
+    });
+
+    await preparePlayer();
+  }
+
+  getAudioPosition(String audioUrl) async{
+    audioPlayer.setSourceUrl(audioUrl);
+
+    audioPlayer.onPositionChanged.listen((event) {
+      setState(() {
+        _position = event;
+      });
+    });
+  }
+
+  Future preparePlayer() async {
+    setState(() => loadingAudio = false);
+    _playStateStreamSub = audioPlayer.onPlayerStateChanged.listen((event) {
+      if (event == PlayerState.paused) {
+        playAnimController.reverse();
+      } else if (event == PlayerState.playing) {
+        playAnimController.forward();
+      }else if(event == PlayerState.completed){
+        playAnimController.reverse();
+      }
+    });
+  }
+
+  Future playAudio() async {
+    await audioPlayer.play(UrlSource(widget.message.message!));
+  }
+
+  Future pauseAudio() async {
+    await audioPlayer.pause();
+  }
 
   @override
   void initState() {
@@ -61,19 +90,22 @@ class _VoiceNoteLayoutState extends State<VoiceNoteLayout>
       vsync: this,
       duration: kThemeAnimationDuration,
     );
-    //_preparePlayer();
+
+    getAudioPosition(widget.message.message!);
   }
 
   @override
   void dispose() {
-    // audioPlayer.dispose();
     playAnimController.dispose();
+    audioPlayer.dispose();
     _playStateStreamSub?.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    getAudioDuration(widget.message.message!);
+
     return Padding(
       padding: const EdgeInsets.all(1),
       child: Row(
@@ -83,7 +115,7 @@ class _VoiceNoteLayoutState extends State<VoiceNoteLayout>
               builder: (_) {
                 if (loadingAudio) {
                   return SizedBox(
-                    height: audioWidgetSize.height,
+                    height: 48,
                     child: Row(
                       children: [
                         const SizedBox(width: 4),
@@ -98,7 +130,7 @@ class _VoiceNoteLayoutState extends State<VoiceNoteLayout>
                         ),
                         const SizedBox(width: 12),
                         DottedLine(
-                          lineLength: audioWidgetSize.width - 6,
+                          lineLength: 82,
                           dashColor: widget.message.fromYou
                               ? Colors.white
                               : Colors.black,
@@ -111,11 +143,11 @@ class _VoiceNoteLayoutState extends State<VoiceNoteLayout>
                   children: [
                     GestureDetector(
                       onTap: () {
-                        // if (playAnimController.isDismissed) {
-                        //   audioPlayer.play();
-                        // } else {
-                        //   audioPlayer.pause();
-                        // }
+                        if (playAnimController.isDismissed) {
+                          playAudio();
+                        } else {
+                          pauseAudio();
+                        }
                       },
                       child: AnimatedIcon(
                         size: 28,
@@ -126,64 +158,54 @@ class _VoiceNoteLayoutState extends State<VoiceNoteLayout>
                         progress: playAnimController,
                       ),
                     ),
-                    // Expanded(
-                    //   child: Stack(
-                    //     alignment: Alignment.center,
-                    //     children: [
-                    //       AudioFileWaveforms(
-                    //         density: 0.4,
-                    //         size: audioWidgetSize,
-                    //         enableSeekGesture: false,
-                    //         playerController: audioPlayer.controller,
-                    //         playerWaveStyle: PlayerWaveStyle(
-                    //           waveThickness: 1.4,
-                    //           liveWaveColor: widget.message.fromYou
-                    //               ? Colors.white
-                    //               : Colors.black,
-                    //           fixedWaveColor: widget.message.fromYou
-                    //               ? Colors.white38
-                    //               : Colors.black38,
-                    //         ),
-                    //       ),
-                    //       if (androidVersion == null || androidVersion! > 8.1)
-                    //         Positioned.fill(
-                    //           child: StreamBuilder<double>(
-                    //             initialData: 0,
-                    //             stream: audioPlayer.onDurationPercent,
-                    //             builder: (context, snapshot) {
-                    //               return _Slider(
-                    //                 value: snapshot.data!,
-                    //                 fromYou: widget.message.fromYou,
-                    //                 onValueChanged: (val) async {
-                    //                   await audioPlayer.seekToPercent(val);
-                    //                   audioPlayer.play();
-                    //                 },
-                    //               );
-                    //             },
-                    //           ),
-                    //         ),
-                    //     ],
-                    //   ),
-                    // ),
+                    Expanded(
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Padding( 
+                            padding: const EdgeInsets.symmetric(horizontal: 8), 
+                            child: ProgressBar( 
+                              progress: _position, 
+                              total: totalDuration, 
+                              buffered: _position, 
+                              timeLabelPadding: 0.0, 
+                              timeLabelTextStyle: const TextStyle( 
+                                  fontSize: 0, color: Colors.transparent), 
+                              progressBarColor: ColorPalette.yellow, 
+                              baseBarColor: Colors.grey[200], 
+                              bufferedBarColor: Colors.grey[350], 
+                              thumbColor: Colors.transparent, 
+                              onSeek: !loadingAudio 
+                                  ? (duration) async { 
+                                      await audioPlayer.seek(duration); 
+                                    } 
+                                  : null, 
+                            ), 
+                          )
+                        ],
+                      ),
+                     ),
                   ],
                 );
               },
             ),
           ),
+
+          //total duration
           const SizedBox(width: 8),
-          // StreamBuilder<String>(
-          //   initialData: '---:---',
-          //   stream: audioPlayer.onDurationText,
-          //   builder: (context, snapshot) {
-          //     return Text(
-          //       snapshot.data!,
-          //       style: TextStyle(
-          //         fontSize: 12,
-          //         color: widget.message.fromYou ? Colors.white : Colors.black,
-          //       ),
-          //     );
-          //   },
-          // ),
+          StreamBuilder<String>(
+            initialData: '---:---',
+            stream: onDurationText,
+            builder: (context, snapshot) {
+              return Text(
+                snapshot.data!,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: widget.message.fromYou ? Colors.white : Colors.black,
+                ),
+              );
+            },
+          ),
           const SizedBox(width: 4),
         ],
       ),
@@ -191,53 +213,53 @@ class _VoiceNoteLayoutState extends State<VoiceNoteLayout>
   }
 }
 
-class _Slider extends StatefulWidget {
-  const _Slider({
-    Key? key,
-    required this.onValueChanged,
-    required this.fromYou,
-    this.value = 0,
-  }) : super(key: key);
+// class _Slider extends StatefulWidget {
+//   const _Slider({
+//     Key? key,
+//     required this.onValueChanged,
+//     required this.fromYou,
+//     this.value = 0,
+//   }) : super(key: key);
 
-  final double value;
-  final bool fromYou;
-  final Function(double value) onValueChanged;
+//   final double value;
+//   final bool fromYou;
+//   final Function(double value) onValueChanged;
 
-  @override
-  State<_Slider> createState() => _SliderState();
-}
+//   @override
+//   State<_Slider> createState() => _SliderState();
+// }
 
-class _SliderState extends State<_Slider> {
-  late double value;
+// class _SliderState extends State<_Slider> {
+//   late double value;
 
-  @override
-  void initState() {
-    value = widget.value;
-    super.initState();
-  }
+//   @override
+//   void initState() {
+//     value = widget.value;
+//     super.initState();
+//   }
 
-  @override
-  void didUpdateWidget(covariant _Slider oldWidget) {
-    setState(() => value = widget.value);
-    super.didUpdateWidget(oldWidget);
-  }
+//   @override
+//   void didUpdateWidget(covariant _Slider oldWidget) {
+//     setState(() => value = widget.value);
+//     super.didUpdateWidget(oldWidget);
+//   }
 
-  @override
-  Widget build(BuildContext context) {
-    return SliderTheme(
-      data: SliderTheme.of(context).copyWith(
-        trackHeight: 0,
-        overlayShape: SliderComponentShape.noOverlay,
-        thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 5),
-        thumbColor: widget.fromYou ? Colors.white : Colors.black,
-      ),
-      child: Slider(
-        value: value,
-        onChanged: (val) {
-          setState(() => value = val);
-          widget.onValueChanged(val);
-        },
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return SliderTheme(
+//       data: SliderTheme.of(context).copyWith(
+//         trackHeight: 0,
+//         overlayShape: SliderComponentShape.noOverlay,
+//         thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 5),
+//         thumbColor: widget.fromYou ? Colors.white : Colors.black,
+//       ),
+//       child: Slider(
+//         value: value,
+//         onChanged: (val) {
+//           setState(() => value = val);
+//           widget.onValueChanged(val);
+//         },
+//       ),
+//     );
+//   }
+// }

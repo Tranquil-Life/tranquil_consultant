@@ -38,13 +38,13 @@ class _ViewParticipantsDialogState extends State<ViewParticipantsDialog> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: DashboardController.instance.participants.length,
-                  itemBuilder: (context, index)=>
-                      ParticipantTile(
-                        participant: DashboardController.instance.participants[index],
-                      ))
+              // ListView.builder(
+              //     shrinkWrap: true,
+              //     itemCount: DashboardController.instance.participants.length,
+              //     itemBuilder: (context, index)=>
+              //         ParticipantTile(
+              //           participant: DashboardController.instance.participants[index],
+              //         ))
             ],
           ),
         ),

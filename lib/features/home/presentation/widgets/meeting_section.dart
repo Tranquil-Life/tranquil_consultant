@@ -21,8 +21,6 @@ class MeetingsState extends State<Meetings> {
   void initState() {
     getMeetings();
 
-    LaravelEcho.init(token: userDataStore.user['auth_token']);
-
     super.initState();
   }
 

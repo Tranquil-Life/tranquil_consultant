@@ -2,27 +2,29 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pusher_client/pusher_client.dart';
-import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'package:tl_consultant/app/presentation/routes/app_pages.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/widgets/custom_snackbar.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/utils/extensions/chat_message_extension.dart';
+import 'package:tl_consultant/core/utils/extensions/date_time_extension.dart';
 import 'package:tl_consultant/core/utils/functions.dart';
-import 'package:tl_consultant/core/utils/laravel_echo/laravel_echo.dart';
 import 'package:tl_consultant/features/chat/data/models/message_model.dart';
-import 'package:tl_consultant/features/chat/data/repos/audio_recorder.dart';
 import 'package:tl_consultant/features/chat/data/repos/chat_repo.dart';
 import 'package:tl_consultant/features/chat/domain/entities/message.dart';
 import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
+import 'package:tl_consultant/features/profile/data/models/user_model.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 import 'package:tl_consultant/main.dart';
 
 
 class ChatController extends GetxController{
   static ChatController instance = Get.find();
+  
   ChatRepoImpl repo = ChatRepoImpl();
 
   TextEditingController textController = TextEditingController();
@@ -35,42 +37,135 @@ class ChatController extends GetxController{
   RxInt? chatId;
   var chatChannel = "".obs;
   Rx<Message> replyMessage = Message().obs;
+  // Used to display loading indicators when _firstLoad function is running
+  var lastMessageId = 0.obs;
+  var isFirstLoadRunning = false.obs;
+  // Used to display loading indicators when _loadMore function is running
+  var isLoadMoreRunning = false.obs;
+  RxBool allPagesLoaded = false.obs; // Flag to check if all pages are loaded
 
-  getMessages() async{
+  List<QueryDocumentSnapshot> messagesDocs = <QueryDocumentSnapshot>[];
 
-  }
+  //listen for changes on the firestore channel
+  listenChannel(){
+    //messagesDocs.clear();
 
-  void listenChannel(){
-    LaravelEcho.instance.channel(chatChannel.value)
-        .listen('.message.sent',
-            (e){
-          if(e is PusherEvent){
-            if(e.data !=null){
-              print("PUSHER DATA: ${jsonDecode(e.data!)}");
+    firebaseFireStore
+    .collection(chatsCollection)
+    .doc(chatChannel.value)
+    .collection(messagesCollection)
+    .orderBy('created_at', descending: true)  // Assuming you have a timestamp field
+    .limit(1)
+    .snapshots()
+    .listen((messagesSnapshot) { 
+      // Handle changes in the subcollection
+      if (messagesSnapshot.docs.isNotEmpty) {
+        Message message = MessageModel.fromDoc(
+          messagesSnapshot.docs[0].data());
 
-              Map map = jsonDecode(e.data!);
+        // Check if the message is not already in the list
+        if (!messages.any((existingMessage) => existingMessage.messageId == message.messageId)) {
+          debugPrint('Latest Subcollection document data: ${message.message}');
 
-              messages.value ??= <Message>[];
-              // messages.clear();
-              messages.add(MessageModel.fromJson(map['chatMessages']));
-
-
-              //update();
-            }
+          if (message.senderId != UserModel.fromJson(userDataStore.user).id) {
+            messages.insert(0, message);
           }
-        }).error((err){
-      print(err);
+        }
+
+        print("INSERTED: $messages");
+        // Iterate through the documents in the subcollection
+        // for (QueryDocumentSnapshot docSnapshot in messagesSnapshot.docs) {
+        //   messagesDocs.add(docSnapshot);
+        // }
+
+        // Message message = MessageModel.fromDoc(messagesDocs[messagesDocs.length-1].data() as Map<String, dynamic>);
+
+        // if(!(messages.contains(message))){
+        //   debugPrint('Subcollection document data: ${message.message}');
+          
+        //   if(message.senderId! != UserModel.fromJson(userDataStore.user).id){
+        //     messages.insert(0, message);
+        //   }
+
+        // }
+
+      } else {
+        debugPrint('No documents in the subcollection.');
+      }
     });
   }
 
-  void leaveChatChannel(){
-    try{
-      LaravelEcho.instance.leave(chatChannel.value);
-    }catch(err){
-      print(err);
-    }
+  leaveChatChannel(){
+    //..
   }
 
+  Future loadRecentMessages() async {
+    isFirstLoadRunning.value = true;
+
+    messages.clear();
+
+    var result = await repo.getRecentMessages(chatId: chatId!.value);
+
+    if (result.isRight()) {
+      result.map((r) {
+        for (int i = 0; i < (r as List).length; i++) {
+          Message message = MessageModel.fromJson(r[i]);
+          if (!messages.any((existingMessage) => existingMessage.messageId == message.messageId)) {
+            messages.add(message);
+          }
+        }
+
+        if (messages.isNotEmpty) {
+          lastMessageId.value = messages[messages.length-1].messageId!;
+        }else{
+          isFirstLoadRunning.value = false;
+        }
+
+      });
+    } else {
+      result.leftMap((l) =>
+          CustomSnackBar.showSnackBar(
+              context: Get.context!,
+              title: "Error",
+              message: l.message!,
+              backgroundColor: ColorPalette.red));
+    }
+
+    update();
+    isFirstLoadRunning.value = false;
+  }
+
+  Future loadOlderMessages() async {
+    isLoadMoreRunning.value = true;
+
+    List<Message> newMessages = <Message>[];
+
+    var result = await repo.getOlderMessages(chatId: chatId!.value, lastMessageId: lastMessageId.value);
+
+    if (result.isRight()) {
+      result.map((r) {
+        for (int i = 0; i < (r as List).length; i++) {
+          newMessages.add(MessageModel.fromJson(r[i]));
+        }
+
+        if (newMessages.isNotEmpty) {
+          lastMessageId.value = newMessages[newMessages.length-1].messageId!;
+
+          messages.addAll(newMessages);
+        }else{
+          isLoadMoreRunning.value = false;
+        }
+
+      });
+    } else {
+      // Handle error
+    }
+
+    update();
+    isLoadMoreRunning.value = false;
+  }
+
+  //Get specific chat history
   Future getChatInfo() async{
     var result = await repo.getChatInfo(
         consultantId: userDataStore.user['id'],
@@ -86,8 +181,51 @@ class ChatController extends GetxController{
       chatId!.value = chatInfo['id'];
       chatChannel.value = chatInfo['channel'];
 
-      print("CHAT_ID: $chatId\nCHAT_CHANNEL: ${chatChannel.value}");
+      await addChatToFirestore();  
 
+    }else{
+      result.leftMap((l) => print("LEFT: Error: ${l.message!} "));
+    }
+
+  }
+
+  Future addChatToFirestore() async{
+    String collection = chatsCollection;
+
+    String documentId = chatChannel.value;
+
+    DocumentReference documentReference = 
+    firebaseFireStore.collection(collection).doc(documentId);
+
+      // Get the document snapshot
+    DocumentSnapshot snapshot = await documentReference.get(); 
+
+    // Replace these with the fields and values you want to set
+    Map<String, dynamic> fields = {
+      'id': chatId!.value,
+      'client_id': DashboardController.instance.clientId.value,
+      'consultant_id': UserModel.fromJson(userDataStore.user).id,
+      'channel': chatChannel.value,
+      'created_at': DateTimeExtension.now,
+      'updated_at': DateTimeExtension.now
+    };
+
+    try {
+      if(!snapshot.exists){
+        // Add document to the top-level collection: chats
+        await FirebaseFirestore.instance.collection(collection).doc(documentId).set(fields);
+
+        debugPrint('Data added successfully!');
+
+        Get.toNamed(Routes.CHAT_SCREEN);
+
+      }else{
+        Get.toNamed(Routes.CHAT_SCREEN);
+
+      }
+
+    } catch (e) {
+      debugPrint('Error adding data: $e');
     }
 
   }
@@ -107,62 +245,16 @@ class ChatController extends GetxController{
     }
   }
 
-  Future handleNewMsg({Message? quotedMessage}) async {
-    final message = textController.text.trim();
-    if (message.isEmpty) return;
-    var result = await repo.sendChat(
-        chatId: chatId?.value,
-        message: message,
-        messageType: derivedMsgType,
-        parentId: quotedMessage!.messageId ?? null,
-        caption: strMsgType(messageType.value)!="text" ? message : null
-    );
-
-    if(result.isRight()){
-      textController.clear();
-
-      print(messages);
-
-
-      CustomSnackBar.showSnackBar(
-          context: Get.context!,
-          title: "Success",
-          message: "Success",
-          backgroundColor: ColorPalette.green);
-
-      //var messageMap = {};
-      // result.map((r) => messageMap = r);
-      //
-      // print("RESPONSE: $messageMap");
-
-      update();
-    }
-    else{
-      result.leftMap((l){
-        print("FAILED: ERROR: ${l.message}");
-        CustomSnackBar.showSnackBar(
-            context: Get.context!,
-            title: "Error",
-            message: l.message!,
-            backgroundColor: ColorPalette.red);
-      });
-    }
-    isExpanded.value = false;
-
-    textController.clear();
-  }
-
+  
   setVoiceFile(File file) {
     audioFile = file;
     update();
   }
 
-  Future handleRecordingUpload(File? file, bool upload) async {
-    if (file == null || !upload) return;
-
-    // context.read<ChatBloc>().add(AddMessage(
-    //       Message(isSent: false, type: MessageType.audio, data: file.path,),
-    //     ));
+  @override
+  void onInit() {
+    loadRecentMessages();
+    super.onInit();
   }
 
   @override

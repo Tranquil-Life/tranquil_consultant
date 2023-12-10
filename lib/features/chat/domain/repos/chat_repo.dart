@@ -11,20 +11,19 @@ abstract class ChatRepo<T, F extends QueryParams> extends ApiService{
     String? caption,
     int? parentId
   });
-
-  Future<Either<ApiError, T>> getChatMessages({
-    required int chatId
+  Future<Either<ApiError, T>> getRecentMessages({
+    required int chatId,
   });
-
+  Future<Either<ApiError, T>> getOlderMessages({
+    required int chatId,
+    required int lastMessageId,
+  });
   Future<Either<ApiError, T>> getChatInfo({
     required int consultantId,
     required int clientId
   });
-
   Future<Either<ApiError, T>> react();
   Future<Either<ApiError, T>> deleteChat();
-  Future<Either<ApiError, T>> uploadFile();
-  Future<Either<ApiError, T>> viewParticipants();
   Future<Either<ApiError, T>> onEnding();
   Future<Either<ApiError, T>> rateClient();
 }

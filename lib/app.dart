@@ -5,7 +5,7 @@ import 'package:tl_consultant/app/presentation/routes/app_pages.dart';
 import 'package:tl_consultant/app/presentation/routes/bindings/controllers_binding.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/theme/fonts.dart';
-import 'package:tl_consultant/features/onboarding/presentation/screens/splash.dart';
+import 'package:tl_consultant/core/utils/functions.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -13,6 +13,7 @@ class App extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    setStatusBarBrightness(true);
     return GetMaterialApp(
       title: AppConfig.appName,
       debugShowCheckedModeBanner: true,

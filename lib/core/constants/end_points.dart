@@ -1,5 +1,5 @@
 // const baseUrl = 'https://tranquil-api.herokuapp.com/api/';
-const host = 'https://2e0a-102-88-62-59.ngrok-free.app';
+const host = 'https://2e73-102-88-63-195.ngrok-free.app';
 const baseUrl = '$host/api/';
 
 
@@ -8,6 +8,11 @@ abstract class AuthEndPoints {
   static const register = 'consultant/register';
   static const passwordReset = 'consultant/requestPasswordReset';
   static const logOut = 'consultant/logOut';
+}
+
+abstract class ProfileEndPoints {
+  static const get = 'client/getProfile';
+  static const edit = 'client/edit';
 }
 
 abstract class ConsultationEndPoints{
@@ -40,6 +45,8 @@ abstract class ChatEndPoints{
   static const sendChat = 'consultant/send-message';
   static const generateToken = 'consultant/generateToken';
   static const getChatInfo = 'consultant/create-chat';
-
-  static getChatMessages({required int chatId}) => 'consultant/get-messages/$chatId';
+  static getRecentMessages({required int chatId}) => 'client/get-recent-messages/$chatId';
+  static getOlderMessages({
+    required int chatId,
+    required int lastMessageId}) => 'client/get-older-messages/$chatId/$lastMessageId';
 }

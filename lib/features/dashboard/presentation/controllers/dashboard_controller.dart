@@ -8,18 +8,16 @@ import 'package:tl_consultant/features/journal/presentation/controllers/notes_co
 class DashboardController extends GetxController{
   static DashboardController instance = Get.find();
 
-  RxInt currentIndex = 0.obs;
+  var currentIndex = 0.obs;
 
-  RxInt currentMeetingCount = 0.obs;
+  var currentMeetingCount = 0.obs;
   var clientId = 0.obs;
   var clientName = "".obs;
   var clientDp = "".obs;
   var currentMeetingET = "".obs;
   var currentMeetingST = "".obs;
   var currentMeetingId = 0.obs;
-
-
-  var participants = <Participant>[].obs;
+  var authToken = "".obs;
 
   Future<void> onTap(int index) async{
     currentIndex.value = index;

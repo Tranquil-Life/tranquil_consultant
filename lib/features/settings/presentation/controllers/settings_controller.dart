@@ -12,16 +12,10 @@ class SettingsController extends GetxController{
   UserDataStore userDataStore = UserDataStore();
 
   signOut() async{
-    var result = await authRepoImpl.signOut();
-    if(result.isRight()){
-      await getStore.clearAllData();
-      //disconnectLaravel();
+    await getStore.clearAllData();
 
-      Get.offAllNamed(Routes.SIGN_IN);
-    }
-  }
+    Get.offAllNamed(Routes.SIGN_IN);
 
-  disconnectLaravel(){
-    //LaravelEcho.instance.disconnect();
+    authRepoImpl.signOut();
   }
 }
