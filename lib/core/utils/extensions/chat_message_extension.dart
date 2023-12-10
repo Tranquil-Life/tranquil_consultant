@@ -28,7 +28,7 @@ extension ChatMessageExtension on Message {
     }
   }
 
-  String get timeSent => createdAt!.formattedTime;
+  String get timeSent => createdAt!.formatted;
 
   String? get data => message;
 }
