@@ -8,8 +8,8 @@ class ClientModel extends ClientUser {
   ClientModel({
     required super.id,
     required super.avatarUrl,
+    required super.usesBitmoji,
     required super.displayName
-
   });
 
   factory ClientModel.fromJson(Map<String, dynamic> json) => _$ClientModelFromJson(json);

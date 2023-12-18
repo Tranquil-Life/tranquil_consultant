@@ -1,5 +1,5 @@
 // const baseUrl = 'https://tranquil-api.herokuapp.com/api/';
-const host = 'https://2e73-102-88-63-195.ngrok-free.app';
+const host = 'https://881f-102-88-83-110.ngrok-free.app';
 const baseUrl = '$host/api/';
 
 

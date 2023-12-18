@@ -7,6 +7,7 @@ class ClientUser extends User {
   ClientUser({
     required this.id,
     super.avatarUrl = '',
+    super.usesBitmoji,
     this.displayName = '',
   });
 

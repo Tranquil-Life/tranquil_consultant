@@ -98,7 +98,7 @@ class MeetingsState extends State<Meetings> {
                           case ConnectionState.active:
                           case ConnectionState.done:
                             if (!snapshot.hasData || (snapshot.data!["meetings"] is List && (snapshot.data!["meetings"] as List).isEmpty)) {
-                              return NoMeetingsWidget();
+                              return const NoMeetingsWidget();
                             }
                             else {
                               List<Meeting> meetings = snapshot.data!['meetings'];
