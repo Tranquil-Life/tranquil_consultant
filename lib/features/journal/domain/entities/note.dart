@@ -17,6 +17,4 @@ class Note {
 
   Note({this.id, this.title = '', this.description = '', this.clientName='', this.clientDp='',  this.mood, this.hexColor, this.dateUpdated});
 
-
-  Map<String, dynamic> toJson() => _$NoteToJson(this);
 }

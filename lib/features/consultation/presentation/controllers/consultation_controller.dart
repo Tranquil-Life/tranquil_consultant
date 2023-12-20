@@ -104,8 +104,7 @@ class ConsultationController extends GetxController{
   Future getMeetings() async{
      loading.value = true;
 
-    await Future.delayed(const Duration(seconds: 1));
-
+    // await Future.delayed(const Duration(seconds: 1));
     var result = await ConsultationRepoImpl().getMeetings();
 
     if(result.isRight()){
@@ -140,15 +139,15 @@ class ConsultationController extends GetxController{
 
       if (!meetingsStreamController.isClosed) meetingsStreamController.sink.add(values);
     }
-    else{
-      result.leftMap((l){
-        CustomSnackBar.showSnackBar(
-            context: Get.context!,
-            title: 'Error',
-            message: l.message!,
-            backgroundColor: ColorPalette.red);
-      });
-    }
+    // else{
+    //   result.leftMap((l){
+    //     CustomSnackBar.showSnackBar(
+    //         context: Get.context!,
+    //         title: 'Error',
+    //         message: l.message!,
+    //         backgroundColor: ColorPalette.red);
+    //   });
+    // }
 
     loading.value = true;
 

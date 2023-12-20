@@ -7,72 +7,94 @@ import 'package:tl_consultant/features/journal/data/models/note.dart';
 import 'package:tl_consultant/features/journal/data/repos/journal_repo.dart';
 import 'package:tl_consultant/features/journal/data/repos/journal_store.dart';
 import 'package:tl_consultant/features/journal/domain/entities/note.dart';
+import 'package:tl_consultant/features/journal/domain/entities/shared_note.dart';
 
-class NotesController extends GetxController{
+class NotesController extends GetxController {
   static NotesController instance = Get.find();
+
   final journalRepo = JournalRepoImpl();
-  var currPageIndex = 0.obs;
   var noteDeleted = false.obs;
 
-  final titleTEC = TextEditingController();
-  final bodyTEC = TextEditingController();
+  RxList<SharedNote> journal = <SharedNote>[].obs;
 
-  var noNotes = false.obs;
+  //pagination vars
+  var page = 1.obs;
+  var limit = 10.obs;
+  // There is next page or not
+  var hasNextPage = true.obs;
+  // Used to display loading indicators when _firstLoad function is running
+  var isFirstLoadRunning = false.obs;
+  // Used to display loading indicators when _loadMore function is running
+  var isLoadMoreRunning = false.obs;
 
-  // Future<List<Note>> getJournal()
-  // async{
-  //
-  //   if(NetworkController.instance.connectionStatus.value == 0){
-  //     update();
-  //
-  //     noNotes.value = journalStore.getJournal.isEmpty ? true : false;
-  //
-  //     return journalStore.getJournal;
-  //   }
-  //   else{
-  //     try{
-  //       await Future.delayed(Duration(seconds: 1));
-  //       var result = await journalRepo.getJournal();
-  //
-  //       if(result.isRight()){
-  //         List<Note> notes = result.getOrElse(() => NoteModel.fromJson({}));
-  //         List<Note> arr = [];
-  //         if(notes.length >= 10){
-  //           for(int i=0; i < 10; i++){
-  //             arr.add(notes[i]);
-  //           }
-  //           journalStore.updateJournal = arr;
-  //           noNotes.value = journalStore.getJournal.isEmpty ? true : false;
-  //
-  //         }else{
-  //           journalStore.updateJournal = notes;
-  //           noNotes.value = journalStore.getJournal.isEmpty ? true : false;
-  //         }
-  //         update();
-  //
-  //         return notes;
-  //       }
-  //       else{
-  //         ///commented out because it was returning snackbar eeror in on start of chat screen
-  //         // result.leftMap((l)
-  //         // => CustomSnackBar.showSnackBar(
-  //         //     context: Get.context!,
-  //         //     title: "Error",
-  //         //     message: l.message.toString(),
-  //         //     backgroundColor: ColorPalette.red)
-  //         // );
-  //         return <Note>[];
-  //       }
-  //     }catch(e){
-  //       return <Note>[];
-  //     }
-  //   }
-  // }
+  // The controller for the ListView
+  late ScrollController scrollController;
 
-  clearData(){
-    currPageIndex.value = 0;
+  loadfirstNotes() async {
+    var result =
+        await journalRepo.getJournal(page: page.value, limit: limit.value);
 
+    isFirstLoadRunning.value = true;
+
+    if (result.isRight()) {
+      result.map((r) => journal.value =
+          (r as List).map((e) => SharedNote.fromJson(e)).toList());
+
+      print("SHARED NOTES: $journal");
+    }
+    // else {
+    //   result.leftMap((l) => CustomSnackBar.showSnackBar(
+    //       context: Get.context!,
+    //       title: "Error",
+    //       message: l.message.toString(),
+    //       backgroundColor: ColorPalette.red));
+    // }
+    update();
+
+    isFirstLoadRunning.value = false;
   }
 
+  // This function will be triggered whenver the user scroll
+  // to near the bottom of the list view
+  loadMoreNotes() async {
+    if (hasNextPage.value == true &&
+        isFirstLoadRunning.value == false &&
+        isLoadMoreRunning.value == false &&
+        scrollController.position.extentAfter < 300) {
+      isLoadMoreRunning.value =
+          true; // Display a progress indicator at the bottom
+      page.value += 1; // Increase _page by 1
 
+      var result =
+          await journalRepo.getJournal(page: page.value, limit: limit.value);
+
+      if (result.isRight()) {
+        List<SharedNote> fetchedNotes = [];
+
+        result.map((r) => fetchedNotes =
+            (r as List).map((e) => SharedNote.fromJson(e)).toList());
+        if (fetchedNotes.isNotEmpty) {
+          journal.addAll(fetchedNotes);
+        } else {
+          // This means there is no more data
+          // and therefore, we will not send another GET request
+          hasNextPage.value = false;
+        }
+
+        isLoadMoreRunning.value = false;
+      } else {
+        result.leftMap((l) => CustomSnackBar.showSnackBar(
+            context: Get.context!,
+            title: "Error",
+            message: l.message.toString(),
+            backgroundColor: ColorPalette.red));
+      }
+
+      update();
+    }
+  }
+
+  clearData() {
+    page.value = 1;
+  }
 }

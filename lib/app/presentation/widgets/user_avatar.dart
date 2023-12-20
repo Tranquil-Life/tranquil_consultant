@@ -2,11 +2,17 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:tl_consultant/app/presentation/theme/tranquil_icons.dart';
 import 'package:tl_consultant/app/presentation/widgets/pulsing_widget.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
+import 'package:tl_consultant/features/profile/data/models/user_model.dart';
+import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
+import 'package:tl_consultant/features/profile/domain/entities/user.dart';
+import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
 
-enum AvatarSource { file, url, bitmojiUrl }
+
+ enum AvatarSource { file, url, bitmojiUrl }
 
 class UserAvatar extends StatelessWidget {
   const UserAvatar({
@@ -30,12 +36,12 @@ class UserAvatar extends StatelessWidget {
   );
 
   Widget errorBuilder(_, __, ___) => Padding(
-    padding: const EdgeInsets.all(8),
-    child: FittedBox(
-      fit: BoxFit.contain,
-      child: Icon(TranquilIcons.profile, color: Colors.grey[600]),
-    ),
-  );
+        padding: const EdgeInsets.all(8),
+        child: FittedBox(
+          fit: BoxFit.contain,
+          child: Icon(TranquilIcons.profile, color: Colors.grey[600]),
+        ),
+      );
 
   Widget frameBuilder(_, img, val, ___) {
     return val == null ? _placeHolder : img;
@@ -53,7 +59,7 @@ class UserAvatar extends StatelessWidget {
             shape: BoxShape.circle,
           ),
       child: Builder(builder: (context) {
-        switch (source ?? AvatarSource.url) {
+        switch (source) {
           case AvatarSource.url:
             return Image.network(
               value,
@@ -74,6 +80,8 @@ class UserAvatar extends StatelessWidget {
               fit: BoxFit.cover,
               placeholderBuilder: (_) => _placeHolder,
             );
+          default:
+            return _placeHolder;
         }
       }),
     );
@@ -92,18 +100,17 @@ class MyAvatarWidget extends StatefulWidget {
 }
 
 class _MyAvatarWidgetState extends State<MyAvatarWidget> {
-  //User client = UserDataStore().user!;
+  final profileController = Get.put(ProfileController());
+  User client = UserModel.fromJson(userDataStore.user);
 
   @override
   Widget build(BuildContext context) {
-    return UserAvatar(
+    return Obx(()=>
+    UserAvatar(
       size: widget.size,
       decoration: widget.decoration,
-      imageUrl: "client.avatarUrl",
-      source: AvatarSource.url,
-      // source: client.usesBitmoji == true
-      //     ? AvatarSource.bitmojiUrl
-      //     : AvatarSource.url,
-    );
+      imageUrl: profileController.editUser.value.avatarUrl,
+      source: client.usesBitmoji! ? AvatarSource.bitmojiUrl : AvatarSource.url,
+    ));
   }
 }

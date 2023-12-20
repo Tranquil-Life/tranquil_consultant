@@ -1,7 +1,6 @@
 // const baseUrl = 'https://tranquil-api.herokuapp.com/api/';
-const host = 'https://881f-102-88-83-110.ngrok-free.app';
+const host = 'https://8d02-102-89-44-1.ngrok-free.app';
 const baseUrl = '$host/api/';
-
 
 abstract class AuthEndPoints {
   static const login = 'consultant/login';
@@ -15,7 +14,7 @@ abstract class ProfileEndPoints {
   static const edit = 'client/edit';
 }
 
-abstract class ConsultationEndPoints{
+abstract class ConsultationEndPoints {
   static const getSlots = 'consultant/getSlots';
   static const saveSlots = 'consultant/saveSlots';
   static const deleteSlot = 'consultant/deleteSlot';
@@ -25,7 +24,8 @@ abstract class ConsultationEndPoints{
 abstract class WalletEndpoints {
   static const getWallet = 'consultant/getWallet';
   static const pay = 'consultant/pay';
-  static getTransactions({required int page, required int limit}) => 'consultant/listTransactions/$page/$limit';
+  static getTransactions({required int page, required int limit}) =>
+      'consultant/listTransactions/$page/$limit';
 }
 
 abstract class EarningsEndpoints {
@@ -33,20 +33,21 @@ abstract class EarningsEndpoints {
   static const getTransactions = 'consultant/getEarnings';
 }
 
-abstract class JournalEndPoints{
-  static const getNotes = 'consultant/listNotes';
+abstract class JournalEndPoints {
+  static sharedNotes({required int page, required int limit}) =>
+      'consultant/listNotes/$page/$limit';
 }
 
-abstract class MediaEndpoints{
+abstract class MediaEndpoints {
   static const uploadFile = 'consultant/uploadFile';
 }
 
-abstract class ChatEndPoints{
+abstract class ChatEndPoints {
   static const sendChat = 'consultant/send-message';
   static const generateToken = 'consultant/generateToken';
   static const getChatInfo = 'consultant/create-chat';
-  static getRecentMessages({required int chatId}) => 'client/get-recent-messages/$chatId';
-  static getOlderMessages({
-    required int chatId,
-    required int lastMessageId}) => 'client/get-older-messages/$chatId/$lastMessageId';
+  static getRecentMessages({required int chatId}) =>
+      'client/get-recent-messages/$chatId';
+  static getOlderMessages({required int chatId, required int lastMessageId}) =>
+      'client/get-older-messages/$chatId/$lastMessageId';
 }
