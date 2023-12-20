@@ -31,7 +31,10 @@ class _NavBarState extends State<NavBar> {
                         label: 'Home',
                         iconData: TranquilIcons.home,
                         isSelected: dashboardController.currentIndex.value == 0,
-                        onTap: () async=> await dashboardController.onTap(0),
+                        onTap: () async{
+                          await dashboardController.onTap(0);
+                          await ConsultationController.instance.getMeetings();
+                        },
                       ),
                       Item(
                         label: 'Wallet',

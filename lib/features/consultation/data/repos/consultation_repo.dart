@@ -70,7 +70,7 @@ class ConsultationRepoImpl extends ConsultantRepo {
           await getReq(ConsultationEndPoints.getMeetings(page: page));
 
       if (response.body['error'] == false) {
-        var data = response.body['data']['data'];
+        var data = response.body['data'];
 
         return Right(data);
       } else {

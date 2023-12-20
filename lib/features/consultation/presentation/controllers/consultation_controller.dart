@@ -81,9 +81,8 @@ class ConsultationController extends GetxController{
   }
 
   Future getAllSlots() async {
-    loading.value = true;
-
     var result = await ConsultationRepoImpl().getSlots();
+    loading.value = true;
 
     if(result.isRight()){
       loading.value = false;
