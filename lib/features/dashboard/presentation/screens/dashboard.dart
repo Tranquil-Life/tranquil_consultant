@@ -13,6 +13,7 @@ import 'package:tl_consultant/features/home/presentation/widgets/count_indicator
 import 'package:tl_consultant/features/journal/presentation/controllers/notes_controller.dart';
 import 'package:tl_consultant/features/journal/presentation/screens/journal_tab.dart';
 import 'package:tl_consultant/features/profile/presentation/screens/profile_tab.dart';
+import 'package:tl_consultant/features/wallet/presentation/controllers/earnings_controller.dart';
 import 'package:tl_consultant/features/wallet/presentation/screens/earnings_tab.dart';
 
 part 'package:tl_consultant/features/dashboard/presentation/widgets/nav_bar.dart';

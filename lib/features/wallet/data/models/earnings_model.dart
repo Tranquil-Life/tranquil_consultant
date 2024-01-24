@@ -6,10 +6,8 @@ class EarningsModel extends Earnings{
   EarningsModel({
     super.id,
     super.userId,
-    super.netInCome,
+    super.balance,
     super.availableForWithdrawal,
-    super.expectedEarnings,
-    super.pendingClearance,
     super.withdrawn
   });
 

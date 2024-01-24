@@ -3,8 +3,8 @@ import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/theme/fonts.dart';
 
 class InfoContentItem extends StatelessWidget {
-  const InfoContentItem({Key? key,
-    required this.title, required this.amount}) : super(key: key);
+  const InfoContentItem({Key? key, required this.title, required this.amount})
+      : super(key: key);
 
   final String title;
   final String amount;
@@ -15,18 +15,18 @@ class InfoContentItem extends StatelessWidget {
       direction: Axis.vertical,
       crossAxisAlignment: WrapCrossAlignment.center,
       children: [
-        Text(title,
+        Text(
+          title,
+          textAlign: TextAlign.center,
           style: TextStyle(
-              color: ColorPalette.white,
-            fontSize: AppFonts.defaultSize
-          ),
+              color: ColorPalette.white, fontSize: AppFonts.defaultSize),
         ),
-        SizedBox(height: 4,),
-        Text(amount,
-          style: TextStyle(
-              color: ColorPalette.white,
-            fontSize: 22
-          ),
+        SizedBox(
+          height: 4,
+        ),
+        Text(
+          amount,
+          style: TextStyle(color: ColorPalette.white, fontSize: 22),
         ),
       ],
     );

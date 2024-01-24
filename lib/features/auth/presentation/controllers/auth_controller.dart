@@ -84,8 +84,6 @@ class AuthController extends GetxController{
               backgroundColor: ColorPalette.red
           ));
     }
-
-
   }
 
   Future signIn(String email, String password) async {

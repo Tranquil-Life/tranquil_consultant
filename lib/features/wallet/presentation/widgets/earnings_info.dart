@@ -1,72 +1,68 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:tl_consultant/features/wallet/presentation/controllers/earnings_controller.dart';
 import 'package:tl_consultant/features/wallet/presentation/widgets/earnings_info_content_item.dart';
 
 class EarningsInfo extends StatefulWidget {
-  const EarningsInfo({Key? key, required this.data}) : super(key: key);
+  const EarningsInfo({Key? key, required this.earningsController}) : super(key: key);
 
-  final Map<String, dynamic>? data;
-
+  final EarningsController earningsController;
 
   @override
   State<EarningsInfo> createState() => _EarningsInfoState();
 }
 
 class _EarningsInfoState extends State<EarningsInfo> {
-  getData(){
-    EarningsController.instance.netIncome.value = widget.data!['net_income'];
-    EarningsController.instance.withdrawn.value = widget.data!['withdrawn'];
-    //EarningsController.instance.pendingClearance.value = widget.data!['net_income'];
-    EarningsController.instance.availableForWithdrawal.value = widget.data!['available_for_withdrawal'];
-    //EarningsController.instance.expectedEarnings = widget.data!['net_income'];
-  }
+  // getData(){
+  //   widget.earningsController.netIncome.value = widget.data!['net_income'];
+  //   widget.earningsController.withdrawn.value = widget.data!['withdrawn'];
+  //   //widget.earningsController.pendingClearance.value = widget.data!['net_income'];
+  //   widget.earningsController.availableForWithdrawal.value = widget.data!['available_for_withdrawal'];
+  //   //widget.earningsController.expectedEarnings = widget.data!['net_income'];
+  // }
 
   @override
   void initState() {
-    getData();
+    //getData();
 
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
+    return Obx(()=>
+    Stack(
       children: [
         Positioned(
             top: 20,
             left: 20,
             child: InfoContentItem(
-                title: "Net Income",
-                amount: "\$${EarningsController.instance.netIncome.value}")
+                title: "Current Balance",
+                amount: "\$${widget.earningsController.balance.value}")
         ),
         Positioned(
             top: 20,
             right: 20,
             child: InfoContentItem(
                 title: "Withdrawn",
-                amount: "\$${EarningsController.instance.withdrawn.value}")
+                amount: "\$${widget.earningsController.withdrawn.value}")
         ),
-        Align(
-            child: InfoContentItem(
-                title: "Available For Withdrawal",
-                amount: "\$${EarningsController.instance.availableForWithdrawal.value}")
-        ),
-        Positioned(
+
+        const Positioned(
             bottom: 20,
             right: 20,
             child: InfoContentItem(
-                title: "Withdrawn",
-                amount: "\$${EarningsController.instance.pendingClearance.value}")
+                title: "Pending \nClearance",
+                amount: "")
         ),
-
         Positioned(
             bottom: 20,
             left: 20,
             child: InfoContentItem(
-                title: "Expected Earnings",
-                amount: "\$${EarningsController.instance.expectedEarnings.value}")
+                title: "Available For \nWithdrawal",
+                amount: "\$${widget.earningsController.availableForWithdrawal.value}")
         ),
       ],
-    );
+    ));
   }
 }

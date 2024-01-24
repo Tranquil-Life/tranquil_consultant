@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/widgets/buttons.dart';
-import 'package:tl_consultant/app/presentation/widgets/custom_app_bar.dart';
 import 'package:tl_consultant/features/wallet/presentation/controllers/earnings_controller.dart';
 import 'package:tl_consultant/features/wallet/presentation/widgets/earnings_info.dart';
 import 'package:tl_consultant/features/wallet/presentation/widgets/title_section.dart';
@@ -27,7 +26,7 @@ class _EarningsTabState extends State<EarningsTab> {
 
   @override
   void initState() {
-    //getEarnings();
+    getEarnings();
 
     super.initState();
   }
@@ -62,35 +61,7 @@ class _EarningsTabState extends State<EarningsTab> {
                       image: AssetImage("assets/images/earnings/earnings_info.png"),
                       fit: BoxFit.cover),
                 ),
-                child: StreamBuilder<Map<String, dynamic>>(
-                  stream: earningsController.earningStream,
-                  builder: (context, snapshot){
-                    if (snapshot.hasError) {
-                      return Center(
-                        child: Text(snapshot.error.toString(), style: const TextStyle(color: ColorPalette.white),),
-                      );
-                    }else{
-                      switch(snapshot.connectionState){
-                        case ConnectionState.waiting:
-                          return const Center(
-                            child: CircularProgressIndicator(color: ColorPalette.white),
-                          );
-                        case ConnectionState.active:
-                        case ConnectionState.done:
-                          if (!snapshot.hasData) {
-                            return EarningsInfo(data: snapshot.data);
-                          }else{
-                            return EarningsInfo(data: snapshot.data);
-                          }
-                        case ConnectionState.none:
-                        default:
-                          return const Center(
-                            child: CircularProgressIndicator(color: ColorPalette.green,),
-                          );
-                      }
-                    }
-                  },
-                ),
+                child: EarningsInfo(earningsController: earningsController)
               ),
             ),
           ),

@@ -10,6 +10,7 @@ import 'package:tl_consultant/core/utils/services/API/network/controllers/networ
 import 'package:tl_consultant/features/journal/domain/entities/note.dart';
 import 'package:tl_consultant/features/journal/domain/entities/shared_note.dart';
 import 'package:tl_consultant/features/journal/presentation/controllers/notes_controller.dart';
+import 'package:tl_consultant/features/journal/presentation/screens/selected_note_view.dart';
 import 'package:tl_consultant/features/journal/presentation/widgets/note_widget.dart';
 
 class JournalTab extends StatelessWidget {
@@ -21,6 +22,7 @@ class JournalTab extends StatelessWidget {
       appBar: CustomAppBar(
         title: "Journal",
         centerTitle: true,
+        hideBackButton: true,
         actions: [
           AppBarAction(
             onPressed: () {},
@@ -128,11 +130,10 @@ class NoteGrid extends StatelessWidget {
             ),
             child: SelectableNoteWidget(
               sharedNote: _.journal[index],
-              onTap: (){
-                // await Get.to(
-                //   const ViewNote(),
-                //   arguments: {'note': _.journal[index]},
-                // );
+              onTap: () async {
+                await Get.to(
+                  NoteView(sharedNote: _.journal[index]),
+                );
               },
             ),
           ),

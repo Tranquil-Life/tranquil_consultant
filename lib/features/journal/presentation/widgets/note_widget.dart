@@ -68,31 +68,23 @@ class NoteWidget extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(10, 50, 10, 0),
+            padding: const EdgeInsets.fromLTRB(10, 60, 10, 0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
-                  child: TextField(
-                    maxLines: 2,
-                    readOnly: true,
-                    controller: TextEditingController(
-                      text: sharedNote.note.title.length > 18
-                          ? "${sharedNote.note.title.substring(0, 18)}..."
-                          : sharedNote.note.title,
-                    ),
-                    style: const TextStyle(
-                      fontSize: AppFonts.defaultSize,
-                      height: 1.4,
-                      fontWeight: FontWeight.w600,
-                    ),
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      // You can customize other decoration properties here
-                    ),
-                  ),
-                ),
+                    child: SizedBox(
+                        height: 10,
+                        child: Text(
+                          sharedNote.note.title.length > 18
+                              ? "${sharedNote.note.title.substring(0, 18)}..."
+                              : sharedNote.note.title,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontFamily: AppFonts.josefinSansRegular,
+                          ),
+                        ))),
                 Text(
                   sharedNote.note.dateUpdated?.formatDate ?? '',
                   style: const TextStyle(

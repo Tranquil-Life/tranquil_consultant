@@ -4,47 +4,26 @@ import 'package:get/get.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/widgets/custom_snackbar.dart';
 import 'package:tl_consultant/features/wallet/data/models/earnings_model.dart';
-import 'package:tl_consultant/features/wallet/data/repos/earnings_repo.dart';
+import 'package:tl_consultant/features/wallet/data/repos/wallet_repo_impl.dart';
 import 'package:tl_consultant/features/wallet/domain/entities/earnings.dart';
 
 class EarningsController extends GetxController{
   static EarningsController instance = Get.find();
 
-  final repo = EarningsRepoImpl();
+  final repo = WalletRepositoryImpl();
 
-  var netIncome = 0.00.obs;
+  var balance = 0.00.obs;
   var withdrawn = 0.00.obs;
   var availableForWithdrawal = 0.00.obs;
-  var pendingClearance = 0.00.obs;
-  var expectedEarnings = 0.00.obs;
-
-  final earningsStreamController = StreamController<Map<String, dynamic>>.broadcast();
-  Stream<Map<String, dynamic>> get earningStream => earningsStreamController.stream;
 
   Future getEarningsInfo() async{
-    var netIncome = 0.00;
-    var withdrawn = 0.00;
-    var availableForWithdrawal = 0.00;
-    var pendingClearance = 0.00;
-    var expectedEarnings = 0.00;
-
-    var result =  await repo.getInfo();
+    var result =  await repo.getWallet();
     if(result.isRight()){
       result.map((r){
-        Earnings earnings = EarningsModel.fromJson(r);
-
-        netIncome = earnings.netInCome;
-        withdrawn = earnings.withdrawn;
-        availableForWithdrawal = earnings.availableForWithdrawal;
+        balance.value = r.balance;
+        withdrawn.value = r.withdrawn;
+        availableForWithdrawal.value = r.availableForWithdrawal;
       });
-
-      Map<String, dynamic> values = {
-        "net_income": netIncome,
-        "withdrawn": withdrawn,
-        "available_for_withdrawal": availableForWithdrawal,
-      };
-
-      earningsStreamController.sink.add(values);
     }else{
       result.leftMap((l) => CustomSnackBar.showSnackBar(
           context: Get.context!,

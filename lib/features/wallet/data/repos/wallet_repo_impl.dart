@@ -1,33 +1,30 @@
-import 'dart:developer';
 import 'dart:io';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tl_consultant/core/constants/end_points.dart';
 import 'package:tl_consultant/core/errors/api_error.dart';
-import 'package:tl_consultant/features/wallet/data/models/wallet_model.dart';
-import 'package:tl_consultant/features/wallet/domain/entities/wallet_entity.dart';
+import 'package:tl_consultant/features/wallet/data/models/earnings_model.dart';
+import 'package:tl_consultant/features/wallet/domain/entities/earnings.dart';
 import 'package:tl_consultant/features/wallet/domain/repos/wallet_repo.dart';
 
 
 class WalletRepositoryImpl extends WalletRepo {
   @override
-  Future<Either<ApiError, Wallet>> getWallet() async {
+  Future<Either<ApiError, Earnings>> getWallet() async {
     try {
       httpClient.baseUrl = baseUrl;
 
       Response response = await getReq(WalletEndpoints.getWallet);
 
       if (response.body['error'] == false) {
-        var wallet = WalletModel.fromJson(response.body['wallet']);
+        var wallet = EarningsModel.fromJson(response.body['data']);
         return Right(wallet);
       } else {
         return Left(
           ApiError(message: response.body['message'].toString()),
         );
       }
-
-
     } on SocketException catch (e) {
       return Left(ApiError(
           message: e.message));

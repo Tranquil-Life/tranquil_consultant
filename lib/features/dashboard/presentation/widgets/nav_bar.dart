@@ -1,6 +1,5 @@
 part of 'package:tl_consultant/features/dashboard/presentation/screens/dashboard.dart';
 
-
 class NavBar extends StatefulWidget {
   const NavBar({super.key});
 
@@ -23,24 +22,22 @@ class _NavBarState extends State<NavBar> {
           padding: const EdgeInsets.only(top: 4, bottom: 2),
           child: SafeArea(
               top: false,
-              child: Obx(()=>
-                  Row(
+              child: Obx(() => Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       Item(
                         label: 'Home',
                         iconData: TranquilIcons.home,
                         isSelected: dashboardController.currentIndex.value == 0,
-                        onTap: () async{
+                        onTap: () async {
                           await dashboardController.onTap(0);
-                          await ConsultationController.instance.getMeetings();
                         },
                       ),
                       Item(
                         label: 'Wallet',
                         iconData: TranquilIcons.wallet,
                         isSelected: dashboardController.currentIndex.value == 1,
-                        onTap: () async{
+                        onTap: () async {
                           await dashboardController.onTap(1);
                         },
                       ),
@@ -49,7 +46,7 @@ class _NavBarState extends State<NavBar> {
                         label: 'Notes',
                         iconData: TranquilIcons.view_note,
                         isSelected: dashboardController.currentIndex.value == 2,
-                        onTap: () async{
+                        onTap: () async {
                           await dashboardController.onTap(2);
                         },
                       ),
@@ -60,20 +57,18 @@ class _NavBarState extends State<NavBar> {
                         onTap: () async => await dashboardController.onTap(3),
                       ),
                     ],
-                  ))
-          ),
+                  ))),
         ),
         Transform.translate(
           offset: const Offset(0, -20),
           child: SafeArea(
             top: false,
             child: GestureDetector(
-              onTap: () async{
+              onTap: () async {
                 await chatController.getChatInfo();
               },
               behavior: HitTestBehavior.opaque,
-              child: Obx(()=>
-                  Stack(
+              child: Obx(() => Stack(
                     alignment: AlignmentDirectional.topEnd,
                     children: [
                       Container(
@@ -94,11 +89,9 @@ class _NavBarState extends State<NavBar> {
                           right: 4,
                           child: SizedBox.square(
                             dimension: 28,
-                            child: CountIndicator(
-                                DashboardController.instance.currentMeetingCount.value
-                            ),
-                          )
-                      )
+                            child: CountIndicator(DashboardController
+                                .instance.currentMeetingCount.value),
+                          ))
                     ],
                   )),
             ),

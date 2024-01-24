@@ -1,5 +1,5 @@
 // const baseUrl = 'https://tranquil-api.herokuapp.com/api/';
-const host = 'https://8d02-102-89-44-1.ngrok-free.app';
+const host = 'https://0b6a-102-89-46-163.ngrok-free.app';
 const baseUrl = '$host/api/';
 
 abstract class AuthEndPoints {
@@ -22,7 +22,7 @@ abstract class ConsultationEndPoints {
 }
 
 abstract class WalletEndpoints {
-  static const getWallet = 'consultant/getWallet';
+  static const getWallet = 'consultant/getEarnings';
   static const pay = 'consultant/pay';
   static getTransactions({required int page, required int limit}) =>
       'consultant/listTransactions/$page/$limit';
@@ -35,7 +35,7 @@ abstract class EarningsEndpoints {
 
 abstract class JournalEndPoints {
   static sharedNotes({required int page, required int limit}) =>
-      'consultant/listNotes/$page/$limit';
+      'consultant/listSharedNotes/$page/$limit';
 }
 
 abstract class MediaEndpoints {
