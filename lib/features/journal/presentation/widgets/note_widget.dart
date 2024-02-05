@@ -44,7 +44,7 @@ class NoteWidget extends StatelessWidget {
                     children: [
                       Container(
                         height: 50,
-                        color: Color(0xffB4E5BC),
+                        color: const Color(0xffB4E5BC),
                         child: UserAvatar(
                           imageUrl: sharedNote.client.avatarUrl,
                           source: sharedNote.client.usesBitmoji!

@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:get/get.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
-import 'package:tl_consultant/app/presentation/theme/fonts.dart';
 import 'package:tl_consultant/app/presentation/widgets/custom_app_bar.dart';
 import 'package:tl_consultant/app/presentation/widgets/unfocus_bg.dart';
+
 import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
-import 'package:tl_consultant/core/utils/services/API/network/controllers/network_controller.dart';
-import 'package:tl_consultant/features/journal/domain/entities/note.dart';
 import 'package:tl_consultant/features/journal/domain/entities/shared_note.dart';
 import 'package:tl_consultant/features/journal/presentation/controllers/notes_controller.dart';
+import 'package:tl_consultant/features/journal/presentation/screens/client_note.dart';
+import 'package:tl_consultant/features/journal/presentation/screens/consultant_note.dart';
 import 'package:tl_consultant/features/journal/presentation/screens/selected_note_view.dart';
+import 'package:tl_consultant/features/journal/presentation/screens/tab_bar.dart';
 import 'package:tl_consultant/features/journal/presentation/widgets/note_widget.dart';
 
 class JournalTab extends StatelessWidget {
@@ -20,9 +22,10 @@ class JournalTab extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
-        title: "Journal",
-        centerTitle: true,
-        hideBackButton: true,
+        title: "My Journal",
+        // centerTitle: true,
+
+        hideBackButton: false,
         actions: [
           AppBarAction(
             onPressed: () {},
@@ -47,7 +50,22 @@ class JournalBody extends StatefulWidget {
   State<JournalBody> createState() => _JournalBodyState();
 }
 
-class _JournalBodyState extends State<JournalBody> {
+class _JournalBodyState extends State<JournalBody>
+    with TickerProviderStateMixin {
+  late TabController? controller = TabController(length: 2, vsync: this);
+
+  final searchBarController = TextEditingController();
+  int index = 0;
+  litenToController() {
+    controller!.addListener(
+      () {
+        setState(() {
+          index = controller!.index;
+        });
+      },
+    );
+  }
+
   final NotesController _ = Get.put(NotesController());
 
   @override
@@ -63,9 +81,36 @@ class _JournalBodyState extends State<JournalBody> {
   Widget build(BuildContext context) {
     return Obx(() => Column(
           children: [
-            const SearchBar(),
-            const SizedBox(height: 8),
-            const NoteGrid(),
+            CustomTabbar(
+                controller: controller,
+                whathappensontap: (int tabindex) {
+                  setState(() {
+                    HapticFeedback.lightImpact();
+                    index = tabindex;
+                  });
+                },
+                tabviewlabel1: "My notes",
+                tabviewlabel2: "Client notes"),
+            // const SearchBar(),
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                IconButton(
+                  onPressed: () {},
+                  icon: const Icon(
+                    Icons.filter_1,
+                  ),
+                ),
+                const Text("Filter"),
+              ],
+            ),
+            Expanded(
+              child: TabBarView(controller: controller, children: const [
+                ConsultantNote(),
+                ClientNote(),
+              ]),
+            ),
+
             // when the _loadMore function is running
             if (_.isLoadMoreRunning.value == true)
               const Padding(
@@ -79,36 +124,36 @@ class _JournalBodyState extends State<JournalBody> {
   }
 }
 
-class SearchBar extends StatelessWidget {
-  const SearchBar({super.key});
+// class SearchBar extends StatelessWidget {
+//   const SearchBar({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(8),
-      child: Container(
-        color: const Color(0xfff2f2f2),
-        child: TextField(
-          autocorrect: false,
-          keyboardType: TextInputType.text,
-          textInputAction: TextInputAction.search,
-          decoration: const InputDecoration(
-            hintText: 'Search',
-            prefixIcon: Padding(
-              padding: EdgeInsets.only(left: 6),
-              child: Icon(Icons.search_rounded),
-            ),
-            prefixIconConstraints: BoxConstraints(minWidth: 48),
-            contentPadding: EdgeInsets.symmetric(horizontal: 0, vertical: 20),
-            fillColor: Color(0xfff2f2f2),
-            border: InputBorder.none,
-          ),
-          onSubmitted: (val) {},
-        ),
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return ClipRRect(
+//       borderRadius: BorderRadius.circular(8),
+//       child: Container(
+//         color: const Color(0xfff2f2f2),
+//         child: TextField(
+//           autocorrect: false,
+//           keyboardType: TextInputType.text,
+//           textInputAction: TextInputAction.search,
+//           decoration: const InputDecoration(
+//             hintText: 'Search',
+//             prefixIcon: Padding(
+//               padding: EdgeInsets.only(left: 6),
+//               child: Icon(Icons.search_rounded),
+//             ),
+//             prefixIconConstraints: BoxConstraints(minWidth: 48),
+//             contentPadding: EdgeInsets.symmetric(horizontal: 0, vertical: 20),
+//             fillColor: Color(0xfff2f2f2),
+//             border: InputBorder.none,
+//           ),
+//           onSubmitted: (val) {},
+//         ),
+//       ),
+//     );
+//   }
+// }
 
 class NoteGrid extends StatelessWidget {
   const NoteGrid({super.key});
