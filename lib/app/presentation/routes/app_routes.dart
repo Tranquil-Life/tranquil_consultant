@@ -9,6 +9,8 @@ abstract class Routes {
   static const SIGN_UP_0 = '/sign-up-0';
   static const SIGN_UP_1 = '/sign-up-1';
   static const SIGN_UP_2 = '/sign-up-2';
+  static const SIGN_UP_3 = '/sign-up-3';
+  static const SIGN_UP_4 = '/sign-up-4';
   static const HOME_SCREEN = '/home';
   static const DASHBOARD = '/dashboard';
   static const EDIT_SLOTS = '/edit-slots';

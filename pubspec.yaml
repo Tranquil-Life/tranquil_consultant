@@ -28,82 +28,68 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  add_2_calendar: ^2.1.3
+  audio_session: ^0.1.10
+  audio_video_progress_bar: ^2.0.1
+  audio_waveforms: ^0.1.4
+  audioplayers: ^1.0.1
+  camera: ^0.10.5+9
+  cloud_firestore: ^4.13.3
+  connectivity_plus: ^3.0.4
+  cupertino_icons: ^1.0.2
+  dartz: ^0.10.1
+  device_info_plus: ^9.1.1
+  dotted_border: ^2.0.0+3
+  dotted_line: ^3.1.0
+  draggable_widget: ^2.0.0
+  dropdown_button2: ^1.7.2
+  emoji_picker_flutter: ^1.5.1
+  equatable: ^2.0.5
+  expandable_page_view: ^1.0.17
+  file_picker: null
+  firebase_core: ^2.15.0
+  firebase_messaging: ^14.6.5
   flutter:
     sdk: flutter
-
-  audio_video_progress_bar: ^2.0.1
-  audio_session: ^0.1.10
-  audio_waveforms: ^0.1.4
+  flutter_cache_manager: ^3.3.0
+  flutter_camera: ^1.0.0
   flutter_sound: ^9.2.13
-  video_thumbnail: ^0.5.2
-  audioplayers: ^1.0.1 # playing of audio recordings or sound
-  vibration: ^1.8.4
-
-  dartz: ^0.10.1
-  equatable: ^2.0.5
-  get: any #state management, dependency injection and GetMaterial widgets
-  connectivity_plus: ^3.0.4
-  json_annotation: ^4.6.0
-  http_parser: ^4.0.2
-  http: ^0.13.4
-
+  flutter_staggered_grid_view: ^0.6.2
+  fluttermoji: ^1.0.0
+  fluttertoast: ^8.1.1
+  geocoding: ^2.1.0
+  geolocator: ^9.0.2
+  get: any
   get_storage: ^2.1.1
-
-  file_picker:
-  image_picker: ^0.8.5+3
+  http: ^0.13.4
+  http_parser: ^4.0.2
   image_cropper: ^3.0.1
-  path_provider: ^2.0.13
-  path_provider_ios: ^2.0.9
-  path: ^1.8.3
-  language_picker: ^0.4.1
-
+  image_picker: ^0.8.5+3
   intl: ^0.17.0
   intl_phone_field: ^3.1.0
+  json_annotation: ^4.6.0
+  language_picker: ^0.4.1
   local_auth: ^2.1.2
+  path: ^1.8.3
+  path_provider: ^2.0.13
+  path_provider_ios: ^2.0.9
   permission_handler: ^10.0.0
   photo_view: ^0.14.0
   scrollable_positioned_list: ^0.3.2
-  uuid: ^3.0.6
-  expandable_page_view: ^1.0.17
-
-  geolocator: ^9.0.2
-  geocoding: ^2.1.0
-
-  device_info_plus: ^9.1.1
-  dotted_line: ^3.1.0
-  draggable_widget: ^2.0.0
-  flutter_staggered_grid_view: ^0.6.2
-  dropdown_button2: ^1.7.2
-  fluttermoji: ^1.0.0
-  flutter_cache_manager: ^3.3.0
   swipe_to: ^1.0.2
-  dotted_border: ^2.0.0+3
-  add_2_calendar: ^2.1.3
-
-  cupertino_icons: ^1.0.2
-  fluttertoast: ^8.1.1
-  emoji_picker_flutter: ^1.5.1
+  uuid: ^3.0.6
+  vibration: ^1.8.4
+  video_player: null
+  video_thumbnail: ^0.5.2
   webview_flutter: ^4.2.2
 
-  firebase_core: ^2.15.0
-  firebase_messaging: ^14.6.5
-  cloud_firestore: ^4.13.3
-
-
 dev_dependencies:
+  flutter_lints: ^2.0.0
   flutter_test:
     sdk: flutter
 
-  # The "flutter_lints" package below contains a set of recommended lints to
-  # encourage good coding practices. The lint set provided by the package is
-  # activated in the `analysis_options.yaml` file located at the root of your
-  # package. See that file for information about deactivating specific lint
-  # rules and activating additional ones.
-  flutter_lints: ^2.0.0
-
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
-
 # The following section is specific to Flutter packages.
 flutter:
 

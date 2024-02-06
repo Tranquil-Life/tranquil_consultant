@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
+import 'package:tl_consultant/app/presentation/routes/app_pages.dart';
 import 'package:tl_consultant/app/presentation/widgets/buttons.dart';
 import 'package:tl_consultant/core/utils/services/location_service.dart';
 import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';
@@ -26,31 +27,31 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
   final _formKey = GlobalKey<FormState>();
 
   Future<void> _getCurrentPosition() async {
-    try{
+    try {
       final hasPermission = await LocationService.handleLocationPermission();
       if (!hasPermission) return;
       await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high)
+              desiredAccuracy: LocationAccuracy.high)
           .then((Position position) {
         setState(() => authController.currentPosition = position);
         _getAddressFromLatLng(authController.currentPosition!);
       }).catchError((e) {
         debugPrint(e);
       });
-    }catch(e){
+    } catch (e) {
       print("Error: $e");
     }
   }
 
   Future<void> _getAddressFromLatLng(Position position) async {
-    await placemarkFromCoordinates(
-        position.latitude, position.longitude)
+    await placemarkFromCoordinates(position.latitude, position.longitude)
         .then((List<Placemark> placemarks) {
       Placemark place = placemarks[0];
       setState(() {
         authController.currentAddress =
-        '${place.administrativeArea}, ${place.country}';
-        AuthController.instance.currLocationTEC.text = authController.currentAddress!;
+            '${place.administrativeArea}, ${place.country}';
+        AuthController.instance.currLocationTEC.text =
+            authController.currentAddress!;
       });
     }).catchError((e) {
       debugPrint(e.toString());
@@ -65,11 +66,12 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
 
   @override
   void didChangeDependencies() {
-    Timer.periodic(const Duration(seconds: 2), (timer) async{
-     if(authController.currLocationTEC.text.isNotEmpty){
-       timer.cancel();
-     }else{
-       authController.currLocationTEC.text = authController.currentAddress.toString();
+    Timer.periodic(const Duration(seconds: 2), (timer) async {
+      if (authController.currLocationTEC.text.isNotEmpty) {
+        timer.cancel();
+      } else {
+        authController.currLocationTEC.text =
+            authController.currentAddress.toString();
       }
     });
     super.didChangeDependencies();
@@ -89,7 +91,6 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
             ),
             const Text('Complete your profile', style: TextStyle(fontSize: 18)),
             const SizedBox(height: 24),
-
             Form(
               key: _formKey,
               child: Column(
@@ -117,17 +118,17 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(8.0),
-                      child: expertiseField(
-                        onTap: () async{
-                          await showModalBottomSheet(
-                          context: context,
-                          isScrollControlled: true,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(16.0)),
-                          ),
-                          builder: (BuildContext context) => AreaOfExpertiseModalSheet());
-                        }
-                      ),
+                      child: expertiseField(onTap: () async {
+                        await showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            shape: RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(16.0)),
+                            ),
+                            builder: (BuildContext context) =>
+                                AreaOfExpertiseModalSheet());
+                      }),
                     ),
                   ),
 
@@ -136,37 +137,37 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(8.0),
-                      child: yearsOfExperienceField(
-                          onTap: (){
-                            showModalBottomSheet(
-                                context: context,
-                                isScrollControlled: true,
-                                shape: const RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                                ),
-                                builder: (BuildContext context) => YearsOfExperienceModal());
-                          }
-                      ),
+                      child: yearsOfExperienceField(onTap: () {
+                        showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            shape: const RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10.0)),
+                            ),
+                            builder: (BuildContext context) =>
+                                YearsOfExperienceModal());
+                      }),
                     ),
                   ),
 
                   //Languages
                   Padding(
-                    padding: EdgeInsets.symmetric(vertical: 12),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(8.0),
-                      child: LanguagesField(),
-                    )
-                  ),
+                      padding: EdgeInsets.symmetric(vertical: 12),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8.0),
+                        child: LanguagesField(),
+                      )),
 
                   const SizedBox(height: 32),
 
                   CustomButton(
                       text: 'Done',
-                      onPressed: (){
-                        if (_formKey.currentState!.validate()) {
-                          authController.signUp();
-                        }
+                      onPressed: () {
+                        Get.toNamed(Routes.SIGN_UP_3);
+                        // if (_formKey.currentState!.validate()) {
+                        //   authController.signUp();
+                        // }
                       })
                 ],
               ),

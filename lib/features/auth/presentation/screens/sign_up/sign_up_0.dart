@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:get/get.dart';
 import 'package:tl_consultant/app/presentation/routes/app_pages.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
@@ -56,9 +55,8 @@ class _SignUpScreen0State extends State<SignUpScreen0> {
                 child: Text(
                   'Register Account',
                   style: TextStyle(
-                      fontSize: AppFonts.defaultSize*2,
-                      fontFamily: AppFonts.josefinSansSemiBold
-                  ),
+                      fontSize: AppFonts.defaultSize * 2,
+                      fontFamily: AppFonts.josefinSansSemiBold),
                 ),
               ),
 
@@ -78,8 +76,7 @@ class _SignUpScreen0State extends State<SignUpScreen0> {
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(8),
                           child: emailFormField(),
-                        )
-                    ),
+                        )),
 
                     const SizedBox(height: 12),
 
@@ -92,11 +89,10 @@ class _SignUpScreen0State extends State<SignUpScreen0> {
                     //Password field
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 12),
-                      child: Obx(()
-                      => ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: passwordField(),
-                      )),
+                      child: Obx(() => ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: passwordField(),
+                          )),
                     ),
 
                     //Confirm password
@@ -105,8 +101,7 @@ class _SignUpScreen0State extends State<SignUpScreen0> {
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(8),
                           child: confirmPwdField(),
-                        )
-                    ),
+                        )),
                   ],
                 ),
               ),
@@ -121,8 +116,8 @@ class _SignUpScreen0State extends State<SignUpScreen0> {
                   //   }
                   // });
                   Get.toNamed(Routes.SIGN_UP_1);
-
-                },),
+                },
+              ),
 
               const SizedBox(height: 64),
 
@@ -130,7 +125,7 @@ class _SignUpScreen0State extends State<SignUpScreen0> {
               RichText(
                 text: TextSpan(
                   text:
-                  'By clicking "Next", you are indicating that you have read and agreed to the ',
+                      'By clicking "Next", you are indicating that you have read and agreed to the ',
                   children: [
                     TextSpan(
                       text: 'Terms of Service',
@@ -161,7 +156,6 @@ class _SignUpScreen0State extends State<SignUpScreen0> {
               const SizedBox(height: 8),
             ],
           ),
-        )
-    );
+        ));
   }
 }

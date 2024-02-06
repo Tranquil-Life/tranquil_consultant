@@ -5,6 +5,8 @@ import 'package:tl_consultant/features/auth/presentation/screens/sign_in/sign_in
 import 'package:tl_consultant/features/auth/presentation/screens/sign_up/sign_up_0.dart';
 import 'package:tl_consultant/features/auth/presentation/screens/sign_up/sign_up_1.dart';
 import 'package:tl_consultant/features/auth/presentation/screens/sign_up/sign_up_2.dart';
+import 'package:tl_consultant/features/auth/presentation/screens/sign_up/sign_up_3.dart';
+import 'package:tl_consultant/features/auth/presentation/screens/sign_up/sign_up_4.dart';
 import 'package:tl_consultant/features/chat/presentation/screens/chat_screen.dart';
 import 'package:tl_consultant/features/consultation/presentation/screens/edit_slots.dart';
 import 'package:tl_consultant/features/dashboard/presentation/screens/dashboard.dart';
@@ -18,17 +20,19 @@ import 'package:tl_consultant/features/wallet/presentation/screens/earnings_tab.
 
 part 'app_routes.dart';
 
-class AppPages{
+class AppPages {
   AppPages._();
 
   static const INITIAL = Routes.SPLASH_SCREEN;
 
   static final routes = [
-    GetPage(name: Routes.SPLASH_SCREEN, page: ()=> SplashScreen()),
-    GetPage(name: Routes.ONBOARDING, page: ()=> const OnBoardingScreen()),
-    GetPage(name: Routes.SIGN_UP_0, page: ()=> SignUpScreen0()),
+    GetPage(name: Routes.SPLASH_SCREEN, page: () => SplashScreen()),
+    GetPage(name: Routes.ONBOARDING, page: () => const OnBoardingScreen()),
+    GetPage(name: Routes.SIGN_UP_0, page: () => SignUpScreen0()),
     GetPage(name: Routes.SIGN_UP_1, page: () => SignUpScreen1()),
     GetPage(name: Routes.SIGN_UP_2, page: () => SignUpScreen2()),
+    GetPage(name: Routes.SIGN_UP_3, page: () => const SignUpScreen3()),
+    GetPage(name: Routes.SIGN_UP_4, page: () => VideoRecorderScreen()),
     GetPage(name: Routes.SIGN_IN, page: () => SignInScreen()),
     GetPage(name: Routes.DASHBOARD, page: () => const Dashboard()),
     GetPage(name: Routes.EDIT_SLOTS, page: () => EditSlots()),
@@ -41,5 +45,4 @@ class AppPages{
     GetPage(name: Routes.PROFILE, page: () => ProfileScreen()),
     GetPage(name: Routes.SETTINGS, page: () => SettingsScreen()),
   ];
-
 }

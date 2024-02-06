@@ -1,3 +1,4 @@
+import 'package:camera/camera.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
@@ -7,8 +8,11 @@ import 'package:tl_consultant/app.dart';
 
 late final FirebaseFirestore firebaseFireStore;
 
-void main() async{
+late List<CameraDescription> cameras;
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  cameras = await availableCameras();
   await GetStorage.init();
 
   runApp(const App());
@@ -32,5 +36,5 @@ void main() async{
   ]);
 
   firebaseFireStore = FirebaseFirestore.instance
-  ..settings = const Settings(persistenceEnabled: true);
+    ..settings = const Settings(persistenceEnabled: true);
 }
