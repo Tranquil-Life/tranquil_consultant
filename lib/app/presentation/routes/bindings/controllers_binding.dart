@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:tl_consultant/core/utils/services/API/network/controllers/network_controller.dart';
 import 'package:tl_consultant/features/activity/presentation/controllers/activity_controller.dart';
 import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';
+import 'package:tl_consultant/features/chat/presentation/controllers/agora_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/chat_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/recording_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/upload_controller.dart';
@@ -18,7 +19,7 @@ import 'package:tl_consultant/features/wallet/presentation/controllers/transacti
 class AllControllerBindings extends Bindings{
   @override
   void dependencies() {
-    Get.lazyPut(() => OnBoardingController());
+    Get.lazyPut(() => OnboardingController());
     Get.lazyPut(() => AuthController());
     Get.lazyPut(() => DashboardController());
     Get.lazyPut(() => ActivityController());
@@ -31,6 +32,7 @@ class AllControllerBindings extends Bindings{
     Get.lazyPut(() => NotesController());
     Get.lazyPut(() => ConsultationController());
     Get.lazyPut(() => ChatController());
+    Get.lazyPut(() => AgoraController());
     Get.lazyPut(() => RecordingController());
     Get.lazyPut(() => UploadController());
     Get.lazyPut(() => NetworkController());

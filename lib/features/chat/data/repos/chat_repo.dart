@@ -6,9 +6,9 @@ import 'package:get/get.dart';
 import 'package:tl_consultant/core/constants/end_points.dart';
 import 'package:tl_consultant/core/errors/api_error.dart';
 import 'package:tl_consultant/features/chat/domain/repos/chat_repo.dart';
+import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 
-
-class ChatRepoImpl extends ChatRepo{
+class ChatRepoImpl extends ChatRepo {
   @override
   Future<Either<ApiError, dynamic>> deleteChat() {
     // TODO: implement deleteChat
@@ -46,79 +46,30 @@ class ChatRepoImpl extends ChatRepo{
   }
 
   @override
-  Future<Either<ApiError, dynamic>> getRecentMessages({required int chatId})
-  async{
-    try{
-      httpClient.baseUrl = baseUrl;
-
-      // debugPrint("recent messages:CHAT_ID: ${chatId.toString()}");
-
-      Response response = await getReq(
-          ChatEndPoints.getRecentMessages(chatId: chatId));
-
-      if(response.body['error'] == false){
-        var data = response.body['data'];
-
-        return Right(data);
-      }
-      else{
-        return Left(
-          ApiError(message: response.body['message'].toString()),
-        );
-      }
-
-    }on SocketException catch (e) {
-      return Left(ApiError(
-          message: e.toString()));
-    } catch (e, stack) {
-      debugPrintStack(stackTrace: stack);
-      return Left(ApiError(
-        message: e.toString(),
-      ));
-    }
+  Future<Either<ApiError, dynamic>> getRecentMessages(
+      {required int chatId}) async {
+    return await catchSocketException(
+            () => getReq(ChatEndPoints.getRecentMessages(chatId: chatId)))
+        .then((value) => handleResponse(value));
   }
 
   @override
-  Future<Either<ApiError, dynamic>> getOlderMessages({required int chatId, required int lastMessageId})
-  async{
-    try{
-      httpClient.baseUrl = baseUrl;
-
-      Response response = await getReq(
-          ChatEndPoints.getOlderMessages(chatId: chatId, lastMessageId: lastMessageId));
-
-
-      if(response.body['error'] == false){
-        var data = response.body['data'];
-
-        return Right(data);
-      }
-      else{
-        return Left(
-          ApiError(message: response.body['message'].toString()),
-        );
-      }
-
-    }on SocketException catch (e) {
-      return Left(ApiError(
-          message: e.toString()));
-    } catch (e, stack) {
-      debugPrintStack(stackTrace: stack);
-      return Left(ApiError(
-        message: e.toString(),
-      ));
-    }
+  Future<Either<ApiError, dynamic>> getOlderMessages(
+      {required int chatId, required int lastMessageId}) async {
+    return await catchSocketException(() => getReq(
+            ChatEndPoints.getOlderMessages(
+                chatId: chatId, lastMessageId: lastMessageId)))
+        .then((value) => handleResponse(value));
   }
 
   @override
-  Future<Either<ApiError, dynamic>> sendChat({
-    required int? chatId,
-    required String message,
-    required String messageType,
-    String? caption,
-    int? parentId})
-  async {
-    final data = {
+  Future<Either<ApiError, dynamic>> sendChat(
+      {required int? chatId,
+      required String message,
+      required String messageType,
+      String? caption,
+      int? parentId}) async {
+    final body = {
       "chat_id": chatId,
       "message": message,
       "message_type": messageType,
@@ -126,75 +77,33 @@ class ChatRepoImpl extends ChatRepo{
       "parent_id": parentId,
     };
 
-    try{
-      httpClient.baseUrl = baseUrl;
-
-      Response response = await postReq(
-          ChatEndPoints.sendChat,
-          body: data
-      );
-
-      await Future.delayed(const Duration(seconds: 1));
-
-      if(response.body['error'] == false){
-        var data = response.body['data'];
-
-        return Right(data);
-      }
-      else{
-        return Left(
-          ApiError(message: response.body['message'].toString()),
-        );
-      }
-
-    }on SocketException catch (e) {
-      return Left(ApiError(
-          message: e.toString()));
-    } catch (e, stack) {
-      debugPrintStack(stackTrace: stack);
-      return Left(ApiError(
-        message: e.toString(),
-      ));
-    }
+    return await catchSocketException(
+            () => postReq(ChatEndPoints.sendChat, body: body))
+        .then((value) => handleResponse(value));
   }
 
   @override
-  Future<Either<ApiError, dynamic>> getChatInfo({
-    required int consultantId,
-    required int clientId})
-  async {
-    try{
-      httpClient.baseUrl = baseUrl;
+  Future<Either<ApiError, dynamic>> getChatInfo(
+      {required int consultantId, required int clientId}) async {
+    var data = {
+      "consultant_id": consultantId,
+      "client_id": clientId,
+    };
 
-      var data = {
-        "consultant_id": consultantId,
-        "client_id": clientId,
-      };
-
-      Response response = await postReq(
-          ChatEndPoints.getChatInfo,
-          body: data);
-
-      if(response.body['message'] == "Chat already exist"){
-        var res = response.body['data'];
-
-        return Right(res);
-      }
-      else{
-        return Left(
-          ApiError(message: response.body['message'].toString()),
-        );
-      }
-
-    }on SocketException catch (e) {
-      return Left(ApiError(
-          message: e.toString()));
-    } catch (e, stack) {
-      debugPrintStack(stackTrace: stack);
-      return Left(ApiError(
-        message: e.toString(),
-      ));
-    }
+    return await catchSocketException(
+            () => postReq(ChatEndPoints.getChatInfo, body: data))
+        .then((value) => handleResponse(value));
   }
 
+  @override
+  Future<Either<ApiError, dynamic>> getAgoraToken(String channelId) async {
+    var input = {
+      "display_name": userDataStore.user['f_name'],
+      "channel_name": channelId,
+    };
+
+    return await catchSocketException(
+            () => postReq(ChatEndPoints.generateToken, body: input))
+        .then((value) => handleResponse(value));
+  }
 }

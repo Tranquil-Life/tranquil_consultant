@@ -9,7 +9,6 @@ class NavBar extends StatefulWidget {
 
 class _NavBarState extends State<NavBar> {
   final dashboardController = Get.put(DashboardController());
-  final notesController = Get.put(NotesController());
   final chatController = Get.put(ChatController());
 
   @override
@@ -65,33 +64,42 @@ class _NavBarState extends State<NavBar> {
             top: false,
             child: GestureDetector(
               onTap: () async {
-                await chatController.getChatInfo();
+                if (chatController.loadingChatRoom.value == false &&
+                    dashboardController.currentMeetingCount.value == 0) {
+                  await ChatController.instance.getChatInfo();
+                } else {
+                  print(chatController.loadingChatRoom.value);
+                }
               },
               behavior: HitTestBehavior.opaque,
               child: Obx(() => Stack(
                     alignment: AlignmentDirectional.topEnd,
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(9),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: ColorPalette.green[800],
-                          border: Border.all(width: 7, color: Colors.white),
-                        ),
-                        child: const Icon(
-                          TranquilIcons.messages,
-                          color: Colors.white,
-                          size: 32,
-                        ),
-                      ),
-                      Positioned(
-                          top: 6,
-                          right: 4,
-                          child: SizedBox.square(
-                            dimension: 28,
-                            child: CountIndicator(DashboardController
-                                .instance.currentMeetingCount.value),
-                          ))
+                          padding: const EdgeInsets.all(9),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: ColorPalette.green[800],
+                            border: Border.all(width: 7, color: Colors.white),
+                          ),
+                          child: chatController.loadingChatRoom.value
+                              ? CircularProgressIndicator(
+                                  color: ColorPalette.white)
+                              : const Icon(
+                                  TranquilIcons.messages,
+                                  color: Colors.white,
+                                  size: 32,
+                                )),
+                      chatController.loadingChatRoom.value
+                          ? SizedBox()
+                          : Positioned(
+                              top: 6,
+                              right: 4,
+                              child: SizedBox.square(
+                                dimension: 28,
+                                child: CountIndicator(dashboardController
+                                    .currentMeetingCount.value),
+                              ))
                     ],
                   )),
             ),

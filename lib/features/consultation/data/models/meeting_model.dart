@@ -1,9 +1,10 @@
+import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/features/consultation/data/models/client_model.dart';
 import 'package:tl_consultant/features/consultation/domain/entities/meeting.dart';
 
 part 'meeting_model.g.dart';
 
-class MeetingModel extends Meeting{
+class MeetingModel extends Meeting {
   MeetingModel({
     required super.id,
     required super.client,
@@ -17,5 +18,8 @@ class MeetingModel extends Meeting{
     //super.updatedAt,
   });
 
-  factory MeetingModel.fromJson(Map<String, dynamic> json) => _$MeetingModelFromJson(json);
+  static Future<MeetingModel> fromJsonWithTimeZone(
+      Map<String, dynamic> json) async {
+    return await fromJsonUsingTimeZone(json);
+  }
 }

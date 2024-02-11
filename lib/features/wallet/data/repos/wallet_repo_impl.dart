@@ -8,58 +8,19 @@ import 'package:tl_consultant/features/wallet/data/models/earnings_model.dart';
 import 'package:tl_consultant/features/wallet/domain/entities/earnings.dart';
 import 'package:tl_consultant/features/wallet/domain/repos/wallet_repo.dart';
 
-
 class WalletRepositoryImpl extends WalletRepo {
   @override
-  Future<Either<ApiError, Earnings>> getWallet() async {
-    try {
-      httpClient.baseUrl = baseUrl;
-
-      Response response = await getReq(WalletEndpoints.getWallet);
-
-      if (response.body['error'] == false) {
-        var wallet = EarningsModel.fromJson(response.body['data']);
-        return Right(wallet);
-      } else {
-        return Left(
-          ApiError(message: response.body['message'].toString()),
-        );
-      }
-    } on SocketException catch (e) {
-      return Left(ApiError(
-          message: e.message));
-    } catch (e, stack) {
-      debugPrintStack(stackTrace: stack);
-      return Left(ApiError(
-          message:
-          e.toString()));
-    }
+  Future<Either<ApiError, dynamic>> getWallet() async {
+    return await catchSocketException(() => getReq(WalletEndpoints.getWallet))
+        .then((value) => handleResponse(value));
   }
 
   @override
-  Future<Either<ApiError, dynamic>> getTransactions({required int page, required int limit}) async{
-    try {
-      httpClient.baseUrl = baseUrl;
-
-      Response response = await getReq(
-          WalletEndpoints.getTransactions(
-              page: page, limit: limit));
-
-      var data = response.body;
-
-      if (data.containsKey('data')) {
-        return Right(response.body['data']);
-      }
-      return Left(ApiError(message: response.body['message']));
-    } on SocketException catch (e) {
-      return Left(ApiError(
-          message: e.toString()));
-    } catch (e, stack) {
-      debugPrintStack(stackTrace: stack);
-      return Left(ApiError(
-        message: e.toString(),
-      ));
-    }
+  Future<Either<ApiError, dynamic>> getTransactions(
+      {required int page, required int limit}) async {
+    return await catchSocketException(() =>
+            getReq(WalletEndpoints.getTransactions(page: page, limit: limit)))
+        .then((value) => handleResponse(value));
   }
 
   String _getReference() {

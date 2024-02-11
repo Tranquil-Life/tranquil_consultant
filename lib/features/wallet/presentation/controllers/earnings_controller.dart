@@ -20,9 +20,10 @@ class EarningsController extends GetxController{
     var result =  await repo.getWallet();
     if(result.isRight()){
       result.map((r){
-        balance.value = r.balance;
-        withdrawn.value = r.withdrawn;
-        availableForWithdrawal.value = r.availableForWithdrawal;
+        Earnings earnings = EarningsModel.fromJson(r['data']);
+        balance.value = earnings.balance;
+        withdrawn.value = earnings.withdrawn;
+        availableForWithdrawal.value = earnings.availableForWithdrawal;
       });
     }else{
       result.leftMap((l) => CustomSnackBar.showSnackBar(

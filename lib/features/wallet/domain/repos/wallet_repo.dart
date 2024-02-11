@@ -6,7 +6,7 @@ import 'package:tl_consultant/features/wallet/domain/entities/earnings.dart';
 abstract class WalletRepo extends ApiService{
   WalletRepo();
 
-  Future<Either<ApiError, Earnings>> getWallet();
+  Future<Either<ApiError, dynamic>> getWallet();
 
   Future<Either<ApiError, dynamic>> getTransactions({
     required int page,

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
@@ -18,13 +19,14 @@ import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_info_repo.dart';
 import 'package:tl_consultant/features/profile/domain/entities/user.dart';
 
-class AuthController extends GetxController{
+class AuthController extends GetxController {
   static AuthController instance = Get.find();
 
   UserDataStore userDataStore = UserDataStore();
   UserInfoRepoImpl userInfoRepoImpl = UserInfoRepoImpl();
 
-  TextEditingController emailTEC = TextEditingController(text: "ona97@example.org");
+  TextEditingController emailTEC =
+      TextEditingController(text: "ona97@example.org");
   TextEditingController passwordTEC = TextEditingController(text: "12345678");
 
   TextEditingController cvTEC = TextEditingController();
@@ -48,7 +50,6 @@ class AuthController extends GetxController{
   String uploadType = "";
   RxString uploadUrl = "".obs;
 
-
   String? currentAddress;
   Position? currentPosition;
 
@@ -57,186 +58,161 @@ class AuthController extends GetxController{
   RxList<String> languagesArr = <String>[].obs;
   RxList<String> specialtiesArr = <String>[].obs;
 
-  Future signUp()async{
-    var either = await AuthRepoImpl().register(params);
-    if(either.isRight()) {
-      either.map((r){
-        userDataStore.user = r;
-      });
+  Future signUp() async {
+    Either either = await AuthRepoImpl().register(params);
+    either.fold(
+        (l) => CustomSnackBar.showSnackBar(
+            context: Get.context!,
+            title: "Error",
+            message: l.message.toString(),
+            backgroundColor: ColorPalette.red), (r) async {
+      Map<String, dynamic> data = r;
+
+      if (data['error'] == false && data['data'] != null) {
+        userDataStore.user = data['data'];
+      }
 
       AppData.isSignedIn = true;
-      User user = UserModel.fromJson(userDataStore.user);
+      // User user = UserModel.fromJson(userDataStore.user);
 
+      // print(user.toJson());
 
-      if(user.authToken!.isNotEmpty){
-        Get.offAllNamed(Routes.DASHBOARD);
-
-        emailTEC.clear();
-        passwordTEC.clear();
-      }
-    }
-    else{
-      either.leftMap((l)=>
-          CustomSnackBar.showSnackBar(
-              context: Get.context!,
-              title: "Error",
-              message: l.message.toString(),
-              backgroundColor: ColorPalette.red
-          ));
-    }
+      await Get.offAllNamed(Routes.DASHBOARD);
+      emailTEC.clear();
+      passwordTEC.clear();
+    });
   }
 
   Future signIn(String email, String password) async {
-    var result = await AuthRepoImpl()
-        .signIn(email, password);
-    if(result.isRight()){
-      result.map((r){
-        userDataStore.user = r;
-      });
+    Either either = await AuthRepoImpl().signIn(email, password);
 
-      AppData.isSignedIn = true;
-      User user = UserModel.fromJson(userDataStore.user);
+    either.fold((l) {
+      return CustomSnackBar.showSnackBar(
+          context: Get.context!,
+          title: "Error",
+          message: l.message.toString(),
+          backgroundColor: ColorPalette.red);
+    }, (r) async {
+      Map<String, dynamic> data = r;
 
-      if(user.authToken!.isNotEmpty){
-        Get.offAllNamed(Routes.DASHBOARD);
-
-        emailTEC.clear();
-        passwordTEC.clear();
+      if (data['error'] == false && data['data'] != null) {
+        userDataStore.user = data['data'];
       }
 
-    }else{
-      result.leftMap((l)=>
-          CustomSnackBar.showSnackBar(
-              context: Get.context!,
-              title: "Error",
-              message: l.message.toString(),
-              backgroundColor: ColorPalette.red
-          ));
-    }
+      AppData.isSignedIn = true;
+
+      await Get.offAllNamed(Routes.DASHBOARD);
+      emailTEC.clear();
+      passwordTEC.clear();
+    });
   }
 
-  Future resetPassword() async{
+  Future resetPassword() async {
     var either = await AuthRepoImpl().resetPassword(emailTEC.text);
-    if(either.isRight()){
+    if (either.isRight()) {
       bool val = either.isRight();
       debugPrint(val.toString());
+    } else {
+      either.leftMap((l) => CustomSnackBar.showSnackBar(
+          context: Get.context!,
+          title: "Error",
+          message: l.message.toString(),
+          backgroundColor: ColorPalette.red));
     }
-    else{
-      either.leftMap((l)=>
-          CustomSnackBar.showSnackBar(
-              context: Get.context!,
-              title: "Error",
-              message: l.message.toString(),
-              backgroundColor: ColorPalette.red
-          ));
-    }
-
   }
 
-  Future<String> generateFcmToken() async{
+  Future<String> generateFcmToken() async {
     var result = await AuthRepoImpl().generateFcmToken();
     String token = "";
-    if(result.isRight()){
-      result.map((r)=>token = r);
+    if (result.isRight()) {
+      result.map((r) => token = r);
 
       return token;
-
-    }else{
-      result.leftMap((l)=>
-          CustomSnackBar.showSnackBar(
-              context: Get.context!,
-              title: "Error",
-              message: l.message.toString(),
-              backgroundColor: ColorPalette.red
-          ));
+    } else {
+      result.leftMap((l) => CustomSnackBar.showSnackBar(
+          context: Get.context!,
+          title: "Error",
+          message: l.message.toString(),
+          backgroundColor: ColorPalette.red));
 
       return "";
     }
   }
 
-  Future updateFcmToken() async{
+  Future updateFcmToken() async {
     String fcmToken = await generateFcmToken();
 
-    if(fcmToken.isNotEmpty){
+    if (fcmToken.isNotEmpty) {
       // Sends the current token to the endpoint
-      await sendTokenToEndpoint(fcmToken);
+      await sendFcmTokenToDB(fcmToken);
     }
   }
 
-  Future sendTokenToEndpoint(String fcmToken) async{
-    var result = await AuthRepoImpl().sendTokenToEndpoint(fcmToken);
-    if(result.isRight()){
+  Future sendFcmTokenToDB(String fcmToken) async {
+    var result = await AuthRepoImpl().sendFcmTokenToDB(fcmToken);
+    if (result.isRight()) {
       result.map((r) => print(r.toString()));
-    }else{
+    } else {
       result.leftMap((l) => CustomSnackBar.showSnackBar(
           context: Get.context!,
           title: "Error",
           message: l.message.toString(),
-          backgroundColor: ColorPalette.red
-      ));
+          backgroundColor: ColorPalette.red));
     }
   }
 
-  uploadCv({File? file}) async{
+  uploadCv({File? file}) async {
     var fileSize = await getFileSize(file!.path, 1);
-    if(fileSize == "Too large"){
+    if (fileSize == "Too large") {
       CustomSnackBar.showSnackBar(
           context: Get.context!,
           title: "Error",
           message: fileMaxSize,
           backgroundColor: ColorPalette.red);
-    }
-    else{
+    } else {
       uploading.value = true;
 
-      var result = await userInfoRepoImpl
-          .uploadCv(file);
+      var result = await userInfoRepoImpl.uploadCv(file);
 
-      if(result.isRight()){
-        result.map((r){
+      if (result.isRight()) {
+        result.map((r) {
           params.cvUrl = r;
           uploadUrl.value = params.cvUrl;
         });
-      }
-      else{
-        result.leftMap((l){
+      } else {
+        result.leftMap((l) {
           CustomSnackBar.showSnackBar(
               context: Get.context!,
               title: "Error",
               message: l.message.toString(),
-              backgroundColor: ColorPalette.red
-          );
+              backgroundColor: ColorPalette.red);
         });
       }
     }
   }
 
-  uploadID({File? file}) async{
+  uploadID({File? file}) async {
     uploading.value = true;
 
-    var result = await userInfoRepoImpl
-        .uploadID(file!);
+    var result = await userInfoRepoImpl.uploadID(file!);
 
-    if(result.isRight()){
-      result.map((r){
+    if (result.isRight()) {
+      result.map((r) {
         params.identityUrl = r;
         uploadUrl.value = params.identityUrl;
       });
-    }
-    else{
-      result.leftMap((l){
+    } else {
+      result.leftMap((l) {
         CustomSnackBar.showSnackBar(
             context: Get.context!,
             title: "Error",
             message: l.message.toString(),
-            backgroundColor: ColorPalette.red
-        );
+            backgroundColor: ColorPalette.red);
       });
     }
-
   }
 
-  clearData(){
+  clearData() {
     emailTEC.clear();
     passwordTEC.clear();
     cvTEC.clear();
@@ -252,5 +228,4 @@ class AuthController extends GetxController{
 
     super.onClose();
   }
-
 }

@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/utils/services/formatters.dart';
-import 'package:tl_consultant/features/chat/data/repos/audio_player.dart';
 import 'package:tl_consultant/features/chat/domain/entities/message.dart';
 
 class VoiceNoteLayout extends StatefulWidget {
@@ -212,54 +211,3 @@ class _VoiceNoteLayoutState extends State<VoiceNoteLayout>
     );
   }
 }
-
-// class _Slider extends StatefulWidget {
-//   const _Slider({
-//     Key? key,
-//     required this.onValueChanged,
-//     required this.fromYou,
-//     this.value = 0,
-//   }) : super(key: key);
-
-//   final double value;
-//   final bool fromYou;
-//   final Function(double value) onValueChanged;
-
-//   @override
-//   State<_Slider> createState() => _SliderState();
-// }
-
-// class _SliderState extends State<_Slider> {
-//   late double value;
-
-//   @override
-//   void initState() {
-//     value = widget.value;
-//     super.initState();
-//   }
-
-//   @override
-//   void didUpdateWidget(covariant _Slider oldWidget) {
-//     setState(() => value = widget.value);
-//     super.didUpdateWidget(oldWidget);
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return SliderTheme(
-//       data: SliderTheme.of(context).copyWith(
-//         trackHeight: 0,
-//         overlayShape: SliderComponentShape.noOverlay,
-//         thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 5),
-//         thumbColor: widget.fromYou ? Colors.white : Colors.black,
-//       ),
-//       child: Slider(
-//         value: value,
-//         onChanged: (val) {
-//           setState(() => value = val);
-//           widget.onValueChanged(val);
-//         },
-//       ),
-//     );
-//   }
-// }
