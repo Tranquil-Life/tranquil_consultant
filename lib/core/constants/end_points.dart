@@ -1,6 +1,6 @@
-const baseUrl = 'https://tranquil-api.herokuapp.com/api/';
-// const host = 'https://e956-102-89-22-124.ngrok-free.app';
-// const baseUrl = '$host/api/';
+// const baseUrl = 'https://tranquil-api.herokuapp.com/api/';
+const host = 'https://0718-102-88-34-187.ngrok-free.app';
+const baseUrl = '$host/api/';
 
 abstract class AuthEndPoints {
   static const login = 'consultant/login';
@@ -34,6 +34,10 @@ abstract class EarningsEndpoints {
 }
 
 abstract class JournalEndPoints {
+  static const addNote = 'consultant/addNote';
+  static const fetchNote = "consultant/listMyNotes/1/10";
+  static const updateNote = "consultant/updateNote";
+  static const deleteNote = "consultant/deleteNote";
   static sharedNotes({required int page, required int limit}) =>
       'consultant/listSharedNotes/$page/$limit';
 }

@@ -6,7 +6,7 @@ class SharedNote {
   final int consultantId;
   final bool canViewUpdates;
   final DateTime createdAt;
-  final NoteModel note;
+  final Note note;
   final ClientModel client;
 
   SharedNote(
@@ -22,6 +22,6 @@ class SharedNote {
       consultantId: json['consultant_id'],
       canViewUpdates: json['can_view_updates'],
       createdAt: DateTime.parse(json['created_at'].toString()),
-      note: NoteModel.fromJson(json['note']),
+      note: Note.fromJson(json['note']),
       client: ClientModel.fromJson(json['client']));
 }

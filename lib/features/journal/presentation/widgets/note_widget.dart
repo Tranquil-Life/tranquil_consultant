@@ -18,7 +18,7 @@ class NoteWidget extends StatelessWidget {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Color(0xffACD5E8),
+        color: ColorPalette.green,
         // color: Color(int.parse(sharedNote.note.hexColor!)) ?? _defaultNoteColor,
         borderRadius: BorderRadius.circular(8),
         boxShadow: const [

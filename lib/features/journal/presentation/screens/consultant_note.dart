@@ -1,70 +1,66 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
-import 'package:tl_consultant/features/journal/domain/entities/shared_note.dart';
+import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/features/journal/presentation/controllers/notes_controller.dart';
-import 'package:tl_consultant/features/journal/presentation/screens/selected_note_view.dart';
-import 'package:tl_consultant/features/journal/presentation/widgets/note_widget.dart';
+import 'package:tl_consultant/features/journal/presentation/screens/create_note_screen.dart';
 
 class ConsultantNote extends StatelessWidget {
-  const ConsultantNote({super.key});
+  const ConsultantNote({
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<NotesController>(
-      builder: (_) => Expanded(
-        child: GridView.builder(
-          shrinkWrap: true,
-          controller: _.scrollController,
-          itemCount: _.journal.length,
-          itemBuilder: (context, index) => Container(
-            margin: const EdgeInsets.only(
-              left: 4,
-              right: 4,
-              bottom: 8,
-              top: 8,
+    final NotesController noteController = Get.find();
+
+    return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: ColorPalette.green,
+        onPressed: () async {
+          await Get.to(const NewNote());
+        },
+        child: const Icon(
+          Icons.add,
+          color: ColorPalette.white,
+        ),
+      ),
+      body: Obx(
+        () => Expanded(
+          child: GridView.builder(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 10,
+              mainAxisSpacing: 10,
             ),
-            child: SelectableNoteWidget(
-              sharedNote: _.journal[index],
-              onTap: () async {
-                await Get.to(
-                  NoteView(sharedNote: _.journal[index]),
-                );
-              },
-            ),
-          ),
-          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-            maxCrossAxisExtent: 200,
-            childAspectRatio: 1,
-            crossAxisSpacing: 14,
-            mainAxisSpacing: 16,
+            itemCount: noteController.notes.length,
+            itemBuilder: (context, index) {
+              return Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        noteController.notes[index].title,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        noteController.notes[index].note,
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
           ),
         ),
       ),
-    );
-  }
-}
-
-class SelectableNoteWidget extends StatelessWidget {
-  final SharedNote sharedNote;
-  final Function()? onTap;
-
-  const SelectableNoteWidget({super.key, required this.sharedNote, this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.topRight,
-      children: [
-        GestureDetector(
-          onTap: onTap!,
-          child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minHeight: displayWidth(context) * 0.3,
-              ),
-              child: NoteWidget(sharedNote: sharedNote)),
-        ),
-      ],
     );
   }
 }
