@@ -16,7 +16,8 @@ class VideoRecorderScreen extends StatefulWidget {
 class _VideoRecorderScreenState extends State<VideoRecorderScreen> {
   late CameraController controller;
   late bool isRecording;
-  Duration recordingDuration = Duration.zero; // Initialize with a default value
+  //got a late initialization error till when i didnt equate (know why)
+  Duration recordingDuration = Duration.zero;
   final int maxRecordingSeconds = 60;
   late Stopwatch stopwatch;
 
@@ -80,7 +81,7 @@ class _VideoRecorderScreenState extends State<VideoRecorderScreen> {
     }
     return Scaffold(
       appBar: const CustomAppBar(
-        title: "Video Record",
+        // title: "Video Record",
         hideBackButton: false,
       ),
       body: Column(
@@ -99,9 +100,7 @@ class _VideoRecorderScreenState extends State<VideoRecorderScreen> {
                     children: [
                       IconButton(
                         icon: Image.asset('assets/images/icons/play.png'),
-                        onPressed: () {
-                          // Add logic to handle play/pause
-                        },
+                        onPressed: () {},
                       ),
                       Stack(
                         alignment: Alignment.center,
@@ -132,9 +131,11 @@ class _VideoRecorderScreenState extends State<VideoRecorderScreen> {
                             ),
                         ],
                       ),
-                      Text(
-                        '${recordingDuration.inSeconds}/${maxRecordingSeconds}',
-                        style: const TextStyle(color: Colors.white),
+                      IconButton(
+                        icon: Image.asset('assets/images/icons/stop.png'),
+                        onPressed: () {
+                          stopRecording();
+                        },
                       ),
                     ],
                   ),
