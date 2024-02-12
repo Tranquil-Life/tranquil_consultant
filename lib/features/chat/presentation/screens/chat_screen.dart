@@ -1,18 +1,15 @@
 import 'dart:async';
-import 'dart:developer';
+
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/theme/tranquil_icons.dart';
 import 'package:tl_consultant/app/presentation/widgets/app_bar_button.dart';
-import 'package:tl_consultant/app/presentation/widgets/swipeable.dart';
 import 'package:tl_consultant/app/presentation/widgets/unfocus_bg.dart';
 import 'package:tl_consultant/app/presentation/widgets/user_avatar.dart';
-import 'package:tl_consultant/core/utils/functions.dart';
 import 'package:tl_consultant/core/utils/services/formatters.dart';
 import 'package:tl_consultant/features/chat/domain/entities/message.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/chat_controller.dart';
@@ -20,7 +17,6 @@ import 'package:tl_consultant/features/chat/presentation/controllers/recording_c
 import 'package:tl_consultant/features/chat/presentation/controllers/upload_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/screens/messages_list_widget.dart';
 import 'package:tl_consultant/features/chat/presentation/widgets/attachment_sheet.dart';
-import 'package:tl_consultant/features/chat/presentation/widgets/chat_boxes/chat_item.dart';
 import 'package:tl_consultant/features/chat/presentation/widgets/chat_boxes/shared/replied_chat_box.dart';
 import 'package:tl_consultant/features/chat/presentation/widgets/chat_more_options.dart';
 import 'package:tl_consultant/features/chat/presentation/widgets/dialogs/vn_dialog.dart';
@@ -39,7 +35,7 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-    final chatController = Get.put(ChatController());
+  final chatController = Get.put(ChatController());
   final uploadController = Get.put(UploadController());
   final _recordingController = RecordingController()..onInit();
 
@@ -51,14 +47,13 @@ class _ChatScreenState extends State<ChatScreen> {
   Future _stopRecording() async {
     await _recordingController.stop();
     if (_recordingController.localAudioPath != null) {
-      chatController
-          .setVoiceFile(File(_recordingController.localAudioPath!));
+      chatController.setVoiceFile(File(_recordingController.localAudioPath!));
     }
 
     return chatController.audioFile!;
   }
 
-  Future _uploadVn() async{
+  Future _uploadVn() async {
     var hasVibrator = await Vibration.hasVibrator();
     if (hasVibrator!) {
       await Vibration.vibrate(duration: 4000, amplitude: 225);
@@ -82,9 +77,9 @@ class _ChatScreenState extends State<ChatScreen> {
     chatController.textController = TextEditingController();
 
     chatController.textController.addListener(() {
-      setState(() => micMode = chatController.textController.text.trim().isEmpty);
+      setState(
+          () => micMode = chatController.textController.text.trim().isEmpty);
     });
-
 
     super.initState();
   }
@@ -111,9 +106,7 @@ class _ChatScreenState extends State<ChatScreen> {
             color: Colors.black26,
             colorBlendMode: BlendMode.darken,
           ),
-
-
-          Obx((){
+          Obx(() {
             if (_recordingController.time.value == "01:00") {
               _uploadVn();
             }
@@ -126,15 +119,15 @@ class _ChatScreenState extends State<ChatScreen> {
                   children: [
                     const _TitleBar(),
 
-
                     // Chat messages list
-                   Expanded(child: chatController.isFirstLoadRunning.value
-                       ?
-                   const Center(child: CircularProgressIndicator(color: ColorPalette.green))
-                       :
-                   const UnFocusWidget(
-                     child: Messages(),
-                   )),
+                    Expanded(
+                        child: chatController.isFirstLoadRunning.value
+                            ? const Center(
+                                child: CircularProgressIndicator(
+                                    color: ColorPalette.green))
+                            : const UnFocusWidget(
+                                child: Messages(),
+                              )),
                     SafeArea(
                       top: false,
                       child: _InputBar(
@@ -142,8 +135,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           recordingController: _recordingController,
                           startRecording: _startRecording,
                           stopRecording: _stopRecording,
-                          showMic: showMic
-                      ),
+                          showMic: showMic),
                     )
                   ],
                 ),

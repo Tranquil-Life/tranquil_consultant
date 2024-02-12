@@ -7,8 +7,8 @@ import 'package:get_storage/get_storage.dart';
 import 'package:tl_consultant/app.dart';
 
 late final FirebaseFirestore firebaseFireStore;
-
-late List<CameraDescription> cameras;
+List<CameraDescription> cameras = [];
+// late List<CameraDescription> cameras;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
