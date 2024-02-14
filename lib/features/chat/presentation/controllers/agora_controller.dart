@@ -24,7 +24,7 @@ class AgoraController extends GetxController {
   String val = uidGenerator.v4();
   final now = DateTimeExtension.now;
 
-  updateAgoraInfo([bool allInfo = false]) async {
+  updateAgoraInfo() async {
     String documentId = chatController.chatChannel.value;
 
     callRoomId.value =
@@ -36,20 +36,9 @@ class AgoraController extends GetxController {
     await getAgoraToken();
 
     Map<String, dynamic> fields = <String, dynamic>{};
-    if (allInfo) {
-      fields = {
-        'agora_channel': callRoomId.value,
-        'agora_token': agoraToken.value,
-        'agora_token_expiry_time': now.add(const Duration(minutes: 45)),
-        'agora_call_status': "calling..."
-      };
-    } else {
-      fields = {
-        'agora_token': agoraToken.value,
-        'agora_token_expiry_time': now.add(const Duration(minutes: 45)),
-        'agora_call_status': "calling..."
-      };
-    }
+    fields = {
+      'agora_channel': callRoomId.value,
+    };
 
     await documentReference.update(fields);
 
@@ -69,33 +58,21 @@ class AgoraController extends GetxController {
     if (snapshot.exists) {
       Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
 
-      if (data != null &&
-          data.containsKey("agora_token_expiry_time") &&
-          data['agora_token'].toString().isNotEmpty) {
-        // Field exists, retrieve its value
-        DateTime agoraTokenExpiry =
-            (data["agora_token_expiry_time"] as Timestamp).toDate();
-        //$agoraTokenExpiry exists in the document.
-        if (now.add(const Duration(minutes: 4)).millisecondsSinceEpoch <
-            agoraTokenExpiry.millisecondsSinceEpoch) {
-          agoraToken.value = data['agora_token'];
+      if (data != null && data.containsKey("agora_channel")) {
+        callRoomId.value = data['agora_channel'];
 
-          //Place call and update agora_call_status to calling...
-          // var fields = {'agora_call_status': "calling..."};
+        await getAgoraToken();
 
-          // await documentReference.update(fields);
+        //Place call and update agora_call_status to calling...
+        // var fields = {'agora_call_status': "calling..."};
 
-          navigateToCallView();
+        // await documentReference.update(fields);
 
-          debugPrint('Updated successfully!');
-        } else {
-          print("hello");
-          updateAgoraInfo(false); //Update token specific agora fields
-        }
+        navigateToCallView();
+
+        debugPrint('Updated successfully!');
       } else {
-        print("bye");
-
-        updateAgoraInfo(true); //Update all agora fields
+        updateAgoraInfo(); //Update all agora fields
       }
     }
   }

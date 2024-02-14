@@ -1,7 +1,7 @@
 // const baseUrl = 'https://tranquil-api.herokuapp.com/api/';
 import 'package:tl_consultant/core/constants/constants.dart';
 
-const host = 'https://0354-102-89-34-166.ngrok-free.app';
+const host = 'https://b7ba-102-88-83-26.ngrok-free.app';
 const exchangeHost = "https://v6.exchangerate-api.com/v6";
 const baseUrl = '$host/api/';
 
@@ -22,7 +22,8 @@ abstract class ConsultationEndPoints {
   static const getSlots = '$thisUserType/getSlots';
   static const saveSlots = '$thisUserType/saveSlots';
   static const deleteSlot = '$thisUserType/deleteSlot';
-  static getMeetings({required int page}) => '$thisUserType/myMeetings?page=$page';
+  static getMeetings({required int page}) =>
+      '$thisUserType/myMeetings?page=$page';
 }
 
 abstract class WalletEndpoints {
