@@ -37,3 +37,8 @@ const messagesCollection = "chat_messages";
 //upload types
 const profileImage = "profile_image";
 const voiceNote = "chat_audio";
+
+//notes list view types
+
+const grid = "grid";
+const list = "list";

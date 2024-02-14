@@ -1,11 +1,9 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/theme/fonts.dart';
 import 'package:tl_consultant/app/presentation/widgets/user_avatar.dart';
 import 'package:tl_consultant/core/utils/extensions/date_time_extension.dart';
-import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 import 'package:tl_consultant/features/journal/domain/entities/shared_note.dart';
 
 class NoteWidget extends StatelessWidget {
@@ -18,7 +16,7 @@ class NoteWidget extends StatelessWidget {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Color(0xffACD5E8),
+        color: const Color(0xffACD5E8),
         // color: Color(int.parse(sharedNote.note.hexColor!)) ?? _defaultNoteColor,
         borderRadius: BorderRadius.circular(8),
         boxShadow: const [
@@ -92,7 +90,7 @@ class NoteWidget extends StatelessWidget {
                     fontFamily: AppFonts.josefinSansRegular,
                   ),
                 ),
-                SizedBox(height: 4)
+                const SizedBox(height: 4)
               ],
             ),
           ),

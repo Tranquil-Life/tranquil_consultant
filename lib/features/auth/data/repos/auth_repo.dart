@@ -31,7 +31,7 @@ class AuthRepoImpl extends AuthRepo {
   Future<Either<ApiError, dynamic>> signIn(
       String email, String password) async {
     final input = {"email": email, "password": password};
-
+    print("input: $input");
     return await catchSocketException(
             () => postReq(AuthEndPoints.login, body: input))
         .then((value) => handleResponse(value));

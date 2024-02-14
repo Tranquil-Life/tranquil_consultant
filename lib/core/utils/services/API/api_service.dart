@@ -33,6 +33,7 @@ class ApiService {
     return eitherResponse.fold(
       (apiError) => Left(apiError),
       (data) {
+        print(data);
         return Right(data);
       },
     );
@@ -43,9 +44,11 @@ class ApiService {
     try {
       return await function();
     } on SocketException catch (e) {
+      print(e);
       return Left(ApiError(message: 'Error: $e'));
     } catch (e, stack) {
       debugPrintStack(stackTrace: stack);
+
       return Left(ApiError(message: e.toString()));
     }
   }
