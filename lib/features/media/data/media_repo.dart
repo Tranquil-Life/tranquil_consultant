@@ -5,6 +5,7 @@ import 'package:dartz/dartz.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
+import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/constants/end_points.dart';
 import 'package:tl_consultant/core/errors/api_error.dart';
 import 'package:tl_consultant/features/media/domain/media_repo.dart';
@@ -14,8 +15,24 @@ import 'package:tl_consultant/features/profile/domain/entities/user.dart';
 
 class MediaRepoImpl extends MediaRepo {
   @override
-  Future<Either<ApiError, dynamic>> uploadFileWithHttp(File file) async {
-    User therapist = UserModel.fromJson(userDataStore.user);
+  Future<Either<ApiError, dynamic>> uploadFileWithHttp(
+      File file, String uploadType,
+      [String? previousImgUrl]) async {
+    User client = UserModel.fromJson(userDataStore.user);
+
+    String mediaType = "";
+    String mediaSubType = "";
+
+    switch (uploadType) {
+      case profileImage:
+        mediaType = "image";
+        mediaSubType = "png";
+        break;
+      case voiceNote:
+        mediaType = "audio";
+        mediaSubType = "wav";
+        break;
+    }
 
     try {
       ///MultiPart request
@@ -24,7 +41,7 @@ class MediaRepoImpl extends MediaRepo {
         Uri.parse(baseUrl + MediaEndpoints.uploadFile),
       );
       Map<String, String> headers = {
-        "Authorization": "Bearer ${therapist.authToken}",
+        "Authorization": "Bearer ${client.authToken}",
         "Content-type": "multipart/form-data"
       };
       request.files.add(
@@ -33,17 +50,14 @@ class MediaRepoImpl extends MediaRepo {
           file.readAsBytes().asStream(),
           file.lengthSync(),
           filename: p.basename(file.path),
-          contentType: MediaType("audio", "wav"),
+          contentType: MediaType(mediaType, mediaSubType),
         ),
       );
       request.headers.addAll(headers);
       request.fields.addAll({
-        "username": therapist.firstName!,
-        "upload_type": "chat_audio",
+        "upload_type": uploadType,
       });
-      print("request: $request");
       var res = await request.send();
-      print("This is response:$res");
       //return res.statusCode;
 
       var newRes = await http.Response.fromStream(res);

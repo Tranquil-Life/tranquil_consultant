@@ -18,42 +18,9 @@ class ProfileRepoImpl extends ProfileRepo {
   }
 
   @override
-  Future<Either<ApiError, dynamic>> updateProfile(User user) async{
-    try {
-      httpClient.baseUrl = baseUrl;
-
-      Response response = await postReq(
-        ProfileEndPoints.edit,
-        body: user.toJson()
-      );
-
-      if (!jsonEncode(response.body).contains('error')) {
-        return const Left(ApiError(
-          message: "An Error Occurred Please check your network and retry",
-        ));
-      }
-      else{
-        if (response.body['profile'] != null) {
-          return Right(response.body['profile']);
-        }
-        else if (response.body['errors'] is List) {
-          final List<String>? errors = (response.body['errors'] as List?)?.cast();
-          return Left(ApiError(
-            message: errors?.fold('', (prev, next) => '$prev\n$next').trim(),
-          ));
-        }
-        else {
-          return Left(ApiError(
-            message: response.body['message'],
-          ));
-        }
-      }
-
-    }
-    on SocketException catch(e) {
-      return Left(ApiError(
-          message: e.toString()));
-    }
+  Future<Either<ApiError, dynamic>> updateProfile(User user) async {
+    return await catchSocketException(
+            () => postReq(ProfileEndPoints.edit, body: user.toJson()))
+        .then((value) => handleResponse(value));
   }
-
 }

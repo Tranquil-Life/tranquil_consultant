@@ -1,51 +1,58 @@
-const baseUrl = 'https://tranquil-api.herokuapp.com/api/';
-// const host = 'https://e956-102-89-22-124.ngrok-free.app';
-// const baseUrl = '$host/api/';
+
+// const baseUrl = 'https://tranquil-api.herokuapp.com/api/';
+import 'package:tl_consultant/core/constants/constants.dart';
+
+const host = 'https://b7ba-102-88-83-26.ngrok-free.app';
+const exchangeHost = "https://v6.exchangerate-api.com/v6";
+const baseUrl = '$host/api/';
+
 
 abstract class AuthEndPoints {
-  static const login = 'consultant/login';
-  static const register = 'consultant/register';
-  static const passwordReset = 'consultant/requestPasswordReset';
-  static const logOut = 'consultant/logOut';
+  static const login = '$thisUserType/login';
+  static const register = '$thisUserType/register';
+  static const passwordReset = '$thisUserType/requestPasswordReset';
+  static const logOut = '$thisUserType/logOut';
 }
 
 abstract class ProfileEndPoints {
-  static const get = 'client/getProfile';
-  static const edit = 'client/edit';
+  static const get = '$thisUserType/getProfile';
+  static const edit = '$thisUserType/edit';
+  static const updateLocation = '$thisUserType/updateMyLocation';
 }
 
 abstract class ConsultationEndPoints {
-  static const getSlots = 'consultant/getSlots';
-  static const saveSlots = 'consultant/saveSlots';
-  static const deleteSlot = 'consultant/deleteSlot';
-  static getMeetings({required int page}) => 'consultant/myMeetings?page=$page';
+  static const getSlots = '$thisUserType/getSlots';
+  static const saveSlots = '$thisUserType/saveSlots';
+  static const deleteSlot = '$thisUserType/deleteSlot';
+  static getMeetings({required int page}) =>
+      '$thisUserType/myMeetings?page=$page';
 }
 
 abstract class WalletEndpoints {
-  static const getWallet = 'consultant/getEarnings';
-  static const pay = 'consultant/pay';
+  static const getWallet = '$thisUserType/getEarnings';
+  static const pay = '$thisUserType/pay';
   static getTransactions({required int page, required int limit}) =>
-      'consultant/listTransactions/$page/$limit';
+      '$thisUserType/listTransactions/$page/$limit';
 }
 
 abstract class EarningsEndpoints {
-  static const getInfo = 'consultant/getEarnings';
-  static const getTransactions = 'consultant/getEarnings';
+  static const getInfo = '$thisUserType/getEarnings';
+  static const getTransactions = '$thisUserType/getEarnings';
 }
 
 abstract class JournalEndPoints {
   static sharedNotes({required int page, required int limit}) =>
-      'consultant/listSharedNotes/$page/$limit';
+      '$thisUserType/listSharedNotes/$page/$limit';
 }
 
 abstract class MediaEndpoints {
-  static const uploadFile = 'consultant/uploadFile';
+  static const uploadFile = '$thisUserType/uploadFile';
 }
 
 abstract class ChatEndPoints {
-  static const sendChat = 'consultant/send-message';
-  static const generateToken = 'consultant/generateToken';
-  static const getChatInfo = 'consultant/create-chat';
+  static const sendChat = '$thisUserType/send-message';
+  static const generateToken = '$thisUserType/generateToken';
+  static const getChatInfo = '$thisUserType/create-chat';
   static getRecentMessages({required int chatId}) =>
       'client/get-recent-messages/$chatId';
   static getOlderMessages({required int chatId, required int lastMessageId}) =>

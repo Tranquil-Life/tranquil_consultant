@@ -26,22 +26,46 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
+	<key>NSCalendarsUsageDescription</key>
+	<string>Tranquil Life needs this permission to be able to add scheduled meetings to your calendar</string>
 	<key>NSCameraUsageDescription</key>
-	<string>this app requires permission to your camera</string>
+	<string>Tranquil Life requires permission to your camera to make calls and to take pictures and videos.</string>
+	<key>NSContactsUsageDescription</key>
+	<string>To prevent app from crashing when adding schedule meeting to calendar</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Tranquil Life uses Face ID authentication to unlock the app</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Always and when in use!</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>this app needs access to location when in the background.</string>
+	<string>Can I have location always?</string>
+	<key>NSLocationUsageDescription</key>
+	<string>Older devices need location.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>this app needs access to location when open.</string>
+	<string>Need location when in use</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>microphone access is needed for calls and recordings</string>
+	<string>Tranquil Life requires permission to your microphone to make calls and to record voice notes and videos.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>this app requires permission to your gallery.</string>
+	<string>Tranquil Life requires permission to your gallery.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>This app needs access to phone mic for audio recordings and speech recognition</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>remote-notification</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
+	<key>UIStatusBarHidden</key>
+	<false/>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
@@ -57,5 +81,7 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>io.flutter.embedded_views_preview</key>
+	<string>YES</string>
 </dict>
 </plist>

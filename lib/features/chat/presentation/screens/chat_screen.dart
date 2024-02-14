@@ -15,6 +15,7 @@ import 'package:tl_consultant/app/presentation/widgets/user_avatar.dart';
 import 'package:tl_consultant/core/utils/functions.dart';
 import 'package:tl_consultant/core/utils/services/formatters.dart';
 import 'package:tl_consultant/features/chat/domain/entities/message.dart';
+import 'package:tl_consultant/features/chat/presentation/controllers/agora_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/chat_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/recording_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/upload_controller.dart';
@@ -74,7 +75,7 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     chatController.onInit();
-    chatController.listenChannel();
+    //chatController.listenChannel();
 
     _recordingController.onInit();
 
@@ -124,7 +125,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 padding: const EdgeInsets.all(4),
                 child: Column(
                   children: [
-                    const _TitleBar(),
+                    _TitleBar(),
 
 
                     // Chat messages list

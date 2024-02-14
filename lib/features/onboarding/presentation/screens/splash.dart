@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:tl_consultant/features/onboarding/presentation/controllers/onboarding_controller.dart';
 
 class SplashScreen extends StatelessWidget {
-  OnBoardingController controller = Get.put(OnBoardingController());
+  OnboardingController controller = Get.put(OnboardingController());
 
   SplashScreen({Key? key}) : super(key: key);
 

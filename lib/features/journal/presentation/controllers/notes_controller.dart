@@ -1,3 +1,4 @@
+import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
@@ -26,31 +27,38 @@ class NotesController extends GetxController {
   var isFirstLoadRunning = false.obs;
   // Used to display loading indicators when _loadMore function is running
   var isLoadMoreRunning = false.obs;
-
+  var lastNoteId = 0.obs;
   // The controller for the ListView
   late ScrollController scrollController;
 
   loadfirstNotes() async {
-    var result =
-        await journalRepo.getJournal(page: page.value, limit: limit.value);
-
     isFirstLoadRunning.value = true;
 
-    if (result.isRight()) {
-      result.map((r) => journal.value =
-          (r as List).map((e) => SharedNote.fromJson(e)).toList());
+    Either either =
+        await journalRepo.getJournal(page: page.value, limit: limit.value);
 
-      print("SHARED NOTES: $journal");
-    }
-    // else {
-    //   result.leftMap((l) => CustomSnackBar.showSnackBar(
-    //       context: Get.context!,
-    //       title: "Error",
-    //       message: l.message.toString(),
-    //       backgroundColor: ColorPalette.red));
-    // }
-    update();
+    either.fold(
+        (l) => CustomSnackBar.showSnackBar(
+            context: Get.context!,
+            title: "Error",
+            message: l.message.toString(),
+            backgroundColor: ColorPalette.red), (r) {
+      journal.clear();
 
+      var data = r['data'];
+      for (int i = 0; i < (data as List).length; i++) {
+        SharedNote note = SharedNote.fromJson(data[i]);
+        journal.add(note);
+      }
+
+      if (journal.isNotEmpty) {
+        lastNoteId.value = journal[journal.length - 1].id;
+      } else {
+        isFirstLoadRunning.value = false;
+      }
+    });
+
+    update(); // Notify listeners that the notes list has changed
     isFirstLoadRunning.value = false;
   }
 

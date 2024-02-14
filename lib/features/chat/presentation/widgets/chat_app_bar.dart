@@ -1,9 +1,11 @@
 part of '../screens/chat_screen.dart';
 
 class _TitleBar extends StatelessWidget {
-  const _TitleBar({Key? key}) : super(key: key);
+  _TitleBar({Key? key}) : super(key: key);
 
   final duration = const Duration(minutes: 30);
+
+  AgoraController agoraController = Get.put(AgoraController());
 
   @override
   Widget build(BuildContext context) {
@@ -48,43 +50,36 @@ class _TitleBar extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 12),
-          AppBarButton(
-            backgroundColor: Colors.white,
-            icon: Padding(
-              padding: const EdgeInsets.all(2),
-              child: Icon(
-                TranquilIcons.phone,
-                color: ColorPalette.green,
-                size: 20,
-              ),
-            ),
-            onPressed: () {
-              // Navigator.of(context).pushNamed(
-              //   CallScreen.routeName,
-              //   arguments: CallPageData(
-              //     context.read<ChatBloc>().consultant.id.toString(),
-              //     false,
-              //   ),
-              // );
-            },
-          ),
-          const SizedBox(width: 12),
+          // AppBarButton(
+          //   backgroundColor: Colors.white,
+          //   icon: Padding(
+          //     padding: const EdgeInsets.all(2),
+          //     child: Icon(
+          //       TranquilIcons.phone,
+          //       color: ColorPalette.green,
+          //       size: 20,
+          //     ),
+          //   ),
+          //   onPressed: () {
+          //     // Navigator.of(context).pushNamed(
+          //     //   CallScreen.routeName,
+          //     //   arguments: CallPageData(
+          //     //     context.read<ChatBloc>().consultant.id.toString(),
+          //     //     false,
+          //     //   ),
+          //     // );
+          //   },
+          // ),
+          // const SizedBox(width: 12),
           AppBarButton(
               backgroundColor: Colors.white,
               icon: Icon(
                 CupertinoIcons.videocam_fill,
                 color: ColorPalette.green,
               ),
-              onPressed: (){
-                // Navigator.of(context).pushNamed(
-                //   CallScreen.routeName,
-                //   arguments: const CallPageData(
-                //     // TODO: ADD CONSULTANT
-                //     'context.read<ChatBloc>().state.consultant!.id.toString()',
-                //   ),
-                // );
-              }
-          ),
+              onPressed: () {
+                agoraController.joinAgoraCall(join: false);
+              }),
           const MoreOptions(),
         ],
       ),
