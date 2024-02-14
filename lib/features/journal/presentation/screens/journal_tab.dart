@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:get/get.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
@@ -40,42 +41,113 @@ class JournalTab extends StatelessWidget {
   }
 }
 
-class JournalBody extends StatefulWidget {
+class JournalBody extends HookWidget {
   const JournalBody({super.key});
 
   @override
-  State<JournalBody> createState() => _JournalBodyState();
-}
-
-class _JournalBodyState extends State<JournalBody> {
-  final NotesController _ = Get.put(NotesController());
-
-  @override
-  void initState() {
-    _.loadfirstNotes();
-    _.scrollController = ScrollController()
-      ..addListener(() => _.loadMoreNotes());
-
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Obx(() => Column(
-          children: [
-            const SearchBar(),
-            const SizedBox(height: 8),
-            const NoteGrid(),
-            // when the _loadMore function is running
-            if (_.isLoadMoreRunning.value == true)
-              const Padding(
-                padding: EdgeInsets.only(top: 10, bottom: 40),
-                child: Center(
-                  child: CircularProgressIndicator(color: ColorPalette.green),
+    final tabController = useTabController(initialLength: 2);
+    final tabIndex = useState(0);
+    useEffect(() {
+      tabController.addListener(() {
+        tabIndex.value = tabController.index;
+      });
+      return () {
+        tabController.dispose();
+      };
+    }, [tabController]);
+
+    return Scaffold(
+      appBar: const CustomAppBar(
+        centerTitle: false,
+        title: "My Journal",
+      ),
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(
+            30,
+          ),
+          child: Column(
+            children: [
+              TabBar(
+                controller: tabController,
+                onTap: (v) {
+                  tabIndex.value = v;
+                },
+                splashFactory: NoSplash.splashFactory,
+                overlayColor: MaterialStateProperty.resolveWith<Color?>(
+                  (Set<MaterialState> states) {
+                    return states.contains(MaterialState.focused)
+                        ? null
+                        : Colors.transparent;
+                  },
+                ),
+                dividerHeight: 2.5,
+                dividerColor: ColorPalette.green,
+                indicatorColor: Colors.transparent,
+                tabs: [
+                  Container(
+                    height: 40,
+                    width: double.maxFinite,
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(6),
+                        topRight: Radius.circular(6),
+                      ),
+                      color: tabIndex.value == 0
+                          ? ColorPalette.green
+                          : Colors.transparent,
+                    ),
+                    child: Center(
+                      child: Text(
+                        "My notes",
+                        style: TextStyle(
+                          color:
+                              tabIndex.value == 0 ? Colors.white : Colors.black,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    height: 40,
+                    width: double.maxFinite,
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(6),
+                        topRight: Radius.circular(6),
+                      ),
+                      color: tabIndex.value == 1
+                          ? ColorPalette.green
+                          : Colors.transparent,
+                    ),
+                    child: Center(
+                      child: Text(
+                        "Client notes",
+                        style: TextStyle(
+                          color:
+                              tabIndex.value == 1 ? Colors.white : Colors.black,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Expanded(
+                child: TabBarView(
+                  controller: tabController,
+                  children: [
+                    ConsultantNote(),
+                    SizedBox(),
+                  ],
                 ),
               ),
-          ],
-        ));
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 
