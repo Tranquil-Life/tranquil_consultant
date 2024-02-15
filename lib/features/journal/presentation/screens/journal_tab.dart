@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:get/get.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
-import 'package:tl_consultant/app/presentation/theme/fonts.dart';
 import 'package:tl_consultant/app/presentation/widgets/custom_app_bar.dart';
 import 'package:tl_consultant/app/presentation/widgets/unfocus_bg.dart';
 import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
-import 'package:tl_consultant/core/utils/services/API/network/controllers/network_controller.dart';
-import 'package:tl_consultant/features/journal/domain/entities/note.dart';
 import 'package:tl_consultant/features/journal/domain/entities/shared_note.dart';
 import 'package:tl_consultant/features/journal/presentation/controllers/notes_controller.dart';
+import 'package:tl_consultant/features/journal/presentation/screens/consultant_note.dart';
 import 'package:tl_consultant/features/journal/presentation/screens/selected_note_view.dart';
 import 'package:tl_consultant/features/journal/presentation/widgets/note_widget.dart';
 
@@ -20,9 +18,9 @@ class JournalTab extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
-        title: "Journal",
+        title: "My Journal",
         centerTitle: true,
-        hideBackButton: true,
+        hideBackButton: false,
         actions: [
           AppBarAction(
             onPressed: () {},
@@ -34,76 +32,6 @@ class JournalTab extends StatelessWidget {
         child: Padding(
           padding: EdgeInsets.all(12),
           child: JournalBody(),
-        ),
-      ),
-    );
-  }
-}
-
-class JournalBody extends StatefulWidget {
-  const JournalBody({super.key});
-
-  @override
-  State<JournalBody> createState() => _JournalBodyState();
-}
-
-class _JournalBodyState extends State<JournalBody> {
-  final NotesController _ = Get.put(NotesController());
-
-  @override
-  void initState() {
-    _.loadfirstNotes();
-    _.scrollController = ScrollController()
-      ..addListener(() => _.loadMoreNotes());
-
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Obx(() => Column(
-          children: [
-            const SearchBar(),
-            const SizedBox(height: 8),
-            const NoteGrid(),
-            // when the _loadMore function is running
-            if (_.isLoadMoreRunning.value == true)
-              const Padding(
-                padding: EdgeInsets.only(top: 10, bottom: 40),
-                child: Center(
-                  child: CircularProgressIndicator(color: ColorPalette.green),
-                ),
-              ),
-          ],
-        ));
-  }
-}
-
-class SearchBar extends StatelessWidget {
-  const SearchBar({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(8),
-      child: Container(
-        color: const Color(0xfff2f2f2),
-        child: TextField(
-          autocorrect: false,
-          keyboardType: TextInputType.text,
-          textInputAction: TextInputAction.search,
-          decoration: const InputDecoration(
-            hintText: 'Search',
-            prefixIcon: Padding(
-              padding: EdgeInsets.only(left: 6),
-              child: Icon(Icons.search_rounded),
-            ),
-            prefixIconConstraints: BoxConstraints(minWidth: 48),
-            contentPadding: EdgeInsets.symmetric(horizontal: 0, vertical: 20),
-            fillColor: Color(0xfff2f2f2),
-            border: InputBorder.none,
-          ),
-          onSubmitted: (val) {},
         ),
       ),
     );
@@ -172,3 +100,191 @@ class SelectableNoteWidget extends StatelessWidget {
     );
   }
 }
+
+class JournalBody extends HookWidget {
+  const JournalBody({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final tabController = useTabController(initialLength: 2);
+    final tabIndex = useState(0);
+    useEffect(() {
+      tabController.addListener(() {
+        tabIndex.value = tabController.index;
+      });
+      return () {
+        tabController.dispose();
+      };
+    }, [tabController]);
+
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(
+            30,
+          ),
+          child: Column(
+            children: [
+              TabBar(
+                controller: tabController,
+                onTap: (v) {
+                  tabIndex.value = v;
+                },
+                splashFactory: NoSplash.splashFactory,
+                overlayColor: MaterialStateProperty.resolveWith<Color?>(
+                  (Set<MaterialState> states) {
+                    return states.contains(MaterialState.focused)
+                        ? null
+                        : Colors.transparent;
+                  },
+                ),
+                // dividerHeight: 2.5,
+                // dividerColor: ColorPalette.green,
+                indicatorColor: Colors.transparent,
+                tabs: [
+                  Container(
+                    height: 40,
+                    width: double.maxFinite,
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(6),
+                        topRight: Radius.circular(6),
+                      ),
+                      color: tabIndex.value == 0
+                          ? ColorPalette.green
+                          : Colors.transparent,
+                    ),
+                    child: Center(
+                      child: Text(
+                        "My notes",
+                        style: TextStyle(
+                          color:
+                              tabIndex.value == 0 ? Colors.white : Colors.black,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    height: 40,
+                    width: double.maxFinite,
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(6),
+                        topRight: Radius.circular(6),
+                      ),
+                      color: tabIndex.value == 1
+                          ? ColorPalette.green
+                          : Colors.transparent,
+                    ),
+                    child: Center(
+                      child: Text(
+                        "Client notes",
+                        style: TextStyle(
+                          color:
+                              tabIndex.value == 1 ? Colors.white : Colors.black,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Expanded(
+                child: TabBarView(
+                  controller: tabController,
+                  children: const [
+                    ConsultantNote(),
+                    SizedBox(),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
+
+// class JournalBody extends StatefulWidget {
+//   const JournalBody({super.key});
+
+//   @override
+//   State<JournalBody> createState() => _JournalBodyState();
+// }
+
+// class _JournalBodyState extends State<JournalBody>
+//     with TickerProviderStateMixin {
+//   late TabController? controller = TabController(length: 2, vsync: this);
+
+//   final searchBarController = TextEditingController();
+//   int index = 0;
+//   litenToController() {
+//     controller!.addListener(
+//       () {
+//         setState(() {
+//           index = controller!.index;
+//         });
+//       },
+//     );
+//   }
+
+//   final NotesController _ = Get.put(NotesController());
+
+//   @override
+//   void initState() {
+//     _.loadfirstNotes();
+//     _.scrollController = ScrollController()
+//       ..addListener(() => _.loadMoreNotes());
+
+//     super.initState();
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Obx(() => Column(
+//           children: [
+//             CustomTabbar(
+//                 controller: controller,
+//                 whathappensontap: (int tabindex) {
+//                   setState(() {
+//                     HapticFeedback.lightImpact();
+//                     index = tabindex;
+//                   });
+//                 },
+//                 tabviewlabel1: "My notes",
+//                 tabviewlabel2: "Client notes"),
+//             // const SearchBar(),
+//             const SizedBox(height: 20),
+//             Row(
+//               children: [
+//                 IconButton(
+//                   onPressed: () {},
+//                   icon: const Icon(
+//                     Icons.filter_1,
+//                   ),
+//                 ),
+//                 const Text("Filter"),
+//               ],
+//             ),
+//             Expanded(
+//               child: TabBarView(controller: controller, children: const [
+//                 ConsultantNote(),
+//                 ClientNote(),
+//               ]),
+//             ),
+
+//             if (_.isLoadMoreRunning.value == true)
+//               const Padding(
+//                 padding: EdgeInsets.only(top: 10, bottom: 40),
+//                 child: Center(
+//                   child: CircularProgressIndicator(color: ColorPalette.green),
+//                 ),
+//               ),
+//           ],
+//         ));
+//   }
+// }
