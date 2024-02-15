@@ -163,9 +163,9 @@ class ChatController extends GetxController {
   Future getChatInfo() async {
     loadingChatRoom.value = true;
     Either either = await repo.getChatInfo(
-        consultantId: userDataStore.user['id'],
-        // consultantId: dashboardController.consultantId.value,
-        clientId: 11);
+      consultantId: userDataStore.user['id'],
+      clientId: dashboardController.clientId.value,
+    );
 
     Map chatInfo = {};
 
@@ -207,7 +207,7 @@ class ChatController extends GetxController {
     // Replace these with the fields and values you want to set
     Map<String, dynamic> fields = {
       'id': chatId!.value,
-      'client_id': DashboardController.instance.clientId.value,
+      'client_id': dashboardController.clientId.value,
       'consultant_id': UserModel.fromJson(userDataStore.user).id,
       'channel': chatChannel.value,
       'created_at': DateTimeExtension.now,

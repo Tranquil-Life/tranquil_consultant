@@ -6,8 +6,6 @@ import 'package:tl_consultant/features/home/presentation/controllers/home_contro
 import 'package:tl_consultant/features/journal/presentation/controllers/notes_controller.dart';
 
 class DashboardController extends GetxController{
-  static DashboardController instance = Get.find();
-
   var currentIndex = 0.obs;
 
   var currentMeetingCount = 0.obs;
