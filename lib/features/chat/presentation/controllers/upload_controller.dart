@@ -16,18 +16,20 @@ import 'package:tl_consultant/main.dart';
 class UploadController extends GetxController {
   static UploadController instance = Get.find();
 
+  ChatController chatController = Get.put(ChatController());
+
   ChatRepoImpl chatRepo = ChatRepoImpl();
   MediaRepoImpl mediaRepo = MediaRepoImpl();
 
   handleTextUpload({required String message, Message? quotedMessage}) async {
     if (message.isEmpty) return;
 
-    ChatController.instance.messageType.value = MessageType.text.toString();
+    chatController.messageType.value = MessageType.text.toString();
 
     var result = await chatRepo.sendChat(
-        chatId: ChatController.instance.chatId?.value,
+        chatId: chatController.chatId?.value,
         message: message,
-        messageType: strMsgType(ChatController.instance.messageType.value),
+        messageType: strMsgType(chatController.messageType.value),
         parentId: quotedMessage!.messageId,
         caption: null);
 
@@ -50,7 +52,7 @@ class UploadController extends GetxController {
         updatedAt: DateTime.parse(messageMap['updated_at']),
       );
 
-      ChatController.instance.messages.insert(0, messageObj);
+      chatController.messages.insert(0, messageObj);
 
       uploadToFirestore(messageObj);
 
@@ -73,7 +75,7 @@ class UploadController extends GetxController {
     var uploaded = false;
     var storageUrl = "";
 
-    ChatController.instance.messageType.value = MessageType.audio.toString();
+    chatController.messageType.value = MessageType.audio.toString();
 
     debugPrint("handleVoiceNoteUpload: upload recording: $file");
 
@@ -98,7 +100,7 @@ class UploadController extends GetxController {
     if (uploaded) {
       await sendVnAsMessage(
           message: storageUrl,
-          messageType: ChatController.instance.messageType.value,
+          messageType: chatController.messageType.value,
           quotedMessage: quotedMessage);
     }
   }
@@ -108,13 +110,13 @@ class UploadController extends GetxController {
       required String messageType,
       required Message? quotedMessage}) async {
     var data = {
-      "chat_id": ChatController.instance.chatId?.value,
+      "chat_id": chatController.chatId?.value,
       "message": message,
       "message_type": strMsgType(messageType),
       "parent_id": quotedMessage!.messageId
     };
     var result = await chatRepo.sendChat(
-        chatId: ChatController.instance.chatId?.value,
+        chatId: chatController.chatId?.value,
         message: message,
         messageType: strMsgType(messageType),
         parentId: quotedMessage.messageId,
@@ -144,7 +146,7 @@ class UploadController extends GetxController {
         updatedAt: DateTime.parse(messageMap['updated_at']),
       );
 
-      ChatController.instance.messages.insert(0, messageObj);
+      chatController.messages.insert(0, messageObj);
 
       uploadToFirestore(messageObj);
     } else {
@@ -161,7 +163,7 @@ class UploadController extends GetxController {
   uploadToFirestore(Message message) async {
     var room = firebaseFireStore
         .collection(chatsCollection)
-        .doc(ChatController.instance.chatChannel.value);
+        .doc(chatController.chatChannel.value);
 
     room
         .collection("chat_messages")

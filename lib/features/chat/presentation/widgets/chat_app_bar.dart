@@ -6,6 +6,7 @@ class _TitleBar extends StatelessWidget {
   final duration = const Duration(minutes: 30);
 
   AgoraController agoraController = Get.put(AgoraController());
+  DashboardController dashboardController = Get.put(DashboardController());
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +21,7 @@ class _TitleBar extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 2),
             child: UserAvatar(
               size: 44,
-              imageUrl: DashboardController.instance.clientDp.value,
+              imageUrl: dashboardController.clientDp.value,
             ),
           ),
           const SizedBox(width: 8),
@@ -29,7 +30,7 @@ class _TitleBar extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  DashboardController.instance.clientName.value,
+                  dashboardController.clientName.value,
                   style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w600,
@@ -50,27 +51,6 @@ class _TitleBar extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 12),
-          // AppBarButton(
-          //   backgroundColor: Colors.white,
-          //   icon: Padding(
-          //     padding: const EdgeInsets.all(2),
-          //     child: Icon(
-          //       TranquilIcons.phone,
-          //       color: ColorPalette.green,
-          //       size: 20,
-          //     ),
-          //   ),
-          //   onPressed: () {
-          //     // Navigator.of(context).pushNamed(
-          //     //   CallScreen.routeName,
-          //     //   arguments: CallPageData(
-          //     //     context.read<ChatBloc>().consultant.id.toString(),
-          //     //     false,
-          //     //   ),
-          //     // );
-          //   },
-          // ),
-          // const SizedBox(width: 12),
           AppBarButton(
               backgroundColor: Colors.white,
               icon: Icon(

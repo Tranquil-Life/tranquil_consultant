@@ -70,8 +70,6 @@ class ApiService {
           Uri.parse((exchange ? "" : baseUrl) + subPath),
           headers: headers);
 
-      await Future.delayed(const Duration(seconds: 1));
-
       if (result.statusCode == 200) {
         return Right(jsonDecode(result.body));
       } else {

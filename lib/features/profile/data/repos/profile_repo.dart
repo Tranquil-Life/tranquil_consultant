@@ -12,15 +12,16 @@ class ProfileRepoImpl extends ProfileRepo {
   ProfileRepoImpl();
 
   @override
-  Future<Either<ApiError, User>> getProfile() {
-    // TODO: implement getProfile
-    throw UnimplementedError();
-  }
-
-  @override
   Future<Either<ApiError, dynamic>> updateProfile(User user) async {
     return await catchSocketException(
             () => postReq(ProfileEndPoints.edit, body: user.toJson()))
+        .then((value) => handleResponse(value));
+  }
+
+  @override
+  Future<Either<ApiError, dynamic>> currentContinent() async {
+    return await catchSocketException(
+            () => getReq(ProfileEndPoints.getContinent, false, true))
         .then((value) => handleResponse(value));
   }
 }

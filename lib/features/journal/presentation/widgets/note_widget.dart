@@ -27,68 +27,22 @@ class NoteWidget extends StatelessWidget {
           ),
         ],
       ),
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              color: Colors.white,
-              child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Row(
-                    children: [
-                      Container(
-                        height: 50,
-                        color: Color(0xffB4E5BC),
-                        child: UserAvatar(
-                          imageUrl: sharedNote.client.avatarUrl,
-                          source: sharedNote.client.usesBitmoji!
-                              ? AvatarSource.bitmojiUrl
-                              : AvatarSource.url,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Container(
-                        height: 50,
-                        alignment: Alignment.center,
-                        child: Text(
-                          sharedNote.client.displayName,
-                          style: TextStyle(
-                              color: ColorPalette.green[800],
-                              fontSize: AppFonts.defaultSize),
-                        ),
-                      )
-                    ],
-                  )),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(10, 60, 10, 0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                    child: SizedBox(
-                        height: 10,
-                        child: Text(
-                          sharedNote.note.title.length > 18
-                              ? "${sharedNote.note.title.substring(0, 18)}..."
-                              : sharedNote.note.title,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontFamily: AppFonts.josefinSansRegular,
-                          ),
-                        ))),
-                Text(
-                  sharedNote.note.dateUpdated?.formatDate ?? '',
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontFamily: AppFonts.josefinSansRegular,
-                  ),
+      child: Card(
+        elevation: 2,
+        margin: EdgeInsets.zero,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(25),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Align(
+              alignment: Alignment.centerRight,
+              child: IconButton(
+                onPressed: () {},
+                icon: const Icon(
+                  Icons.more_vert,
+                  color: Color.fromARGB(255, 76, 48, 81),
                 ),
                 const SizedBox(height: 4)
               ],
@@ -111,20 +65,18 @@ class NoteWidget extends StatelessWidget {
                 ],
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Center(
-                child: Material(
-                  type: MaterialType.transparency,
-                  child: Text(
-                    sharedNote.note.mood!,
-                    style: Platform.isIOS
-                        ? const TextStyle(fontSize: 37)
-                        : const TextStyle(fontSize: 30),
-                  ),
-                ),
+            ),
+            const Text("data"),
+            const SizedBox(height: 10),
+            const Text(
+              "",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Color.fromARGB(255, 76, 48, 81),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
