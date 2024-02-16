@@ -26,94 +26,65 @@ class _ProfileScreenState extends State<ProfileScreen>
   @override
   void initState() {
     super.initState();
-    litenToController();
+    listenToController();
   }
 
-  litenToController() {
-    controller!.addListener(
-      () {
-        setState(() {
-          index = controller!.index;
-        });
-      },
-    );
+  listenToController() {
+    controller.addListener(() {
+      setState(() {
+        index = controller.index;
+      });
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final h = MediaQuery.of(context).size.height;
     return Scaffold(
-        appBar: const CustomAppBar(
-          centerTitle: false,
-          title: "My Profile",
-        ),
-        body: Container(
-            padding:
-                const EdgeInsets.only(top: 40, left: 24, right: 24, bottom: 24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const ProfileHead(),
-                const SizedBox(height: 30),
-                const ProfileRow(),
-                const SizedBox(height: 40),
-                const PersonalInfo(),
-                const SizedBox(height: 20),
-                CustomTabBar(
+      appBar: const CustomAppBar(
+        centerTitle: false,
+        title: "My Profile",
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding:
+              const EdgeInsets.only(top: 40, left: 24, right: 24, bottom: 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const ProfileHead(),
+              const SizedBox(height: 30),
+              const ProfileRow(),
+              const SizedBox(height: 40),
+              const PersonalInfo(),
+              const SizedBox(height: 20),
+              CustomTabBar(
+                controller: controller,
+                onTap: (i) {},
+                label1: "label1",
+                label2: "label2",
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                height: h * 0.5,
+                child: TabBarView(
                   controller: controller,
-                  onTap: (i) {},
-                  label1: "label1",
-                  label2: "label2",
+                  children: [
+                    Container(
+                      child: const Text(
+                          "Dr Charles Richard is a licensed mental health therapist with a decade of experience. He helps clients overcome various challenges and enhance their well-being. He applies various therapy modalities to ensure his clients receive the best treatment and care. He offers a safe, supportive, and collaborative space for his clients where they can grow and thrive."),
+                    ),
+                    Container(
+                      child: const Text("Qualification"),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 20),
-                Expanded(
-                  child: TabBarView(
-                    controller: controller,
-                    children: [
-                      Container(
-                        child: const Text(
-                            "Dr Charles Richard is a licensed mental health therapist with a decade of experience. He helps clients overcome various challenges and enhance their well-being. He applies various therapy modalities to ensure his clients receive the best treatment and care. He offers a sae, supportive, and collaborative space or his clients where they can grow and thrive."),
-                      ),
-                      Container(
-                        child: const Text("Qualification"),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            )));
-    // ListView(
-    //   children: [
-    //     ProfileHead(),
-    //     SizedBox(
-    //       height: 30,
-    //     ),
-    //     ProfileRow(),
-    //     SizedBox(
-    //       height: 40,
-    //     ),
-    //     PersonalInfo(),
-    //     SizedBox(
-    //       height: 20,
-    //     ),
-    //     CustomTabBar(
-    //         controller: controller,
-    //         onTap: (index) {},
-    //         label1: "label1",
-    //         label2: "label2"),
-    //     SizedBox(height: 20),
-    //     TabBarView(
-    //       controller: controller,
-    //       children: [
-    //         Container(
-    //           child: const Text("My Bio"),
-    //         ),
-    //         Container(
-    //           child: const Text("Qualification"),
-    //         ),
-    //       ],
-    //     ),
-    //   ],
-    // ));
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 
