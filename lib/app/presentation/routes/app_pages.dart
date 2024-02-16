@@ -18,15 +18,15 @@ import 'package:tl_consultant/features/wallet/presentation/screens/earnings_tab.
 
 part 'app_routes.dart';
 
-class AppPages{
+class AppPages {
   AppPages._();
 
   static const INITIAL = Routes.SPLASH_SCREEN;
 
   static final routes = [
-    GetPage(name: Routes.SPLASH_SCREEN, page: ()=> SplashScreen()),
-    GetPage(name: Routes.ONBOARDING, page: ()=> const OnBoardingScreen()),
-    GetPage(name: Routes.SIGN_UP_0, page: ()=> SignUpScreen0()),
+    GetPage(name: Routes.SPLASH_SCREEN, page: () => SplashScreen()),
+    GetPage(name: Routes.ONBOARDING, page: () => const OnBoardingScreen()),
+    GetPage(name: Routes.SIGN_UP_0, page: () => SignUpScreen0()),
     GetPage(name: Routes.SIGN_UP_1, page: () => SignUpScreen1()),
     GetPage(name: Routes.SIGN_UP_2, page: () => SignUpScreen2()),
     GetPage(name: Routes.SIGN_IN, page: () => SignInScreen()),
@@ -35,11 +35,10 @@ class AppPages{
     GetPage(name: Routes.HOME_SCREEN, page: () => const HomeTab()),
     //GetPage(name: Routes.QUESTIONNAIRE, page: () => const Questionnaire()),
     GetPage(name: Routes.CHAT_SCREEN, page: () => const ChatScreen()),
-    GetPage(name: Routes.NOTES_SCREEN, page: () => const JournalTab()),
+    // GetPage(name: Routes.NOTES_SCREEN, page: () => const JournalTab()),
     GetPage(name: Routes.WALLET, page: () => EarningsTab()),
     // GetPage(name: Routes.CUSTOMIZE_CARD, page: () => const CustomizeCardScreen()),
     GetPage(name: Routes.PROFILE, page: () => ProfileScreen()),
     GetPage(name: Routes.SETTINGS, page: () => SettingsScreen()),
   ];
-
 }

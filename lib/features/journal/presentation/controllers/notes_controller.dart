@@ -3,20 +3,46 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/widgets/custom_snackbar.dart';
-import 'package:tl_consultant/core/utils/services/API/network/controllers/network_controller.dart';
-import 'package:tl_consultant/features/journal/data/models/note.dart';
+import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/features/journal/data/repos/journal_repo.dart';
-import 'package:tl_consultant/features/journal/data/repos/journal_store.dart';
-import 'package:tl_consultant/features/journal/domain/entities/note.dart';
 import 'package:tl_consultant/features/journal/domain/entities/shared_note.dart';
+import 'package:tl_consultant/features/journal/presentation/screens/tabs/personal_notes_tab.dart';
+import 'package:tl_consultant/features/journal/presentation/screens/shared_note.dart';
+import 'package:tl_consultant/features/journal/presentation/screens/tabs/shared_notes_tab.dart';
 
 class NotesController extends GetxController {
   static NotesController instance = Get.find();
 
   final journalRepo = JournalRepoImpl();
   var noteDeleted = false.obs;
+  var defaultView = grid.obs;
+  RxList<SharedNote> sharedNotesList = <SharedNote>[].obs;
 
-  RxList<SharedNote> journal = <SharedNote>[].obs;
+  List<Widget> journalTabs = [const PersonalNotes(), SharedNotesTab()];
+  var journalTabIndex = 0.obs;
+
+  switchTab() async {
+    switch (journalTabIndex.value) {
+      case 0:
+        journalTabIndex.value++;
+        if (sharedNotesList.isEmpty) {
+          await loadfirstSharedNotes();
+        }
+        Get.to(journalTabs[1]);
+        break;
+      case 1:
+        journalTabIndex.value--;
+        if (sharedNotesList.isEmpty) {
+          //await loadfirstPersonalNotes();
+        }
+        Get.to(journalTabs[0]);
+        break;
+
+      default:
+        journalTabIndex.value = 0;
+        Get.to(journalTabs[0]);
+    }
+  }
 
   //pagination vars
   var page = 1.obs;
@@ -31,11 +57,12 @@ class NotesController extends GetxController {
   // The controller for the ListView
   late ScrollController scrollController;
 
-  loadfirstNotes() async {
+  Future loadfirstSharedNotes() async {
     isFirstLoadRunning.value = true;
 
     Either either =
         await journalRepo.getJournal(page: page.value, limit: limit.value);
+    print(page);
 
     either.fold(
         (l) => CustomSnackBar.showSnackBar(
@@ -43,16 +70,16 @@ class NotesController extends GetxController {
             title: "Error",
             message: l.message.toString(),
             backgroundColor: ColorPalette.red), (r) {
-      journal.clear();
+      sharedNotesList.clear();
 
       var data = r['data'];
       for (int i = 0; i < (data as List).length; i++) {
         SharedNote note = SharedNote.fromJson(data[i]);
-        journal.add(note);
+        sharedNotesList.add(note);
       }
 
-      if (journal.isNotEmpty) {
-        lastNoteId.value = journal[journal.length - 1].id;
+      if (sharedNotesList.isNotEmpty) {
+        lastNoteId.value = sharedNotesList[sharedNotesList.length - 1].id;
       } else {
         isFirstLoadRunning.value = false;
       }
@@ -64,7 +91,7 @@ class NotesController extends GetxController {
 
   // This function will be triggered whenver the user scroll
   // to near the bottom of the list view
-  loadMoreNotes() async {
+  loadMoreSharedNotes() async {
     if (hasNextPage.value == true &&
         isFirstLoadRunning.value == false &&
         isLoadMoreRunning.value == false &&
@@ -82,7 +109,7 @@ class NotesController extends GetxController {
         result.map((r) => fetchedNotes =
             (r as List).map((e) => SharedNote.fromJson(e)).toList());
         if (fetchedNotes.isNotEmpty) {
-          journal.addAll(fetchedNotes);
+          sharedNotesList.addAll(fetchedNotes);
         } else {
           // This means there is no more data
           // and therefore, we will not send another GET request
@@ -104,5 +131,11 @@ class NotesController extends GetxController {
 
   clearData() {
     page.value = 1;
+  }
+
+  @override
+  void onInit() {
+    loadfirstSharedNotes();
+    super.onInit();
   }
 }

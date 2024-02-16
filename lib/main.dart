@@ -7,11 +7,9 @@ import 'package:tl_consultant/app.dart';
 import 'package:timezone/data/latest.dart' as tz;
 
 late final FirebaseFirestore firebaseFireStore;
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await GetStorage.init();
-
   runApp(const App());
 
   tz.initializeTimeZones();
