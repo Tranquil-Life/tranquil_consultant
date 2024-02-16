@@ -26,11 +26,15 @@ class DashboardController extends GetxController {
   var currentMeetingId = 0.obs;
   var authToken = "".obs;
 
+  var locationChecked = false.obs;
+
   Future<void> onTap(int index) async {
     currentIndex.value = index;
   }
 
   checkLocation() async {
+    locationChecked.value = false;
+
     var result = await getCurrLocation();
     double latitude = result['latitude'];
     double longitude = result['longitude'];
@@ -50,7 +54,12 @@ class DashboardController extends GetxController {
     if (location != userDataStore.user['location']) {
       updateMyLocation(
           latitude, longitude, formattedTimeZone, location, timeZoneIdentifier);
+    } else {
+      locationChecked.value = true;
+
+      update();
     }
+    print("dash controller: ${locationChecked.value}");
   }
 
   updateMyLocation(double latitude, double longitude, double timeZone,
@@ -75,6 +84,8 @@ class DashboardController extends GetxController {
         );
       },
       (r) {
+        locationChecked.value = true;
+
         var data = r['data'];
 
         userDataStore.user['timezone_identifier'] = data['timezone_identifier'];
@@ -85,6 +96,7 @@ class DashboardController extends GetxController {
       },
     );
 
+    update();
     userDataStore.user = userDataStore.user;
   }
 

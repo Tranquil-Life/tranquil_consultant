@@ -88,7 +88,8 @@ class _MeetingsState extends State<Meetings> {
               ),
               const SizedBox(height: 8),
               Expanded(
-                child: consultationController.isFirstLoadRunning.value
+                child: !dashboardController.locationChecked.value ||
+                        consultationController.isFirstLoadRunning.value
                     ? const Center(
                         child: CircularProgressIndicator(
                           color: ColorPalette.green,
