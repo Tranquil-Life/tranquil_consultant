@@ -38,15 +38,14 @@ class DashboardController extends GetxController {
     String country = placemarks.first.country!;
     String state = placemarks.first.administrativeArea!;
     var location = "$country/$state";
+
     var continent = await ProfileController().getContinent(placemarks);
-    final timeZone = tz
-        .getLocation(
-            TimeZoneUtil.getTzIdentifier(continent: continent, state: state))
-        .currentTimeZone;
-    var hourInMilliSecs = 3600000;
-    var formattedTimeZone = timeZone.offset / hourInMilliSecs;
     var timeZoneIdentifier =
         TimeZoneUtil.getTzIdentifier(continent: continent, state: state);
+    final timeZone = tz.getLocation(timeZoneIdentifier).currentTimeZone;
+
+    var hourInMilliSecs = 3600000;
+    var formattedTimeZone = timeZone.offset / hourInMilliSecs;
 
     if (location != userDataStore.user['location']) {
       updateMyLocation(
@@ -76,9 +75,17 @@ class DashboardController extends GetxController {
         );
       },
       (r) {
-        print("UPDATE LOCATION RESPONSE: $r");
+        var data = r['data'];
+
+        userDataStore.user['timezone_identifier'] = data['timezone_identifier'];
+        userDataStore.user['time_zone'] = data['time_zone'];
+        userDataStore.user['location'] = data['location'];
+        userDataStore.user['latitude'] = data['latitude'];
+        userDataStore.user['longitude'] = data['longitude'];
       },
     );
+
+    userDataStore.user = userDataStore.user;
   }
 
   @override

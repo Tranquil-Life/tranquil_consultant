@@ -4,7 +4,6 @@ import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 
 class TimeZoneUtil {
   static Future<DateTime> convertToLocal(String utcTime) async {
-    print("TZ IDENTIFIER: ${userDataStore.user['timezone_identifier']}");
     final location =
         tz.getLocation("${userDataStore.user['timezone_identifier']}");
     var timeZone = location.currentTimeZone;

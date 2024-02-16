@@ -123,9 +123,7 @@ Future<Map<String, dynamic>> getCurrLocation() async {
     position = await Geolocator.getCurrentPosition(
       desiredAccuracy: LocationAccuracy.best,
     );
-
-    print("POSITION: $position");
-
+    
     // Use geocoding to get the placemarks for the current location
     placemarks = await placemarkFromCoordinates(
       position.latitude,
