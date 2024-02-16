@@ -89,6 +89,7 @@ class ChatRepoImpl extends ChatRepo {
       "consultant_id": consultantId,
       "client_id": clientId,
     };
+    print(data);
 
     return await catchSocketException(
             () => postReq(ChatEndPoints.getChatInfo, body: data))

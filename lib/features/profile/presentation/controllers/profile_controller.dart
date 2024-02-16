@@ -1,3 +1,4 @@
+import 'package:dartz/dartz.dart';
 import 'package:get/get.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/widgets/custom_snackbar.dart';
@@ -12,11 +13,10 @@ class ProfileController extends GetxController {
 
   Rx<EditUser> editUser = EditUser().obs;
 
-  ProfileRepoImpl repo = ProfileRepoImpl();
+  ProfileRepoImpl profileRepo = ProfileRepoImpl();
 
   updateUser(EditUser newUserData) async {
-    //print(newUserData.toJson());
-    final result = await repo.updateProfile(newUserData);
+    final result = await profileRepo.updateProfile(newUserData);
 
     result.fold(
       (l) => CustomSnackBar.showSnackBar(
@@ -25,8 +25,8 @@ class ProfileController extends GetxController {
           message: l.message!,
           backgroundColor: ColorPalette.red),
       (r) {
-        editUser.value = EditUser(baseUser: UserModel.fromJson(r));
-        User user = UserModel.fromJson(r);
+        editUser.value = EditUser(baseUser: UserModel.fromJson(r['data']));
+        User user = UserModel.fromJson(r['data']);
         updateProfile(user);
 
         CustomSnackBar.showSnackBar(
@@ -55,5 +55,31 @@ class ProfileController extends GetxController {
 
   restoreUser() {
     editUser.value = EditUser(baseUser: UserModel.fromJson(userDataStore.user));
+  }
+
+  getContinent(placemarks) async {
+    Either either = await profileRepo.currentContinent();
+
+    var continent = "";
+
+    either.fold(
+        (l) => CustomSnackBar.showSnackBar(
+            context: Get.context!,
+            title: "Error",
+            message: l.message,
+            backgroundColor: ColorPalette.red), (r) {
+      final jsonData = r;
+
+      final countries = jsonData;
+
+      for (var country in countries) {
+        if (country['country'] == placemarks.first.country) {
+          continent = country['continent'];
+          break;
+        }
+      }
+    });
+
+    return continent;
   }
 }

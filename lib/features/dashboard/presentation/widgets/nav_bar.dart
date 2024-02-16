@@ -9,6 +9,7 @@ class NavBar extends StatefulWidget {
 
 class _NavBarState extends State<NavBar> {
   final dashboardController = Get.put(DashboardController());
+  final consultController = Get.put(ConsultationController());
   final chatController = Get.put(ChatController());
 
   @override
@@ -64,11 +65,15 @@ class _NavBarState extends State<NavBar> {
             top: false,
             child: GestureDetector(
               onTap: () async {
-                if (chatController.loadingChatRoom.value == false &&
-                    dashboardController.currentMeetingCount.value == 0) {
-                  await ChatController.instance.getChatInfo();
-                } else {
-                  print(chatController.loadingChatRoom.value);
+                try {
+                  if (chatController.loadingChatRoom.value == false &&
+                      dashboardController.currentMeetingCount.value == 1) {
+                    await chatController.getChatInfo();
+                  } else {
+                    print(chatController.loadingChatRoom.value);
+                  } // Additional code...
+                } catch (error) {
+                  print('Error during onTap: $error');
                 }
               },
               behavior: HitTestBehavior.opaque,

@@ -4,6 +4,8 @@ import 'dart:math';
 import 'package:add_2_calendar/add_2_calendar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
 import 'package:tl_consultant/app/config.dart';
 import 'package:tl_consultant/app/presentation/widgets/IOSDatePicker.dart';
@@ -17,25 +19,26 @@ void setStatusBarBrightness(bool dark, [Duration? delayedTime]) async {
   ));
 }
 
-List timeOfDayRange(){
+List timeOfDayRange() {
   return List.generate(19, (index) {
-    if(index >= 6 && index <=18) return "${index.toString().padLeft(2, "0")}:00";
-  }).where((element) => element !=null).toList();
+    if (index >= 6 && index <= 18)
+      return "${index.toString().padLeft(2, "0")}:00";
+  }).where((element) => element != null).toList();
 }
 
-List timeOfNightRange(){
+List timeOfNightRange() {
   return List.generate(24, (index) {
-    if(index <= 5 || index >=19) return "${index.toString().padLeft(2, "0")}:00";
-  }).where((element) => element !=null).toList();
+    if (index <= 5 || index >= 19)
+      return "${index.toString().padLeft(2, "0")}:00";
+  }).where((element) => element != null).toList();
 }
-
 
 Future<bool> addMeetingToCalendar(DateTime time,
     {required String c_fname, required String c_lname}) {
   return Add2Calendar.addEvent2Cal(Event(
     title: 'TL consultation with $c_fname $c_lname',
     description:
-    'This is a scheduled meeting with a consultant on ${AppConfig.appName}',
+        'This is a scheduled meeting with a consultant on ${AppConfig.appName}',
     location: AppConfig.appName,
     startDate: time,
     endDate: time.add(const Duration(hours: 1)),
@@ -65,11 +68,7 @@ Future<DateTime?> showCustomDatePicker(BuildContext context,
     return showModalBottomSheet<DateTime>(
       context: context,
       builder: (_) =>
-          IOSDatePicker(
-              minDate: min,
-              maxDate: max,
-              initialDate: initial
-          ),
+          IOSDatePicker(minDate: min, maxDate: max, initialDate: initial),
     );
   }
   return showDatePicker(
@@ -80,7 +79,7 @@ Future<DateTime?> showCustomDatePicker(BuildContext context,
   );
 }
 
-String strMsgType(String messageType){
+String strMsgType(String messageType) {
   switch (messageType) {
     case "MessageType.text":
       return 'text';
@@ -102,13 +101,43 @@ Future getFileSize(String filepath, int decimals) async {
   const suffixes = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
   var i = (log(bytes) / log(1024)).floor();
 
-  if(suffixes[i] != "B" && suffixes[i] !="KB"){
-    if((bytes / pow(1024, i)) > 2){
+  if (suffixes[i] != "B" && suffixes[i] != "KB") {
+    if ((bytes / pow(1024, i)) > 2) {
       return "Too large";
-    }else{
+    } else {
       return '${(bytes / pow(1024, i)).toStringAsFixed(decimals)} ${suffixes[i]}';
     }
-  }else{
+  } else {
     return '${(bytes / pow(1024, i)).toStringAsFixed(decimals)} ${suffixes[i]}';
   }
+}
+
+Future<Map<String, dynamic>> getCurrLocation() async {
+  late Position position;
+  // Request location permissions
+  LocationPermission permission = await Geolocator.requestPermission();
+  List<Placemark> placemarks = [];
+  if (permission == LocationPermission.denied) {
+    print("Location permission denied");
+  } else {
+    position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.best,
+    );
+
+    print("POSITION: $position");
+
+    // Use geocoding to get the placemarks for the current location
+    placemarks = await placemarkFromCoordinates(
+      position.latitude,
+      position.longitude,
+    );
+  }
+
+  var data = <String, dynamic>{
+    "latitude": position.latitude,
+    "longitude": position.longitude,
+    "placemarks": placemarks
+  };
+
+  return data;
 }

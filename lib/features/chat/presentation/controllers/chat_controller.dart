@@ -23,7 +23,6 @@ import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 import 'package:tl_consultant/main.dart';
 
 class ChatController extends GetxController {
-  static ChatController instance = Get.find();
   final dashboardController = Get.put(DashboardController());
 
   ChatRepoImpl repo = ChatRepoImpl();
@@ -84,16 +83,16 @@ class ChatController extends GetxController {
   }
 
   Future loadRecentMessages() async {
-    isFirstLoadRunning.value = true;
+    if (chatId != null) {
+      isFirstLoadRunning.value = true;
+      var result = await repo.getRecentMessages(chatId: chatId!.value);
 
-    var result = await repo.getRecentMessages(chatId: chatId!.value);
+      if (result.isRight()) {
+        result.map((r) {
+          messages.clear();
 
-    if (result.isRight()) {
-      result.map((r) {
-        messages.clear();
-
-        /**
-         * 
+          /**
+         *
          * for (int i = 0; i < (r as List).length; i++) {
           Message message = MessageModel.fromJson(r[i]);
           if (!messages.any((existingMessage) =>
@@ -103,32 +102,37 @@ class ChatController extends GetxController {
         }
          */
 
-        var data = r['data'];
-        for (int i = 0; i < (data as List).length; i++) {
-          Message message = MessageModel.fromJson(data[i]);
-          messages.add(message);
-        }
+          var data = r['data'];
+          for (int i = 0; i < (data as List).length; i++) {
+            Message message = MessageModel.fromJson(data[i]);
+            messages.add(message);
+          }
 
-        if (messages.isNotEmpty) {
-          lastMessageId.value = messages[messages.length - 1].messageId!;
-        } else {
-          isFirstLoadRunning.value = false;
-        }
-      });
+          if (messages.isNotEmpty) {
+            lastMessageId.value = messages[messages.length - 1].messageId!;
+          } else {
+            isFirstLoadRunning.value = false;
+          }
+        });
 
-//just added
-      update(); // Notify listeners that the messages list has changed
+        //update(); // Notify listeners that the messages list has changed
+        isFirstLoadRunning.value = false;
+      } else {
+        result.leftMap((l) => CustomSnackBar.showSnackBar(
+            context: Get.context!,
+            title: "Error",
+            message: l.message!,
+            backgroundColor: ColorPalette.red));
+      }
+
+      update();
       isFirstLoadRunning.value = false;
+      print(chatId!.value);
+      // Additional logic related to chatId...
     } else {
-      result.leftMap((l) => CustomSnackBar.showSnackBar(
-          context: Get.context!,
-          title: "Error",
-          message: l.message!,
-          backgroundColor: ColorPalette.red));
+      // Handle the case where chatId is null (optional).
+      print('chatId is null');
     }
-
-    update();
-    isFirstLoadRunning.value = false;
   }
 
   Future loadOlderMessages() async {
@@ -164,7 +168,8 @@ class ChatController extends GetxController {
     loadingChatRoom.value = true;
     Either either = await repo.getChatInfo(
       consultantId: userDataStore.user['id'],
-      clientId: dashboardController.clientId.value,
+      clientId: 11,
+      // clientId: dashboardController.clientId.value,
     );
 
     Map chatInfo = {};

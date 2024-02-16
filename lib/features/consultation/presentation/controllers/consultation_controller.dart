@@ -109,7 +109,7 @@ class ConsultationController extends GetxController {
 
   Future loadFirstMeetings() async {
     if (userDataStore.user['timezone_identifier'] == null) {
-      print("null");
+      print("tz identifier: null");
     } else {
       isFirstLoadRunning.value = true;
 
