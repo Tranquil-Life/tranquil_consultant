@@ -10,6 +10,7 @@ import 'package:tl_consultant/features/journal/presentation/controllers/notes_co
 import 'package:tl_consultant/features/journal/presentation/screens/consultant_note.dart';
 import 'package:tl_consultant/features/journal/presentation/screens/selected_note_view.dart';
 import 'package:tl_consultant/features/journal/presentation/widgets/note_widget.dart';
+import 'package:tl_consultant/features/journal/presentation/widgets/tab_bar.dart';
 
 class JournalTab extends StatelessWidget {
   JournalTab({Key? key}) : super(key: key);
@@ -23,8 +24,7 @@ class JournalTab extends StatelessWidget {
     return Scaffold(
       appBar: CustomAppBar(
         title: "My Journal",
-        centerTitle: true,
-        hideBackButton: false,
+        centerTitle: false,
         actions: [
           AppBarAction(
             onPressed: () {},
@@ -32,8 +32,35 @@ class JournalTab extends StatelessWidget {
           ),
         ],
       ),
-      body: const UnFocusWidget(
-        child: Padding(padding: EdgeInsets.all(12), child: SizedBox()
+      body: UnFocusWidget(
+        child: Padding(
+            padding: EdgeInsets.all(12),
+            child: Column(
+              children: [
+                CustomTabBar(
+                  controller: notesController.tabController,
+                  onTap: (i) {},
+                  label1: "label1",
+                  label2: "label2",
+                ),
+                const SizedBox(height: 20),
+                SizedBox(
+                  height: displayHeight(context) * 0.5,
+                  child: TabBarView(
+                    controller: notesController.tabController,
+                    children: [
+                      Container(
+                        child: const Text(
+                            "Dr Charles Richard is a licensed mental health therapist with a decade of experience. He helps clients overcome various challenges and enhance their well-being. He applies various therapy modalities to ensure his clients receive the best treatment and care. He offers a safe, supportive, and collaborative space for his clients where they can grow and thrive."),
+                      ),
+                      Container(
+                        child: const Text("Qualification"),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            )
             //JournalBody(),
             ),
       ),
@@ -209,8 +236,6 @@ class JournalTab extends StatelessWidget {
 //     );
 //   }
 // }
-
-
 
 // class JournalBody extends StatefulWidget {
 //   const JournalBody({super.key});

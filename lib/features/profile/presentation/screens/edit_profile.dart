@@ -5,7 +5,7 @@ import 'package:tl_consultant/app/presentation/widgets/custom_app_bar.dart';
 import 'package:tl_consultant/app/presentation/widgets/custom_form_field.dart';
 import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:tl_consultant/features/profile/presentation/widgets/custom_form_field.dart';
-import 'package:tl_consultant/features/profile/presentation/widgets/tab_bar.dart';
+import 'package:tl_consultant/app/presentation/widgets/custom_tab_bar.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({Key? key}) : super(key: key);

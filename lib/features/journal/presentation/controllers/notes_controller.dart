@@ -20,7 +20,7 @@ class NotesController extends GetxController with GetTickerProviderStateMixin {
   var defaultView = grid.obs;
   RxList<SharedNote> sharedNotesList = <SharedNote>[].obs;
 
-  List<Widget> journalTabs = [const PersonalNotes(), SharedNotesTab()];
+  // List<Widget> journalTabs = [const PersonalNotes(), SharedNotesTab()];
   var journalTabIndex = 0.obs;
 
   switchTab() async {
