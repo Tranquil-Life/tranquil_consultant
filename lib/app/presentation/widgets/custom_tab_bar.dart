@@ -4,16 +4,16 @@ import 'package:tl_consultant/app/presentation/theme/colors.dart';
 class CustomTabbar extends StatelessWidget {
   final TabController? controller;
 
-  final Function(int) whathappensontap;
-  final String? tabviewlabel1;
-  final String? tabviewlabel2;
+  final Function(int) onTap;
+  final String? labelOne;
+  final String? labelTwo;
 
   const CustomTabbar({
     Key? key,
     this.controller,
-    required this.whathappensontap,
-    required this.tabviewlabel1,
-    required this.tabviewlabel2,
+    required this.onTap,
+    required this.labelOne,
+    required this.labelTwo,
   }) : super(key: key);
 
   @override
@@ -25,13 +25,13 @@ class CustomTabbar extends StatelessWidget {
       unselectedLabelColor: Colors.grey,
       controller: controller,
       isScrollable: true,
-      onTap: whathappensontap,
+      onTap: onTap,
       tabs: [
         Container(
           height: 20,
           margin: const EdgeInsets.only(bottom: 5, top: 5),
           child: Text(
-            tabviewlabel1 ?? '',
+            labelOne ?? '',
             style: const TextStyle(fontSize: 16),
           ),
         ),
@@ -39,7 +39,7 @@ class CustomTabbar extends StatelessWidget {
           height: 20,
           margin: const EdgeInsets.only(bottom: 5, top: 5),
           child:
-              Text(tabviewlabel2 ?? '', style: const TextStyle(fontSize: 16)),
+              Text(labelTwo ?? '', style: const TextStyle(fontSize: 16)),
         ),
       ],
     );

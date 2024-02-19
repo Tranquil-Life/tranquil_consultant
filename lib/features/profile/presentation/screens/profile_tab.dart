@@ -5,6 +5,7 @@ import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/theme/fonts.dart';
 import 'package:tl_consultant/app/presentation/widgets/custom_app_bar.dart';
 import 'package:tl_consultant/app/presentation/widgets/user_avatar.dart';
+import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 import 'package:tl_consultant/features/journal/presentation/widgets/tab_bar.dart';
 
 import 'package:tl_consultant/features/profile/presentation/screens/edit_profile.dart';
@@ -40,7 +41,6 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   @override
   Widget build(BuildContext context) {
-    final h = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: const CustomAppBar(
         centerTitle: false,
@@ -67,7 +67,7 @@ class _ProfileScreenState extends State<ProfileScreen>
               ),
               const SizedBox(height: 20),
               SizedBox(
-                height: h * 0.5,
+                height: displayHeight(context) * 0.5,
                 child: TabBarView(
                   controller: controller,
                   children: const [

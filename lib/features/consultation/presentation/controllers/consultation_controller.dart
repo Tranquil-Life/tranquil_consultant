@@ -9,7 +9,6 @@ import 'package:tl_consultant/core/utils/extensions/date_time_extension.dart';
 import 'package:tl_consultant/features/consultation/data/models/meeting_model.dart';
 import 'package:tl_consultant/features/consultation/data/repos/consultation_repo.dart';
 import 'package:tl_consultant/features/consultation/domain/entities/meeting.dart';
-import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 
 class ConsultationController extends GetxController {
@@ -109,7 +108,7 @@ class ConsultationController extends GetxController {
 
   Future loadFirstMeetings() async {
     if (userDataStore.user['timezone_identifier'] == null) {
-      print("null");
+      print("tz identifier: null");
     } else {
       isFirstLoadRunning.value = true;
 

@@ -1,40 +1,106 @@
-// import 'package:flutter/material.dart';
-// import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:get/get.dart';
+import 'package:tl_consultant/app/presentation/theme/colors.dart';
+import 'package:tl_consultant/app/presentation/widgets/custom_app_bar.dart';
+import 'package:tl_consultant/app/presentation/widgets/unfocus_bg.dart';
+import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
+import 'package:tl_consultant/features/journal/domain/entities/shared_note.dart';
+import 'package:tl_consultant/features/journal/presentation/controllers/notes_controller.dart';
+import 'package:tl_consultant/features/journal/presentation/screens/consultant_note.dart';
+import 'package:tl_consultant/features/journal/presentation/screens/selected_note_view.dart';
+import 'package:tl_consultant/features/journal/presentation/widgets/note_widget.dart';
+import 'package:tl_consultant/features/journal/presentation/widgets/tab_bar.dart';
 
-// import 'package:get/get.dart';
-// import 'package:tl_consultant/app/presentation/theme/colors.dart';
-// import 'package:tl_consultant/app/presentation/widgets/custom_app_bar.dart';
-// import 'package:tl_consultant/app/presentation/widgets/unfocus_bg.dart';
-// import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
-// import 'package:tl_consultant/features/journal/domain/entities/shared_note.dart';
-// import 'package:tl_consultant/features/journal/presentation/controllers/notes_controller.dart';
+class JournalTab extends StatelessWidget {
+  JournalTab({Key? key}) : super(key: key);
 
-// import 'package:tl_consultant/features/journal/presentation/screens/tabs/personal_notes_tab.dart';
-// import 'package:tl_consultant/features/journal/presentation/screens/tabs/shared_notes_tab.dart';
-// import 'package:tl_consultant/features/journal/presentation/screens/selected_note_view.dart';
-// import 'package:tl_consultant/features/journal/presentation/widgets/note_widget.dart';
+  final notesController = Get.put(NotesController());
 
-// class JournalTab extends StatelessWidget {
-//   const JournalTab({Key? key}) : super(key: key);
+  // late TabController controller = TabController(length: 2, vsync: this);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: CustomAppBar(
+        title: "My Journal",
+        centerTitle: false,
+        actions: [
+          AppBarAction(
+            onPressed: () {},
+            child: const Icon(Icons.filter_list_alt),
+          ),
+        ],
+      ),
+      body: UnFocusWidget(
+        child: Padding(
+            padding: EdgeInsets.all(12),
+            child: Column(
+              children: [
+                CustomTabBar(
+                  controller: notesController.tabController,
+                  onTap: (i) {},
+                  label1: "label1",
+                  label2: "label2",
+                ),
+                const SizedBox(height: 20),
+                SizedBox(
+                  height: displayHeight(context) * 0.5,
+                  child: TabBarView(
+                    controller: notesController.tabController,
+                    children: [
+                      Container(
+                        child: const Text(
+                            "Dr Charles Richard is a licensed mental health therapist with a decade of experience. He helps clients overcome various challenges and enhance their well-being. He applies various therapy modalities to ensure his clients receive the best treatment and care. He offers a safe, supportive, and collaborative space for his clients where they can grow and thrive."),
+                      ),
+                      Container(
+                        child: const Text("Qualification"),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            )
+            //JournalBody(),
+            ),
+      ),
+    );
+  }
+}
+
+// class NoteGrid extends StatelessWidget {
+//   const NoteGrid({super.key});
 
 //   @override
 //   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: CustomAppBar(
-//         title: "My Journal",
-//         centerTitle: true,
-//         hideBackButton: false,
-//         actions: [
-//           AppBarAction(
-//             onPressed: () {},
-//             child: const Icon(Icons.filter_list_alt),
+//     return GetBuilder<NotesController>(
+//       builder: (_) => Expanded(
+//         child: GridView.builder(
+//           shrinkWrap: true,
+//           controller: _.scrollController,
+//           itemCount: _.journal.length,
+//           itemBuilder: (context, index) => Container(
+//             margin: const EdgeInsets.only(
+//               left: 4,
+//               right: 4,
+//               bottom: 8,
+//               top: 8,
+//             ),
+//             child: SelectableNoteWidget(
+//               sharedNote: _.journal[index],
+//               onTap: () async {
+//                 await Get.to(
+//                   NoteView(sharedNote: _.journal[index]),
+//                 );
+//               },
+//             ),
 //           ),
-//         ],
-//       ),
-//       body: UnFocusWidget(
-//         child: Padding(
-//           padding: EdgeInsets.all(12),
-//           child: JournalBody(),
+//           gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+//             maxCrossAxisExtent: 200,
+//             childAspectRatio: 1,
+//             crossAxisSpacing: 14,
+//             mainAxisSpacing: 16,
+//           ),
 //         ),
 //       ),
 //     );
@@ -66,9 +132,7 @@
 // }
 
 // class JournalBody extends HookWidget {
-//   JournalBody({super.key});
-
-//   NotesController notesController = Get.put(NotesController());
+//   const JournalBody({super.key});
 
 //   @override
 //   Widget build(BuildContext context) {
@@ -86,165 +150,169 @@
 //     return Scaffold(
 //       backgroundColor: Colors.white,
 //       body: SafeArea(
-//         child: Column(
-//           children: [
-//             Container(),
-//             // TabBar(
-//             //   controller: tabController,
-//             //   onTap: (v) {
-//             //     tabIndex.value = v;
-//             //   },
-//             //   splashFactory: NoSplash.splashFactory,
-//             //   overlayColor: MaterialStateProperty.resolveWith<Color?>(
-//             //     (Set<MaterialState> states) {
-//             //       return states.contains(MaterialState.focused)
-//             //           ? null
-//             //           : Colors.transparent;
-//             //     },
-//             //   ),
-//             //   dividerHeight: 2,
-//             //   dividerColor: ColorPalette.green,
-//             //   indicatorColor: Colors.transparent,
-//             //   tabs: [
-//             //     Container(
-//             //       height: 40,
-//             //       width: double.maxFinite,
-//             //       decoration: BoxDecoration(
-//             //         borderRadius: const BorderRadius.only(
-//             //           topLeft: Radius.circular(6),
-//             //           topRight: Radius.circular(6),
-//             //         ),
-//             //         color: tabIndex.value == 0
-//             //             ? ColorPalette.green
-//             //             : Colors.transparent,
-//             //       ),
-//             //       child: Center(
-//             //         child: Text(
-//             //           "My notes",
-//             //           style: TextStyle(
-//             //             color:
-//             //                 tabIndex.value == 0 ? Colors.white : Colors.black,
-//             //           ),
-//             //         ),
-//             //       ),
-//             //     ),
-//             //     Container(
-//             //       height: 40,
-//             //       width: double.maxFinite,
-//             //       decoration: BoxDecoration(
-//             //         borderRadius: const BorderRadius.only(
-//             //           topLeft: Radius.circular(6),
-//             //           topRight: Radius.circular(6),
-//             //         ),
-//             //         color: tabIndex.value == 1
-//             //             ? ColorPalette.green
-//             //             : Colors.transparent,
-//             //       ),
-//             //       child: Center(
-//             //         child: GestureDetector(
-//             //           child: Text(
-//             //             "Client notes",
-//             //             style: TextStyle(
-//             //               color:
-//             //                   tabIndex.value == 1 ? Colors.white : Colors.black,
-//             //             ),
-//             //           ),
-//             //           onTap: () {},
-//             //         ),
-//             //       ),
-//             //     ),
-//             //   ],
-//             // ),
-//             // const SizedBox(height: 10),
-//             // Expanded(
-//             //   child: TabBarView(
-//             //     controller: tabController,
-//             //     children: notesController.journalTabs,
-//             //   ),
-//             // ),
-//           ],
+//         child: Padding(
+//           padding: const EdgeInsets.all(
+//             30,
+//           ),
+//           child: Column(
+//             children: [
+//               TabBar(
+//                 controller: tabController,
+//                 onTap: (v) {
+//                   tabIndex.value = v;
+//                 },
+//                 splashFactory: NoSplash.splashFactory,
+//                 overlayColor: MaterialStateProperty.resolveWith<Color?>(
+//                   (Set<MaterialState> states) {
+//                     return states.contains(MaterialState.focused)
+//                         ? null
+//                         : Colors.transparent;
+//                   },
+//                 ),
+//                 // dividerHeight: 2.5,
+//                 // dividerColor: ColorPalette.green,
+//                 indicatorColor: Colors.transparent,
+//                 tabs: [
+//                   Container(
+//                     height: 40,
+//                     width: double.maxFinite,
+//                     decoration: BoxDecoration(
+//                       borderRadius: const BorderRadius.only(
+//                         topLeft: Radius.circular(6),
+//                         topRight: Radius.circular(6),
+//                       ),
+//                       color: tabIndex.value == 0
+//                           ? ColorPalette.green
+//                           : Colors.transparent,
+//                     ),
+//                     child: Center(
+//                       child: Text(
+//                         "My notes",
+//                         style: TextStyle(
+//                           color:
+//                               tabIndex.value == 0 ? Colors.white : Colors.black,
+//                         ),
+//                       ),
+//                     ),
+//                   ),
+//                   Container(
+//                     height: 40,
+//                     width: double.maxFinite,
+//                     decoration: BoxDecoration(
+//                       borderRadius: const BorderRadius.only(
+//                         topLeft: Radius.circular(6),
+//                         topRight: Radius.circular(6),
+//                       ),
+//                       color: tabIndex.value == 1
+//                           ? ColorPalette.green
+//                           : Colors.transparent,
+//                     ),
+//                     child: Center(
+//                       child: Text(
+//                         "Client notes",
+//                         style: TextStyle(
+//                           color:
+//                               tabIndex.value == 1 ? Colors.white : Colors.black,
+//                         ),
+//                       ),
+//                     ),
+//                   ),
+//                 ],
+//               ),
+//               const SizedBox(height: 10),
+//               Expanded(
+//                 child: TabBarView(
+//                   controller: tabController,
+//                   children: const [
+//                     ConsultantNote(),
+//                     SizedBox(),
+//                   ],
+//                 ),
+//               ),
+//             ],
+//           ),
 //         ),
 //       ),
 //     );
 //   }
 // }
 
-// // class JournalBody extends StatefulWidget {
-// //   const JournalBody({super.key});
+// class JournalBody extends StatefulWidget {
+//   const JournalBody({super.key});
 
-// //   @override
-// //   State<JournalBody> createState() => _JournalBodyState();
-// // }
+//   @override
+//   State<JournalBody> createState() => _JournalBodyState();
+// }
 
-// // class _JournalBodyState extends State<JournalBody>
-// //     with TickerProviderStateMixin {
-// //   late TabController? controller = TabController(length: 2, vsync: this);
+// class _JournalBodyState extends State<JournalBody>
+//     with TickerProviderStateMixin {
+//   late TabController? controller = TabController(length: 2, vsync: this);
 
-// //   final searchBarController = TextEditingController();
-// //   int index = 0;
-// //   litenToController() {
-// //     controller!.addListener(
-// //       () {
-// //         setState(() {
-// //           index = controller!.index;
-// //         });
-// //       },
-// //     );
-// //   }
+//   final searchBarController = TextEditingController();
+//   int index = 0;
+//   litenToController() {
+//     controller!.addListener(
+//       () {
+//         setState(() {
+//           index = controller!.index;
+//         });
+//       },
+//     );
+//   }
 
-// //   final NotesController _ = Get.put(NotesController());
+//   final NotesController _ = Get.put(NotesController());
 
-// //   @override
-// //   void initState() {
-// //     _.loadfirstNotes();
-// //     _.scrollController = ScrollController()
-// //       ..addListener(() => _.loadMoreNotes());
+//   @override
+//   void initState() {
+//     _.loadfirstNotes();
+//     _.scrollController = ScrollController()
+//       ..addListener(() => _.loadMoreNotes());
 
-// //     super.initState();
-// //   }
+//     super.initState();
+//   }
 
-// //   @override
-// //   Widget build(BuildContext context) {
-// //     return Obx(() => Column(
-// //           children: [
-// //             CustomTabbar(
-// //                 controller: controller,
-// //                 whathappensontap: (int tabindex) {
-// //                   setState(() {
-// //                     HapticFeedback.lightImpact();
-// //                     index = tabindex;
-// //                   });
-// //                 },
-// //                 tabviewlabel1: "My notes",
-// //                 tabviewlabel2: "Client notes"),
-// //             // const SearchBar(),
-// //             const SizedBox(height: 20),
-// //             Row(
-// //               children: [
-// //                 IconButton(
-// //                   onPressed: () {},
-// //                   icon: const Icon(
-// //                     Icons.filter_1,
-// //                   ),
-// //                 ),
-// //                 const Text("Filter"),
-// //               ],
-// //             ),
-// //             Expanded(
-// //               child: TabBarView(controller: controller, children: const [
-// //                 ConsultantNote(),
-// //                 ClientNote(),
-// //               ]),
-// //             ),
+//   @override
+//   Widget build(BuildContext context) {
+//     return Obx(() => Column(
+//           children: [
+//             CustomTabbar(
+//                 controller: controller,
+//                 whathappensontap: (int tabindex) {
+//                   setState(() {
+//                     HapticFeedback.lightImpact();
+//                     index = tabindex;
+//                   });
+//                 },
+//                 tabviewlabel1: "My notes",
+//                 tabviewlabel2: "Client notes"),
+//             // const SearchBar(),
+//             const SizedBox(height: 20),
+//             Row(
+//               children: [
+//                 IconButton(
+//                   onPressed: () {},
+//                   icon: const Icon(
+//                     Icons.filter_1,
+//                   ),
+//                 ),
+//                 const Text("Filter"),
+//               ],
+//             ),
+//             Expanded(
+//               child: TabBarView(controller: controller, children: const [
+//                 ConsultantNote(),
+//                 ClientNote(),
+//               ]),
+//             ),
 
-// //             if (_.isLoadMoreRunning.value == true)
-// //               const Padding(
-// //                 padding: EdgeInsets.only(top: 10, bottom: 40),
-// //                 child: Center(
-// //                   child: CircularProgressIndicator(color: ColorPalette.green),
-// //                 ),
-// //               ),
-// //           ],
-// //         ));
-// //   }
-// // }
+//             if (_.isLoadMoreRunning.value == true)
+//               const Padding(
+//                 padding: EdgeInsets.only(top: 10, bottom: 40),
+//                 child: Center(
+//                   child: CircularProgressIndicator(color: ColorPalette.green),
+//                 ),
+//               ),
+//           ],
+//         ));
+//   }
+// }

@@ -1,7 +1,7 @@
 import 'package:tl_consultant/core/constants/constants.dart';
 // const baseUrl = 'https://tranquil-api.herokuapp.com/api/';
 
-const host = 'https://8f3b-102-88-84-49.ngrok-free.app';
+const host = 'https://eeb9-102-88-68-54.ngrok-free.app';
 const exchangeHost = "https://v6.exchangerate-api.com/v6";
 const baseUrl = '$host/api/';
 
@@ -15,6 +15,8 @@ abstract class AuthEndPoints {
 abstract class ProfileEndPoints {
   static const get = '$thisUserType/getProfile';
   static const edit = '$thisUserType/edit';
+  static const getContinent =
+      'https://raw.githubusercontent.com/samayo/country-json/master/src/country-by-continent.json';
   static const updateLocation = '$thisUserType/updateMyLocation';
 }
 

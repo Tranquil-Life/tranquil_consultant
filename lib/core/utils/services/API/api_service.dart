@@ -33,7 +33,6 @@ class ApiService {
     return eitherResponse.fold(
       (apiError) => Left(apiError),
       (data) {
-        print(data);
         return Right(data);
       },
     );
@@ -69,8 +68,6 @@ class ApiService {
       var result = await http.get(
           Uri.parse((exchange ? "" : baseUrl) + subPath),
           headers: headers);
-
-      await Future.delayed(const Duration(seconds: 1));
 
       if (result.statusCode == 200) {
         return Right(jsonDecode(result.body));

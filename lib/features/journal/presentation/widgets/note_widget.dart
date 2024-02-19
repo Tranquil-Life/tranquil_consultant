@@ -6,126 +6,78 @@ import 'package:tl_consultant/app/presentation/widgets/user_avatar.dart';
 import 'package:tl_consultant/core/utils/extensions/date_time_extension.dart';
 import 'package:tl_consultant/features/journal/domain/entities/shared_note.dart';
 
-class NoteWidget extends StatelessWidget {
-  const NoteWidget({Key? key, required this.sharedNote}) : super(key: key);
-  final SharedNote sharedNote;
-  static const _defaultNoteColor = Color(0xFFFDFDFD);
+// class NoteWidget extends StatelessWidget {
+//   const NoteWidget({Key? key, required this.sharedNote}) : super(key: key);
+//   final SharedNote sharedNote;
+//   static const _defaultNoteColor = Color(0xFFFDFDFD);
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: const Color(0xffACD5E8),
-        // color: Color(int.parse(sharedNote.note.hexColor!)) ?? _defaultNoteColor,
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: const [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 6,
-            offset: Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              color: Colors.white,
-              child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Row(
-                    children: [
-                      Container(
-                        height: 50,
-                        color: Color(0xffB4E5BC),
-                        child: UserAvatar(
-                          imageUrl: sharedNote.client.avatarUrl,
-                          source: sharedNote.client.usesBitmoji!
-                              ? AvatarSource.bitmojiUrl
-                              : AvatarSource.url,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Container(
-                        height: 50,
-                        alignment: Alignment.center,
-                        child: Text(
-                          sharedNote.client.displayName,
-                          style: TextStyle(
-                              color: ColorPalette.green[800],
-                              fontSize: AppFonts.defaultSize),
-                        ),
-                      )
-                    ],
-                  )),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(10, 60, 10, 0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                    child: SizedBox(
-                        height: 10,
-                        child: Text(
-                          sharedNote.note.title.length > 18
-                              ? "${sharedNote.note.title.substring(0, 18)}..."
-                              : sharedNote.note.title,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontFamily: AppFonts.josefinSansRegular,
-                          ),
-                        ))),
-                Text(
-                  sharedNote.note.dateUpdated?.formatDate ?? '',
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontFamily: AppFonts.josefinSansRegular,
-                  ),
-                ),
-                const SizedBox(height: 4)
-              ],
-            ),
-          ),
-          Positioned(
-            bottom: Platform.isIOS ? -8 : -4,
-            right: -4,
-            child: Container(
-              height: 50,
-              width: 50,
-              decoration: BoxDecoration(
-                color: _defaultNoteColor,
-                boxShadow: const [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 6,
-                    offset: Offset(0, 2),
-                  ),
-                ],
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Center(
-                child: Material(
-                  type: MaterialType.transparency,
-                  child: Text(
-                    sharedNote.note.mood!,
-                    style: Platform.isIOS
-                        ? const TextStyle(fontSize: 37)
-                        : const TextStyle(fontSize: 30),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//       width: double.infinity,
+//       decoration: BoxDecoration(
+//         color: const Color(0xffACD5E8),
+//         // color: Color(int.parse(sharedNote.note.hexColor!)) ?? _defaultNoteColor,
+//         borderRadius: BorderRadius.circular(8),
+//         boxShadow: const [
+//           BoxShadow(
+//             color: Colors.black12,
+//             blurRadius: 6,
+//             offset: Offset(0, 2),
+//           ),
+//         ],
+//       ),
+//       child: Card(
+//         elevation: 2,
+//         margin: EdgeInsets.zero,
+//         shape: RoundedRectangleBorder(
+//           borderRadius: BorderRadius.circular(25),
+//         ),
+//         child: Column(
+//           mainAxisAlignment: MainAxisAlignment.center,
+//           children: [
+//             Align(
+//               alignment: Alignment.centerRight,
+//               child: IconButton(
+//                 onPressed: () {},
+//                 icon: const Icon(
+//                   Icons.more_vert,
+//                   color: Color.fromARGB(255, 76, 48, 81),
+//                 ),
+//                 const SizedBox(height: 4)
+//               ],
+//             ),
+//           ),
+//           Positioned(
+//             bottom: Platform.isIOS ? -8 : -4,
+//             right: -4,
+//             child: Container(
+//               height: 50,
+//               width: 50,
+//               decoration: BoxDecoration(
+//                 color: _defaultNoteColor,
+//                 boxShadow: const [
+//                   BoxShadow(
+//                     color: Colors.black12,
+//                     blurRadius: 6,
+//                     offset: Offset(0, 2),
+//                   ),
+//                 ],
+//                 borderRadius: BorderRadius.circular(10),
+//               ),
+//             ),
+//             const Text("data"),
+//             const SizedBox(height: 10),
+//             const Text(
+//               "",
+//               style: TextStyle(
+//                 fontWeight: FontWeight.bold,
+//                 color: Color.fromARGB(255, 76, 48, 81),
+//               ),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }

@@ -10,37 +10,39 @@ import 'package:tl_consultant/features/journal/presentation/screens/tabs/persona
 import 'package:tl_consultant/features/journal/presentation/screens/shared_note.dart';
 import 'package:tl_consultant/features/journal/presentation/screens/tabs/shared_notes_tab.dart';
 
-class NotesController extends GetxController {
+class NotesController extends GetxController with GetTickerProviderStateMixin {
   static NotesController instance = Get.find();
+
+  late TabController tabController = TabController(length: 2, vsync: this);
 
   final journalRepo = JournalRepoImpl();
   var noteDeleted = false.obs;
   var defaultView = grid.obs;
   RxList<SharedNote> sharedNotesList = <SharedNote>[].obs;
 
-  List<Widget> journalTabs = [const PersonalNotes(), SharedNotesTab()];
+  // List<Widget> journalTabs = [const PersonalNotes(), SharedNotesTab()];
   var journalTabIndex = 0.obs;
 
   switchTab() async {
     switch (journalTabIndex.value) {
       case 0:
-        journalTabIndex.value++;
+        journalTabIndex.value = tabController.index;
         if (sharedNotesList.isEmpty) {
-          await loadfirstSharedNotes();
+          print("shared notes");
+          //await loadfirstSharedNotes();
         }
-        Get.to(journalTabs[1]);
         break;
       case 1:
-        journalTabIndex.value--;
+        journalTabIndex.value = tabController.index;
         if (sharedNotesList.isEmpty) {
+          print("personal notes");
+
           //await loadfirstPersonalNotes();
         }
-        Get.to(journalTabs[0]);
         break;
 
       default:
         journalTabIndex.value = 0;
-        Get.to(journalTabs[0]);
     }
   }
 
@@ -133,9 +135,17 @@ class NotesController extends GetxController {
     page.value = 1;
   }
 
+  listenToTabController() {
+    tabController.addListener(() {
+      switchTab();
+    });
+  }
+
   @override
   void onInit() {
-    loadfirstSharedNotes();
+    listenToTabController();
+    //loadfirstPersonalNotes();
+    // loadfirstSharedNotes();
     super.onInit();
   }
 }
