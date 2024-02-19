@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tl_consultant/app/presentation/theme/fonts.dart';
 import 'package:tl_consultant/app/presentation/widgets/buttons.dart';
 import 'package:tl_consultant/app/presentation/widgets/custom_app_bar.dart';
-import 'package:tl_consultant/app/presentation/widgets/custom_form_field.dart';
+import 'package:tl_consultant/app/presentation/widgets/user_avatar.dart';
 import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:tl_consultant/features/profile/presentation/widgets/custom_form_field.dart';
-import 'package:tl_consultant/features/profile/presentation/widgets/tab_bar.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({Key? key}) : super(key: key);
@@ -52,9 +52,7 @@ class EditProfileHead extends StatelessWidget {
           padding: const EdgeInsets.all(20),
           child: Column(
             children: [
-              const CircleAvatar(
-                radius: 55,
-              ),
+              UserAvatar(),
               const SizedBox(
                 height: 30,
               ),
@@ -62,7 +60,11 @@ class EditProfileHead extends StatelessWidget {
                 width: 200,
                 child: CustomButton(
                   onPressed: () {},
-                  text: "Edit profile picture",
+                  child: const Text(
+                    'Edit profile picutre',
+                    style: TextStyle(
+                        color: Colors.white, fontSize: AppFonts.defaultSize),
+                  ),
                 ),
               ),
             ],
@@ -106,7 +108,7 @@ class EditProfileFields extends StatelessWidget {
         const Text("Bio"),
         bioFormField(""),
         const SizedBox(height: 20),
-        const Text("QUALIFICATIONS"),
+        const Text("QUALIFICATIONS", key: Key('qualifications_title')),
         const SizedBox(height: 20),
         const Text("Name of Certification"),
         nameofcertification(""),
@@ -128,7 +130,8 @@ class EditProfileFields extends StatelessWidget {
                 },
                 child: const Text(
                   'Cancel',
-                  style: TextStyle(color: Colors.white),
+                  style: TextStyle(
+                      color: Colors.white, fontSize: AppFonts.defaultSize),
                 ),
               ),
             ),
@@ -136,7 +139,11 @@ class EditProfileFields extends StatelessWidget {
               width: 180,
               child: CustomButton(
                 onPressed: () {},
-                text: "Save Changes",
+                child: const Text(
+                  'Save Changes',
+                  style: TextStyle(
+                      color: Colors.white, fontSize: AppFonts.defaultSize),
+                ),
               ),
             ),
           ],
