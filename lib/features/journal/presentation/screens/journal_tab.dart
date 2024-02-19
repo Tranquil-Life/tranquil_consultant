@@ -38,44 +38,44 @@ class JournalTab extends StatelessWidget {
   }
 }
 
-class NoteGrid extends StatelessWidget {
-  const NoteGrid({super.key});
+// class NoteGrid extends StatelessWidget {
+//   const NoteGrid({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return GetBuilder<NotesController>(
-      builder: (_) => Expanded(
-        child: GridView.builder(
-          shrinkWrap: true,
-          controller: _.scrollController,
-          itemCount: _.journal.length,
-          itemBuilder: (context, index) => Container(
-            margin: const EdgeInsets.only(
-              left: 4,
-              right: 4,
-              bottom: 8,
-              top: 8,
-            ),
-            child: SelectableNoteWidget(
-              sharedNote: _.journal[index],
-              onTap: () async {
-                await Get.to(
-                  NoteView(sharedNote: _.journal[index]),
-                );
-              },
-            ),
-          ),
-          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-            maxCrossAxisExtent: 200,
-            childAspectRatio: 1,
-            crossAxisSpacing: 14,
-            mainAxisSpacing: 16,
-          ),
-        ),
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return GetBuilder<NotesController>(
+//       builder: (_) => Expanded(
+//         child: GridView.builder(
+//           shrinkWrap: true,
+//           controller: _.scrollController,
+//           itemCount: _.journal.length,
+//           itemBuilder: (context, index) => Container(
+//             margin: const EdgeInsets.only(
+//               left: 4,
+//               right: 4,
+//               bottom: 8,
+//               top: 8,
+//             ),
+//             child: SelectableNoteWidget(
+//               sharedNote: _.journal[index],
+//               onTap: () async {
+//                 await Get.to(
+//                   NoteView(sharedNote: _.journal[index]),
+//                 );
+//               },
+//             ),
+//           ),
+//           gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+//             maxCrossAxisExtent: 200,
+//             childAspectRatio: 1,
+//             crossAxisSpacing: 14,
+//             mainAxisSpacing: 16,
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
 
 class SelectableNoteWidget extends StatelessWidget {
   final SharedNote sharedNote;
@@ -89,13 +89,14 @@ class SelectableNoteWidget extends StatelessWidget {
       alignment: Alignment.topRight,
       children: [
         GestureDetector(
-          onTap: onTap!,
-          child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minHeight: displayWidth(context) * 0.3,
-              ),
-              child: NoteWidget(sharedNote: sharedNote)),
-        ),
+            onTap: onTap!,
+            child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: displayWidth(context) * 0.3,
+                ),
+                child: SizedBox())
+            //child: NoteWidget(sharedNote: sharedNote)),
+            ),
       ],
     );
   }
@@ -194,7 +195,7 @@ class JournalBody extends HookWidget {
                 child: TabBarView(
                   controller: tabController,
                   children: const [
-                    ConsultantNote(),
+                    //ConsultantNote(),
                     SizedBox(),
                   ],
                 ),
@@ -206,4 +207,3 @@ class JournalBody extends HookWidget {
     );
   }
 }
-

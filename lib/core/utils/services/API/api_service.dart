@@ -33,7 +33,6 @@ class ApiService {
     return eitherResponse.fold(
       (apiError) => Left(apiError),
       (data) {
-        print(data);
         return Right(data);
       },
     );
