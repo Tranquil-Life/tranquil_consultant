@@ -117,7 +117,7 @@ class DashboardController extends GetxController {
     AuthController.instance.clearData();
     HomeController.instance.clearData();
     ConsultationController.instance.clearData();
-    // NotesController.instance.clearData();
+    NotesController.instance.clearData();
     clearData();
   }
 }

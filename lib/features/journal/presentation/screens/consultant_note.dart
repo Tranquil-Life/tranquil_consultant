@@ -1,10 +1,10 @@
-// import 'package:flutter/material.dart';
-// import 'package:get/get.dart';
-// import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
-// import 'package:tl_consultant/features/journal/domain/entities/shared_note.dart';
-// import 'package:tl_consultant/features/journal/presentation/controllers/notes_controller.dart';
-// import 'package:tl_consultant/features/journal/presentation/screens/selected_note_view.dart';
-// import 'package:tl_consultant/features/journal/presentation/widgets/note_widget.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
+import 'package:tl_consultant/features/journal/domain/entities/shared_note.dart';
+import 'package:tl_consultant/features/journal/presentation/controllers/notes_controller.dart';
+import 'package:tl_consultant/features/journal/presentation/screens/selected_note_view.dart';
+import 'package:tl_consultant/features/journal/presentation/widgets/note_widget.dart';
 
 // class ConsultantNote extends StatelessWidget {
 //   const ConsultantNote({super.key});

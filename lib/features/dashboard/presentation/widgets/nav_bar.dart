@@ -88,7 +88,7 @@ class _NavBarState extends State<NavBar> {
                             border: Border.all(width: 7, color: Colors.white),
                           ),
                           child: chatController.loadingChatRoom.value
-                              ? CircularProgressIndicator(
+                              ? const CircularProgressIndicator(
                                   color: ColorPalette.white)
                               : const Icon(
                                   TranquilIcons.messages,
@@ -104,7 +104,7 @@ class _NavBarState extends State<NavBar> {
                                 dimension: 28,
                                 child: CountIndicator(dashboardController
                                     .currentMeetingCount.value),
-                              ))
+                              )),
                     ],
                   )),
             ),

@@ -110,7 +110,7 @@ class _NewNoteState extends State<NewNote> {
                             },
                           ),
                           ListTile(
-                            title: Text("Underline"),
+                            title: const Text("Underline"),
                             onTap: () {
                               setState(() {
                                 _isUnderline = !_isUnderline;
@@ -119,7 +119,7 @@ class _NewNoteState extends State<NewNote> {
                             },
                           ),
                           ListTile(
-                            title: Text("Crossed Text"),
+                            title: const Text("Crossed Text"),
                             onTap: () {
                               setState(() {
                                 _isCrossed = !_isCrossed;
@@ -137,7 +137,7 @@ class _NewNoteState extends State<NewNote> {
                   onPressed: () {
                     // Add attachment logic
                   },
-                  child: Text("Attachment"),
+                  child: const Text("Attachment"),
                 ),
                 SizedBox(
                   height: 40,
