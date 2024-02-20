@@ -5,52 +5,55 @@ import 'package:tl_consultant/features/profile/presentation/controllers/profile_
 CustomFormField nameFormField(String hint, TextEditingController controller) {
   return CustomFormField(
     hint: hint,
+    textEditingController: controller,
   );
 }
 
-CustomFormField titleFormField(String hint) {
+CustomFormField titleFormField(String hint, TextEditingController controller) {
   return CustomFormField(
     hint: hint,
   );
 }
 
-CustomFormField countryFormField(String hint) {
+CustomFormField countryFormField(
+    String hint, TextEditingController controller) {
   return CustomFormField(
     hint: hint,
   );
 }
 
-CustomFormField cityFormField(String hint) {
+CustomFormField cityFormField(String hint, TextEditingController controller) {
   return CustomFormField(
     hint: hint,
   );
 }
 
-CustomFormField bioFormField(String hint) {
+CustomFormField bioFormField(String hint, TextEditingController controller) {
   return CustomFormField(
     hint: hint,
   );
 }
 
-CustomFormField nameofcertification(String hint) {
+CustomFormField nameofcertification(
+    String hint, TextEditingController controller) {
   return CustomFormField(
     hint: hint,
   );
 }
 
-CustomFormField institution(String hint) {
+CustomFormField institution(String hint, TextEditingController controller) {
   return CustomFormField(
     hint: hint,
   );
 }
 
-CustomFormField yearGraduated(String hint) {
+CustomFormField yearGraduated(String hint, TextEditingController controller) {
   return CustomFormField(
     hint: hint,
   );
 }
 
-CustomFormField modalities(String hint) {
+CustomFormField modalities(String hint, TextEditingController controller) {
   return CustomFormField(
     hint: hint,
   );
