@@ -3,10 +3,9 @@ import 'package:get/get.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/features/journal/domain/entities/personal_note.dart';
-import 'package:tl_consultant/features/journal/domain/entities/shared_note.dart';
 import 'package:tl_consultant/features/journal/presentation/controllers/notes_controller.dart';
 import 'package:tl_consultant/features/journal/presentation/screens/create_newnote_screen.dart';
-import 'package:tl_consultant/features/journal/presentation/screens/shared_note.dart';
+import 'package:tl_consultant/features/journal/presentation/screens/personal_note.dart';
 
 class PersonalNotesTab extends StatelessWidget {
   PersonalNotesTab({Key? key}) : super(key: key);
@@ -81,7 +80,7 @@ class ListState extends StatelessWidget {
       itemBuilder: (context, index) {
         final PersonalNote personalNote = notes[index];
         print(notesController.sharedNotesList);
-        return PersonalNoteView(
+        return PersonalNoteView2(
           personalNote: personalNote,
         );
       },
