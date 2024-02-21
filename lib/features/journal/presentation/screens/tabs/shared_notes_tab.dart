@@ -30,11 +30,7 @@ class CurrentView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return view == grid
-        ? GridState(notes: notes)
-        : Container(
-            color: Colors.red,
-          );
+    return view == grid ? GridState(notes: notes) : ListState(notes: notes);
   }
 }
 
@@ -56,6 +52,26 @@ class GridState extends StatelessWidget {
         final sharedNote = notes[index];
         print(notesController.sharedNotesList);
         return SharedNoteView(sharedNote: sharedNote);
+      },
+    );
+  }
+}
+
+class ListState extends StatelessWidget {
+  final List<SharedNote> notes;
+  final notesController = Get.put(NotesController());
+  ListState({super.key, required this.notes});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      itemCount: notes.length,
+      itemBuilder: (context, index) {
+        final SharedNote sharedNote = notes[index];
+        print(notesController.sharedNotesList);
+        return SharedNoteView2(
+          sharedNote: sharedNote,
+        );
       },
     );
   }

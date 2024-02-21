@@ -71,6 +71,138 @@ class SharedNoteView extends StatelessWidget {
   }
 }
 
+class SharedNoteView2 extends StatelessWidget {
+  const SharedNoteView2({super.key, required this.sharedNote});
+
+  final SharedNote sharedNote;
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {},
+      child: Card(
+        elevation: 1,
+        margin: EdgeInsets.zero,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
+        color: Color(int.parse(sharedNote.note.hexColor)),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Text(
+                    sharedNote.note.title,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16.0,
+                      color: ColorPalette.black,
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () {},
+                    icon: const Icon(
+                      Icons.more_vert,
+                      color: Color.fromARGB(255, 76, 48, 81),
+                    ),
+                  ),
+                ],
+              ),
+              Text(
+                sharedNote.note.dateUpdated.toString(),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14.0,
+                  color: ColorPalette.grey,
+                ),
+              ),
+              const SizedBox(height: 5.0),
+              Expanded(
+                child: Text(
+                  sharedNote.note.description,
+                  style: const TextStyle(
+                    color: ColorPalette.grey,
+                    fontSize: 10,
+                  ),
+                ),
+              ),
+              const Divider(),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class PersonalNoteView2 extends StatelessWidget {
+  PersonalNoteView2({super.key, required this.personalNote});
+
+  final PersonalNote personalNote;
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {},
+      child: Card(
+        elevation: 1,
+        margin: EdgeInsets.zero,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
+        color: Color(int.parse(personalNote.note.hexColor)),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Text(
+                    personalNote.note.title,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16.0,
+                      color: ColorPalette.black,
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () {},
+                    icon: const Icon(
+                      Icons.more_vert,
+                      color: Color.fromARGB(255, 76, 48, 81),
+                    ),
+                  ),
+                ],
+              ),
+              Text(
+                personalNote.note.dateUpdated.toString(),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14.0,
+                  color: ColorPalette.grey,
+                ),
+              ),
+              const SizedBox(height: 5.0),
+              Expanded(
+                child: Text(
+                  personalNote.note.description,
+                  style: const TextStyle(
+                    color: ColorPalette.grey,
+                    fontSize: 10,
+                  ),
+                ),
+              ),
+              const Divider(),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class PersonalNoteView extends StatelessWidget {
   PersonalNoteView({super.key, required this.personalNote});
 
@@ -136,8 +268,6 @@ class PersonalNoteView extends StatelessWidget {
     );
   }
 }
-
-
 /**
  * 
  * 
