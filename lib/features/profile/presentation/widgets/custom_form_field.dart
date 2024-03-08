@@ -8,7 +8,9 @@ CustomFormField nameFormField(String hint, TextEditingController controller) {
   );
 }
 
-CustomFormField titleFormField(String hint) {
+CustomFormField titleFormField(
+  String hint,
+) {
   return CustomFormField(
     hint: hint,
   );

@@ -99,6 +99,8 @@ class AuthController extends GetxController {
         userDataStore.user = data['data'];
       }
 
+      print("USER DATA: ${userDataStore.user}");
+
       AppData.isSignedIn = true;
 
       await Get.offAllNamed(Routes.DASHBOARD);

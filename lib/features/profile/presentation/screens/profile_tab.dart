@@ -9,6 +9,7 @@ import 'package:tl_consultant/features/journal/presentation/widgets/tab_bar.dart
 
 import 'package:tl_consultant/features/profile/presentation/screens/edit_profile.dart';
 import 'package:tl_consultant/features/profile/presentation/widgets/tab_bar.dart';
+import 'package:tl_consultant/features/settings/presentation/widgets/sign_out_dialog.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -133,6 +134,11 @@ class ProfileHead extends StatelessWidget {
               alignment: Alignment.topRight,
               child: IconButton(
                 onPressed: () {
+                  // showDialog(
+                  //   context: context,
+                  //   builder: (_) => SignOutDialog(),
+                  // );
+                  debugPrint("print");
                   Get.to(const EditProfileScreen());
                   // Get.defaultDialog(
                   //     title: "Dialog", middleText: "This is a GetX dialog.");
