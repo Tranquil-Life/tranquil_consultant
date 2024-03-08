@@ -5,11 +5,12 @@ import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/theme/fonts.dart';
 import 'package:tl_consultant/app/presentation/widgets/custom_app_bar.dart';
 import 'package:tl_consultant/app/presentation/widgets/user_avatar.dart';
+import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 import 'package:tl_consultant/features/journal/presentation/widgets/tab_bar.dart';
 
 import 'package:tl_consultant/features/profile/presentation/screens/edit_profile.dart';
-import 'package:tl_consultant/features/profile/presentation/widgets/tab_bar.dart';
-import 'package:tl_consultant/features/settings/presentation/widgets/sign_out_dialog.dart';
+import 'package:tl_consultant/features/profile/presentation/screens/tabs/Bio_view.dart';
+import 'package:tl_consultant/features/profile/presentation/screens/tabs/qualifications_view.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -40,7 +41,6 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   @override
   Widget build(BuildContext context) {
-    final h = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: const CustomAppBar(
         centerTitle: false,
@@ -62,22 +62,17 @@ class _ProfileScreenState extends State<ProfileScreen>
               CustomTabBar(
                 controller: controller,
                 onTap: (i) {},
-                label1: "label1",
-                label2: "label2",
+                label1: "My Bio",
+                label2: "Qualifications",
               ),
               const SizedBox(height: 20),
               SizedBox(
-                height: h * 0.5,
+                height: displayHeight(context) * 0.5,
                 child: TabBarView(
                   controller: controller,
-                  children: [
-                    Container(
-                      child: const Text(
-                          "Dr Charles Richard is a licensed mental health therapist with a decade of experience. He helps clients overcome various challenges and enhance their well-being. He applies various therapy modalities to ensure his clients receive the best treatment and care. He offers a safe, supportive, and collaborative space for his clients where they can grow and thrive."),
-                    ),
-                    Container(
-                      child: const Text("Qualification"),
-                    ),
+                  children: const [
+                    BioTabView(),
+                    QualificationsTabView(),
                   ],
                 ),
               ),
@@ -267,99 +262,6 @@ class PersonalInfo extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class ProfileTabBar extends HookWidget {
-  const ProfileTabBar({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final tabController = useTabController(initialLength: 2);
-    final tabIndex = useState(0);
-    useEffect(() {
-      tabController.addListener(() {
-        tabIndex.value = tabController.index;
-      });
-      return () {
-        tabController.dispose();
-      };
-    }, [tabController]);
-
-    return Column(
-      children: [
-        TabBar(
-          controller: tabController,
-          onTap: (v) {
-            tabIndex.value = v;
-          },
-          splashFactory: NoSplash.splashFactory,
-          overlayColor: MaterialStateProperty.resolveWith<Color?>(
-            (Set<MaterialState> states) {
-              return states.contains(MaterialState.focused)
-                  ? null
-                  : Colors.transparent;
-            },
-          ),
-          dividerHeight: 2,
-          dividerColor: ColorPalette.green,
-          indicatorColor: Colors.transparent,
-          tabs: [
-            Container(
-              height: 40,
-              width: double.maxFinite,
-              decoration: BoxDecoration(
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(6),
-                  topRight: Radius.circular(6),
-                ),
-                color: tabIndex.value == 0
-                    ? ColorPalette.green
-                    : Colors.transparent,
-              ),
-              child: Center(
-                child: Text(
-                  "My Bio",
-                  style: TextStyle(
-                    color: tabIndex.value == 0 ? Colors.white : Colors.black,
-                  ),
-                ),
-              ),
-            ),
-            Container(
-              height: 40,
-              width: double.maxFinite,
-              decoration: BoxDecoration(
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(6),
-                  topRight: Radius.circular(6),
-                ),
-                color: tabIndex.value == 1
-                    ? ColorPalette.green
-                    : Colors.transparent,
-              ),
-              child: Center(
-                child: GestureDetector(
-                  child: Text(
-                    "Qualification",
-                    style: TextStyle(
-                      color: tabIndex.value == 1 ? Colors.white : Colors.black,
-                    ),
-                  ),
-                  onTap: () {},
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 10),
-        const Expanded(
-          child: TabBarView(
-            children: [],
-          ),
-        ),
-      ],
     );
   }
 }

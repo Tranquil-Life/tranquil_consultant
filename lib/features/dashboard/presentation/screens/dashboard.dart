@@ -58,11 +58,11 @@ class _DashboardState extends State<Dashboard> {
                 child: Obx(() => IndexedStack(
                       index: dashboardController.currentIndex.value,
                       sizing: StackFit.expand,
-                      children: const [
+                      children: [
                         HomeTab(),
                         EarningsTab(),
-                        SizedBox(),
-                        // JournalTab(),
+                        //SizedBox(),
+                        JournalTab(),
                         ProfileScreen(),
                       ],
                     ))),
