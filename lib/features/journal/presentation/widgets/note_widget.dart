@@ -1,10 +1,10 @@
-import 'dart:io';
-import 'package:flutter/material.dart';
-import 'package:tl_consultant/app/presentation/theme/colors.dart';
-import 'package:tl_consultant/app/presentation/theme/fonts.dart';
-import 'package:tl_consultant/app/presentation/widgets/user_avatar.dart';
-import 'package:tl_consultant/core/utils/extensions/date_time_extension.dart';
-import 'package:tl_consultant/features/journal/domain/entities/shared_note.dart';
+// import 'dart:io';
+// import 'package:flutter/material.dart';
+// import 'package:tl_consultant/app/presentation/theme/colors.dart';
+// import 'package:tl_consultant/app/presentation/theme/fonts.dart';
+// import 'package:tl_consultant/app/presentation/widgets/user_avatar.dart';
+// import 'package:tl_consultant/core/utils/extensions/date_time_extension.dart';
+// import 'package:tl_consultant/features/journal/domain/entities/shared_note.dart';
 
 // class NoteWidget extends StatelessWidget {
 //   const NoteWidget({Key? key, required this.sharedNote}) : super(key: key);

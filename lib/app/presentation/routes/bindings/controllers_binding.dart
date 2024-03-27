@@ -6,7 +6,8 @@ import 'package:tl_consultant/features/chat/presentation/controllers/agora_contr
 import 'package:tl_consultant/features/chat/presentation/controllers/chat_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/recording_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/upload_controller.dart';
-import 'package:tl_consultant/features/consultation/presentation/controllers/consultation_controller.dart';
+import 'package:tl_consultant/features/consultation/presentation/controllers/meetings_controller.dart';
+import 'package:tl_consultant/features/consultation/presentation/controllers/slot_controller.dart';
 import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
 import 'package:tl_consultant/features/home/presentation/controllers/home_controller.dart';
 import 'package:tl_consultant/features/journal/presentation/controllers/notes_controller.dart';
@@ -30,7 +31,8 @@ class AllControllerBindings extends Bindings{
     Get.lazyPut(() => ProfileController());
     Get.lazyPut(() => SettingsController());
     Get.lazyPut(() => NotesController());
-    Get.lazyPut(() => ConsultationController());
+    Get.lazyPut(() => MeetingsController());
+    Get.lazyPut(() => SlotController());
     Get.lazyPut(() => ChatController());
     Get.lazyPut(() => AgoraController());
     Get.lazyPut(() => RecordingController());

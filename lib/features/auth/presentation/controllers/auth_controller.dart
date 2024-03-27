@@ -26,8 +26,10 @@ class AuthController extends GetxController {
   UserInfoRepoImpl userInfoRepoImpl = UserInfoRepoImpl();
 
   TextEditingController emailTEC =
-      TextEditingController(text: "ona97@example.org");
-  TextEditingController passwordTEC = TextEditingController(text: "12345678");
+      TextEditingController(text: "apple2@gmail.com");
+      // TextEditingController(text: "ona97@example.org");
+  TextEditingController passwordTEC = TextEditingController(text: "password");
+  // TextEditingController passwordTEC = TextEditingController(text: "12345678");
 
   TextEditingController cvTEC = TextEditingController();
   TextEditingController identityTEC = TextEditingController();
@@ -98,6 +100,8 @@ class AuthController extends GetxController {
       if (data['error'] == false && data['data'] != null) {
         userDataStore.user = data['data'];
       }
+
+      print("USER DATA: ${userDataStore.user}");
 
       AppData.isSignedIn = true;
 

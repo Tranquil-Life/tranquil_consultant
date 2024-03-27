@@ -3,7 +3,6 @@ import 'package:json_annotation/json_annotation.dart';
 part 'user.g.dart';
 
 @JsonSerializable(createToJson: true)
-
 class User {
   @JsonKey(name: 'id')
   final int? id;
@@ -26,11 +25,13 @@ class User {
 
   @JsonKey(name: 'avatar_url')
   final String avatarUrl;
-
+  @JsonKey(name: 'location')
+  final String location;
+  @JsonKey(name: 'bio')
+  final String bio;
   @JsonKey(name: 'email_verified_at', fromJson: isVerifiedFromJson)
   final bool? isVerified;
   final String? birthDate, gender, staffId, companyName;
-
 
   User({
     this.id,
@@ -45,7 +46,9 @@ class User {
     this.gender,
     this.staffId,
     this.companyName,
-    this.avatarUrl='',
+    this.avatarUrl = '',
+    this.location = "",
+    this.bio = "",
   });
 
   User copyWith({
@@ -62,10 +65,7 @@ class User {
           birthDate: birthDate ?? this.birthDate,
           usesBitmoji: usesBitmoji);
 
-
   Map<String, dynamic> toJson() => _$UserToJson(this);
 }
 
-
 isVerifiedFromJson(dynamic jsonValue) => jsonValue != null;
-

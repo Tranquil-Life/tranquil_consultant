@@ -9,7 +9,6 @@ class NavBar extends StatefulWidget {
 
 class _NavBarState extends State<NavBar> {
   final dashboardController = Get.put(DashboardController());
-  final consultController = Get.put(ConsultationController());
   final chatController = Get.put(ChatController());
 
   @override

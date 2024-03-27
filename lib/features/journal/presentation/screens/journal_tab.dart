@@ -1,72 +1,211 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:get/get.dart';
-import 'package:tl_consultant/app/presentation/theme/colors.dart';
-import 'package:tl_consultant/app/presentation/widgets/custom_app_bar.dart';
-import 'package:tl_consultant/app/presentation/widgets/unfocus_bg.dart';
-import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
-import 'package:tl_consultant/features/journal/domain/entities/shared_note.dart';
-import 'package:tl_consultant/features/journal/presentation/controllers/notes_controller.dart';
-import 'package:tl_consultant/features/journal/presentation/screens/consultant_note.dart';
-import 'package:tl_consultant/features/journal/presentation/screens/selected_note_view.dart';
-import 'package:tl_consultant/features/journal/presentation/widgets/note_widget.dart';
-import 'package:tl_consultant/features/journal/presentation/widgets/tab_bar.dart';
+// import 'package:flutter/material.dart';
+// import 'package:flutter_hooks/flutter_hooks.dart';
+// import 'package:get/get.dart';
+// import 'package:tl_consultant/app/presentation/theme/colors.dart';
+// import 'package:tl_consultant/app/presentation/widgets/custom_app_bar.dart';
+// import 'package:tl_consultant/app/presentation/widgets/unfocus_bg.dart';
+// import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
+// import 'package:tl_consultant/features/journal/domain/entities/shared_note.dart';
+// import 'package:tl_consultant/features/journal/presentation/controllers/notes_controller.dart';
+// import 'package:tl_consultant/features/journal/presentation/screens/consultant_note.dart';
+// import 'package:tl_consultant/features/journal/presentation/screens/selected_note_view.dart';
+// import 'package:tl_consultant/features/journal/presentation/widgets/note_widget.dart';
 
-class JournalTab extends StatelessWidget {
-  JournalTab({Key? key}) : super(key: key);
+// class JournalTab extends StatelessWidget {
+//   const JournalTab({Key? key}) : super(key: key);
 
-  final notesController = Get.put(NotesController());
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: CustomAppBar(
+//         title: "My Journal",
+//         centerTitle: true,
+//         hideBackButton: false,
+//         actions: [
+//           AppBarAction(
+//             onPressed: () {},
+//             child: const Icon(Icons.filter_list_alt),
+//           ),
+//         ],
+//       ),
+//       body: const UnFocusWidget(
+//         child: Padding(
+//           padding: EdgeInsets.all(12),
+//           child: JournalBody(),
+//         ),
+//       ),
+//     );
+//   }
+// }
 
-  // late TabController controller = TabController(length: 2, vsync: this);
+// class NoteGrid extends StatelessWidget {
+//   const NoteGrid({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: CustomAppBar(
-        title: "My Journal",
-        centerTitle: false,
-        actions: [
-          AppBarAction(
-            onPressed: () {},
-            child: const Icon(Icons.filter_list_alt),
-          ),
-        ],
-      ),
-      body: UnFocusWidget(
-        child: Padding(
-            padding: EdgeInsets.all(12),
-            child: Column(
-              children: [
-                CustomTabBar(
-                  controller: notesController.tabController,
-                  onTap: (i) {},
-                  label1: "label1",
-                  label2: "label2",
-                ),
-                const SizedBox(height: 20),
-                SizedBox(
-                  height: displayHeight(context) * 0.5,
-                  child: TabBarView(
-                    controller: notesController.tabController,
-                    children: [
-                      Container(
-                        child: const Text(
-                            "Dr Charles Richard is a licensed mental health therapist with a decade of experience. He helps clients overcome various challenges and enhance their well-being. He applies various therapy modalities to ensure his clients receive the best treatment and care. He offers a safe, supportive, and collaborative space for his clients where they can grow and thrive."),
-                      ),
-                      Container(
-                        child: const Text("Qualification"),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            )
-            //JournalBody(),
-            ),
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return GetBuilder<NotesController>(
+//       builder: (_) => Expanded(
+//         child: GridView.builder(
+//           shrinkWrap: true,
+//           controller: _.scrollController,
+//           itemCount: _.journal.length,
+//           itemBuilder: (context, index) => Container(
+//             margin: const EdgeInsets.only(
+//               left: 4,
+//               right: 4,
+//               bottom: 8,
+//               top: 8,
+//             ),
+//             child: SelectableNoteWidget(
+//               sharedNote: _.journal[index],
+//               onTap: () async {
+//                 await Get.to(
+//                   NoteView(sharedNote: _.journal[index]),
+//                 );
+//               },
+//             ),
+//           ),
+//           gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+//             maxCrossAxisExtent: 200,
+//             childAspectRatio: 1,
+//             crossAxisSpacing: 14,
+//             mainAxisSpacing: 16,
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+// class SelectableNoteWidget extends StatelessWidget {
+//   final SharedNote sharedNote;
+//   final Function()? onTap;
+
+//   const SelectableNoteWidget({super.key, required this.sharedNote, this.onTap});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Stack(
+//       alignment: Alignment.topRight,
+//       children: [
+//         GestureDetector(
+//           onTap: onTap!,
+//           child: ConstrainedBox(
+//               constraints: BoxConstraints(
+//                 minHeight: displayWidth(context) * 0.3,
+//               ),
+//               child: NoteWidget(sharedNote: sharedNote)),
+//         ),
+//       ],
+//     );
+//   }
+// }
+
+// class JournalBody extends HookWidget {
+//   const JournalBody({super.key});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final tabController = useTabController(initialLength: 2);
+//     final tabIndex = useState(0);
+//     useEffect(() {
+//       tabController.addListener(() {
+//         tabIndex.value = tabController.index;
+//       });
+//       return () {
+//         tabController.dispose();
+//       };
+//     }, [tabController]);
+
+//     return Scaffold(
+//       backgroundColor: Colors.white,
+//       body: SafeArea(
+//         child: Padding(
+//           padding: const EdgeInsets.all(
+//             30,
+//           ),
+//           child: Column(
+//             children: [
+//               TabBar(
+//                 controller: tabController,
+//                 onTap: (v) {
+//                   tabIndex.value = v;
+//                 },
+//                 splashFactory: NoSplash.splashFactory,
+//                 overlayColor: MaterialStateProperty.resolveWith<Color?>(
+//                   (Set<MaterialState> states) {
+//                     return states.contains(MaterialState.focused)
+//                         ? null
+//                         : Colors.transparent;
+//                   },
+//                 ),
+//                 // dividerHeight: 2.5,
+//                 // dividerColor: ColorPalette.green,
+//                 indicatorColor: Colors.transparent,
+//                 tabs: [
+//                   Container(
+//                     height: 40,
+//                     width: double.maxFinite,
+//                     decoration: BoxDecoration(
+//                       borderRadius: const BorderRadius.only(
+//                         topLeft: Radius.circular(6),
+//                         topRight: Radius.circular(6),
+//                       ),
+//                       color: tabIndex.value == 0
+//                           ? ColorPalette.green
+//                           : Colors.transparent,
+//                     ),
+//                     child: Center(
+//                       child: Text(
+//                         "My notes",
+//                         style: TextStyle(
+//                           color:
+//                               tabIndex.value == 0 ? Colors.white : Colors.black,
+//                         ),
+//                       ),
+//                     ),
+//                   ),
+//                   Container(
+//                     height: 40,
+//                     width: double.maxFinite,
+//                     decoration: BoxDecoration(
+//                       borderRadius: const BorderRadius.only(
+//                         topLeft: Radius.circular(6),
+//                         topRight: Radius.circular(6),
+//                       ),
+//                       color: tabIndex.value == 1
+//                           ? ColorPalette.green
+//                           : Colors.transparent,
+//                     ),
+//                     child: Center(
+//                       child: Text(
+//                         "Client notes",
+//                         style: TextStyle(
+//                           color:
+//                               tabIndex.value == 1 ? Colors.white : Colors.black,
+//                         ),
+//                       ),
+//                     ),
+//                   ),
+//                 ],
+//               ),
+//               const SizedBox(height: 10),
+//               Expanded(
+//                 child: TabBarView(
+//                   controller: tabController,
+//                   children: const [
+//                     ConsultantNote(),
+//                     SizedBox(),
+//                   ],
+//                 ),
+//               ),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
 
 // class NoteGrid extends StatelessWidget {
 //   const NoteGrid({super.key});
