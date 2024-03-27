@@ -7,7 +7,7 @@ import 'package:tl_consultant/app/presentation/widgets/buttons.dart';
 import 'package:tl_consultant/app/presentation/widgets/custom_app_bar.dart';
 import 'package:tl_consultant/features/wallet/presentation/controllers/earnings_controller.dart';
 import 'package:tl_consultant/features/wallet/presentation/widgets/earnings_info.dart';
-import 'package:tl_consultant/features/wallet/presentation/widgets/title_section.dart';
+
 import 'package:tl_consultant/features/wallet/presentation/widgets/transaction_item.dart';
 
 class EarningsTab extends StatefulWidget {

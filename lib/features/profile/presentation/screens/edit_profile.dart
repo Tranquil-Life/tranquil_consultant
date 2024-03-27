@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tl_consultant/app/presentation/theme/fonts.dart';
 import 'package:tl_consultant/app/presentation/widgets/buttons.dart';
 import 'package:tl_consultant/app/presentation/widgets/custom_app_bar.dart';
-import 'package:tl_consultant/app/presentation/widgets/custom_form_field.dart';
+import 'package:tl_consultant/app/presentation/widgets/user_avatar.dart';
+import 'package:tl_consultant/features/profile/domain/entities/edit_user.dart';
 import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:tl_consultant/features/profile/presentation/widgets/custom_form_field.dart';
-import 'package:tl_consultant/app/presentation/widgets/custom_tab_bar.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({Key? key}) : super(key: key);
@@ -17,19 +18,19 @@ class EditProfileScreen extends StatefulWidget {
 class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      appBar: CustomAppBar(
+    return Scaffold(
+      appBar: const CustomAppBar(
         title: "Edit Profile",
         centerTitle: false,
       ),
       body: Padding(
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              EditProfileHead(),
-              SizedBox(
+              const EditProfileHead(),
+              const SizedBox(
                 height: 30,
               ),
               EditProfileFields(),
@@ -52,9 +53,7 @@ class EditProfileHead extends StatelessWidget {
           padding: const EdgeInsets.all(20),
           child: Column(
             children: [
-              const CircleAvatar(
-                radius: 55,
-              ),
+              UserAvatar(),
               const SizedBox(
                 height: 30,
               ),
@@ -62,7 +61,11 @@ class EditProfileHead extends StatelessWidget {
                 width: 200,
                 child: CustomButton(
                   onPressed: () {},
-                  text: "Edit profile picture",
+                  child: const Text(
+                    'Edit profile picutre',
+                    style: TextStyle(
+                        color: Colors.white, fontSize: AppFonts.defaultSize),
+                  ),
                 ),
               ),
             ],
@@ -74,8 +77,17 @@ class EditProfileHead extends StatelessWidget {
 }
 
 class EditProfileFields extends StatelessWidget {
-  const EditProfileFields({Key? key}) : super(key: key);
-
+  EditProfileFields({Key? key}) : super(key: key);
+  final TextEditingController firstNameController = TextEditingController();
+  final TextEditingController lastNameController = TextEditingController();
+  final TextEditingController countryController = TextEditingController();
+  final TextEditingController cityController = TextEditingController();
+  final TextEditingController bioController = TextEditingController();
+  final TextEditingController title = TextEditingController();
+  final TextEditingController certificationController = TextEditingController();
+  final TextEditingController institutionController = TextEditingController();
+  final TextEditingController yearGraduatedController = TextEditingController();
+  final TextEditingController modalitiesController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     ProfileController profileController = Get.put(ProfileController());
@@ -86,36 +98,36 @@ class EditProfileFields extends StatelessWidget {
         const SizedBox(height: 20),
         const Text("First name"),
         nameFormField(
-          profileController.editUser.value.firstName,
-          TextEditingController(),
-        ),
+            profileController.editUser.value.firstName, firstNameController),
         const Text("Last name"),
         nameFormField(
           profileController.editUser.value.lastName,
-          TextEditingController(),
+          lastNameController,
         ),
         const Text("Title"),
-        titleFormField(profileController.editUser.value.toString()),
+        titleFormField(""),
         const SizedBox(height: 20),
         const Text("LOCATION"),
         const SizedBox(height: 20),
         const Text("Country"),
-        countryFormField(""),
+        countryFormField(
+            profileController.editUser.value.location, countryController),
         const Text("City"),
-        cityFormField(""),
+        cityFormField(
+            profileController.editUser.value.location, cityController),
         const Text("Bio"),
-        bioFormField(""),
+        bioFormField(profileController.editUser.value.bio, bioController),
         const SizedBox(height: 20),
-        const Text("QUALIFICATIONS"),
+        const Text("QUALIFICATIONS", key: Key('qualifications_title')),
         const SizedBox(height: 20),
         const Text("Name of Certification"),
-        nameofcertification(""),
+        nameofcertification("", certificationController),
         const Text("Institution/Awarding body"),
-        institution(""),
+        institution("", institutionController),
         const Text("Year graduated/awarded"),
-        yearGraduated(""),
+        yearGraduated("", yearGraduatedController),
         const Text("Modalities practiced"),
-        modalities(""),
+        modalities("", modalitiesController),
         const SizedBox(height: 20),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -128,15 +140,27 @@ class EditProfileFields extends StatelessWidget {
                 },
                 child: const Text(
                   'Cancel',
-                  style: TextStyle(color: Colors.white),
+                  style: TextStyle(
+                      color: Colors.white, fontSize: AppFonts.defaultSize),
                 ),
               ),
             ),
             SizedBox(
               width: 180,
               child: CustomButton(
-                onPressed: () {},
-                text: "Save Changes",
+                onPressed: () {
+                  profileController.updateUser(
+                    EditUser(
+                      firstName: firstNameController.text,
+                      lastName: lastNameController.text,
+                    ),
+                  );
+                },
+                child: const Text(
+                  'Save Changes',
+                  style: TextStyle(
+                      color: Colors.white, fontSize: AppFonts.defaultSize),
+                ),
               ),
             ),
           ],

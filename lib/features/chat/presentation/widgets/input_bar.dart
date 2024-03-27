@@ -31,7 +31,8 @@ class __InputBarState extends State<_InputBar> {
           quotedMessage: widget.chatController.replyMessage.value);
     } else {
       await UploadController().handleTextUpload(
-          message: widget.chatController.textController.text.trim(),
+          message:
+              widget.chatController.textController.text.removeAllWhitespace,
           quotedMessage: widget.chatController.replyMessage.value);
 
       widget.chatController.textController.clear();
