@@ -40,7 +40,7 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-    final chatController = Get.put(ChatController());
+  final chatController = Get.put(ChatController());
   final uploadController = Get.put(UploadController());
   final _recordingController = RecordingController()..onInit();
 
@@ -52,14 +52,13 @@ class _ChatScreenState extends State<ChatScreen> {
   Future _stopRecording() async {
     await _recordingController.stop();
     if (_recordingController.localAudioPath != null) {
-      chatController
-          .setVoiceFile(File(_recordingController.localAudioPath!));
+      chatController.setVoiceFile(File(_recordingController.localAudioPath!));
     }
 
     return chatController.audioFile!;
   }
 
-  Future _uploadVn() async{
+  Future _uploadVn() async {
     var hasVibrator = await Vibration.hasVibrator();
     if (hasVibrator!) {
       await Vibration.vibrate(duration: 4000, amplitude: 225);
@@ -83,9 +82,9 @@ class _ChatScreenState extends State<ChatScreen> {
     chatController.textController = TextEditingController();
 
     chatController.textController.addListener(() {
-      setState(() => micMode = chatController.textController.text.trim().isEmpty);
+      setState(() => micMode =
+          chatController.textController.text.removeAllWhitespace.isEmpty);
     });
-
 
     super.initState();
   }
@@ -112,9 +111,7 @@ class _ChatScreenState extends State<ChatScreen> {
             color: Colors.black26,
             colorBlendMode: BlendMode.darken,
           ),
-
-
-          Obx((){
+          Obx(() {
             if (_recordingController.time.value == "01:00") {
               _uploadVn();
             }
@@ -127,15 +124,15 @@ class _ChatScreenState extends State<ChatScreen> {
                   children: [
                     _TitleBar(),
 
-
                     // Chat messages list
-                   Expanded(child: chatController.isFirstLoadRunning.value
-                       ?
-                   const Center(child: CircularProgressIndicator(color: ColorPalette.green))
-                       :
-                   const UnFocusWidget(
-                     child: Messages(),
-                   )),
+                    Expanded(
+                        child: chatController.isFirstLoadRunning.value
+                            ? const Center(
+                                child: CircularProgressIndicator(
+                                    color: ColorPalette.green))
+                            : const UnFocusWidget(
+                                child: Messages(),
+                              )),
                     SafeArea(
                       top: false,
                       child: _InputBar(
@@ -143,8 +140,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           recordingController: _recordingController,
                           startRecording: _startRecording,
                           stopRecording: _stopRecording,
-                          showMic: showMic
-                      ),
+                          showMic: showMic),
                     )
                   ],
                 ),

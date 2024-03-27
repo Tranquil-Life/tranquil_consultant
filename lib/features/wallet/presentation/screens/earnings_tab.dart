@@ -7,7 +7,6 @@ import 'package:tl_consultant/app/presentation/widgets/buttons.dart';
 import 'package:tl_consultant/app/presentation/widgets/custom_app_bar.dart';
 import 'package:tl_consultant/features/wallet/presentation/controllers/earnings_controller.dart';
 import 'package:tl_consultant/features/wallet/presentation/widgets/earnings_info.dart';
-import 'package:tl_consultant/features/wallet/presentation/widgets/title_section.dart';
 import 'package:tl_consultant/features/wallet/presentation/widgets/transaction_item.dart';
 
 class EarningsTab extends StatefulWidget {
@@ -45,10 +44,6 @@ class _EarningsTabState extends State<EarningsTab> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(
-        title: "My Earnings",
-        centerTitle: false,
-      ),
       body: Padding(
           padding: const EdgeInsets.only(left: 24, right: 24),
           child: Column(
