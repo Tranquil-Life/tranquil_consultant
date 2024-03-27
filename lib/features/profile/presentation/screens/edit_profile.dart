@@ -24,7 +24,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         centerTitle: false,
       ),
       body: Padding(
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -110,11 +110,13 @@ class EditProfileFields extends StatelessWidget {
         const Text("LOCATION"),
         const SizedBox(height: 20),
         const Text("Country"),
-        countryFormField(profileController.editUser.value.location),
+        countryFormField(
+            profileController.editUser.value.location, countryController),
         const Text("City"),
-        cityFormField("", cityController),
+        cityFormField(
+            profileController.editUser.value.location, cityController),
         const Text("Bio"),
-        bioFormField(profileController.editUser.value.bio),
+        bioFormField(profileController.editUser.value.bio, bioController),
         const SizedBox(height: 20),
         const Text("QUALIFICATIONS", key: Key('qualifications_title')),
         const SizedBox(height: 20),

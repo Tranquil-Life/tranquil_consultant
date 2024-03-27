@@ -1,19 +1,19 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/widgets/custom_snackbar.dart';
-import 'package:tl_consultant/core/utils/extensions/date_time_extension.dart';
 import 'package:tl_consultant/features/consultation/data/models/meeting_model.dart';
 import 'package:tl_consultant/features/consultation/data/repos/consultation_repo.dart';
 import 'package:tl_consultant/features/consultation/domain/entities/meeting.dart';
+import 'package:tl_consultant/features/consultation/presentation/controllers/slot_controller.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 
-class ConsultationController extends GetxController {
-  static ConsultationController instance = Get.find();
-  final repo = ConsultationRepoImpl();
+class MeetingsController extends GetxController {
+  static MeetingsController instance = Get.find();
+
+  SlotController slotController = Get.put(SlotController());
+
+  ConsultationRepoImpl repo = ConsultationRepoImpl();
 
   //pagination vars
   var page = 1.obs;
@@ -26,89 +26,17 @@ class ConsultationController extends GetxController {
   var lastMessageId = 0.obs;
   // The controller for the ListView
   late ScrollController scrollController;
+
   var meetingsCount = 0.obs;
+
   DateTime? meetingDate;
+  var loading = false.obs;
 
   RxList<Meeting> meetings = RxList<Meeting>();
 
-  var loading = false.obs;
-
-  var now = DateTimeExtension.now;
-  var timeSlots = [].obs;
-  RxList selectedDays = [].obs;
-  var apiSlots = [];
-
-  addToSlots(String time) => instance.timeSlots.add(time);
-  removeFromSlots(String time) => instance.timeSlots.remove(time);
-
-  List get listInUtc {
-    List utcSlots = [];
-    for (var element in instance.timeSlots) {
-      var newTime = DateTime.parse("${DateTimeExtension.now.year}"
-              "-${DateTimeExtension.now.month.toString().padLeft(2, "0")}"
-              "-${DateTimeExtension.now.day.toString().padLeft(2, "0")} $element")
-          .toUtc();
-      utcSlots.add("${newTime.hour.toString().padLeft(2, "0")}"
-          ":${newTime.minute.toString().padLeft(2, "0")}");
-    }
-    return utcSlots;
-  }
-
-  getSlotsInLocal() {
-    for (var element in apiSlots) {
-      var dateTime = DateFormat("yyyy-MM-dd HH:mm:ss").parse(
-          "${DateTimeExtension.now.year}"
-          "-${DateTimeExtension.now.month.toString().padLeft(2, "0")}"
-          "-${DateTimeExtension.now.day.toString().padLeft(2, "0")} $element",
-          true);
-      var dateLocal = dateTime.toLocal();
-
-      timeSlots.add("${dateLocal.hour.toString().padLeft(2, "0")}"
-          ":${dateLocal.minute.toString().padLeft(2, "0")}");
-    }
-  }
-
-  Future saveSlots({List? availableDays}) async {
-    var result =
-        await repo.saveSlots(slots: listInUtc, availableDays: availableDays);
-
-    if (result.isRight()) {
-      CustomSnackBar.showSnackBar(
-          context: Get.context!,
-          title: "Success",
-          message: "Saved",
-          backgroundColor: ColorPalette.green);
-    } else {
-      CustomSnackBar.showSnackBar(
-          context: Get.context!,
-          title: "Error",
-          message: "Couldn't save slots",
-          backgroundColor: ColorPalette.red);
-    }
-  }
-
-  Future getAllSlots() async {
-    var result = await ConsultationRepoImpl().getSlots();
-    loading.value = true;
-
-    if (result.isRight()) {
-      loading.value = false;
-
-      result.map((r) {
-        apiSlots = r['slots'];
-        availableDays(r['days']);
-
-        getSlotsInLocal();
-      });
-    } else {
-      loading.value = false;
-      instance.timeSlots.clear();
-    }
-  }
-
   Future loadFirstMeetings() async {
     if (userDataStore.user['timezone_identifier'] == null) {
-      print("tz identifier: null");
+      print("null");
     } else {
       isFirstLoadRunning.value = true;
 
@@ -177,15 +105,17 @@ class ConsultationController extends GetxController {
     }
   }
 
-  availableDays(Map<String, dynamic> daysMap) {
-    selectedDays.value = daysMap.keys
-        .map((e) {
-          if (daysMap[e] == true) return e.capitalizeFirst;
-        })
-        .toList()
-        .where((element) => element != null)
-        .toList();
-  }
+  // navigateToDashboard() {
+  //   Get.back();
+  //   Get.back();
+  //   Get.back();
+  //   Get.back();
+  //   Get.back();
+  // }
 
-  void clearData() {}
+  clearData() {
+    meetingsCount.value = 0;
+    loading.value = false;
+    meetings.clear();
+  }
 }

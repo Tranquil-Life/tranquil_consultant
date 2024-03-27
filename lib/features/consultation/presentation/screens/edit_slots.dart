@@ -8,7 +8,7 @@ import 'package:tl_consultant/app/presentation/widgets/custom_app_bar.dart';
 import 'package:tl_consultant/core/utils/functions.dart';
 import 'package:tl_consultant/core/utils/helpers/day_section_option.dart';
 import 'package:tl_consultant/features/consultation/domain/entities/client.dart';
-import 'package:tl_consultant/features/consultation/presentation/controllers/consultation_controller.dart';
+import 'package:tl_consultant/features/consultation/presentation/controllers/slot_controller.dart';
 import 'package:tl_consultant/features/consultation/presentation/widgets/day_card.dart';
 import 'package:tl_consultant/features/consultation/presentation/widgets/day_section_picker.dart';
 import 'package:tl_consultant/features/consultation/presentation/widgets/time_widget.dart';
@@ -21,7 +21,7 @@ class EditSlots extends StatefulWidget {
 }
 
 class _EditSlotsState extends State<EditSlots> {
-  final controller = Get.put(ConsultationController());
+  final slotController = Get.put(SlotController());
   ClientUser? clientUser;
 
   List times = [];
@@ -43,7 +43,7 @@ class _EditSlotsState extends State<EditSlots> {
 
   @override
   void initState() {
-    controller.getAllSlots();
+    slotController.getAllSlots();
     getDaySlots();
     super.initState();
   }
@@ -67,7 +67,7 @@ class _EditSlotsState extends State<EditSlots> {
                   sortTime(isNightSelected);
                 }),
 
-                controller.loading.value ? Center(
+                slotController.loading.value ? Center(
                   child: CircularProgressIndicator(color: ColorPalette.green),
                 ) :
                 Container(
@@ -81,7 +81,7 @@ class _EditSlotsState extends State<EditSlots> {
                   ),
                 ),
 
-                controller.loading.value ? Center(child: CircularProgressIndicator(color: ColorPalette.green)) :
+                slotController.loading.value ? Center(child: CircularProgressIndicator(color: ColorPalette.green)) :
                 Align(
                   alignment: Alignment.bottomCenter,
                   child: Wrap(
@@ -106,26 +106,26 @@ class _EditSlotsState extends State<EditSlots> {
                                 padding: const EdgeInsets.symmetric(horizontal: 8),
                                 child: Obx(()=>DayCard(
                                   day,
-                                  selected: controller.selectedDays.contains(day),
+                                  selected: slotController.selectedDays.contains(day),
                                   onChosen: (){
-                                    if(controller.selectedDays.contains(day)){
-                                      controller.selectedDays.remove(day);
+                                    if(slotController.selectedDays.contains(day)){
+                                      slotController.selectedDays.remove(day);
                                     }else{
-                                      controller.selectedDays.add(day);
+                                      slotController.selectedDays.add(day);
                                     }
                                   },
                                 ))
                             );
                           },
                         ),
-                      ),
+                      ),                      
                       Padding(
                         padding: const EdgeInsets.only(top: 48, bottom: 32),
                         child: CustomButton(
                             child: const Text("Save", style: TextStyle(fontSize: AppFonts.defaultSize)),
                             onPressed: (){
-                              controller.saveSlots(
-                                  availableDays: controller.selectedDays.value
+                              slotController.saveSlots(
+                                availableDays: slotController.selectedDays
                               );
                             }),
                       )

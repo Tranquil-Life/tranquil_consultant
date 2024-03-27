@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/widgets/my_default_text_theme.dart';
-import 'package:tl_consultant/features/consultation/presentation/controllers/consultation_controller.dart';
+import 'package:tl_consultant/features/consultation/presentation/controllers/slot_controller.dart';
 
 class TimePickerWidget extends StatefulWidget {
   const TimePickerWidget(
@@ -19,7 +19,7 @@ class TimePickerWidget extends StatefulWidget {
 }
 
 class _TimePickerWidgetState extends State<TimePickerWidget> {
-  final controller = Get.put(ConsultationController());
+  final slotController = Get.put(SlotController());
   int selectedIndex = -1;
 
   @override
@@ -52,15 +52,16 @@ class _TimePickerWidgetState extends State<TimePickerWidget> {
                         child: Obx(()=>
                             TimeWidget(
                               text: time,
-                              onSelected: (){
-                                if(ConsultationController.instance.timeSlots.contains(time)){
-                                  ConsultationController.instance.removeFromSlots(time);
+                              onSelected: ()
+                              {
+                                if(slotController.timeSlots.contains(time)){
+                                  slotController.removeFromSlots(time);
                                 }else{
-                                  ConsultationController.instance.addToSlots(time);
+                                  slotController.addToSlots(time);
                                 }
                                 setState(() {});
                               },
-                              selectedSlots: ConsultationController.instance.timeSlots.value,
+                              selectedSlots: slotController.timeSlots,
                             ))
                     )
                 );

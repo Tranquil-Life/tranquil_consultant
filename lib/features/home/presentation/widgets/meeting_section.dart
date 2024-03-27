@@ -8,15 +8,15 @@ class Meetings extends StatefulWidget {
 }
 
 class _MeetingsState extends State<Meetings> {
-  final consultationController = Get.put(ConsultationController());
+  final meetingsController = Get.put(MeetingsController());
   final dashboardController = Get.put(DashboardController());
 
   final ValueNotifier<DateTime> _timeNotifier = ValueNotifier(DateTime.now());
 
   getMeetings() async {
-    await consultationController.loadFirstMeetings();
+    await meetingsController.loadFirstMeetings();
 
-    for (var meeting in consultationController.meetings) {
+    for (var meeting in meetingsController.meetings) {
       if (meeting.endAt.isAfter(DateTimeExtension.now) &&
           (meeting.startAt.isBefore(DateTimeExtension.now) ||
               meeting.startAt == DateTimeExtension.now)) {
@@ -78,7 +78,7 @@ class _MeetingsState extends State<Meetings> {
                     ),
                     child: Center(
                       child: Text(
-                        consultationController.meetings.length.toString(),
+                        meetingsController.meetings.length.toString(),
                         style:
                             const TextStyle(color: Colors.white, fontSize: 19),
                       ),
@@ -88,8 +88,7 @@ class _MeetingsState extends State<Meetings> {
               ),
               const SizedBox(height: 8),
               Expanded(
-                child: !dashboardController.locationChecked.value ||
-                        consultationController.isFirstLoadRunning.value
+                child: meetingsController.isFirstLoadRunning.value
                     ? const Center(
                         child: CircularProgressIndicator(
                           color: ColorPalette.green,
@@ -104,20 +103,19 @@ class _MeetingsState extends State<Meetings> {
                             child: ValueListenableBuilder<DateTime>(
                               valueListenable: _timeNotifier,
                               builder: (context, time, child) {
-                                if (consultationController.meetings.isEmpty) {
-                                  return NoMeetingsWidget();
+                                if (meetingsController.meetings.isEmpty) {
+                                  return const NoMeetingsWidget();
                                 }
 
                                 return ListView.builder(
                                     physics:
                                         const AlwaysScrollableScrollPhysics(),
                                     itemCount:
-                                        consultationController.meetings.length,
+                                        meetingsController.meetings.length,
                                     padding: EdgeInsets.zero,
                                     itemBuilder: (_, index) {
                                       if (index ==
-                                          consultationController
-                                              .meetings.length) {
+                                          meetingsController.meetings.length) {
                                         return const Center(
                                           child: CircularProgressIndicator(
                                               color: ColorPalette.green),
@@ -125,7 +123,7 @@ class _MeetingsState extends State<Meetings> {
                                       }
 
                                       return MeetingTile(
-                                        meeting: consultationController
+                                        meeting: meetingsController
                                             .meetings[index]
                                           ..setIsExpired(_timeNotifier.value),
                                       );

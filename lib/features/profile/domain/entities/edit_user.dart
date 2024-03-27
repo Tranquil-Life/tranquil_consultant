@@ -50,8 +50,8 @@ class EditUser extends User {
           companyName: companyName ??
               baseUser?.companyName ??
               userDataStore.user['company_name'],
-          location:
-              location ?? baseUser?.location ?? userDataStore.user["location"],
+          location:"",
+              // location ?? baseUser?.location ?? userDataStore.user["location"],
           bio: bio ?? baseUser?.bio ?? userDataStore.user["bio"] ?? "",
         );
 }
