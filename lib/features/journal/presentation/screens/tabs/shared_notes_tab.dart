@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:tl_consultant/app/presentation/theme/colors.dart';
-import 'package:tl_consultant/app/presentation/widgets/user_avatar.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
-import 'package:tl_consultant/features/journal/domain/entities/note.dart';
 import 'package:tl_consultant/features/journal/domain/entities/shared_note.dart';
 import 'package:tl_consultant/features/journal/presentation/controllers/notes_controller.dart';
 import 'package:tl_consultant/features/journal/presentation/screens/shared_note.dart';
@@ -33,14 +30,14 @@ class CurrentView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return view == grid ? GridState(notes: notes) : Container();
+    return view == grid ? GridState(notes: notes) : ListState(notes: notes);
   }
 }
 
 class GridState extends StatelessWidget {
   final List<SharedNote> notes;
-
-  const GridState({super.key, required this.notes});
+  final notesController = Get.put(NotesController());
+  GridState({super.key, required this.notes});
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +50,28 @@ class GridState extends StatelessWidget {
       itemCount: notes.length,
       itemBuilder: (context, index) {
         final sharedNote = notes[index];
+        print(notesController.sharedNotesList);
         return SharedNoteView(sharedNote: sharedNote);
+      },
+    );
+  }
+}
+
+class ListState extends StatelessWidget {
+  final List<SharedNote> notes;
+  final notesController = Get.put(NotesController());
+  ListState({super.key, required this.notes});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      itemCount: notes.length,
+      itemBuilder: (context, index) {
+        final SharedNote sharedNote = notes[index];
+        print(notesController.sharedNotesList);
+        return SharedNoteView2(
+          sharedNote: sharedNote,
+        );
       },
     );
   }
