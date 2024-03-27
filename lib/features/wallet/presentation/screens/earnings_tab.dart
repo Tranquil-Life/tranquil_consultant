@@ -73,7 +73,7 @@ class _EarningsTabState extends State<EarningsTab> {
                 text: "Withdraw",
               ),
               const SizedBox(height: 22),
-              Transactions()
+            const  Transactions()
             ],
           )),
     );

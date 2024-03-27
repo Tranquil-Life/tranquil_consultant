@@ -11,6 +11,7 @@ import 'package:tl_consultant/features/auth/presentation/controllers/auth_contro
 import 'package:tl_consultant/features/consultation/presentation/controllers/meetings_controller.dart';
 import 'package:tl_consultant/features/dashboard/data/repos%20/location_repo.dart';
 import 'package:tl_consultant/features/home/presentation/controllers/home_controller.dart';
+import 'package:tl_consultant/features/journal/presentation/controllers/notes_controller.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
 
@@ -131,7 +132,7 @@ class DashboardController extends GetxController {
     HomeController.instance.clearData();
     MeetingsController.instance.clearData();
     MeetingsController.instance.clearData();
-    // NotesController.instance.clearData();
+    NotesController.instance.clearData();
     clearData();
   }
 }
