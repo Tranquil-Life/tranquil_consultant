@@ -62,17 +62,19 @@ class ApiService {
       if (result.statusCode == 200) {
         return Right(jsonDecode(result.body));
       } else {
-        return Left(ApiError(message: 'HTTP Error: ${result.statusCode}'));
+        return Left(ApiError(message: jsonDecode(result.body)['message']));
       }
     } else {
       var result = await http.get(
           Uri.parse((exchange ? "" : baseUrl) + subPath),
           headers: headers);
 
+      await Future.delayed(const Duration(seconds: 1));
+
       if (result.statusCode == 200) {
         return Right(jsonDecode(result.body));
       } else {
-        return Left(ApiError(message: 'HTTP Error: ${result.statusCode}'));
+        return Left(ApiError(message: jsonDecode(result.body)['message']));
       }
     }
   }
@@ -81,6 +83,9 @@ class ApiService {
       {dynamic body}) async {
     final headers = _getHeaders();
 
+    // var result = await dio.post(baseUrl + subPath,
+    //     data: jsonEncode(body),
+    //     options: Options(followRedirects: true, headers: _getHeaders()));
     var result = await http.post(Uri.parse(baseUrl + subPath),
         body: jsonEncode(body), headers: headers);
 
@@ -89,7 +94,7 @@ class ApiService {
     if (result.statusCode == 200 || result.statusCode == 201) {
       return Right(jsonDecode(result.body));
     } else {
-      return Left(ApiError(message: 'HTTP Error: ${result.statusCode}'));
+      return Left(ApiError(message: jsonDecode(result.body)['message']));
     }
   }
 
@@ -103,7 +108,7 @@ class ApiService {
     if (result.statusCode == 204) {
       return const Right(true);
     } else {
-      return Left(ApiError(message: 'HTTP Error: ${result.statusCode}'));
+      return Left(ApiError(message: jsonDecode(result.body)['message']));
     }
   }
 }

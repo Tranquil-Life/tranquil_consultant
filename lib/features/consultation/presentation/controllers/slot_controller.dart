@@ -1,3 +1,4 @@
+import 'package:dartz/dartz.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
@@ -6,7 +7,7 @@ import 'package:tl_consultant/core/utils/extensions/date_time_extension.dart';
 import 'package:tl_consultant/features/consultation/data/repos/consultation_repo.dart';
 
 class SlotController extends GetxController {
-  static SlotController instance = Get.find();
+  // static SlotController instance = Get.find();
 
   ConsultationRepoImpl repo = ConsultationRepoImpl();
 
@@ -18,12 +19,12 @@ class SlotController extends GetxController {
   RxList selectedDays = [].obs;
   var apiSlots = [];
 
-  addToSlots(String time) => instance.timeSlots.add(time);
-  removeFromSlots(String time) => instance.timeSlots.remove(time);
+  addToSlots(String time) => timeSlots.add(time);
+  removeFromSlots(String time) => timeSlots.remove(time);
 
   List get listInUtc {
     List utcSlots = [];
-    for (var element in instance.timeSlots) {
+    for (var element in timeSlots) {
       var newTime = DateTime.parse("${now.year}"
               "-${now.month.toString().padLeft(2, "0")}"
               "-${now.day.toString().padLeft(2, "0")} $element")
@@ -68,22 +69,34 @@ class SlotController extends GetxController {
   }
 
   Future getAllSlots() async {
-    var result = await ConsultationRepoImpl().getSlots();
     loading.value = true;
 
-    if (result.isRight()) {
+    Either result = await ConsultationRepoImpl().getSlots();
+
+    result.fold((l) {
+      loading.value = false;
+      timeSlots.clear();
+
+      // if(l.message == "No Slots"){
+      // CustomSnackBar.showSnackBar(context: Get.context!, title: "Error", message: message, backgroundColor: backgroundColor)
+
+      // }
+
+      print("Error: ${l.message}");
+    }, (r) {
       loading.value = false;
 
       result.map((r) {
         apiSlots = r['slots'];
         availableDays(r['days']);
 
-        getSlotsInLocal();
+      print("Slot: $apiSlots");
+
+        // if (apiSlots.isNotEmpty) {
+        //   getSlotsInLocal();
+        // }
       });
-    } else {
-      loading.value = false;
-      instance.timeSlots.clear();
-    }
+    });
   }
 
   availableDays(Map<String, dynamic> daysMap) {
@@ -102,5 +115,4 @@ class SlotController extends GetxController {
     selectedDays.clear();
     loading.value = false;
   }
-  
 }

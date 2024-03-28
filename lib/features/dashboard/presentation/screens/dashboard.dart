@@ -62,8 +62,7 @@ class _DashboardState extends State<Dashboard> {
                   children: [
                     HomeTab(),
                     EarningsTab(),
-                    //SizedBox(),
-                    SizedBox(),
+                    JournalTab(),
                     ProfileScreen(),
                   ],
                 ),
