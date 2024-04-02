@@ -4,6 +4,7 @@ class Earnings {
   double balance;
   double withdrawn;
   double availableForWithdrawal;
+  double pendingClearance;
 
   Earnings(
       {
@@ -11,6 +12,7 @@ class Earnings {
         this.userId,
         this.balance = 0.00,
         this.withdrawn = 0.00,
-        this.availableForWithdrawal = 0.00
+        this.availableForWithdrawal = 0.00,
+        this.pendingClearance = 0.00
       });
 }

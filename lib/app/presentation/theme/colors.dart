@@ -28,6 +28,8 @@ class ColorPalette {
         500: Color(0xFFEDC24D),
       });
   static const black = Color(0xFF363740);
+  static const pNoteBgColor= Color(0xFFF0F8F2);
+  static const pNoteBodyTxtColor = Color(0xFF808080);
 }
 
 class LightMode {

@@ -90,11 +90,9 @@ class SlotController extends GetxController {
         apiSlots = r['slots'];
         availableDays(r['days']);
 
-      print("Slot: $apiSlots");
-
-        // if (apiSlots.isNotEmpty) {
-        //   getSlotsInLocal();
-        // }
+        if (apiSlots.isNotEmpty) {
+          getSlotsInLocal();
+        }
       });
     });
   }

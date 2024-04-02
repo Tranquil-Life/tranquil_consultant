@@ -3,8 +3,6 @@ import 'package:get/get.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/widgets/buttons.dart';
 import 'package:tl_consultant/app/presentation/widgets/custom_app_bar.dart';
-import 'package:tl_consultant/features/journal/data/models/note.dart';
-import 'package:tl_consultant/features/journal/presentation/controllers/notes_controller.dart';
 
 class NewNote extends StatefulWidget {
   const NewNote({Key? key}) : super(key: key);
@@ -20,8 +18,6 @@ class _NewNoteState extends State<NewNote> {
   bool _isBold = false;
   bool _isUnderline = false;
   bool _isCrossed = false;
-
-  final NotesController noteController = Get.put(NotesController());
 
   @override
   Widget build(BuildContext context) {

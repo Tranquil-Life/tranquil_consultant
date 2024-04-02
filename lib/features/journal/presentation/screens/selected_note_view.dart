@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:tl_consultant/app/presentation/theme/fonts.dart';
 import 'package:tl_consultant/app/presentation/widgets/custom_app_bar.dart';
-import 'package:tl_consultant/features/journal/domain/entities/shared_note.dart';
+import 'package:tl_consultant/features/journal/domain/entities/shared_note/shared_note.dart';
 import 'package:uuid/uuid.dart';
 
 class NoteView extends StatelessWidget {
@@ -20,7 +20,7 @@ class NoteView extends StatelessWidget {
     return Scaffold(
       backgroundColor: Color(0xffACD5E8),
       appBar: CustomAppBar(
-        title: sharedNote.client.displayName,
+        title: sharedNote.client!.displayName,
         centerTitle: false,
       ),
       body: Padding(
@@ -28,25 +28,25 @@ class NoteView extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (sharedNote.note.mood!.isNotEmpty)
+            if (sharedNote.note!.mood!.isNotEmpty)
               Hero(
-                  tag: 'shared-${sharedNote.note.mood}-$uniqueId',
+                  tag: 'shared-${sharedNote.note!.mood}-$uniqueId',
                   child: Material(
                     type: MaterialType.transparency,
                     child: Text(
-                      sharedNote.note.mood!,
+                      sharedNote.note!.mood!,
                       style: Platform.isIOS
                           ? const TextStyle(fontSize: 48)
                           : const TextStyle(fontSize: 40),
                     ),
                   )),
             Text(
-              sharedNote.note.title,
+              sharedNote.note!.title,
               style: TextStyle(fontSize: 28),
             ),
             const SizedBox(height: 18),
             Text(
-              sharedNote.note.description,
+              sharedNote.note!.description,
               style: TextStyle(fontSize: AppFonts.defaultSize),
             ),
           ],
