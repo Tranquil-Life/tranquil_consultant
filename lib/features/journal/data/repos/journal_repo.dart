@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:dartz/dartz.dart';
 import 'package:tl_consultant/core/constants/end_points.dart';
 import 'package:tl_consultant/core/errors/api_error.dart';
+import 'package:tl_consultant/features/journal/domain/entities/personal_note.dart';
 import 'package:tl_consultant/features/journal/domain/entities/shared_note/note.dart';
 import 'package:tl_consultant/features/journal/domain/repos/journal_repo.dart';
 
@@ -35,8 +36,8 @@ class JournalRepoImpl extends JournalRepo {
   }
 
   @override
-  Future<Either<ApiError, dynamic>> addNote({required Note note}) async {
-    return await catchSocketException(() => postReq(JournalEndPoints.addNote))
+  Future<Either<ApiError, dynamic>> addNote({required PersonalNote note}) async {
+    return await catchSocketException(() => postReq(JournalEndPoints.addNote, body: note.toJson(note)))
         .then((value) => handleResponse(value));
   }
 }

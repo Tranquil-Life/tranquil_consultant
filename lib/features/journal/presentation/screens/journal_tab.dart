@@ -5,6 +5,7 @@ import 'package:tl_consultant/app/presentation/theme/fonts.dart';
 
 import 'package:tl_consultant/app/presentation/widgets/unfocus_bg.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
+import 'package:tl_consultant/core/utils/helpers/svg_elements.dart';
 import 'package:tl_consultant/features/journal/presentation/controllers/notes_controller.dart';
 import 'package:tl_consultant/features/journal/presentation/screens/tabs/personal_notes_tab.dart';
 import 'package:tl_consultant/features/journal/presentation/screens/tabs/shared_notes_tab.dart';
@@ -20,6 +21,9 @@ class JournalTab extends StatefulWidget {
 class _JournalTabState extends State<JournalTab> {
   final notesController = Get.put(NotesController());
 
+  String gridViewIcon = SvgElements.svgGridViewIcon;
+  String listViewIcon = SvgElements.svgGridViewIcon;
+
   @override
   void initState() {
     Future.delayed(Duration(seconds: 1), () {
@@ -34,7 +38,7 @@ class _JournalTabState extends State<JournalTab> {
     return Scaffold(
       body: UnFocusWidget(
         child: Padding(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(16),
             child: Column(
               children: [
                 CustomTabBar(
@@ -47,18 +51,18 @@ class _JournalTabState extends State<JournalTab> {
                 Padding(
                   padding: EdgeInsets.only(right: 8),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       // GestureDetector(
-                      //     onTap: () {
+                      //   onTap: () {
                       //       //...
-                      //     },
-                      //     child: Wrap(
-                      //       direction: Axis.horizontal,
-                      //       crossAxisAlignment: WrapCrossAlignment.center,
-                      //       children: [Icon(Icons.filter_list), Text("Filters")],
-                      //     ),
-                      //     ),
+                      //   },
+                      //   child: Wrap(
+                      //     direction: Axis.horizontal,
+                      //     crossAxisAlignment: WrapCrossAlignment.center,
+                      //     children: [Icon(Icons.filter_list), Text("Filters")],
+                      //   ),
+                      // ),
                       GestureDetector(
                         onTap: () {},
                         child: Wrap(
@@ -72,19 +76,19 @@ class _JournalTabState extends State<JournalTab> {
                             // SizedBox(
                             //   width: 24,
                             // ),
-                            Obx(()=>GestureDetector(
-                              child: SvgPicture.asset(
-                                  'assets/images/icons/${notesController.defaultView.value != grid ? 'grid_icon' : 'list_icon'}.svg',
-                                  height: 30,
-                                  width: 30),
-                              onTap: () {
-                                if (notesController.defaultView.value == grid) {
-                                  notesController.defaultView.value = list;
-                                } else {
-                                  notesController.defaultView.value = grid;
-                                }
-                              },
-                            ))
+                            Obx(() => GestureDetector(
+                                  child: SvgPicture.asset(
+                                      notesController.layout.value != grid ? gridViewIcon : listViewIcon,
+                                      height: 30,
+                                      width: 30),
+                                  onTap: () {
+                                    if (notesController.layout.value == grid) {
+                                      notesController.layout.value = list;
+                                    } else {
+                                      notesController.layout.value = grid;
+                                    }
+                                  },
+                                ))
                           ],
                         ),
                       )

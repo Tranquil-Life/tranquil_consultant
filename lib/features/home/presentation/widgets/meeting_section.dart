@@ -66,14 +66,14 @@ class _MeetingsState extends State<Meetings> {
                 children: [
                   const Text(
                     'Your scheduled meetings',
-                    style: TextStyle(fontSize: 20),
+                    style: TextStyle(fontSize: 18),
                   ),
                   Container(
                     width: 44,
                     height: 26,
                     margin: const EdgeInsets.only(right: 14),
                     decoration: BoxDecoration(
-                      color: ColorPalette.green[800],
+                      color: ColorPalette.green,
                       borderRadius: BorderRadius.circular(24),
                     ),
                     child: Center(

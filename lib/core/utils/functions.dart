@@ -123,7 +123,7 @@ Future<Map<String, dynamic>> getCurrLocation() async {
     position = await Geolocator.getCurrentPosition(
       desiredAccuracy: LocationAccuracy.best,
     );
-    
+
     // Use geocoding to get the placemarks for the current location
     placemarks = await placemarkFromCoordinates(
       position.latitude,
@@ -138,4 +138,28 @@ Future<Map<String, dynamic>> getCurrLocation() async {
   };
 
   return data;
+}
+
+List<TextSpan> parseNoteText(String text) {
+  RegExp regExpBold = RegExp(r'\*\*(.*?)\*\*');
+  RegExp regExpItalic = RegExp(r'\b_(.*?)_\b');
+  List<TextSpan> spans = [];
+  List<String> words = text.split(' ');
+
+  for (String word in words) {
+    if (regExpBold.hasMatch(word)) {
+      spans.add(TextSpan(
+        text: "${word.replaceAll('**', '')} ",
+        style: const TextStyle(fontWeight: FontWeight.bold),
+      ));
+    } else if (regExpItalic.hasMatch(word)) {
+      spans.add(TextSpan(
+        text: "${word.replaceAll('_', '')} ",
+        style: const TextStyle(fontStyle: FontStyle.italic),
+      ));
+    } else {
+      spans.add(TextSpan(text: '$word '));
+    }
+  }
+  return spans;
 }

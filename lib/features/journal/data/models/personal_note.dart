@@ -16,7 +16,7 @@ class PersonalNoteModel extends PersonalNote {
           consultantId: json['consultant_id'],
           heading: json['heading'],
           body: json['body'],
-          isFavourite: json['isFavorite'] == 0 ? false : true,
+          isFavourite: json['isFavorite'] == 0 || json['isFavorite'] == false ? false : true,
           attachments: json['attachments'] ?? [],
           updatedAt: DateTime.parse(json['updated_at'].toString()));
 }

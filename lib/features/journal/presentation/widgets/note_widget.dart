@@ -1,3 +1,5 @@
+// ignore_for_file: must_be_immutable
+
 import 'dart:io';
 
 import 'package:flutter_svg/flutter_svg.dart';
@@ -8,6 +10,8 @@ import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/widgets/user_avatar.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/utils/extensions/date_time_extension.dart';
+import 'package:tl_consultant/core/utils/functions.dart';
+import 'package:tl_consultant/core/utils/helpers/svg_elements.dart';
 import 'package:tl_consultant/features/journal/domain/entities/personal_note.dart';
 import 'package:tl_consultant/features/journal/domain/entities/shared_note/shared_note.dart';
 import 'package:tl_consultant/features/journal/presentation/controllers/notes_controller.dart';
@@ -18,6 +22,8 @@ class NoteWidget extends StatelessWidget {
   final SharedNote? sharedNote;
 
   final notesController = Get.put(NotesController());
+
+  String attachIcon = SvgElements.svgAttachIcon;
 
   @override
   Widget build(BuildContext context) {
@@ -66,12 +72,14 @@ class NoteWidget extends StatelessWidget {
                                     Obx(
                                       () => SizedBox(
                                         width:
-                                            notesController.defaultView.value ==
-                                                    grid
+                                            notesController.layout.value == grid
                                                 ? 148 / 2
                                                 : 148,
                                         child: Text(
-                                          sharedNote!.note!.title,
+                                          truncateString(
+                                            notesController.layout.value,
+                                            sharedNote!.note!.title,
+                                          ),
                                           style: const TextStyle(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 14.0,
@@ -118,12 +126,13 @@ class NoteWidget extends StatelessWidget {
                               children: [
                                 Obx(
                                   () => SizedBox(
-                                    width: notesController.defaultView.value ==
-                                            grid
-                                        ? 148 / 2
+                                    width: notesController.layout.value == grid
+                                        ? 148 / 1.4
                                         : 148,
                                     child: Text(
-                                      personalNote!.heading,
+                                      truncateString(
+                                          notesController.layout.value,
+                                          personalNote!.heading),
                                       style: const TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 14.0,
@@ -140,7 +149,7 @@ class NoteWidget extends StatelessWidget {
                             ),
                             const SizedBox(height: 4.0),
                             Text(
-                              personalNote!.updatedAt.formatDate,
+                              personalNote!.updatedAt!.formatDate,
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 10.0,
@@ -149,13 +158,19 @@ class NoteWidget extends StatelessWidget {
                             ),
                             const SizedBox(height: 16.0),
                             Expanded(
-                              child: Text(
-                                personalNote!.body,
-                                style: const TextStyle(
-                                  color: ColorPalette.pNoteBodyTxtColor,
-                                  fontSize: 12,
+                              child: RichText(
+                                text: TextSpan(
+                                  style: TextStyle(color: Colors.black),
+                                  children: parseNoteText(personalNote!.body),
                                 ),
                               ),
+                              // Text(
+                              //   personalNote!.body,
+                              //   style: const TextStyle(
+                              //     color: ColorPalette.pNoteBodyTxtColor,
+                              //     fontSize: 12,
+                              //   ),
+                              // ),
                             ),
                             const Divider(),
                             Row(
@@ -174,10 +189,9 @@ class NoteWidget extends StatelessWidget {
                                     crossAxisAlignment:
                                         WrapCrossAlignment.center,
                                     children: [
-                                      Text(personalNote!.attachments.length
+                                      Text(personalNote!.attachments!.length
                                           .toString()),
-                                      SvgPicture.asset(
-                                          'assets/images/icons/attach_icon.svg'),
+                                      SvgPicture.asset(attachIcon),
                                     ],
                                   ),
                                 )
@@ -226,9 +240,26 @@ class NoteWidget extends StatelessWidget {
                         ),
                       ],
                     ))
-                
                 : SizedBox(),
           ],
         ));
+  }
+
+  String truncateString(String layout, String input) {
+    if (layout == grid) {
+      int maxLength = 10;
+      if (input.length > maxLength) {
+        return '${input.substring(0, maxLength)}...';
+      } else {
+        return input;
+      }
+    } else {
+      int maxLength = 20;
+      if (input.length > maxLength) {
+        return '${input.substring(0, maxLength)}...';
+      } else {
+        return input;
+      }
+    }
   }
 }

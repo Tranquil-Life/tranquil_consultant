@@ -50,7 +50,7 @@ class _HomeTabState extends State<HomeTab> {
                 child: Column(
                   children: [
                     Padding(
-                        padding: const EdgeInsets.all(12),
+                        padding: const EdgeInsets.all(16),
                         child: Column(
                           children: [
                             Title(),

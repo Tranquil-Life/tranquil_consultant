@@ -14,9 +14,15 @@ class NotesController extends GetxController with GetTickerProviderStateMixin {
 
   late TabController tabController = TabController(length: 2, vsync: this);
 
+  TextEditingController titleController = TextEditingController();
+  TextEditingController bodyController = TextEditingController();
+
+  var isBold = false.obs;
+  var isItalic = false.obs;
+
   final journalRepo = JournalRepoImpl();
   var noteDeleted = false.obs;
-  var defaultView = grid.obs;
+  var layout = grid.obs;
   RxList<SharedNote> sharedNotesList = <SharedNote>[].obs;
   RxList<PersonalNote> personalNotesList = <PersonalNote>[].obs;
 
@@ -80,7 +86,7 @@ class NotesController extends GetxController with GetTickerProviderStateMixin {
       }
 
       if (personalNotesList.isNotEmpty) {
-        lastNoteId.value = personalNotesList[personalNotesList.length - 1].id;
+        lastNoteId.value = personalNotesList[personalNotesList.length - 1].id!;
       } else {
         isFirstPersonalNotesLoading.value = false;
       }
@@ -199,8 +205,28 @@ class NotesController extends GetxController with GetTickerProviderStateMixin {
     }
   }
 
-  clearData() {
-    page.value = 1;
+  Future createNote({List? attachments}) async {
+    PersonalNote note =
+        PersonalNote(heading: titleController.text, body: bodyController.text);
+    Either either = await journalRepo.addNote(note: note);
+    either.fold(
+        (l) => CustomSnackBar.showSnackBar(
+            context: Get.context!,
+            title: "Error",
+            message: l.message.toString(),
+            backgroundColor: ColorPalette.red), (r) {
+      var data = r as Map<String, dynamic>;
+
+      personalNotesList.insert(0, PersonalNoteModel.fromJson(data['data']));
+
+      CustomSnackBar.showSnackBar(
+          context: Get.context!,
+          title: "Success",
+          message: "Added new note",
+          backgroundColor: ColorPalette.green);
+    });
+
+    update();
   }
 
   listenToTabController() {
@@ -213,5 +239,9 @@ class NotesController extends GetxController with GetTickerProviderStateMixin {
   void onInit() {
     listenToTabController();
     super.onInit();
+  }
+
+  clearData() {
+    page.value = 1;
   }
 }
