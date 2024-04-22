@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/theme/fonts.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
@@ -9,44 +10,12 @@ import 'package:tl_consultant/core/utils/extensions/date_time_extension.dart';
 part 'transactions.dart';
 
 class TransactionItem extends StatelessWidget {
-  const TransactionItem({Key? key, required this.date, required this.transactions}) : super(key: key);
-
-  final String date;
-  final List transactions;
-
-  //final amount = transaction['amount'];
-  //                         final isCredit = transaction['is_credit'];
-  //                         final status = transaction['status'];
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(height: 24),
-        Text(date,style: TextStyle(fontSize: 16),),
-        Container(height: 2, color: ColorPalette.grey),
-        ListView.builder(
-          padding: const EdgeInsets.only(top: 4),
-          itemCount: transactions.length,
-          shrinkWrap: true,
-          itemBuilder: (context, index)=>
-              EachTransaction(
-                  amount: transactions[index]['amount'].toString(), time: DateTime.parse(date).formattedTime, withdrawn: transactions[index]['is_credit'] ? false : true),
-        ),
-      ],
-    );
-  }
-}
-
-
-class EachTransaction extends StatelessWidget {
-  const EachTransaction({
-    Key? key,
-    required this.amount,
-    required this.time,
-    required this.withdrawn
-  }) : super(key: key);
+  const TransactionItem(
+      {Key? key,
+      required this.amount,
+      required this.time,
+      required this.withdrawn})
+      : super(key: key);
 
   final String amount;
   final String time;
@@ -54,7 +23,30 @@ class EachTransaction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return Container(
+      padding: EdgeInsets.all(12),
+      margin: EdgeInsets.only(top: 20),
+      decoration: BoxDecoration(color: ColorPalette.green[100], borderRadius: BorderRadius.circular(8)),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(withdrawn ? "Withdrawal" : "Session payment", style: TextStyle(
+                fontFamily: AppFonts.josefinSansBold)),
+          Text(
+            withdrawn ? "- $amount" : amount,
+            style: TextStyle(
+                color: withdrawn ? ColorPalette.red : ColorPalette.green[800],
+                fontFamily: AppFonts.josefinSansBold),
+          ),
+          Text(time)
+        ],
+      ),
+    );
+  }
+}
+
+/**
+ * Padding(
       padding: EdgeInsets.only(top: 8),
       child: Stack(
         children: [
@@ -96,7 +88,5 @@ class EachTransaction extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
+    )
+ */
