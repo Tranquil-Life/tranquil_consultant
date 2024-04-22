@@ -4,9 +4,10 @@ import 'package:get/get.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/widgets/custom_snackbar.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
+import 'package:tl_consultant/features/journal/data/models/personal_note.dart';
 import 'package:tl_consultant/features/journal/data/repos/journal_repo.dart';
 import 'package:tl_consultant/features/journal/domain/entities/personal_note.dart';
-import 'package:tl_consultant/features/journal/domain/entities/shared_note.dart';
+import 'package:tl_consultant/features/journal/domain/entities/shared_note/shared_note.dart';
 
 class NotesController extends GetxController with GetTickerProviderStateMixin {
   static NotesController instance = Get.find();
@@ -19,7 +20,6 @@ class NotesController extends GetxController with GetTickerProviderStateMixin {
   RxList<SharedNote> sharedNotesList = <SharedNote>[].obs;
   RxList<PersonalNote> personalNotesList = <PersonalNote>[].obs;
 
-  // List<Widget> journalTabs = [const PersonalNotes(), SharedNotesTab()];
   var journalTabIndex = 0.obs;
 
   switchTab() async {
@@ -27,16 +27,15 @@ class NotesController extends GetxController with GetTickerProviderStateMixin {
       case 0:
         journalTabIndex.value = tabController.index;
         if (sharedNotesList.isEmpty) {
-          print(NotesController.instance.sharedNotesList);
+          print("shared notes");
           //await loadfirstSharedNotes();
         }
         break;
       case 1:
         journalTabIndex.value = tabController.index;
-        if (sharedNotesList.isEmpty) {
+        if (personalNotesList.isEmpty) {
           print("personal notes");
-
-          //await loadfirstPersonalNotes();
+          await loadFirstPersonalNotes();
         }
         break;
 
@@ -51,19 +50,89 @@ class NotesController extends GetxController with GetTickerProviderStateMixin {
   // There is next page or not
   var hasNextPage = true.obs;
   // Used to display loading indicators when _firstLoad function is running
-  var isFirstLoadRunning = false.obs;
+  var isFirstPersonalNotesLoading = false.obs;
   // Used to display loading indicators when _loadMore function is running
-  var isLoadMoreRunning = false.obs;
+  var isMorePersonalNotesLoading = false.obs;
+  var isFirstSharedNotesLoading = false.obs;
+  var isMoreSharedNotesLoading = false.obs;
   var lastNoteId = 0.obs;
   // The controller for the ListView
   late ScrollController scrollController;
 
-  Future loadfirstSharedNotes() async {
-    isFirstLoadRunning.value = true;
+  Future loadFirstPersonalNotes() async {
+    isFirstPersonalNotesLoading.value = true;
+
+    Either either = await journalRepo.getPersonalNotes(
+        page: page.value, limit: limit.value);
+    either.fold(
+        (l) => CustomSnackBar.showSnackBar(
+            context: Get.context!,
+            title: "Error",
+            message: l.message.toString(),
+            backgroundColor: ColorPalette.red), (r) {
+      personalNotesList.clear();
+
+      var data = r['data'];
+
+      for (int i = 0; i < (data as List).length; i++) {
+        PersonalNote note = PersonalNoteModel.fromJson(data[i]);
+        personalNotesList.add(note);
+      }
+
+      if (personalNotesList.isNotEmpty) {
+        lastNoteId.value = personalNotesList[personalNotesList.length - 1].id;
+      } else {
+        isFirstPersonalNotesLoading.value = false;
+      }
+
+      update(); // Notify listeners that the notes list has changed
+      isFirstPersonalNotesLoading.value = false;
+    });
+  }
+
+  Future loadMorePersonalNotes() async {
+    if (hasNextPage.value == true &&
+        isFirstPersonalNotesLoading.value == false &&
+        isMorePersonalNotesLoading.value == false &&
+        scrollController.position.extentAfter < 300) {
+      isMorePersonalNotesLoading.value =
+          true; // Display a progress indicator at the bottom
+      page.value += 1; // Increase _page by 1
+
+      var result = await journalRepo.getPersonalNotes(
+          page: page.value, limit: limit.value);
+
+      if (result.isRight()) {
+        List<PersonalNote> fetchedNotes = [];
+
+        result.map((r) => fetchedNotes =
+            (r as List).map((e) => PersonalNoteModel.fromJson(e)).toList());
+        if (fetchedNotes.isNotEmpty) {
+          personalNotesList.addAll(fetchedNotes);
+        } else {
+          // This means there is no more data
+          // and therefore, we will not send another GET request
+          hasNextPage.value = false;
+        }
+
+        isMorePersonalNotesLoading.value = false;
+      } else {
+        result.leftMap((l) => CustomSnackBar.showSnackBar(
+            context: Get.context!,
+            title: "Error",
+            message: l.message.toString(),
+            backgroundColor: ColorPalette.red));
+      }
+
+      update();
+    }
+  }
+
+  Future loadFirstSharedNotes() async {
+    isFirstSharedNotesLoading.value = true;
 
     Either either =
-        await journalRepo.getJournal(page: page.value, limit: limit.value);
-    print(page);
+        await journalRepo.getSharedNotes(page: page.value, limit: limit.value);
 
     either.fold(
         (l) => CustomSnackBar.showSnackBar(
@@ -82,27 +151,27 @@ class NotesController extends GetxController with GetTickerProviderStateMixin {
       if (sharedNotesList.isNotEmpty) {
         lastNoteId.value = sharedNotesList[sharedNotesList.length - 1].id;
       } else {
-        isFirstLoadRunning.value = false;
+        isFirstSharedNotesLoading.value = false;
       }
     });
 
     update(); // Notify listeners that the notes list has changed
-    isFirstLoadRunning.value = false;
+    isFirstSharedNotesLoading.value = false;
   }
 
   // This function will be triggered whenver the user scroll
   // to near the bottom of the list view
-  loadMoreSharedNotes() async {
+  Future loadMoreSharedNotes() async {
     if (hasNextPage.value == true &&
-        isFirstLoadRunning.value == false &&
-        isLoadMoreRunning.value == false &&
+        isFirstSharedNotesLoading.value == false &&
+        isMoreSharedNotesLoading.value == false &&
         scrollController.position.extentAfter < 300) {
-      isLoadMoreRunning.value =
+      isMoreSharedNotesLoading.value =
           true; // Display a progress indicator at the bottom
       page.value += 1; // Increase _page by 1
 
-      var result =
-          await journalRepo.getJournal(page: page.value, limit: limit.value);
+      var result = await journalRepo.getSharedNotes(
+          page: page.value, limit: limit.value);
 
       if (result.isRight()) {
         List<SharedNote> fetchedNotes = [];
@@ -117,7 +186,7 @@ class NotesController extends GetxController with GetTickerProviderStateMixin {
           hasNextPage.value = false;
         }
 
-        isLoadMoreRunning.value = false;
+        isMoreSharedNotesLoading.value = false;
       } else {
         result.leftMap((l) => CustomSnackBar.showSnackBar(
             context: Get.context!,
@@ -143,8 +212,6 @@ class NotesController extends GetxController with GetTickerProviderStateMixin {
   @override
   void onInit() {
     listenToTabController();
-    //loadfirstPersonalNotes();
-    // loadfirstSharedNotes();
     super.onInit();
   }
 }

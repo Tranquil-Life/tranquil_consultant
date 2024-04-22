@@ -1,9 +1,9 @@
 import 'package:tl_consultant/core/constants/constants.dart';
-const baseUrl = 'https://tranquil-api.herokuapp.com/api/';
+// const baseUrl = 'https://tranquil-api.herokuapp.com/api/';
 
-const host = 'https://9c0c-102-89-34-189.ngrok-free.app';
+const host = 'https://51ec-197-210-8-47.ngrok-free.app';
 const exchangeHost = "https://v6.exchangerate-api.com/v6";
-// const baseUrl = '$host/api/';
+const baseUrl = '$host/api/';
 
 abstract class AuthEndPoints {
   static const login = '$thisUserType/login';
@@ -48,6 +48,8 @@ abstract class JournalEndPoints {
 
   static sharedNotes({required int page, required int limit}) =>
       '$thisUserType/listSharedNotes/$page/$limit';
+  static personalNotes({required int page, required int limit}) =>
+    '$thisUserType/listMyNotes/$page/$limit';    
 }
 
 abstract class MediaEndpoints {

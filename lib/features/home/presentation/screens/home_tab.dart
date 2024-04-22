@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -17,8 +16,6 @@ import 'package:tl_consultant/features/dashboard/presentation/controllers/dashbo
 import 'package:tl_consultant/features/home/presentation/widgets/count_indicator.dart';
 
 import 'package:tl_consultant/app/presentation/widgets/custom_icon_button.dart';
-import 'package:tl_consultant/app/presentation/widgets/custom_snackbar.dart';
-import 'package:tl_consultant/app/presentation/widgets/dialogs.dart';
 import 'package:tl_consultant/features/home/presentation/widgets/no_meetings.dart';
 import 'package:tl_consultant/features/profile/data/models/user_model.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
@@ -53,7 +50,7 @@ class _HomeTabState extends State<HomeTab> {
                 child: Column(
                   children: [
                     Padding(
-                        padding: const EdgeInsets.fromLTRB(22, 8, 22, 28),
+                        padding: const EdgeInsets.all(12),
                         child: Column(
                           children: [
                             Title(),

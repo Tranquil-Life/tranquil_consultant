@@ -1,5 +1,4 @@
 import 'package:json_annotation/json_annotation.dart';
-part 'note.g.dart';
 
 @JsonSerializable(createToJson: true)
 class Note {
@@ -9,8 +8,6 @@ class Note {
   String title;
   @JsonKey(name: 'body')
   String description;
-  String clientName;
-  String clientDp;
   String? mood;
   String hexColor;
   DateTime? dateUpdated;
@@ -19,9 +16,17 @@ class Note {
       {this.id,
       this.title = '',
       this.description = '',
-      this.clientName = '',
-      this.clientDp = '',
       this.mood,
       required this.hexColor,
       this.dateUpdated});
+
+  factory Note.fromJson(Map<String, dynamic> json) =>
+    Note(
+      id: json['id'],
+      title: json['heading'] ?? "",
+      description: json['body'] ?? "",
+      mood: json['mood'] ?? "",
+      hexColor: json['hex_color'] ?? "0xFFFDFDFD",
+      dateUpdated: DateTime.parse(json['updated_at'].toString())
+    );    
 }
