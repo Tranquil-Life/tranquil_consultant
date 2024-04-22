@@ -8,7 +8,8 @@ class EarningsModel extends Earnings{
     super.userId,
     super.balance,
     super.availableForWithdrawal,
-    super.withdrawn
+    super.withdrawn,
+    super.pendingClearance
   });
 
   factory EarningsModel.fromJson(Map<String, dynamic> json) =>

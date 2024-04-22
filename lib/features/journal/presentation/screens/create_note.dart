@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/widgets/buttons.dart';
 import 'package:tl_consultant/app/presentation/widgets/custom_app_bar.dart';
-import 'package:tl_consultant/features/journal/presentation/controllers/notes_controller.dart';
 
 class NewNote extends StatefulWidget {
   const NewNote({Key? key}) : super(key: key);
@@ -19,8 +18,6 @@ class _NewNoteState extends State<NewNote> {
   bool _isBold = false;
   bool _isUnderline = false;
   bool _isCrossed = false;
-
-  final NotesController noteController = Get.put(NotesController());
 
   @override
   Widget build(BuildContext context) {
@@ -110,7 +107,7 @@ class _NewNoteState extends State<NewNote> {
                             },
                           ),
                           ListTile(
-                            title: Text("Underline"),
+                            title: const Text("Underline"),
                             onTap: () {
                               setState(() {
                                 _isUnderline = !_isUnderline;
@@ -119,7 +116,7 @@ class _NewNoteState extends State<NewNote> {
                             },
                           ),
                           ListTile(
-                            title: Text("Crossed Text"),
+                            title: const Text("Crossed Text"),
                             onTap: () {
                               setState(() {
                                 _isCrossed = !_isCrossed;
@@ -137,17 +134,80 @@ class _NewNoteState extends State<NewNote> {
                   onPressed: () {
                     // Add attachment logic
                   },
-                  child: Text("Attachment"),
+                  child: const Text("Attachment"),
                 ),
                 SizedBox(
                   height: 40,
                   width: 120,
                   child: CustomButton(
-                    onPressed: () {},
-                    child: const Text(
-                      "Save note",
-                      style: TextStyle(color: ColorPalette.white),
-                    ),
+                    onPressed: () {
+                      Get.defaultDialog(
+                        confirm: SizedBox(
+                          height: 40,
+                          width: 180,
+                          child: CustomButton(
+                            onPressed: () {},
+                            child: const Text("Apply Option"),
+                          ),
+                        ),
+                        cancel: SizedBox(
+                          height: 40,
+                          width: 80,
+                          child: CustomButton(
+                            onPressed: () {},
+                            child: const Text(
+                              "Cancel",
+                              style: TextStyle(color: ColorPalette.white),
+                            ),
+                          ),
+                        ),
+                        title: "Text options",
+                        content: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text("Choose text options to apply to text:"),
+                            CheckboxListTile(
+                              title: const Text("Italic"),
+                              value: _isItalic,
+                              onChanged: (value) {
+                                setState(() {
+                                  _isItalic = value ?? false;
+                                });
+                              },
+                            ),
+                            CheckboxListTile(
+                              title: const Text("Bold"),
+                              value: _isBold,
+                              onChanged: (value) {
+                                setState(() {
+                                  _isBold = value ?? false;
+                                });
+                              },
+                            ),
+                            CheckboxListTile(
+                              title: const Text("Underline"),
+                              value: _isUnderline,
+                              onChanged: (value) {
+                                setState(() {
+                                  _isUnderline = value ?? false;
+                                });
+                              },
+                            ),
+                            CheckboxListTile(
+                              title: const Text("Crossed Text"),
+                              value: _isCrossed,
+                              onChanged: (value) {
+                                setState(() {
+                                  _isCrossed = value ?? false;
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                    child: const Text("Format"),
                   ),
                 ),
               ],

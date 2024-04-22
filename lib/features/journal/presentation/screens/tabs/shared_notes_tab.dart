@@ -1,60 +1,56 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:tl_consultant/app/presentation/theme/colors.dart';
-import 'package:tl_consultant/app/presentation/widgets/user_avatar.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
-import 'package:tl_consultant/features/journal/domain/entities/note.dart';
-import 'package:tl_consultant/features/journal/domain/entities/shared_note.dart';
+import 'package:tl_consultant/features/journal/domain/entities/shared_note/shared_note.dart';
 import 'package:tl_consultant/features/journal/presentation/controllers/notes_controller.dart';
-import 'package:tl_consultant/features/journal/presentation/screens/shared_note.dart';
+import 'package:tl_consultant/features/journal/presentation/widgets/note_widget.dart';
 
 class SharedNotesTab extends StatelessWidget {
   SharedNotesTab({Key? key}) : super(key: key);
 
-  final notesController = Get.put(NotesController());
+  final _ = Get.put(NotesController());
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Obx(
         () => CurrentView(
-            view: notesController.defaultView.value,
-            notes: notesController.sharedNotesList),
+              view: _.defaultView.value,
+              notes: _.sharedNotesList,
+              controller: _),
       ),
     );
   }
 }
 
 class CurrentView extends StatelessWidget {
-  const CurrentView({super.key, required this.view, required this.notes});
+  const CurrentView({
+    Key? key,
+    required this.view,
+    required this.notes,
+    required this.controller,
+  }) : super(key: key);
 
   final String view;
   final List<SharedNote> notes;
+  final NotesController controller;
 
   @override
   Widget build(BuildContext context) {
-    return view == grid ? GridState(notes: notes) : Container();
-  }
-}
-
-class GridState extends StatelessWidget {
-  final List<SharedNote> notes;
-
-  const GridState({super.key, required this.notes});
-
-  @override
-  Widget build(BuildContext context) {
-    return GridView.builder(
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        mainAxisSpacing: 22.0,
-        crossAxisSpacing: 22.0,
+    return Obx(
+      () => GridView.builder(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: view == grid ? 2 : 1,
+          mainAxisSpacing: 57.0,
+          crossAxisSpacing: 22.0,
+        ),
+        itemCount: notes.length,
+        itemBuilder: (context, index) {
+          final sharedNote = notes[index];
+          return NoteWidget(sharedNote: sharedNote);
+        },
+        padding: const EdgeInsets.only(bottom: 80), // Add padding to the bottom
       ),
-      itemCount: notes.length,
-      itemBuilder: (context, index) {
-        final sharedNote = notes[index];
-        return SharedNoteView(sharedNote: sharedNote);
-      },
     );
   }
 }

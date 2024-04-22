@@ -62,12 +62,21 @@ class ProfileController extends GetxController {
 
     var continent = "";
 
-    either.fold(
-        (l) => CustomSnackBar.showSnackBar(
+    either.fold((l) {
+      if (l.message.toString().contains('CERTIFICATE_VERIFY_FAILED')) {
+        CustomSnackBar.showSnackBar(
+            context: Get.context!,
+            title: "Internet Error",
+            message: "Change your internet provider",
+            backgroundColor: ColorPalette.red);
+      } else {
+        CustomSnackBar.showSnackBar(
             context: Get.context!,
             title: "Error",
             message: l.message,
-            backgroundColor: ColorPalette.red), (r) {
+            backgroundColor: ColorPalette.red);
+      }
+    }, (r) {
       final jsonData = r;
 
       final countries = jsonData;

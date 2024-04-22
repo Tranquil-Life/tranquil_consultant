@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/theme/fonts.dart';
+import 'package:tl_consultant/app/presentation/theme/tranquil_icons.dart';
 import 'package:tl_consultant/app/presentation/widgets/buttons.dart';
 import 'package:tl_consultant/app/presentation/widgets/custom_app_bar.dart';
 import 'package:tl_consultant/app/presentation/widgets/user_avatar.dart';
 import 'package:tl_consultant/features/profile/domain/entities/edit_user.dart';
 import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:tl_consultant/features/profile/presentation/widgets/custom_form_field.dart';
+import 'package:tl_consultant/features/settings/presentation/widgets/settings_button.dart';
+import 'package:tl_consultant/features/settings/presentation/widgets/sign_out_dialog.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({Key? key}) : super(key: key);
@@ -66,6 +70,15 @@ class EditProfileHead extends StatelessWidget {
                     style: TextStyle(
                         color: Colors.white, fontSize: AppFonts.defaultSize),
                   ),
+                ),
+              ),
+              SettingsButton(
+                label: 'Sign out',
+                prefixIconData: TranquilIcons.sign_out,
+                prefixIconColor: ColorPalette.red,
+                onPressed: () => showDialog(
+                  context: context,
+                  builder: (_) => SignOutDialog(),
                 ),
               ),
             ],

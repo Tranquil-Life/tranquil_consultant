@@ -54,7 +54,7 @@ class _DashboardState extends State<Dashboard> {
           alignment: Alignment.bottomCenter,
           children: [
             Positioned.fill(
-              bottom: MediaQuery.of(context).padding.bottom + 62,
+              bottom: MediaQuery.of(context).padding.bottom + 20,
               child: Obx(
                 () => IndexedStack(
                   index: dashboardController.currentIndex.value,
@@ -62,8 +62,7 @@ class _DashboardState extends State<Dashboard> {
                   children: [
                     HomeTab(),
                     EarningsTab(),
-                    //SizedBox(),
-                    SizedBox(),
+                    JournalTab(),
                     ProfileScreen(),
                   ],
                 ),
