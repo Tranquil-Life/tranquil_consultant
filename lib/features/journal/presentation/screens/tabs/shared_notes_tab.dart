@@ -15,9 +15,7 @@ class SharedNotesTab extends StatelessWidget {
     return Scaffold(
       body: Obx(
         () => CurrentView(
-              view: _.defaultView.value,
-              notes: _.sharedNotesList,
-              controller: _),
+            view: _.layout.value, notes: _.sharedNotesList, controller: _),
       ),
     );
   }

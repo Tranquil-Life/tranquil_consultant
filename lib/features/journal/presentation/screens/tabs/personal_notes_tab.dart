@@ -30,7 +30,7 @@ class _PersonalNotesTabState extends State<PersonalNotesTab> {
       children: [
         Obx(
           () => CurrentView(
-              view: _.defaultView.value,
+              layout: _.layout.value,
               notes: _.personalNotesList,
               controller: _),
         ),
@@ -40,7 +40,7 @@ class _PersonalNotesTabState extends State<PersonalNotesTab> {
           child: FloatingActionButton(
             backgroundColor: ColorPalette.green,
             onPressed: () {
-              Get.to(const NewNote());
+              Get.to(const CreateNote());
             },
             child: const Icon(
               Icons.add,
@@ -56,19 +56,19 @@ class _PersonalNotesTabState extends State<PersonalNotesTab> {
 class CurrentView extends StatelessWidget {
   const CurrentView(
       {super.key,
-      required this.view,
+      required this.layout,
       required this.notes,
       required this.controller});
 
-  final String view;
+  final String layout;
   final List<PersonalNote> notes;
   final NotesController controller;
 
   @override
   Widget build(BuildContext context) {
-    return Obx(()=>GridView.builder(
+    return Obx(() => GridView.builder(
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: view == grid ? 2 : 1,
+          crossAxisCount: layout == grid ? 2 : 1,
           childAspectRatio: 1,
           mainAxisSpacing: 16.0,
           crossAxisSpacing: 16.0,
@@ -81,4 +81,3 @@ class CurrentView extends StatelessWidget {
             )));
   }
 }
-

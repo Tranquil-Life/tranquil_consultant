@@ -1,7 +1,7 @@
 import 'package:tl_consultant/core/constants/constants.dart';
 // const baseUrl = 'https://tranquil-api.herokuapp.com/api/';
 
-const host = 'https://51ec-197-210-8-47.ngrok-free.app';
+const host = 'https://107c-102-88-84-30.ngrok-free.app';
 const exchangeHost = "https://v6.exchangerate-api.com/v6";
 const baseUrl = '$host/api/';
 

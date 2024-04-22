@@ -19,7 +19,7 @@ class CustomSnackBar {
       backgroundColor: backgroundColor,
       snackPosition: SnackPosition.BOTTOM,
       margin: const EdgeInsets.all(12),
-      duration: Duration(milliseconds: max(1000, message.length * 40)),
+      duration: Duration(milliseconds: max(3000, message.length * 40)),
       animationDuration: const Duration(milliseconds: 400),
       titleText: Text(
         title,

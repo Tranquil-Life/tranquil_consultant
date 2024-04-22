@@ -9,12 +9,12 @@ import 'package:tl_consultant/features/chat/presentation/screens/chat_screen.dar
 import 'package:tl_consultant/features/consultation/presentation/screens/edit_slots.dart';
 import 'package:tl_consultant/features/dashboard/presentation/screens/dashboard.dart';
 import 'package:tl_consultant/features/home/presentation/screens/home_tab.dart';
-import 'package:tl_consultant/features/journal/presentation/screens/journal_tab.dart';
 import 'package:tl_consultant/features/onboarding/presentation/screens/onboarding.dart';
 import 'package:tl_consultant/features/onboarding/presentation/screens/splash.dart';
 import 'package:tl_consultant/features/profile/presentation/screens/profile_tab.dart';
 import 'package:tl_consultant/features/settings/presentation/screens/settings_screen.dart';
 import 'package:tl_consultant/features/wallet/presentation/screens/earnings_tab.dart';
+import 'package:tl_consultant/features/wallet/presentation/screens/wallet_tab.dart';
 
 part 'app_routes.dart';
 
@@ -36,7 +36,7 @@ class AppPages {
     //GetPage(name: Routes.QUESTIONNAIRE, page: () => const Questionnaire()),
     GetPage(name: Routes.CHAT_SCREEN, page: () => const ChatScreen()),
     // GetPage(name: Routes.NOTES_SCREEN, page: () => const JournalTab()),
-    GetPage(name: Routes.WALLET, page: () => EarningsTab()),
+    GetPage(name: Routes.WALLET, page: () => WalletTab()),
     // GetPage(name: Routes.CUSTOMIZE_CARD, page: () => const CustomizeCardScreen()),
     GetPage(name: Routes.PROFILE, page: () => ProfileScreen()),
     GetPage(name: Routes.SETTINGS, page: () => SettingsScreen()),

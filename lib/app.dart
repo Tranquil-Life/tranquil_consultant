@@ -16,7 +16,7 @@ class App extends StatelessWidget {
     setStatusBarBrightness(true);
     return GetMaterialApp(
       title: AppConfig.appName,
-      debugShowCheckedModeBanner: true,
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         fontFamily: AppFonts.josefinSansRegular,
         primaryColor: ColorPalette.green,
