@@ -26,12 +26,14 @@ class TransactionItem extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(12),
       margin: EdgeInsets.only(top: 20),
-      decoration: BoxDecoration(color: ColorPalette.green[100], borderRadius: BorderRadius.circular(8)),
+      decoration: BoxDecoration(
+          color: ColorPalette.green[100],
+          borderRadius: BorderRadius.circular(8)),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(withdrawn ? "Withdrawal" : "Session payment", style: TextStyle(
-                fontFamily: AppFonts.josefinSansBold)),
+          Text(withdrawn ? "Withdrawal" : "Session payment",
+              style: TextStyle(fontFamily: AppFonts.josefinSansBold)),
           Text(
             withdrawn ? "- $amount" : amount,
             style: TextStyle(
@@ -44,49 +46,3 @@ class TransactionItem extends StatelessWidget {
     );
   }
 }
-
-/**
- * Padding(
-      padding: EdgeInsets.only(top: 8),
-      child: Stack(
-        children: [
-          Align(
-            alignment: Alignment.bottomLeft,
-            child: Container(
-              padding: EdgeInsets.only(top: 8),
-              child: Text("${withdrawn ? "-" :""}$amount", style: TextStyle(fontSize: AppFonts.defaultSize),),
-            ),
-          ),
-          Align(
-            alignment: Alignment.center,
-            child: Container(
-                width: 120,
-                height: 31,
-                decoration: BoxDecoration(
-                    color: withdrawn ? ColorPalette.red.shade400: ColorPalette.green,
-                    borderRadius: BorderRadius.circular(8.0),
-                    border: Border.all(width: 2, color: withdrawn ? ColorPalette.red : ColorPalette.green),
-                    boxShadow: [
-                      BoxShadow(
-                          blurRadius: 6, color: Colors.black12, offset: Offset(0, 3)),
-                    ]
-                ),
-                child: Center(
-                  child: Text(
-                      withdrawn ? "Withdrawn" : "Received",
-                      style: const TextStyle(fontSize: AppFonts.defaultSize, color: Colors.white)
-                  ),
-                )
-            ),
-          ),
-          Align(
-            alignment: Alignment.bottomRight,
-            child: Container(
-              padding: EdgeInsets.only(top: 8),
-              child: Text(time, style: TextStyle(fontSize: AppFonts.defaultSize)),
-            ),
-          ),
-        ],
-      ),
-    )
- */
