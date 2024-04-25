@@ -182,7 +182,7 @@ class _TransactionsState extends State<Transactions> {
                       // Access transaction attributes and create widgets to display the data
                       final amount = transaction['amount'];
                       final isCredit = transaction['is_credit'];
-                      final status = transaction['status'];
+                      // final status = transaction['status'];
                       final updatedAt =
                           DateTime.parse(transaction['updated_at']);
                       final formattedDate = updatedAt.formatted;
