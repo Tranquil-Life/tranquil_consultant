@@ -10,6 +10,7 @@ abstract class AuthEndPoints {
   static const register = '$thisUserType/register';
   static const passwordReset = '$thisUserType/requestPasswordReset';
   static const logOut = '$thisUserType/logOut';
+  static const updateFcmToken = '$thisUserType/generate-device-id';
 }
 
 abstract class ProfileEndPoints {

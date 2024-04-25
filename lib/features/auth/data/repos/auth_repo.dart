@@ -43,7 +43,12 @@ class AuthRepoImpl extends AuthRepo {
         .then((value) => handleResponse(value));
   }
 
-  sendFcmTokenToDB(String fcmToken) {}
+  @override
+  Future<Either<ApiError, dynamic>> refreshFcmToken(String fcmToken)async {
+    final input = {'token': fcmToken};
 
-  generateFcmToken() {}
+    return await catchSocketException(
+      () => postReq(AuthEndPoints.fcmToken, body: input),
+    ).then((value) => handleResponse(value));
+  }
 }
