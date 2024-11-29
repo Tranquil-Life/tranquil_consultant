@@ -44,11 +44,10 @@ class AuthRepoImpl extends AuthRepo {
   }
 
   @override
-  Future<Either<ApiError, dynamic>> refreshFcmToken(String fcmToken)async {
-    final input = {'token': fcmToken};
-
-    return await catchSocketException(
-      () => postReq(AuthEndPoints.fcmToken, body: input),
-    ).then((value) => handleResponse(value));
+  Future<Either<ApiError, dynamic>> refreshFcmToken(String fcmToken) {
+    // TODO: implement refreshFcmToken
+    throw UnimplementedError();
   }
+
+
 }

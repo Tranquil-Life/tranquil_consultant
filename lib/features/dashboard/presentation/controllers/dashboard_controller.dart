@@ -16,8 +16,7 @@ import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
 
 class DashboardController extends GetxController {
-  
- RxInt currentIndex = 0.obs;
+  RxInt currentIndex = 0.obs;
 
   var currentMeetingCount = 0.obs;
   var clientId = 0.obs;
@@ -31,63 +30,69 @@ class DashboardController extends GetxController {
     currentIndex.value = index;
   }
 
-  checkLocation() async {
-    var result = await getCurrLocation();
-    double latitude = result['latitude'];
-    double longitude = result['longitude'];
-    List<Placemark> placemarks = result['placemarks'];
-    String country = placemarks.first.country!;
-    String state = placemarks.first.administrativeArea!;
-    var location = "$country/$state";
-    var continent = await ProfileController().getContinent(placemarks);
-    print("CONTINE: $continent");
-    var timeZoneIdentifier =
-        TimeZoneUtil.getTzIdentifier(continent: continent, state: state);
-    final timeZone = tz.getLocation(timeZoneIdentifier).currentTimeZone;
-    var hourInMilliSecs = 3600000;
-    var formattedTimeZone = timeZone.offset / hourInMilliSecs;
+  // checkLocation() async {
+  //
+  //   /** METHOD 1 **/
+  //
+  //
+  //   /** METHOD 2 **/
+  //
+  //   var result = await getCurrLocation();
+  //   double latitude = result['latitude'];
+  //   double longitude = result['longitude'];
+  //   List<Placemark> placemarks = result['placemarks'];
+  //   String country = placemarks.first.country!;
+  //   String state = placemarks.first.administrativeArea!;
+  //   var location = "$country/$state";
+  //   var continent = await ProfileController().getContinent(placemarks);
+  //   print("CONTINE: $continent");
+  //   var timeZoneIdentifier =
+  //       TimeZoneUtil.getTzIdentifier(continent: continent, state: state);
+  //   final timeZone = tz.getLocation('America/Los_Angeles').currentTimeZone;
+  //   var hourInMilliSecs = 3600000;
+  //   var formattedTimeZone = timeZone.offset / hourInMilliSecs;
+  //
+  //   print(location);
+  //   print(userDataStore.user['location']);
+  //   if (location != userDataStore.user['location']) {
+  //     updateMyLocation(
+  //         latitude, longitude, formattedTimeZone, location, timeZoneIdentifier);
+  //   }
+  // }
 
-    print(location);
-    print(userDataStore.user['location']);
-    if (location != userDataStore.user['location']) {
-      updateMyLocation(
-          latitude, longitude, formattedTimeZone, location, timeZoneIdentifier);
-    }
-  }
-
-  updateMyLocation(double latitude, double longitude, double timeZone,
-      String location, String timeZoneIdentifier) async {
-    debugPrint(
-        "lat: $latitude\nlong: $longitude\ntz: $timeZone\nlocation: $location\ntzIdentifier: $timeZoneIdentifier");
-
-    var either = await LocationRepoImpl().updateLocation(
-        latitude: latitude,
-        longitude: longitude,
-        timeZone: timeZone,
-        location: location,
-        timeZoneIdentifier: timeZoneIdentifier);
-
-    either.fold(
-      (l) {
-        print("IDENTIFIER: ${l.message}");
-
-        CustomSnackBar.showSnackBar(
-          context: Get.context!,
-          title: "Error",
-          message: "UPDATE LOCATION: ${l.message!}",
-          backgroundColor: ColorPalette.red,
-        );
-      },
-      (r) {
-        Map data = r['data'];
-        print("IDENTIFIER: $data");
-        userDataStore.user['timezone_identifier'] = data['timezone_identifier'];
-      },
-    );
-
-    userDataStore.user = userDataStore.user;
-    getMeetings();
-  }
+  // updateMyLocation(double latitude, double longitude, double timeZone,
+  //     String location, String timeZoneIdentifier) async {
+  //   debugPrint(
+  //       "lat: $latitude\nlong: $longitude\ntz: $timeZone\nlocation: $location\ntzIdentifier: $timeZoneIdentifier");
+  //
+  //   var either = await LocationRepoImpl().updateLocation(
+  //       latitude: latitude,
+  //       longitude: longitude,
+  //       timeZone: timeZone,
+  //       location: location,
+  //       timeZoneIdentifier: 'America/Los_Angeles');
+  //
+  //   either.fold(
+  //     (l) {
+  //       print("IDENTIFIER: ${l.message}");
+  //
+  //       CustomSnackBar.showSnackBar(
+  //         context: Get.context!,
+  //         title: "Error",
+  //         message: "UPDATE LOCATION: ${l.message!}",
+  //         backgroundColor: ColorPalette.red,
+  //       );
+  //     },
+  //     (r) {
+  //       Map data = r['data'];
+  //       print("IDENTIFIER: $data");
+  //       userDataStore.user['timezone_identifier'] = data['timezone_identifier'];
+  //     },
+  //   );
+  //
+  //   userDataStore.user = userDataStore.user;
+  //   getMeetings();
+  // }
 
   getMeetings() async {
     await MeetingsController().loadFirstMeetings();
@@ -106,12 +111,12 @@ class DashboardController extends GetxController {
       }
     }
   }
-  
+
   @override
   void onInit() {
     ProfileController.instance.restoreUser();
 
-    checkLocation();
+    // checkLocation();
 
     super.onInit();
   }
@@ -119,12 +124,12 @@ class DashboardController extends GetxController {
   clearData() {
     currentIndex.value = 0;
     currentMeetingCount.value = 0;
-  var clientId = 0;
-  var clientName = "";
-  var clientDp = "";
-  var currentMeetingET = "";
-  var currentMeetingST = "";
-  var currentMeetingId = 1;
+    var clientId = 0;
+    var clientName = "";
+    var clientDp = "";
+    var currentMeetingET = "";
+    var currentMeetingST = "";
+    var currentMeetingId = 1;
   }
 
   clearAllData() {

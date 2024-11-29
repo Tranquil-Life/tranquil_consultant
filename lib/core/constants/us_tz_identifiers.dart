@@ -11,7 +11,7 @@ const centralStates = [
   'Missouri',
   'Kentucky',
   'Texas',
-  'Wisconsin'
+  'Wisconsin',
 ];
 
 const easternStates = [

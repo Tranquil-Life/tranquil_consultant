@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -30,8 +29,8 @@ class AgoraController extends GetxController {
     callRoomId.value =
         "${val.substring(0, val.length - 28)}-${dashboardController.currentMeetingId}";
 
-    DocumentReference documentReference =
-        firebaseFireStore.collection(chatsCollection).doc(documentId);
+    // DocumentReference documentReference =
+    //     firebaseFireStore.collection(chatsCollection).doc(documentId);
 
     await getAgoraToken();
 
@@ -40,7 +39,7 @@ class AgoraController extends GetxController {
       'agora_channel': callRoomId.value,
     };
 
-    await documentReference.update(fields);
+    // await documentReference.update(fields);
 
     navigateToCallView();
   }
@@ -49,32 +48,32 @@ class AgoraController extends GetxController {
     //update Firebase DB with agoraChannel, token
     String documentId = chatController.chatChannel.value;
 
-    DocumentReference documentReference =
-        firebaseFireStore.collection(chatsCollection).doc(documentId);
+    // DocumentReference documentReference =
+    //     firebaseFireStore.collection(chatsCollection).doc(documentId);
+    //
+    // // Get the document snapshot
+    // DocumentSnapshot snapshot = await documentReference.get();
 
-    // Get the document snapshot
-    DocumentSnapshot snapshot = await documentReference.get();
-
-    if (snapshot.exists) {
-      Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
-
-      if (data != null && data.containsKey("agora_channel")) {
-        callRoomId.value = data['agora_channel'];
-
-        await getAgoraToken();
-
-        //Place call and update agora_call_status to calling...
-        // var fields = {'agora_call_status': "calling..."};
-
-        // await documentReference.update(fields);
-
-        navigateToCallView();
-
-        debugPrint('Updated successfully!');
-      } else {
-        updateAgoraInfo(); //Update all agora fields
-      }
-    }
+    // if (snapshot.exists) {
+    //   Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
+    //
+    //   if (data != null && data.containsKey("agora_channel")) {
+    //     callRoomId.value = data['agora_channel'];
+    //
+    //     await getAgoraToken();
+    //
+    //     //Place call and update agora_call_status to calling...
+    //     // var fields = {'agora_call_status': "calling..."};
+    //
+    //     // await documentReference.update(fields);
+    //
+    //     navigateToCallView();
+    //
+    //     debugPrint('Updated successfully!');
+    //   } else {
+    //     updateAgoraInfo(); //Update all agora fields
+    //   }
+    // }
   }
 
   Future joinAgoraCall({bool join = true}) async {

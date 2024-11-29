@@ -161,13 +161,13 @@ class UploadController extends GetxController {
   }
 
   uploadToFirestore(Message message) async {
-    var room = firebaseFireStore
-        .collection(chatsCollection)
-        .doc(chatController.chatChannel.value);
-
-    room
-        .collection("chat_messages")
-        .doc(message.messageId.toString())
-        .set(message.toJson());
+    // var room = firebaseFireStore
+    //     .collection(chatsCollection)
+    //     .doc(chatController.chatChannel.value);
+    //
+    // room
+    //     .collection("chat_messages")
+    //     .doc(message.messageId.toString())
+    //     .set(message.toJson());
   }
 }

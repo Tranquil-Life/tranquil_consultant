@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:tl_consultant/core/utils/extensions/date_time_extension.dart';
 import 'package:tl_consultant/features/chat/domain/entities/message.dart';
 
@@ -25,7 +24,7 @@ class MessageModel extends Message{
       _$MessageModelFromJson(json);
 
   // Static method for Firestore document data
-  static MessageModel fromDoc(Map<String, dynamic> doc) =>
-      _$MessageModelFromDoc(doc);
+  // static MessageModel fromDoc(Map<String, dynamic> doc) =>
+  //     _$MessageModelFromDoc(doc);
 }
 

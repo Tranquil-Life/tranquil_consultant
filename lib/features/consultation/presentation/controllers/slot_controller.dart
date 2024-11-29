@@ -84,16 +84,27 @@ class SlotController extends GetxController {
 
       print("Error: ${l.message}");
     }, (r) {
+      print(r);
       loading.value = false;
 
-      result.map((r) {
-        apiSlots = r['slots'];
-        availableDays(r['days']);
+      apiSlots = r['slots'];
 
-        if (apiSlots.isNotEmpty) {
-          getSlotsInLocal();
-        }
-      });
+      if(r['days'] != null){
+        availableDays(r['days']);
+      }
+
+      if (apiSlots.isNotEmpty) {
+        getSlotsInLocal();
+      }
+
+      // result.map((r) {
+      //   apiSlots = r['slots'];
+      //   availableDays(r['days']);
+      //
+      //   if (apiSlots.isNotEmpty) {
+      //     getSlotsInLocal();
+      //   }
+      // });
     });
   }
 

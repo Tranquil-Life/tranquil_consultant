@@ -123,45 +123,45 @@ class AuthController extends GetxController {
     }
   }
 
-  Future<String> generateFcmToken() async {
-    var result = await AuthRepoImpl().generateFcmToken();
-    String token = "";
-    if (result.isRight()) {
-      result.map((r) => token = r);
+  //Future<String> generateFcmToken() async {
+    // var result = await AuthRepoImpl().generateFcmToken();
+    // String token = "";
+    // if (result.isRight()) {
+    //   result.map((r) => token = r);
+    //
+    //   return token;
+    // } else {
+    //   result.leftMap((l) => CustomSnackBar.showSnackBar(
+    //       context: Get.context!,
+    //       title: "Error",
+    //       message: l.message.toString(),
+    //       backgroundColor: ColorPalette.red));
+    //
+    //   return "";
+    // }
+  //}
 
-      return token;
-    } else {
-      result.leftMap((l) => CustomSnackBar.showSnackBar(
-          context: Get.context!,
-          title: "Error",
-          message: l.message.toString(),
-          backgroundColor: ColorPalette.red));
+  // Future updateFcmToken() async {
+  //   String fcmToken = await generateFcmToken();
+  //
+  //   if (fcmToken.isNotEmpty) {
+  //     // Sends the current token to the endpoint
+  //     await sendFcmTokenToDB(fcmToken);
+  //   }
+  // }
 
-      return "";
-    }
-  }
-
-  Future updateFcmToken() async {
-    String fcmToken = await generateFcmToken();
-
-    if (fcmToken.isNotEmpty) {
-      // Sends the current token to the endpoint
-      await sendFcmTokenToDB(fcmToken);
-    }
-  }
-
-  Future sendFcmTokenToDB(String fcmToken) async {
-    var result = await AuthRepoImpl().sendFcmTokenToDB(fcmToken);
-    if (result.isRight()) {
-      result.map((r) => print(r.toString()));
-    } else {
-      result.leftMap((l) => CustomSnackBar.showSnackBar(
-          context: Get.context!,
-          title: "Error",
-          message: l.message.toString(),
-          backgroundColor: ColorPalette.red));
-    }
-  }
+  // Future sendFcmTokenToDB(String fcmToken) async {
+  //   var result = await AuthRepoImpl().sendFcmTokenToDB(fcmToken);
+  //   if (result.isRight()) {
+  //     result.map((r) => print(r.toString()));
+  //   } else {
+  //     result.leftMap((l) => CustomSnackBar.showSnackBar(
+  //         context: Get.context!,
+  //         title: "Error",
+  //         message: l.message.toString(),
+  //         backgroundColor: ColorPalette.red));
+  //   }
+  // }
 
   uploadCv({File? file}) async {
     var fileSize = await getFileSize(file!.path, 1);

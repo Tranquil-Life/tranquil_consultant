@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -49,38 +48,38 @@ class ChatController extends GetxController {
   // Used to display loading indicators when _loadMore function is running
   var isLoadMoreRunning = false.obs;
   RxBool allPagesLoaded = false.obs; // Flag to check if all pages are loaded
-
-  List<QueryDocumentSnapshot> messagesDocs = <QueryDocumentSnapshot>[];
-
-  //listen for changes on the firestore channel
-  listenChannel() {
-    firebaseFireStore
-        .collection(chatsCollection)
-        .doc(chatChannel.value)
-        .collection(messagesCollection)
-        .orderBy('created_at',
-            descending: true) // Assuming you have a timestamp field
-        .limit(1)
-        .snapshots()
-        .listen((messagesSnapshot) {
-      // Handle changes in the subcollection
-      if (messagesSnapshot.docs.isNotEmpty) {
-        Message message = MessageModel.fromDoc(messagesSnapshot.docs[0].data());
-
-        // Check if the message is not already in the list
-        if (!messages.any((existingMessage) =>
-            existingMessage.messageId == message.messageId)) {
-          debugPrint('Latest Subcollection document data: ${message.message}');
-
-          if (message.senderId != UserModel.fromJson(userDataStore.user).id) {
-            messages.insert(0, message);
-          }
-        }
-      } else {
-        debugPrint('No documents in the subcollection.');
-      }
-    });
-  }
+  //
+  // List<QueryDocumentSnapshot> messagesDocs = <QueryDocumentSnapshot>[];
+  //
+  // //listen for changes on the firestore channel
+  // listenChannel() {
+  //   firebaseFireStore
+  //       .collection(chatsCollection)
+  //       .doc(chatChannel.value)
+  //       .collection(messagesCollection)
+  //       .orderBy('created_at',
+  //           descending: true) // Assuming you have a timestamp field
+  //       .limit(1)
+  //       .snapshots()
+  //       .listen((messagesSnapshot) {
+  //     // Handle changes in the subcollection
+  //     if (messagesSnapshot.docs.isNotEmpty) {
+  //       Message message = MessageModel.fromDoc(messagesSnapshot.docs[0].data());
+  //
+  //       // Check if the message is not already in the list
+  //       if (!messages.any((existingMessage) =>
+  //           existingMessage.messageId == message.messageId)) {
+  //         debugPrint('Latest Subcollection document data: ${message.message}');
+  //
+  //         if (message.senderId != UserModel.fromJson(userDataStore.user).id) {
+  //           messages.insert(0, message);
+  //         }
+  //       }
+  //     } else {
+  //       debugPrint('No documents in the subcollection.');
+  //     }
+  //   });
+  // }
 
   Future loadRecentMessages() async {
     if (chatId != null) {
@@ -192,7 +191,7 @@ class ChatController extends GetxController {
 
     await Future.delayed(Duration.zero);
 
-    await addChatToFirestore();
+    // await addChatToFirestore();
     await Future.delayed(const Duration(seconds: 1));
 
     loadRecentMessages();
@@ -200,40 +199,40 @@ class ChatController extends GetxController {
     loadingChatRoom.value = false;
   }
 
-  Future addChatToFirestore() async {
-    String documentId = chatChannel.value;
-
-    DocumentReference documentReference =
-        firebaseFireStore.collection(chatsCollection).doc(documentId);
-
-    // Get the document snapshot
-    DocumentSnapshot snapshot = await documentReference.get();
-
-    // Replace these with the fields and values you want to set
-    Map<String, dynamic> fields = {
-      'id': chatId!.value,
-      'client_id': dashboardController.clientId.value,
-      'consultant_id': UserModel.fromJson(userDataStore.user).id,
-      'channel': chatChannel.value,
-      'created_at': DateTimeExtension.now,
-      'updated_at': DateTimeExtension.now
-    };
-
-    try {
-      if (!snapshot.exists) {
-        // Add document to the top-level collection: chats
-        await documentReference.set(fields);
-
-        debugPrint('Data added successfully!');
-
-        Get.toNamed(Routes.CHAT_SCREEN, arguments: chatId?.value);
-      } else {
-        Get.toNamed(Routes.CHAT_SCREEN, arguments: chatId?.value);
-      }
-    } catch (e) {
-      debugPrint('Error adding data: $e');
-    }
-  }
+  // Future addChatToFirestore() async {
+  //   String documentId = chatChannel.value;
+  //
+  //   DocumentReference documentReference =
+  //       firebaseFireStore.collection(chatsCollection).doc(documentId);
+  //
+  //   // Get the document snapshot
+  //   DocumentSnapshot snapshot = await documentReference.get();
+  //
+  //   // Replace these with the fields and values you want to set
+  //   Map<String, dynamic> fields = {
+  //     'id': chatId!.value,
+  //     'client_id': dashboardController.clientId.value,
+  //     'consultant_id': UserModel.fromJson(userDataStore.user).id,
+  //     'channel': chatChannel.value,
+  //     'created_at': DateTimeExtension.now,
+  //     'updated_at': DateTimeExtension.now
+  //   };
+  //
+  //   try {
+  //     if (!snapshot.exists) {
+  //       // Add document to the top-level collection: chats
+  //       await documentReference.set(fields);
+  //
+  //       debugPrint('Data added successfully!');
+  //
+  //       Get.toNamed(Routes.CHAT_SCREEN, arguments: chatId?.value);
+  //     } else {
+  //       Get.toNamed(Routes.CHAT_SCREEN, arguments: chatId?.value);
+  //     }
+  //   } catch (e) {
+  //     debugPrint('Error adding data: $e');
+  //   }
+  // }
 
   setVoiceFile(File file) {
     audioFile = file;

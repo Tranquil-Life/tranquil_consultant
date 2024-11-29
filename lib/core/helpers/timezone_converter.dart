@@ -4,12 +4,10 @@ import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 
 class TimeZoneUtil {
   static Future<DateTime> convertToLocal(String utcTime) async {
-    final location =
-        tz.getLocation("${userDataStore.user['timezone_identifier']}");
-    var timeZone = location.currentTimeZone;
-
+    final timeZoneName = DateTime.now().timeZoneName;
+    final timeZoneOffset = DateTime.now().timeZoneOffset;
     var hourInMilliSecs = 3600000;
-    var formattedTimeZone = timeZone.offset / hourInMilliSecs;
+    var formattedTimeZone = timeZoneOffset.inMilliseconds / hourInMilliSecs;
     Duration offset = Duration(hours: formattedTimeZone.toInt());
 
     return DateTime.parse(utcTime).add(offset);
