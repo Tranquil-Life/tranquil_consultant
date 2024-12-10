@@ -37,7 +37,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.fontFamily,
   }) : super(key: key);
 
-
   @override
   Widget build(BuildContext context) {
     return AppBar(
@@ -51,35 +50,36 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         fontFamily: fontFamily,
       ),
       leading: (Navigator.of(context).canPop() || onBackPressed != null) &&
-          !hideBackButton
+              !hideBackButton
           ? Hero(
-        tag: 'back_button',
-        child: Center(
-          child: AppBarButton(
-            onPressed: onBackPressed ?? Navigator.of(context).pop,
-            icon: const Padding(
-              padding: EdgeInsets.all(1),
-              child: Icon(
-                Icons.arrow_back_ios_new,
-                color: Colors.white,
-                size: 19,
+              tag: 'back_button',
+              child: Center(
+                child: AppBarButton(
+                  onPressed: onBackPressed ?? Navigator.of(context).pop,
+                  icon: const Padding(
+                    padding: EdgeInsets.all(1),
+                    child: Icon(
+                      Icons.arrow_back_ios_new,
+                      color: Colors.white,
+                      size: 19,
+                    ),
+                  ),
+                ),
               ),
-            ),
-          ),
-        ),
-      )
+            )
           : const SizedBox.shrink(),
       title: title != null
           ? Padding(
-        padding: const EdgeInsets.only(top: 4),
-        child: Text(
-          title!,
-          style: TextStyle(
-            fontSize: 21,
-            color: titleColor ?? ColorPalette.green[800],
-          ),
-        ),
-      )
+              padding: const EdgeInsets.only(top: 4),
+              child: Text(
+                title!,
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w500,
+                  color: titleColor ?? ColorPalette.black,
+                ),
+              ),
+            )
           : null,
       actions: actions?.map<Widget>((e) {
         return Padding(
