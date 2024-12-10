@@ -14,8 +14,8 @@ class VideoLayout extends StatefulWidget {
 
   static Future<File?> getVideoThumb(String url,
       [bool fromFile = false]) async {
-    return (await DefaultCacheManager().getFileFromCache(url))?.file ??
-        await MediaService.generateVideoThumb(url, fromFile: fromFile);
+    // return (await DefaultCacheManager().getFileFromCache(url))?.file ??
+    //     await MediaService.generateVideoThumb(url, fromFile: fromFile);
   }
 
   @override
@@ -69,7 +69,7 @@ class _VideoLayoutState extends State<VideoLayout> {
     return SizedBox(
       height: MediaQuery.of(context).size.width * 0.6,
       child: GestureDetector(
-        onTap: (){
+        onTap: () {
           /*
           * Navigator.of(context).pushNamed(
           VideoPlayerScreen.routeName,

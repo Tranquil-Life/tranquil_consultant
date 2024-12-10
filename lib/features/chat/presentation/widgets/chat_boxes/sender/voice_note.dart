@@ -16,7 +16,7 @@ class SenderChatVoiceNote extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          VoiceNoteLayout(message: message),
+          // VoiceNoteLayout(message: message),
         ],
       ),
     );

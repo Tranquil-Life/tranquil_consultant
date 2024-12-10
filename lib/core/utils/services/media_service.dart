@@ -5,7 +5,6 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';
-import 'package:video_thumbnail/video_thumbnail.dart';
 
 abstract class MediaService {
   static final _filePicker = FilePicker.platform;
@@ -40,34 +39,38 @@ abstract class MediaService {
 
   static Future<File?> selectAudio() => _selectFile(type: FileType.audio);
 
-  static Future<File?> selectDocument({List<String>? allowedExtensions, String? uploadTpe}) =>
-      _selectFile(type: FileType.any, allowedExtensions: allowedExtensions, uploadType: uploadTpe);
+  static Future<File?> selectDocument(
+          {List<String>? allowedExtensions, String? uploadTpe}) =>
+      _selectFile(
+          type: FileType.any,
+          allowedExtensions: allowedExtensions,
+          uploadType: uploadTpe);
 
   ///Returns a jpg image file
-  static Future<File?> generateVideoThumb(
-      String path, {
-        bool fromFile = false,
-        int? maxHeight,
-      }) async {
-    if (fromFile) {
-      final data = await VideoThumbnail.thumbnailData(
-        maxHeight: chatBoxMaxWidth!.round(),
-        imageFormat: ImageFormat.JPEG,
-        quality: 75,
-        video: path,
-      );
-      if (data == null) return null;
-      return File.fromRawPath(data);
-    }
-    final data = await VideoThumbnail.thumbnailFile(
-      maxHeight: maxHeight ?? chatBoxMaxWidth!.round(),
-      imageFormat: ImageFormat.JPEG,
-      quality: 75,
-      video: path,
-    );
-    if (data == null) return null;
-    return File(data);
-  }
+  // static Future<File?> generateVideoThumb(
+  //     String path, {
+  //       bool fromFile = false,
+  //       int? maxHeight,
+  //     }) async {
+  //   if (fromFile) {
+  //     final data = await VideoThumbnail.thumbnailData(
+  //       maxHeight: chatBoxMaxWidth!.round(),
+  //       imageFormat: ImageFormat.JPEG,
+  //       quality: 75,
+  //       video: path,
+  //     );
+  //     if (data == null) return null;
+  //     return File.fromRawPath(data);
+  //   }
+  //   final data = await VideoThumbnail.thumbnailFile(
+  //     maxHeight: maxHeight ?? chatBoxMaxWidth!.round(),
+  //     imageFormat: ImageFormat.JPEG,
+  //     quality: 75,
+  //     video: path,
+  //   );
+  //   if (data == null) return null;
+  //   return File(data);
+  // }
 
   static Future<File?> _selectFile({
     FileType type = FileType.any,
@@ -80,11 +83,9 @@ abstract class MediaService {
     );
     if (result == null) return null;
 
-    if(uploadType=="cv"){
-
+    if (uploadType == "cv") {
       AuthController.instance.uploadCv(file: File(result.files.first.path!));
     }
-
 
     return File(result.files.first.path!);
   }
