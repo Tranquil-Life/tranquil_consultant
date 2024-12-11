@@ -151,7 +151,7 @@ class _WalletTabState extends State<WalletTab> {
         height: 100,
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(width: 1, color: ColorPalette.grey)),
+            border: Border.all(width: 1, color: ColorPalette.gray)),
         child: Center(
           child: Container(
               margin: const EdgeInsets.only(left: 4, right: 4),
@@ -159,7 +159,7 @@ class _WalletTabState extends State<WalletTab> {
               height: 90,
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(4),
-                  border: Border.all(width: 1, color: ColorPalette.grey)),
+                  border: Border.all(width: 1, color: ColorPalette.gray)),
               child: Center(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,

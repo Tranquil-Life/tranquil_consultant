@@ -25,7 +25,7 @@ class CustomTabBar extends StatelessWidget {
       indicator: const BoxDecoration(
         color: ColorPalette.green,
         borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(10), topRight: Radius.circular(10)),
+            topLeft: Radius.circular(4.0), topRight: Radius.circular(4.0)),
       ),
       indicatorSize: TabBarIndicatorSize.tab,
       labelColor: ColorPalette.white,
@@ -42,7 +42,7 @@ class CustomTabBar extends StatelessWidget {
           padding: EdgeInsets.only(left: 5),
           child: Text(
             label1 ?? '',
-            style: const TextStyle(fontSize: AppFonts.defaultSize),
+            style: const TextStyle(fontSize: AppFonts.baseSize),
           ),
         ),
         Container(
@@ -51,7 +51,7 @@ class CustomTabBar extends StatelessWidget {
           margin: const EdgeInsets.only(bottom: 5, top: 5),
           child: Text(
             label2 ?? '',
-            style: const TextStyle(fontSize: AppFonts.defaultSize),
+            style: const TextStyle(fontSize: AppFonts.baseSize),
           ),
         ),
       ],
