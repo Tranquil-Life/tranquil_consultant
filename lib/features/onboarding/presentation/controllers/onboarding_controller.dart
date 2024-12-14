@@ -16,6 +16,8 @@ class OnboardingController extends GetxController{
   }
 
   navigateTo(){
+    // Get.offAllNamed(Routes.ONBOARDING);
+
     checkUserIsLogged();
 
   }

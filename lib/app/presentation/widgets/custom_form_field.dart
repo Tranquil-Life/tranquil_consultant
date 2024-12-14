@@ -4,8 +4,10 @@ import 'package:tl_consultant/app/presentation/theme/colors.dart';
 // ignore: must_be_immutable
 class CustomFormField extends StatelessWidget {
   final String hint;
+  final Color? hintColor;
   final String? errorText;
   final String? initialValue;
+  final Function(String)? onFieldSubmitted;
   final TextEditingController? textEditingController;
   final bool showCursor;
   final double? verContentPadding;
@@ -21,7 +23,7 @@ class CustomFormField extends StatelessWidget {
   final TextCapitalization textCapitalization;
 
   CustomFormField(
-      {Key? key,
+      {super.key,
       this.hint = "",
       this.textEditingController,
       this.showCursor = false,
@@ -40,8 +42,7 @@ class CustomFormField extends StatelessWidget {
       this.verContentPadding,
       this.horContentPadding,
       this.textCapitalization = TextCapitalization.none,
-      this.onChanged})
-      : super(key: key);
+      this.onChanged, this.hintColor, this.onFieldSubmitted});
 
   @override
   Widget build(BuildContext context) {
@@ -57,13 +58,14 @@ class CustomFormField extends StatelessWidget {
       textCapitalization: textCapitalization,
       onChanged: onChanged,
       onTap: onTap,
+      onFieldSubmitted: onFieldSubmitted,
       decoration: InputDecoration(
           errorText: errorText,
           hintText: hint,
           hintStyle: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w400,
-              color: ColorPalette.gray.shade800),
+              color: hintColor ?? ColorPalette.gray[200]),
           errorStyle: const TextStyle(color: ColorPalette.white, fontSize: 14),
           fillColor: Colors.white,
           border: InputBorder.none,

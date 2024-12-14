@@ -18,6 +18,8 @@ class ApiData {
 }
 
 class ApiService {
+  static const certVerifyFailed = "CERTIFICATE_VERIFY_FAILED";
+
   Map<String, String> _getHeaders() {
     User client = UserModel.fromJson(userDataStore.user);
 
@@ -30,9 +32,11 @@ class ApiService {
 
   Future<Either<ApiError, dynamic>> handleResponse(
       Either<ApiError, dynamic> eitherResponse) async {
+    // print('Handling response: $eitherResponse');
     return eitherResponse.fold(
-      (apiError) => Left(apiError),
-      (data) {
+          (apiError) => Left(apiError),
+          (data) {
+        //   print('Handling data: $data');
         return Right(data);
       },
     );
@@ -43,11 +47,9 @@ class ApiService {
     try {
       return await function();
     } on SocketException catch (e) {
-      print(e);
       return Left(ApiError(message: 'Error: $e'));
     } catch (e, stack) {
       debugPrintStack(stackTrace: stack);
-
       return Left(ApiError(message: e.toString()));
     }
   }
@@ -58,6 +60,7 @@ class ApiService {
 
     if (countries) {
       var result = await http.get(Uri.parse((subPath)));
+      //print('Response: ${result.statusCode} - ${result.body}');
 
       if (result.statusCode == 200) {
         return Right(jsonDecode(result.body));
@@ -68,8 +71,9 @@ class ApiService {
       var result = await http.get(
           Uri.parse((exchange ? "" : baseUrl) + subPath),
           headers: headers);
+      // print('Response: ${result.statusCode} - ${result.body}');
 
-      await Future.delayed(const Duration(seconds: 1));
+      // await Future.delayed(const Duration(seconds: 1));
 
       if (result.statusCode == 200) {
         return Right(jsonDecode(result.body));
@@ -81,6 +85,8 @@ class ApiService {
 
   Future<Either<ApiError, dynamic>> postReq(String subPath,
       {dynamic body}) async {
+    print(body);
+    print(baseUrl + subPath);
     final headers = _getHeaders();
 
     // var result = await dio.post(baseUrl + subPath,
@@ -89,11 +95,13 @@ class ApiService {
     var result = await http.post(Uri.parse(baseUrl + subPath),
         body: jsonEncode(body), headers: headers);
 
-    await Future.delayed(const Duration(seconds: 1));
+    // await Future.delayed(const Duration(seconds: 1));
 
     if (result.statusCode == 200 || result.statusCode == 201) {
       return Right(jsonDecode(result.body));
     } else {
+      print(result.body);
+
       return Left(ApiError(message: jsonDecode(result.body)['message']));
     }
   }

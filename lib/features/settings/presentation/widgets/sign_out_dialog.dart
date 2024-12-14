@@ -3,9 +3,14 @@ import 'package:tl_consultant/app/presentation/widgets/dialogs.dart';
 import 'package:tl_consultant/core/utils/services/app_data_store.dart';
 import 'package:tl_consultant/features/settings/presentation/controllers/settings_controller.dart';
 
-class SignOutDialog extends StatelessWidget {
-  SignOutDialog({Key? key}) : super(key: key);
+class SignOutDialog extends StatefulWidget {
+  const SignOutDialog({super.key});
 
+  @override
+  State<SignOutDialog> createState() => _SignOutDialogState();
+}
+
+class _SignOutDialogState extends State<SignOutDialog> {
   SettingsController settingsController = SettingsController();
 
   @override

@@ -163,3 +163,22 @@ List<TextSpan> parseNoteText(String text) {
   }
   return spans;
 }
+
+int calculateAge(String birthDate) {
+  // Parse the input string to a DateTime object
+  DateTime parsedDate = DateFormat("dd-MM-yyyy").parse(birthDate);
+
+  // Get today's date
+  DateTime today = DateTime.now();
+
+  // Calculate the difference in years
+  int age = today.year - parsedDate.year;
+
+  // Adjust for cases where the birthday hasn't occurred yet this year
+  if (today.month < parsedDate.month ||
+      (today.month == parsedDate.month && today.day < parsedDate.day)) {
+    age--;
+  }
+
+  return age;
+}

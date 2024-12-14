@@ -26,7 +26,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String? fontFamily;
 
   const CustomAppBar({
-    Key? key,
+    super.key,
     this.title,
     this.titleColor,
     this.hideBackButton = false,
@@ -35,7 +35,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.centerTitle,
     this.backIcon,
     this.fontFamily,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -55,6 +55,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               tag: 'back_button',
               child: Center(
                 child: AppBarButton(
+                  backgroundColor: ColorPalette.green,
                   onPressed: onBackPressed ?? Navigator.of(context).pop,
                   icon: const Padding(
                     padding: EdgeInsets.all(1),
@@ -100,7 +101,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 }
 
 class _NormalButton extends StatelessWidget {
-  const _NormalButton(this.data, {Key? key}) : super(key: key);
+  const _NormalButton(this.data, {super.key});
   final AppBarAction data;
 
   @override

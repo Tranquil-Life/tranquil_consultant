@@ -27,7 +27,7 @@ class AuthController extends GetxController {
 
   TextEditingController emailTEC =
       // TextEditingController(text: "apple2@gmail.com");
-      TextEditingController(text: "ona97@example.org");
+      TextEditingController(text: "barry@gmail.com");
   // TextEditingController passwordTEC = TextEditingController(text: "password");
   TextEditingController passwordTEC = TextEditingController(text: "12345678");
 
@@ -51,6 +51,7 @@ class AuthController extends GetxController {
   RxString fileSize = "0 KB".obs;
   String uploadType = "";
   RxString uploadUrl = "".obs;
+  var loading = false.obs;
 
   String? currentAddress;
   Position? currentPosition;
@@ -86,6 +87,8 @@ class AuthController extends GetxController {
   }
 
   Future signIn(String email, String password) async {
+    loading.value = true;
+
     Either either = await AuthRepoImpl().signIn(email, password);
 
     either.fold((l) {
@@ -98,15 +101,18 @@ class AuthController extends GetxController {
       Map<String, dynamic> data = r;
 
       if (data['error'] == false && data['data'] != null) {
-        userDataStore.user = data['data'];
+        userDataStore.user = data['data']['user'];
       }
 
       AppData.isSignedIn = true;
 
       await Get.offAllNamed(Routes.DASHBOARD);
+
       emailTEC.clear();
       passwordTEC.clear();
     });
+
+    loading.value = false;
   }
 
   Future resetPassword() async {

@@ -30,13 +30,13 @@ class User {
   @JsonKey(name: 'bio')
   final String bio;
   @JsonKey(name: 'email_verified_at', fromJson: isVerifiedFromJson)
-  final bool? isVerified;
+  final DateTime? emailVerifiedAt;
   final String? birthDate, gender, staffId, companyName;
 
   User({
     this.id,
     this.email,
-    this.isVerified,
+    this.emailVerifiedAt,
     this.firstName = "",
     this.lastName = "",
     this.phoneNumber = "",
@@ -51,19 +51,7 @@ class User {
     this.bio = "",
   });
 
-  User copyWith({
-    String? fname,
-    int? id,
-    String? phoneNumber,
-    String? birthDate,
-  }) =>
-      User(
-          firstName: fname ?? firstName,
-          lastName: lastName,
-          id: id ?? this.id,
-          phoneNumber: phoneNumber ?? this.phoneNumber,
-          birthDate: birthDate ?? this.birthDate,
-          usesBitmoji: usesBitmoji);
+
 
   Map<String, dynamic> toJson() => _$UserToJson(this);
 }

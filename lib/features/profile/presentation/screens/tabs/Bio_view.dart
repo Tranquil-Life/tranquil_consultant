@@ -1,15 +1,44 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:tl_consultant/app/presentation/theme/colors.dart';
+import 'package:tl_consultant/core/constants/constants.dart';
+import 'package:tl_consultant/features/profile/data/models/user_model.dart';
+import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
+import 'package:tl_consultant/features/profile/presentation/screens/edit_profile.dart';
+import 'package:tl_consultant/features/profile/presentation/widgets/custom_form_field.dart';
 
 class BioTabView extends StatelessWidget {
-  const BioTabView({super.key});
+  const BioTabView({super.key, this.client});
+
+  final UserModel? client;
+
+  // final profileController = Get.put(ProfileController());
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Text(
-        "Dr Charles Richard is a licensed mental health therapist with a decade of experience. He helps clients overcome various challenges and enhance their well-being."
-        "He applies various therapy modalities to ensure his clients receive the best treatment and care. He offers a sae, supportive, and collaborative space or his clients where they can grow and thrive.",
-        //  textAlign: TextAlign.start,
+    // return bioFormField(inputBio, profileController.bioTEC);
+
+    return GestureDetector(
+      onTap: () => Get.to(const EditProfileScreen()),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Flexible(
+            child: Text(
+              "${client!.bio.isEmpty ? inputBio : client?.bio}",
+              style: TextStyle(
+                  color: client!.bio.isEmpty
+                      ? ColorPalette.gray[800]
+                      : ColorPalette.black),
+            ),
+          ),
+          Icon(
+            Icons.edit_outlined,
+            size: 20,
+            color: ColorPalette.green,
+          ),
+        ],
       ),
     );
   }

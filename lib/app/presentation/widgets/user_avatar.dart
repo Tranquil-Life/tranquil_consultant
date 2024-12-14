@@ -105,12 +105,14 @@ class _MyAvatarWidgetState extends State<MyAvatarWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(()=>
-    UserAvatar(
+    return UserAvatar(
       size: widget.size,
       decoration: widget.decoration,
-      imageUrl: profileController.editUser.value.avatarUrl,
-      source: client.usesBitmoji! ? AvatarSource.bitmojiUrl : AvatarSource.url,
-    ));
+      imageUrl: client.avatarUrl,
+      // imageUrl: profileController.editUser.value.avatarUrl,
+      source: AvatarSource.url,
+    );
+    // return Obx(()=>
+
   }
 }

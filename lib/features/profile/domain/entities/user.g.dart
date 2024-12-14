@@ -8,9 +8,9 @@ Map<String, dynamic> _$UserToJson(User instance) =><String, dynamic>{
   'email': instance.email,
   'phone': instance.phoneNumber,
   'birth_date': instance.birthDate,
+  'bio': instance.bio,
   'gender': instance.gender,
   'staff_id': instance.staffId,
   'company_name': instance.companyName,
   'uses_bitmoji': instance.usesBitmoji,
-  'is_verified': instance.isVerified,
 };

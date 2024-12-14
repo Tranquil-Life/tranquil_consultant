@@ -41,3 +41,5 @@ const voiceNote = "chat_audio";
 
 const grid = "grid";
 const list = "list";
+
+const inputBio = "No bio available. Please add a short description about yourself.";

@@ -7,12 +7,14 @@ UserModel _$UserModelFromJson(Map<String, dynamic> json) => UserModel(
   id: json['id'],
   authToken: json['auth_token'],
   //phoneNumber: json['phone'] as String,
-  // isVerified: json['is_verified'] as bool? ?? false,
+  emailVerifiedAt: json['email_verified_at'],
   // hasAnsweredQuestions: json['has_answered_questions'] as bool? ?? false,
   //usesBitmoji: json['uses_bitmoji'] as bool,
-  // avatarUrl: json['avatar_url'] as String? ?? '',
-  // birthDate: json['birth_date'] as String ?? '',
+  avatarUrl: json['avatar_url'] ?? '',
+  birthDate: json['birth_date'] ?? '',
+  bio: json['bio'] ?? '',
   // gender: json['gender'] as String ?? '',
   // staffId: json['staff_id'] as String ?? '',
   // companyName: json['company_name'] as String?,
+
 );

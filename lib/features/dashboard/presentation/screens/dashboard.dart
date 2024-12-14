@@ -9,6 +9,7 @@ import 'package:tl_consultant/features/dashboard/presentation/widgets/nav_item.d
 import 'package:tl_consultant/features/home/presentation/screens/home_tab.dart';
 import 'package:tl_consultant/features/home/presentation/widgets/count_indicator.dart';
 import 'package:tl_consultant/features/journal/presentation/screens/journal_tab.dart';
+import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 import 'package:tl_consultant/features/profile/presentation/screens/profile_tab.dart';
 import 'package:tl_consultant/features/wallet/presentation/screens/earnings_tab.dart';
 import 'package:tl_consultant/features/wallet/presentation/screens/wallet_tab.dart';
@@ -27,6 +28,8 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   void initState() {
+    print(userDataStore.user);
+
     setStatusBarBrightness(true);
     super.initState();
   }

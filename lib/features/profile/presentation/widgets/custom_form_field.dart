@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/widgets/custom_form_field.dart';
 import 'package:tl_consultant/app/presentation/widgets/drop_down_menu.dart';
 import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
@@ -30,17 +31,17 @@ CustomFormField titleFormField(
 }
 
 CustomFormField countryFormField(
-  String hint,
-) {
-  final dropdownControllerCountry =
-      DropdownController(initialValue: "United Kingdom");
+    String hint, ProfileController profileController) {
+  // final dropdownControllerCountry =
+  //     DropdownController(initialValue: "United Kingdom");
   return CustomFormField(
     readOnly: true,
-    suffix: DropdownWidget(
-      options: ["United Kingdom", "Nigeria", "Denmark"],
-      controller: dropdownControllerCountry,
-      title: "",
-    ),
+    textEditingController: profileController.countryTEC,
+    // suffix: DropdownWidget(
+    //   options: ["United Kingdom", "Nigeria", "Denmark"],
+    //   controller: dropdownControllerCountry,
+    //   title: "",
+    // ),
     verContentPadding: 12,
     horContentPadding: 12,
     hint: hint,
@@ -48,16 +49,17 @@ CustomFormField countryFormField(
 }
 
 CustomFormField cityFormField(
-  String hint,
-) {
-  final dropdownControllerCity = DropdownController(initialValue: "London");
+    String hint, ProfileController profileController) {
+  // final dropdownControllerCity = DropdownController(initialValue: "London");
   return CustomFormField(
     readOnly: true,
-    suffix: DropdownWidget(
-      options: ["London", "Abuja", "Accra"],
-      controller: dropdownControllerCity,
-      title: "",
-    ),
+    textEditingController: profileController.cityTEC,
+
+    // suffix: DropdownWidget(
+    //   options: ["London", "Abuja", "Accra"],
+    //   controller: dropdownControllerCity,
+    //   title: "",
+    // ),
     verContentPadding: 12,
     horContentPadding: 12,
     hint: hint,
@@ -66,43 +68,69 @@ CustomFormField cityFormField(
 
 CustomFormField bioFormField(String hint, TextEditingController controller) {
   return CustomFormField(
+    textEditingController: controller,
     maxLines: 3,
     verContentPadding: 12,
     horContentPadding: 12,
     hint: hint,
+    onChanged: (s) {
+      //TODO: save after 3 secs
+      print("From TEC: ${controller.text}");
+      print("From onchanged string: $s");
+    },
   );
 }
 
-CustomFormField nameofcertification(
-    String hint, TextEditingController controller) {
+CustomFormField nameOfCertification(
+    {required String hint,
+    Function(String)? onChanged,
+    Function(String)? onFieldSubmitted,
+    required String text}) {
   return CustomFormField(
     verContentPadding: 12,
     horContentPadding: 12,
     hint: hint,
+    hintColor: text.isNotEmpty ? ColorPalette.black : null,
+    onChanged: onChanged,
+    onFieldSubmitted: onFieldSubmitted,
   );
 }
 
-CustomFormField timezoneField(String hint, TextEditingController controller) {
+CustomFormField timezoneField(ProfileController profileController) {
+  return CustomFormField(
+    textEditingController: profileController.timeZoneTEC,
+    verContentPadding: 12,
+    horContentPadding: 12,
+  );
+}
+
+CustomFormField institutionField(
+    {required String hint,
+    Function(String)? onChanged,
+    Function(String)? onFieldSubmitted,
+    required String text}) {
   return CustomFormField(
     verContentPadding: 12,
     horContentPadding: 12,
     hint: hint,
+    hintColor: text.isNotEmpty ? ColorPalette.black : null,
+    onChanged: onChanged,
+    onFieldSubmitted: onFieldSubmitted,
   );
 }
 
-CustomFormField institution(String hint, TextEditingController controller) {
+CustomFormField yearGraduatedField(
+    {required String hint,
+    Function(String)? onChanged,
+    Function(String)? onFieldSubmitted,
+    required String text}) {
   return CustomFormField(
     verContentPadding: 12,
     horContentPadding: 12,
     hint: hint,
-  );
-}
-
-CustomFormField yearGraduated(String hint, TextEditingController controller) {
-  return CustomFormField(
-    verContentPadding: 12,
-    horContentPadding: 12,
-    hint: hint,
+    hintColor: text.isNotEmpty ? ColorPalette.black : null,
+    onChanged: onChanged,
+    onFieldSubmitted: onFieldSubmitted,
   );
 }
 
