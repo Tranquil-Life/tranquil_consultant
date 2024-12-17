@@ -23,9 +23,11 @@ import 'package:tl_consultant/features/profile/data/repos/profile_repo.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 import 'package:tl_consultant/features/profile/domain/entities/edit_user.dart';
 import 'package:tl_consultant/features/profile/domain/entities/user.dart';
+import 'package:video_player/video_player.dart';
 
 class ProfileController extends GetxController {
   static ProfileController instance = Get.find();
+  late VideoPlayerController videoPlayerController;
 
   Rx<EditUser> editUser = EditUser().obs;
 
@@ -34,8 +36,14 @@ class ProfileController extends GetxController {
   ProfileRepoImpl profileRepo = ProfileRepoImpl();
   MediaRepoImpl mediaRepo = MediaRepoImpl();
 
+  var isInitialized = false.obs; // Track if initialization is complete
+  var introVideoDuration = 0.obs;
+
   var profilePic = UserModel.fromJson(userDataStore.user).avatarUrl.obs;
   var introVideo = UserModel.fromJson(userDataStore.user).videoIntroUrl.obs;
+  RxDouble uploadProgress = 0.0.obs;
+  var uploading = false.obs;
+  var compressing = false.obs;
   final TextEditingController firstNameTEC = TextEditingController(
       text: UserModel.fromJson(userDataStore.user).firstName);
   final TextEditingController lastNameTEC = TextEditingController(
@@ -44,8 +52,8 @@ class ProfileController extends GetxController {
       text: UserModel.fromJson(userDataStore.user).phoneNumber);
   final TextEditingController countryTEC = TextEditingController();
   final TextEditingController cityTEC = TextEditingController();
-  final TextEditingController bioTEC = TextEditingController(
-      text: UserModel.fromJson(userDataStore.user).bio);
+  final TextEditingController bioTEC =
+      TextEditingController(text: UserModel.fromJson(userDataStore.user).bio);
   final TextEditingController timeZoneTEC = TextEditingController();
   final TextEditingController titleTEC = TextEditingController();
   final TextEditingController certificationTEC = TextEditingController();
@@ -72,6 +80,15 @@ class ProfileController extends GetxController {
 
   var qualifications = <Map<String, dynamic>>[].obs;
 
+  initializeVideoPlayer() async{
+    videoPlayerController = VideoPlayerController.networkUrl(Uri.parse(introVideo.value));
+    // Wait for the controller to initialize
+    await videoPlayerController.initialize();
+    isInitialized.value = true;
+
+    introVideoDuration.value = videoPlayerController.value.duration.inSeconds;
+  }
+
   Future updateUser() async {
     updatingProfile.value = true;
 
@@ -85,9 +102,7 @@ class ProfileController extends GetxController {
     );
 
     var request = <String, dynamic>{};
-    var qualificationReq = {
-      'qualifications': qualifications
-    };
+    var qualificationReq = {'qualifications': qualifications};
 
     request.addAll(user.toJson());
     request.addAll(qualificationReq);
@@ -101,9 +116,11 @@ class ProfileController extends GetxController {
           message: l.message!,
           backgroundColor: ColorPalette.red),
       (r) {
-        editUser.value = EditUser(baseUser: UserModel.fromJson(r['data']['user']));
+        editUser.value =
+            EditUser(baseUser: UserModel.fromJson(r['data']['user']));
         User user = UserModel.fromJson(r['data']['user']);
-        qualifications.value = List<Map<String, dynamic>>.from(r['data']['qualifications']);
+        qualifications.value =
+            List<Map<String, dynamic>>.from(r['data']['qualifications']);
         updateProfile(user);
 
         CustomSnackBar.showSnackBar(
@@ -115,7 +132,6 @@ class ProfileController extends GetxController {
     );
 
     updatingProfile.value = false;
-
   }
 
   void updateProfile(User user) {
@@ -207,8 +223,8 @@ class ProfileController extends GetxController {
   //
   // }
 
-  getExtension(String uploadType){
-    switch(uploadType){
+  getExtension(String uploadType) {
+    switch (uploadType) {
       case profileImage:
         return '.png';
       case voiceNote:
@@ -218,8 +234,10 @@ class ProfileController extends GetxController {
     }
   }
 
-
   Future<String?> uploadFile(File uploadFile, String uploadType) async {
+    uploadProgress.value = 0.0;
+    compressing.value = false;
+
     final int fileSizeInBytes = await uploadFile.length();
     final double fileSizeInKB = fileSizeInBytes / 1024;
     final double fileSizeInMB = fileSizeInKB / 1024;
@@ -228,17 +246,24 @@ class ProfileController extends GetxController {
 
     try {
       // Define the storage path and image name
-      String path = uploadType;  // Example directory in Firebase Storage
-      String fileName = "${uploadFile.path.split('/').last}_${DateTime.now().millisecondsSinceEpoch}";  // Example image name
+      String path = uploadType; // Example directory in Firebase Storage
+      String fileName =
+          "${uploadFile.path.split('/').last}_${DateTime.now().millisecondsSinceEpoch}"; // Example image name
 
       // Compress the file if it's an image
       File? compressedFile;
 
-      if (uploadFile.path.endsWith('.jpg') || uploadFile.path.endsWith('.jpeg') || uploadFile.path.endsWith('.png')) {
-        // Compress image
-        // compressedFile = await compressImage(uploadFile);
+      if (uploadFile.path.endsWith('.jpg') ||
+          uploadFile.path.endsWith('.jpeg') ||
+          uploadFile.path.endsWith('.png')) {
+
+        //TODO: Compress images
         compressedFile = uploadFile;
-      } else if (uploadFile.path.endsWith('.mp4') || uploadFile.path.endsWith('.mov') || uploadFile.path.endsWith('.avi')) {
+      } else if (uploadFile.path.endsWith('.mp4') ||
+          uploadFile.path.endsWith('.mov') ||
+          uploadFile.path.endsWith('.avi')) {
+
+        compressing.value = true;
         // Compress video
         compressedFile = await mediaRepo.compressVideo(uploadFile);
       } else {
@@ -249,25 +274,31 @@ class ProfileController extends GetxController {
       if (compressedFile == null) {
         print("Error compressing file");
         return null;
-      }else{
+      } else {
         final int afterCompressionSizeInBytes = await compressedFile.length();
-        final double afterCompressionSizeInKB = afterCompressionSizeInBytes / 1024;
+        final double afterCompressionSizeInKB =
+            afterCompressionSizeInBytes / 1024;
         final double afterCompressionSizeInMB = afterCompressionSizeInKB / 1024;
 
-        print('File size after compression: $afterCompressionSizeInMB MB');
+        // print('File size after compression: $afterCompressionSizeInMB MB');
       }
+
+      compressing.value = false;
 
       // Get the system temp directory to save the file
       final Directory systemTempDir = Directory.systemTemp;
 
       // Load the image data from the assets
-      final byteData = await rootBundle.load(compressedFile.path); // Assuming `imgFile.path` is the image path
+      final byteData = await rootBundle.load(
+          compressedFile.path); // Assuming `imgFile.path` is the image path
 
       // Create a new file from the temp directory with a unique name
-      final file = File('${systemTempDir.path}/$fileName${getExtension(uploadType)}');
+      final file =
+          File('${systemTempDir.path}/$fileName${getExtension(uploadType)}');
 
       // Write the byte data into the file
-      await file.writeAsBytes(byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
+      await file.writeAsBytes(byteData.buffer
+          .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
 
       Reference reference = FirebaseStorage.instance.ref('$path/$fileName');
       // Start the file upload and listen to the progress
@@ -276,8 +307,8 @@ class ProfileController extends GetxController {
       // Monitor the upload progress
       uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
         // Calculate progress percentage
-        double progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        print('Upload Progress: ${progress.toStringAsFixed(2)}%');
+        uploadProgress.value =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
       });
 
       // Wait for the upload to complete
@@ -286,57 +317,68 @@ class ProfileController extends GetxController {
       // Get the download URL of the uploaded file
       final String downloadUrl = await taskSnapshot.ref.getDownloadURL();
 
-      print(downloadUrl);
+      if(uploadType == videoIntro){
+        introVideo.value = downloadUrl;
+
+        await Future.delayed(Duration(seconds: 1));
+
+        Get.back();
+
+        await initializeVideoPlayer();
+      }
 
       // Return the download URL
       return downloadUrl;
 
-      return "";
     } catch (e) {
-      print("Error uploading file: $e");
+      CustomSnackBar.showSnackBar(
+          context: Get.context!,
+          title: "Error",
+          message: "Error uploading file: $e",
+          backgroundColor: ColorPalette.red);
+
       return null; // Return null if there's an error
     }
   }
 
-  // Future uploadVideo(File file) async{
-  //   final int fileSizeInBytes = await file.length();
-  //   final double fileSizeInKB = fileSizeInBytes / 1024;
-  //   final double fileSizeInMB = fileSizeInKB / 1024;
-  //
-  //   print('File size: $fileSizeInBytes bytes');
-  //   print('File size: $fileSizeInKB KB');
-  //   print('File size: $fileSizeInMB MB');
-  //
-  //     // Prepare data for the file upload
-  //     final String field = "file"; // Ensure this matches the API's expected field name.
-  //
-  //     // Create FormData from the file
-  //     dio.FormData formData = dio.FormData.fromMap({
-  //       "upload_type": "video_intro", // Other fields as necessary
-  //       field: await dio.MultipartFile.fromFile(file.path, filename: basename(file.path)),
-  //     });
-  //
-  //     // Set the headers if needed (e.g., authorization)
-  //     Options options = Options(
-  //       headers: {
-  //         'Authorization': 'Bearer ${UserModel.fromJson(userDataStore.user).authToken}', // Replace with your auth token if necessary
-  //         'Accept': 'application/json',
-  //         'Content-Type': 'multipart/form-data',
-  //       },
-  //     );
-  //
-  //     final response = await dioObj.post(
-  //       baseUrl+MediaEndpoints.uploadFile, // Replace with your actual API endpoint
-  //       data: formData,
-  //       options: options,
-  //     );
-  //
-  //     // Handle the response
-  //     if (response.statusCode == 200) {
-  //       print("Upload successful: ${response.data}");
-  //     } else {
-  //       print("Error uploading: ${response.statusCode}");
-  //     }
-  // }
-
+// Future uploadVideo(File file) async{
+//   final int fileSizeInBytes = await file.length();
+//   final double fileSizeInKB = fileSizeInBytes / 1024;
+//   final double fileSizeInMB = fileSizeInKB / 1024;
+//
+//   print('File size: $fileSizeInBytes bytes');
+//   print('File size: $fileSizeInKB KB');
+//   print('File size: $fileSizeInMB MB');
+//
+//     // Prepare data for the file upload
+//     final String field = "file"; // Ensure this matches the API's expected field name.
+//
+//     // Create FormData from the file
+//     dio.FormData formData = dio.FormData.fromMap({
+//       "upload_type": "video_intro", // Other fields as necessary
+//       field: await dio.MultipartFile.fromFile(file.path, filename: basename(file.path)),
+//     });
+//
+//     // Set the headers if needed (e.g., authorization)
+//     Options options = Options(
+//       headers: {
+//         'Authorization': 'Bearer ${UserModel.fromJson(userDataStore.user).authToken}', // Replace with your auth token if necessary
+//         'Accept': 'application/json',
+//         'Content-Type': 'multipart/form-data',
+//       },
+//     );
+//
+//     final response = await dioObj.post(
+//       baseUrl+MediaEndpoints.uploadFile, // Replace with your actual API endpoint
+//       data: formData,
+//       options: options,
+//     );
+//
+//     // Handle the response
+//     if (response.statusCode == 200) {
+//       print("Upload successful: ${response.data}");
+//     } else {
+//       print("Error uploading: ${response.statusCode}");
+//     }
+// }
 }

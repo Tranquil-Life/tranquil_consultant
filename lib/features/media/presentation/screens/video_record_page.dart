@@ -39,6 +39,7 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
 
   @override
   void initState() {
+    profileController.uploadProgress.value = 0.0;
     initAnimation();
     initCamera();
 
@@ -171,7 +172,7 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ColorPalette.scaffoldColor,
+        backgroundColor: ColorPalette.scaffoldColor,
         body: _isLoading
             ? Container(
                 color: Colors.white,
@@ -225,14 +226,15 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
                                 padding: EdgeInsets.symmetric(horizontal: 24),
                                 child: Column(
                                   children: [
-
                                     Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
                                       children: [
                                         Text(formatDuration(_currentPosition)),
-                                        Text(formatDuration(_videoPlayerController
-                                            .value.duration.inMilliseconds
-                                            .toDouble()))
+                                        Text(formatDuration(
+                                            _videoPlayerController
+                                                .value.duration.inMilliseconds
+                                                .toDouble()))
                                       ],
                                     ),
 
@@ -240,45 +242,44 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
                                     // Playback Controls
                                     Row(
                                       mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                          MainAxisAlignment.spaceBetween,
                                       children: [
-                                        SvgPicture.asset(SvgElements.svgDownloadIcon,
+                                        SvgPicture.asset(
+                                          SvgElements.svgDownloadIcon,
                                           height: 30,
                                           width: 30,
-                                           ),
+                                        ),
                                         Container(
                                           height: 60,
                                           width: 60,
                                           decoration: BoxDecoration(
                                             color: ColorPalette.green.shade100,
                                             borderRadius:
-                                            BorderRadius.circular(100),
+                                                BorderRadius.circular(100),
                                           ),
                                           child: Center(
                                               child: GestureDetector(
-                                                onTap: () => setState(() {
-                                                  if (_videoPlayerController
-                                                      .value.isPlaying) {
-                                                    _videoPlayerController.pause();
-                                                  } else {
-                                                    _videoPlayerController.play();
-                                                  }
-                                                }),
-                                                child: Container(
-                                                  padding: EdgeInsets.all(14),
-                                                  child: _videoPlayerController
+                                            onTap: () => setState(() {
+                                              if (_videoPlayerController
+                                                  .value.isPlaying) {
+                                                _videoPlayerController.pause();
+                                              } else {
+                                                _videoPlayerController.play();
+                                              }
+                                            }),
+                                            child: Container(
+                                              padding: EdgeInsets.all(14),
+                                              child: _videoPlayerController
                                                       .value.isPlaying
-                                                      ? SvgPicture.asset(
+                                                  ? SvgPicture.asset(
                                                       SvgElements.svgPauseIcon)
-                                                      : SvgPicture.asset(
+                                                  : SvgPicture.asset(
                                                       SvgElements.svgPlayIcon),
-                                                ),
-                                              )),
+                                            ),
+                                          )),
                                         ),
-
-
                                         GestureDetector(
-                                          onTap: (){
+                                          onTap: () {
                                             shareFile(File(video.path));
                                           },
                                           child: SvgPicture.asset(
@@ -293,17 +294,24 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
 
                                     SizedBox(height: 40),
 
-                                    CustomButton(onPressed: (){
-                                    }, text: "Retake video", textColor: ColorPalette.green, showBorder: true, bgColor: ColorPalette.white),
+                                    CustomButton(
+                                        onPressed: () {},
+                                        text: "Retake video",
+                                        textColor: ColorPalette.green,
+                                        showBorder: true,
+                                        bgColor: ColorPalette.white),
                                     SizedBox(height: 20),
 
-                                    CustomButton(onPressed: () async{
-                                      await profileController.uploadFile(File(video.path), videoIntro);
-                                    }, text: "Save video and upload")
+                                    Obx(()=>CustomButton(
+                                        onPressed: uploadTextState == successfulUploadMsg ? null : () async{
+                                           await profileController
+                                                  .uploadFile(File(video.path),
+                                                  videoIntro);
+
+                                        },
+                                        text: uploadTextState()))
                                   ],
                                 )),
-
-
                           ],
                         )
                       else
@@ -418,5 +426,18 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
                       )),
                 ],
               ));
+  }
+
+  String uploadTextState() {
+    if (profileController.compressing.value) {
+      return "Compressing video...";
+    } else if (profileController.uploadProgress.value > 0.0 &&
+        profileController.uploadProgress.value < 100.0) {
+      return "Uploading video: ${profileController.uploadProgress.value.toStringAsFixed(2)}%";
+    } else if (profileController.uploadProgress.value.toInt() == 100) {
+      return successfulUploadMsg;
+    } else {
+      return "Save video and upload";
+    }
   }
 }

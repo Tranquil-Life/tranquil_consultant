@@ -45,3 +45,5 @@ const list = "list";
 
 const noInputBio = "No bio available. Please add a short description about yourself.";
 const hintBio = "I am a licensed mental health therapist with a decade of experience. I help clients overcome various challenges and enhance their well-being. I apply various therapy modalities to ensure my clients receive the best treatment and care. I offers a safe, supportive, and collaborative space for my clients where they can grow and thrive.";
+
+const successfulUploadMsg = "Upload successful";

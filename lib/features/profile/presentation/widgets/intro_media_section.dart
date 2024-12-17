@@ -7,9 +7,14 @@ import 'package:tl_consultant/app/presentation/theme/fonts.dart';
 import 'package:tl_consultant/app/presentation/widgets/buttons.dart';
 import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 import 'package:tl_consultant/features/media/presentation/screens/video_record_page.dart';
+import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
+import 'package:tl_consultant/features/profile/presentation/widgets/no_video_record_state.dart';
+import 'package:tl_consultant/features/profile/presentation/widgets/video_record_state.dart';
 
 class IntroMediaSection extends StatelessWidget {
-  const IntroMediaSection({super.key});
+  const IntroMediaSection({super.key, required this.profileController});
+
+  final ProfileController profileController;
 
   @override
   Widget build(BuildContext context) {
@@ -23,84 +28,27 @@ class IntroMediaSection extends StatelessWidget {
             fontWeight: FontWeight.w400,
           ),
         ),
-        InkWell(
-          onTap: () {
-            Get.to(() => const VideoRecordingPage());
+        profileController.introVideo.value.isEmpty
+            ? GestureDetector(
+                child: NoVideoRecordState(),
+                onTap: () {
+                  Get.to(() => const VideoRecordingPage());
+                },
+              )
+            : GestureDetector(
+          onTap: (){
+            // playVideo();
           },
-          child: Container(
-            padding: const EdgeInsets.all(12),
-            width: displayWidth(context),
-            decoration: BoxDecoration(
-              color: ColorPalette.green.shade300,
-              borderRadius: BorderRadius.circular(8.0),
-              border: Border.all(width: 1, color: ColorPalette.gray.shade100),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Row(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(right: 12),
-                        child: Container(
-                          height: 40,
-                          width: 40,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8.0),
-                              border: Border.all(
-                                  width: 1, color: Color(0xFF62B778))),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: SvgPicture.asset(
-                                height: 24,
-                                width: 24,
-                                "assets/images/icons/video-play.svg"),
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Play video",
-                              style: TextStyle(
-                                color: ColorPalette.gray.shade400,
-                                fontSize: AppFonts.baseSize,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                            Text(
-                              "57 secs",
-                              style: TextStyle(
-                                color: ColorPalette.gray.shade300,
-                                fontSize: AppFonts.defaultSize,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                GestureDetector(
-                    onTap: () {
-                      _showDeleteVideoDialog(context);
-                    },
-                    child: SvgPicture.asset("assets/images/icons/trash.svg"))
-              ],
-            ),
-          ),
+          child: VideoRecordState(profileController: profileController,),
         ),
         TextButton(
             style: TextButton.styleFrom(
               padding: EdgeInsets.zero,
               alignment: Alignment.centerLeft,
             ),
-            onPressed: () {},
+            onPressed: () {
+              Get.to(() => const VideoRecordingPage());
+            },
             child: Text(
               "Retake video recording",
               style: TextStyle(
@@ -131,7 +79,7 @@ class IntroMediaSection extends StatelessWidget {
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(8.0),
                             border:
-                            Border.all(width: 1, color: Color(0xFF62B778))),
+                                Border.all(width: 1, color: Color(0xFF62B778))),
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: SvgPicture.asset(
@@ -192,96 +140,3 @@ class IntroMediaSection extends StatelessWidget {
     );
   }
 }
-
-void _showDeleteVideoDialog(BuildContext context) {
-  showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8.0)),
-          backgroundColor: ColorPalette.white,
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SizedBox(
-                height: 20,
-              ),
-              Text(
-                "Delete video file?",
-                style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                    color: ColorPalette.black),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              Container(
-                  padding: EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                      shape: BoxShape.circle, color: Color(0xFFFDDDDD)),
-                  child: SvgPicture.asset("assets/images/icons/trash.svg")),
-              SizedBox(
-                height: 20,
-              ),
-              Text(
-                "You need to have a video recording for your clients in your profile",
-                style: TextStyle(
-                    fontSize: AppFonts.defaultSize,
-                    fontWeight: FontWeight.w400,
-                    color: ColorPalette.gray.shade800),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              Row(
-                children: [
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: Container(
-                          height: 44,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8.0),
-                            border: Border.all(
-                              width: 1,
-                              color: ColorPalette.green.shade500,
-                            ),
-                          ),
-                          alignment: Alignment.center,
-                          child: Text(
-                            "Close",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w400,
-                              color: ColorPalette.green.shade500,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: CustomButton(
-                        onPressed: () {},
-                        text: "Delete File",
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        );
-      });
-}
-

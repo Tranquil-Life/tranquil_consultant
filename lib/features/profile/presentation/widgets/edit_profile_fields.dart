@@ -159,7 +159,7 @@ class _EditProfileFieldsState extends State<EditProfileFields> {
         ),
         const SizedBox(height: 20),
 
-        IntroMediaSection(),
+        IntroMediaSection(profileController: widget.profileController),
 
 
       ],
