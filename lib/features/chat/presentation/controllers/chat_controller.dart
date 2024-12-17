@@ -247,8 +247,8 @@ class ChatController extends GetxController {
 
   @override
   void onClose() {
-    isExpanded.value = false;
-    chatId!.close(); // Dispose of the subscription
+    // isExpanded.value = false;
+    // chatId!.close(); // Dispose of the subscription
 
     super.onClose();
   }

@@ -17,6 +17,7 @@ import 'package:tl_consultant/app/presentation/widgets/custom_snackbar.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/constants/end_points.dart';
 import 'package:tl_consultant/core/utils/functions.dart';
+import 'package:tl_consultant/features/media/data/media_repo.dart';
 import 'package:tl_consultant/features/profile/data/models/user_model.dart';
 import 'package:tl_consultant/features/profile/data/repos/profile_repo.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
@@ -31,7 +32,10 @@ class ProfileController extends GetxController {
   dio.Dio dioObj = dio.Dio();
 
   ProfileRepoImpl profileRepo = ProfileRepoImpl();
+  MediaRepoImpl mediaRepo = MediaRepoImpl();
 
+  var profilePic = UserModel.fromJson(userDataStore.user).avatarUrl.obs;
+  var introVideo = UserModel.fromJson(userDataStore.user).videoIntroUrl.obs;
   final TextEditingController firstNameTEC = TextEditingController(
       text: UserModel.fromJson(userDataStore.user).firstName);
   final TextEditingController lastNameTEC = TextEditingController(
@@ -182,55 +186,90 @@ class ProfileController extends GetxController {
     timeZoneTEC.text = "$formattedTimeZone";
   }
 
-  Future uploadVideo(File file) async{
-    dio.FormData formData = dio.FormData.fromMap({
-      "upload_preset": "",  // Ensure you have this correctly set
-      "file": await dio.MultipartFile.fromFile(file.path, filename: basename(file.path)),
-    });
+  // Future uploadVideo(File file) async{
+  //   dio.FormData formData = dio.FormData.fromMap({
+  //     "upload_preset": "",  // Ensure you have this correctly set
+  //     "file": await dio.MultipartFile.fromFile(file.path, filename: basename(file.path)),
+  //   });
+  //
+  //   dio.Response response = await dio.Dio().post(
+  //     'https://api.cloudinary.com/v1_1/tranquil-life/upload',
+  //     data: formData,
+  //     options: dio.Options(
+  //       headers: {
+  //         'Content-Type': 'multipart/form-data',
+  //         'Authorization': 'Bearer ',  // Make sure to use the updated token
+  //       },
+  //     ),
+  //   );
+  //
+  //   print(response.data);
+  //
+  // }
 
-    dio.Response response = await dio.Dio().post(
-      'https://api.cloudinary.com/v1_1/tranquil-life/upload',
-      data: formData,
-      options: dio.Options(
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          'Authorization': 'Bearer ',  // Make sure to use the updated token
-        },
-      ),
-    );
-
-    print(response.data);
-
+  getExtension(String uploadType){
+    switch(uploadType){
+      case profileImage:
+        return '.png';
+      case voiceNote:
+        return '.wav';
+      case videoIntro:
+        return '.mp4';
+    }
   }
 
-  Future<String?> uploadFile(File uploadFile) async {
+
+  Future<String?> uploadFile(File uploadFile, String uploadType) async {
     final int fileSizeInBytes = await uploadFile.length();
     final double fileSizeInKB = fileSizeInBytes / 1024;
     final double fileSizeInMB = fileSizeInKB / 1024;
 
-    print('File size: $fileSizeInBytes bytes');
-    print('File size: $fileSizeInKB KB');
-    print('File size: $fileSizeInMB MB');
-    
+    print('File size before compression: $fileSizeInMB MB');
+
     try {
       // Define the storage path and image name
-      String path = 'user_uploads';  // Example directory in Firebase Storage
-      String imageName = introVideo;  // Example image name
+      String path = uploadType;  // Example directory in Firebase Storage
+      String fileName = "${uploadFile.path.split('/').last}_${DateTime.now().millisecondsSinceEpoch}";  // Example image name
+
+      // Compress the file if it's an image
+      File? compressedFile;
+
+      if (uploadFile.path.endsWith('.jpg') || uploadFile.path.endsWith('.jpeg') || uploadFile.path.endsWith('.png')) {
+        // Compress image
+        // compressedFile = await compressImage(uploadFile);
+        compressedFile = uploadFile;
+      } else if (uploadFile.path.endsWith('.mp4') || uploadFile.path.endsWith('.mov') || uploadFile.path.endsWith('.avi')) {
+        // Compress video
+        compressedFile = await mediaRepo.compressVideo(uploadFile);
+      } else {
+        // If not an image or video, skip compression
+        compressedFile = uploadFile;
+      }
+
+      if (compressedFile == null) {
+        print("Error compressing file");
+        return null;
+      }else{
+        final int afterCompressionSizeInBytes = await compressedFile.length();
+        final double afterCompressionSizeInKB = afterCompressionSizeInBytes / 1024;
+        final double afterCompressionSizeInMB = afterCompressionSizeInKB / 1024;
+
+        print('File size after compression: $afterCompressionSizeInMB MB');
+      }
 
       // Get the system temp directory to save the file
       final Directory systemTempDir = Directory.systemTemp;
 
       // Load the image data from the assets
-      final byteData = await rootBundle.load(uploadFile.path); // Assuming `imgFile.path` is the image path
+      final byteData = await rootBundle.load(compressedFile.path); // Assuming `imgFile.path` is the image path
 
       // Create a new file from the temp directory with a unique name
-      final file = File('${systemTempDir.path}/$imageName.mp4');
+      final file = File('${systemTempDir.path}/$fileName${getExtension(uploadType)}');
 
       // Write the byte data into the file
       await file.writeAsBytes(byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
 
-      Reference reference = FirebaseStorage.instance.ref('$path/$imageName');
-
+      Reference reference = FirebaseStorage.instance.ref('$path/$fileName');
       // Start the file upload and listen to the progress
       UploadTask uploadTask = reference.putFile(file);
 
@@ -251,6 +290,8 @@ class ProfileController extends GetxController {
 
       // Return the download URL
       return downloadUrl;
+
+      return "";
     } catch (e) {
       print("Error uploading file: $e");
       return null; // Return null if there's an error

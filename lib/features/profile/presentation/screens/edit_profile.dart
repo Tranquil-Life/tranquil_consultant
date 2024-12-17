@@ -11,6 +11,7 @@ import 'package:tl_consultant/app/presentation/widgets/broken_vertical_line.dart
 import 'package:tl_consultant/app/presentation/widgets/buttons.dart';
 import 'package:tl_consultant/app/presentation/widgets/custom_app_bar.dart';
 import 'package:tl_consultant/app/presentation/widgets/drop_down_menu.dart';
+import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 import 'package:tl_consultant/core/utils/services/media_service.dart';
 import 'package:tl_consultant/features/profile/domain/entities/edit_user.dart';
@@ -239,7 +240,7 @@ class _EditProfileHeadState extends State<EditProfileHead> {
                 onPressed: () async{
                   File? file = await MediaService.selectImage(ImageSource.camera);
                   // await profileController.uploadVideo(File(video.path));
-                  await profileController.uploadVideo(file!);
+                  await profileController.uploadFile(file!, profileImage);
                 },
                 child: const Text(
                   'Edit profile picture',

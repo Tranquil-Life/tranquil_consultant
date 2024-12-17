@@ -4,6 +4,7 @@ Map<String, dynamic> _$UserToJson(User instance) =><String, dynamic>{
   'id': instance.id,
   'email': instance.email,
   'avatar_url': instance.avatarUrl,
+  'video_intro': instance.videoIntroUrl,
   'f_name': instance.firstName,
   'l_name': instance.lastName,
   'phone': instance.phoneNumber,
@@ -11,7 +12,7 @@ Map<String, dynamic> _$UserToJson(User instance) =><String, dynamic>{
   'gender': instance.gender,
   'location': instance.location,
   'time_zone': instance.timezone,
-  'specialties': instance.specialties
+  'specialties': instance.specialties,
   // 'staff_id': instance.staffId,
   // 'company_name': instance.companyName,
   // 'uses_bitmoji': instance.usesBitmoji,

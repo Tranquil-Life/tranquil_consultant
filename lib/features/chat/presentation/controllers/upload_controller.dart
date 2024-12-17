@@ -79,30 +79,31 @@ class UploadController extends GetxController {
 
     debugPrint("handleVoiceNoteUpload: upload recording: $file");
 
-    var result = await mediaRepo.uploadFileWithHttp(file, voiceNote);
-
-    if (result.isRight()) {
-      Map map = {};
-      result.map((r) => map = r);
-
-      uploaded = true;
-      storageUrl = map['data'].toString();
-    } else {
-      result.leftMap((l) {
-        CustomSnackBar.showSnackBar(
-            context: Get.context!,
-            title: "Error",
-            message: l.message!,
-            backgroundColor: ColorPalette.red);
-      });
-    }
-
-    if (uploaded) {
-      await sendVnAsMessage(
-          message: storageUrl,
-          messageType: chatController.messageType.value,
-          quotedMessage: quotedMessage);
-    }
+    //TODO: Uncomment and modify to upload to Firebase storage
+    // var result = await mediaRepo.uploadFileWithHttp(file, voiceNote);
+    //
+    // if (result.isRight()) {
+    //   Map map = {};
+    //   result.map((r) => map = r);
+    //
+    //   uploaded = true;
+    //   storageUrl = map['data'].toString();
+    // } else {
+    //   result.leftMap((l) {
+    //     CustomSnackBar.showSnackBar(
+    //         context: Get.context!,
+    //         title: "Error",
+    //         message: l.message!,
+    //         backgroundColor: ColorPalette.red);
+    //   });
+    // }
+    //
+    // if (uploaded) {
+    //   await sendVnAsMessage(
+    //       message: storageUrl,
+    //       messageType: chatController.messageType.value,
+    //       quotedMessage: quotedMessage);
+    // }
   }
 
   Future sendVnAsMessage(

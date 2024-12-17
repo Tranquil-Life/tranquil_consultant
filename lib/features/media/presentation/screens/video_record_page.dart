@@ -6,6 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/widgets/buttons.dart';
+import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/utils/functions.dart';
 import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 import 'package:tl_consultant/core/utils/helpers/svg_elements.dart';
@@ -292,11 +293,12 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
 
                                     SizedBox(height: 40),
 
-                                    CustomButton(onPressed: (){}, text: "Retake video", textColor: ColorPalette.green, showBorder: true, bgColor: ColorPalette.white),
+                                    CustomButton(onPressed: (){
+                                    }, text: "Retake video", textColor: ColorPalette.green, showBorder: true, bgColor: ColorPalette.white),
                                     SizedBox(height: 20),
 
                                     CustomButton(onPressed: () async{
-                                      await profileController.uploadFile(File(video.path));
+                                      await profileController.uploadFile(File(video.path), videoIntro);
                                     }, text: "Save video and upload")
                                   ],
                                 )),

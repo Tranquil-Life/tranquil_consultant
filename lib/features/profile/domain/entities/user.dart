@@ -35,6 +35,7 @@ class User {
   final List? specialties;
   @JsonKey(name: 'email_verified_at', fromJson: isVerifiedFromJson)
   final DateTime? emailVerifiedAt;
+  final String videoIntroUrl;
   final String? birthDate, gender, staffId, companyName;
 
   User({
@@ -53,6 +54,7 @@ class User {
     this.staffId,
     this.companyName,
     this.avatarUrl = '',
+    this.videoIntroUrl = '',
     this.location = "",
     this.timezone,
   });

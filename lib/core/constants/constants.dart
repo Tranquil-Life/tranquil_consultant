@@ -36,7 +36,7 @@ const messagesCollection = "chat_messages";
 //upload types
 const profileImage = "profile_image";
 const voiceNote = "chat_audio";
-const introVideo = "video_intro";
+const videoIntro = "video_intro";
 
 //notes list view types
 
