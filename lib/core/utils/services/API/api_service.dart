@@ -2,7 +2,12 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:dio/dio.dart' as dio;
+
+import 'package:get/get.dart';
+import 'package:path/path.dart';
 import 'package:tl_consultant/core/constants/end_points.dart';
 import 'package:tl_consultant/core/errors/api_error.dart';
 import 'package:tl_consultant/features/profile/data/models/user_model.dart';
@@ -18,24 +23,25 @@ class ApiData {
 }
 
 class ApiService {
+  final Dio dioo = Dio();
+
   static const certVerifyFailed = "CERTIFICATE_VERIFY_FAILED";
 
   Map<String, String> _getHeaders() {
-    User client = UserModel.fromJson(userDataStore.user);
+    User user = UserModel.fromJson(userDataStore.user);
 
     return {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-      'Authorization': 'Bearer ${client.authToken}',
+      'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiYjI1YWVmYWIwNzE3YWFiMWQwNjkzYjJkM2VjZDAxODViNjQxYzE2MjIyNWI5OTE2NjQ2NjVmZmYxN2IxM2JhNmYwZTIyNGE1OTI0MTg4YzUiLCJpYXQiOjE3MzQ0MTk4NjQuNDYyNTM2LCJuYmYiOjE3MzQ0MTk4NjQuNDYyNTM3LCJleHAiOjE3NjU5NTU4NjQuNDQ5MTE1LCJzdWIiOiIxIiwic2NvcGVzIjpbXX0.WRi8vgGl2y0KPnkEr1XgmQwEBBDBiXvxMmtJ63MF3lmDbt89hLOcnao2Thvo16SLZW2T6-c_imCrTP55d0EG7fZPtHEcWfj0mgGvhD5v9hxP8KYXkPSdmjhzW-GKejvU0KKk-LneqKRI2oBJFceA04hQ4X-UEshJoXXwhm6ldbDDwsN15OTYfDkeFJSu-o7wFRiXY2yudjCqpkl-KM0BZ5ymyWwET61eKDCMsfIvAWrgPDHPVqlexAi50nXee_V-IBqYz2wXbsVp1eUsXk_UNLPNLuih-sulFMwqUnMme8DDAeqrvFxCx_stGRAe4dQXeiQi99rY7zx9iELb3tY8CD_pfJ7CJy6EC2FkZJpf8Ce5TiqKdx-SVwiuU9KUd3NT1jrkRC9WGwVirGgLdECxjIplrOdLJeZaBHR0cur2xR4bOS0jJr3fNDPLFLsBHNFX5CQ18jVFlHl1xnbaRXAL_RCpmDg2YUA5V_KuSry6NSA8tEGk2bn2C1zXl9oEsmfAAW51RQap1EgvRfvFR6mijN5T4p4Z668dF31gVxeM4y5Qn4emMjUenj9MhccKoErOH09rt_-yhgYlq2f3zEZ1VHq1wIWxee--8CfLIowduMGIa-3_k3YThBN-dtnYqfI4f1hnQJI9imllml90p0ill8rDre3m6yb87owy_ieWfss',
     };
   }
 
   Future<Either<ApiError, dynamic>> handleResponse(
       Either<ApiError, dynamic> eitherResponse) async {
-    // print('Handling response: $eitherResponse');
     return eitherResponse.fold(
-          (apiError) => Left(apiError),
-          (data) {
+      (apiError) => Left(apiError),
+      (data) {
         //   print('Handling data: $data');
         return Right(data);
       },
@@ -83,26 +89,64 @@ class ApiService {
     }
   }
 
+  bool containsMultipartFile(Map<String, dynamic> data) {
+    for (var value in data.values) {
+      if (value is http.MultipartFile || value is List<http.MultipartFile>) {
+        return true; // Found a MultipartFile
+      }
+    }
+    return false; // No MultipartFile found
+  }
+
   Future<Either<ApiError, dynamic>> postReq(String subPath,
       {dynamic body}) async {
-    print(body);
-    print(baseUrl + subPath);
+
+    String url = baseUrl + subPath;
     final headers = _getHeaders();
 
-    // var result = await dio.post(baseUrl + subPath,
-    //     data: jsonEncode(body),
-    //     options: Options(followRedirects: true, headers: _getHeaders()));
-    var result = await http.post(Uri.parse(baseUrl + subPath),
-        body: jsonEncode(body), headers: headers);
+    try {
+      bool hasMultipartFile = containsMultipartFile(body);
 
-    // await Future.delayed(const Duration(seconds: 1));
+      late dio.Response<dynamic> response;
 
-    if (result.statusCode == 200 || result.statusCode == 201) {
-      return Right(jsonDecode(result.body));
-    } else {
-      print(result.body);
+      if(hasMultipartFile){
+        dio.FormData form = dio.FormData.fromMap(body);
 
-      return Left(ApiError(message: jsonDecode(result.body)['message']));
+        response = await dioo.post(url,
+            data: form,
+            options: Options(
+              headers: {
+                'Content-Type': 'multipart/form-data',
+                'Accept': 'application/json',
+                'Authorization': 'Bearer ${UserModel.fromJson(userDataStore.user).authToken}',
+              },
+            ));
+      }
+      else{
+        response = await dioo.post(url,
+            data: body,
+            options: Options(headers: headers));
+      }
+
+      await Future.delayed(const Duration(seconds: 1));
+
+      print(response);
+
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        print(response.data);
+
+        return Right(response.data);
+      } else {
+
+        return Left(ApiError(message: "response.data['message']"));
+      }
+    } on DioException catch (error) {
+
+      print(error);
+
+      var message = error.response?.data['message'] ?? error.message;
+      return Left(ApiError(message: "message.toString()"));
     }
   }
 

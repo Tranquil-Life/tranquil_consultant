@@ -54,6 +54,8 @@
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>This app needs access to phone mic for audio recordings and speech recognition</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<key>UIFileSharingEnabled</key>
+    <key>LSSupportsOpeningDocumentsInPlace</key>
 	<true/>
 	<key>UIBackgroundModes</key>
 	<array>

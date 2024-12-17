@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class ColorPalette {
   static const red = Colors.red;
   static const scaffoldColor = Color(0xFFFBFBFB);
-  static const white = Color(0xFFF7F8FC);
+  static const white = Colors.white;
   static const gray = MaterialColor(0xFFF2F2F2, {
     100: Color(0xFFD3D3D3),
     200: Color(0xFFC3C3C3),

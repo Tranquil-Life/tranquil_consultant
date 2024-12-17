@@ -48,7 +48,7 @@ class _WalletTabState extends State<WalletTab> {
                 child: Stack(
                   clipBehavior: Clip.none,
                   children: [
-                    SvgPicture.asset(SvgElements.svgbalanceBgImg),
+                    SvgPicture.asset(SvgElements.svgBalanceBgImg),
                     Container(
                         alignment: Alignment.center,
                         padding: EdgeInsets.only(top: 24),

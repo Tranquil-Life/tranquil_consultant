@@ -7,6 +7,8 @@ import 'package:tl_consultant/features/profile/domain/entities/user.dart';
 abstract class ProfileRepo<T, F extends QueryParams> extends ApiService {
   ProfileRepo();
 
-  Future<Either<ApiError, dynamic>> updateProfile(User user);
-  Future<Either<ApiError, dynamic>> currentContinent();
+  Future<Either<ApiError, dynamic>> updateProfile(Map<String, dynamic> req);
+
+  // Future<Either<ApiError, dynamic>> currentContinent();
+  Future<Either<ApiError, dynamic>> uploadVideo(Map<String, dynamic> req);
 }

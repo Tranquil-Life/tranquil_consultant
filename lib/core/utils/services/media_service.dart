@@ -94,7 +94,9 @@ abstract class MediaService {
     var croppedFile = await _imageCropper.cropImage(
         sourcePath: file.path, compressQuality: 75);
     if (croppedFile == null) return null;
-    AuthController.instance.uploadID(file: File(croppedFile.path));
+
+    //TODO: UNcomment
+    // AuthController.instance.uploadID(file: File(croppedFile.path));
     return File(croppedFile.path);
   }
 }

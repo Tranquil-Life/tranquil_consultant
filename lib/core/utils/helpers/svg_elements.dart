@@ -11,5 +11,13 @@ class SvgElements {
   static get svgMicIcon => "assets/images/icons/mic.svg";
   static get svgUnderlineIcon => "assets/images/icons/underline.svg";
   
-  static get svgbalanceBgImg => "assets/images/balance_bg.svg";
+  static get svgBalanceBgImg => "assets/images/balance_bg.svg";
+
+  static get svgPlayIcon => "assets/images/icons/play.svg";
+  static get svgStopIcon => "assets/images/icons/stop.svg";
+  static get svgPauseIcon => "assets/images/icons/pause.svg";
+  static get svgDownloadIcon => "assets/images/icons/download.svg";
+  static get svgShareIcon => "assets/images/icons/share.svg";
+  static get svgModifySpeedIcon => "assets/images/icons/modify_speed.svg";
+  static get svgDeleteIcon => "assets/images/icons/trash.svg";
 }

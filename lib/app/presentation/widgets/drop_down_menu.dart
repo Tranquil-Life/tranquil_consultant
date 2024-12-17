@@ -24,6 +24,9 @@ class DropdownWidget extends StatelessWidget {
           : null;
       return DropdownButton<String>(
         value: dropdownValue,
+        style: TextStyle(
+          color: ColorPalette.black
+        ),
         hint: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Text(
@@ -34,12 +37,7 @@ class DropdownWidget extends StatelessWidget {
                   color: ColorPalette.gray.shade800),
             )),
         underline: const SizedBox(),
-        icon: SvgPicture.asset(
-          "assets/images/icons/arrow_down.svg",
-          color: ColorPalette.black,
-          height: 16,
-          width: 12,
-        ),
+        icon: Icon(Icons.keyboard_arrow_down),
         isExpanded: true,
         onChanged: controller.updateValue,
         items: options.map((String option) {
@@ -52,7 +50,7 @@ class DropdownWidget extends StatelessWidget {
                 style: TextStyle(
                     fontSize: AppFonts.defaultSize,
                     fontWeight: FontWeight.w400,
-                    color: ColorPalette.gray.shade800),
+                    color: ColorPalette.black),
               ),
             ),
           );

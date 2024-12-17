@@ -15,12 +15,13 @@ CustomFormField nameFormField(String hint, TextEditingController controller) {
 
 CustomFormField titleFormField(
   String hint,
+    ProfileController profileController
 ) {
   final dropdownControllerTitle = DropdownController(initialValue: "Psy.D");
   return CustomFormField(
     readOnly: true,
     suffix: DropdownWidget(
-      options: ["Psy.D"],
+      options: profileController.titles,
       controller: dropdownControllerTitle,
       title: "",
     ),
@@ -66,18 +67,13 @@ CustomFormField cityFormField(
   );
 }
 
-CustomFormField bioFormField(String hint, TextEditingController controller) {
+CustomFormField bioFormField(String hint, ProfileController profileController) {
   return CustomFormField(
-    textEditingController: controller,
+    textEditingController: profileController.bioTEC,
     maxLines: 3,
     verContentPadding: 12,
     horContentPadding: 12,
     hint: hint,
-    onChanged: (s) {
-      //TODO: save after 3 secs
-      print("From TEC: ${controller.text}");
-      print("From onchanged string: $s");
-    },
   );
 }
 
@@ -87,10 +83,11 @@ CustomFormField nameOfCertification(
     Function(String)? onFieldSubmitted,
     required String text}) {
   return CustomFormField(
+    textEditingController: TextEditingController(text: text),
     verContentPadding: 12,
     horContentPadding: 12,
     hint: hint,
-    hintColor: text.isNotEmpty ? ColorPalette.black : null,
+    // hintColor: text.isNotEmpty ? ColorPalette.black : null,
     onChanged: onChanged,
     onFieldSubmitted: onFieldSubmitted,
   );
@@ -110,10 +107,11 @@ CustomFormField institutionField(
     Function(String)? onFieldSubmitted,
     required String text}) {
   return CustomFormField(
+    textEditingController: TextEditingController(text: text),
     verContentPadding: 12,
     horContentPadding: 12,
     hint: hint,
-    hintColor: text.isNotEmpty ? ColorPalette.black : null,
+    // hintColor: text.isNotEmpty ? ColorPalette.black : Colors.white,
     onChanged: onChanged,
     onFieldSubmitted: onFieldSubmitted,
   );
@@ -125,10 +123,11 @@ CustomFormField yearGraduatedField(
     Function(String)? onFieldSubmitted,
     required String text}) {
   return CustomFormField(
+    textEditingController: TextEditingController(text: text),
     verContentPadding: 12,
     horContentPadding: 12,
     hint: hint,
-    hintColor: text.isNotEmpty ? ColorPalette.black : null,
+    // hintColor: text.isNotEmpty ? ColorPalette.black : null,
     onChanged: onChanged,
     onFieldSubmitted: onFieldSubmitted,
   );

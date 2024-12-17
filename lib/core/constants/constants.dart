@@ -36,10 +36,12 @@ const messagesCollection = "chat_messages";
 //upload types
 const profileImage = "profile_image";
 const voiceNote = "chat_audio";
+const introVideo = "video_intro";
 
 //notes list view types
 
 const grid = "grid";
 const list = "list";
 
-const inputBio = "No bio available. Please add a short description about yourself.";
+const noInputBio = "No bio available. Please add a short description about yourself.";
+const hintBio = "I am a licensed mental health therapist with a decade of experience. I help clients overcome various challenges and enhance their well-being. I apply various therapy modalities to ensure my clients receive the best treatment and care. I offers a safe, supportive, and collaborative space for my clients where they can grow and thrive.";

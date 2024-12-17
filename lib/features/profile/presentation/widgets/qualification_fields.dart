@@ -32,10 +32,15 @@ class QualificationFields extends StatelessWidget {
         nameOfCertification(
             hint: "B.Sc. (Hons) Psychology",
             onChanged: (s) {
-              //..
+              profileController.qualifications[index]['consultant_id'] =
+                  UserModel.fromJson(userDataStore.user).id;
+              profileController.qualifications[index]['certification'] = s;
+
+              print(s);
             },
             onFieldSubmitted: (s) {
-              profileController.qualifications[index]['consultant_id'] = UserModel.fromJson(userDataStore.user).id;
+              profileController.qualifications[index]['consultant_id'] =
+                  UserModel.fromJson(userDataStore.user).id;
               profileController.qualifications[index]['certification'] = s;
             },
             text: certification),
@@ -45,10 +50,14 @@ class QualificationFields extends StatelessWidget {
         institutionField(
             hint: "Leeds University",
             onChanged: (s) {
-//..
+              profileController.qualifications[index]['consultant_id'] =
+                  UserModel.fromJson(userDataStore.user).id;
+              profileController.qualifications[index]['institution'] = s;
+              print(s);
             },
             onFieldSubmitted: (s) {
-              profileController.qualifications[index]['consultant_id'] = UserModel.fromJson(userDataStore.user).id;
+              profileController.qualifications[index]['consultant_id'] =
+                  UserModel.fromJson(userDataStore.user).id;
               profileController.qualifications[index]['institution'] = s;
             },
             text: institution),
@@ -58,10 +67,13 @@ class QualificationFields extends StatelessWidget {
         yearGraduatedField(
             hint: "2018",
             onChanged: (s) {
-              //..
+              profileController.qualifications[index]['consultant_id'] =
+                  UserModel.fromJson(userDataStore.user).id;
+              profileController.qualifications[index]['year_awarded'] = s;
             },
             onFieldSubmitted: (s) {
-              profileController.qualifications[index]['consultant_id'] = UserModel.fromJson(userDataStore.user).id;
+              profileController.qualifications[index]['consultant_id'] =
+                  UserModel.fromJson(userDataStore.user).id;
               profileController.qualifications[index]['year_awarded'] = s;
             },
             text: yearAwarded),

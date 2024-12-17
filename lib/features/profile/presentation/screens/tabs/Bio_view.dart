@@ -26,7 +26,7 @@ class BioTabView extends StatelessWidget {
         children: [
           Flexible(
             child: Text(
-              "${client!.bio.isEmpty ? inputBio : client?.bio}",
+              "${client!.bio.isEmpty ? noInputBio : client?.bio}",
               style: TextStyle(
                   color: client!.bio.isEmpty
                       ? ColorPalette.gray[800]

@@ -102,14 +102,15 @@ class AuthController extends GetxController {
 
       if (data['error'] == false && data['data'] != null) {
         userDataStore.user = data['data']['user'];
+
+        AppData.isSignedIn = true;
+
+        await Get.offAllNamed(Routes.DASHBOARD);
+
+        emailTEC.clear();
+        passwordTEC.clear();
       }
 
-      AppData.isSignedIn = true;
-
-      await Get.offAllNamed(Routes.DASHBOARD);
-
-      emailTEC.clear();
-      passwordTEC.clear();
     });
 
     loading.value = false;

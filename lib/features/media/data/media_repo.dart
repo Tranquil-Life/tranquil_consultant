@@ -32,6 +32,10 @@ class MediaRepoImpl extends MediaRepo {
         mediaType = "audio";
         mediaSubType = "wav";
         break;
+      case introVideo:
+        mediaType = "video";
+        mediaSubType = "mp4";
+        break;
     }
 
     try {

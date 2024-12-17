@@ -1,10 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/theme/fonts.dart';
 import 'package:tl_consultant/app/presentation/widgets/buttons.dart';
 import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
+import 'package:tl_consultant/features/media/presentation/screens/video_record_page.dart';
 
 class IntroMediaSection extends StatelessWidget {
   const IntroMediaSection({super.key});
@@ -22,7 +24,9 @@ class IntroMediaSection extends StatelessWidget {
           ),
         ),
         InkWell(
-          onTap: () {},
+          onTap: () {
+            Get.to(() => const VideoRecordingPage());
+          },
           child: Container(
             padding: const EdgeInsets.all(12),
             width: displayWidth(context),

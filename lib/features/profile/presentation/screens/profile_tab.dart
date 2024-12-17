@@ -334,7 +334,7 @@ class PersonalInfo extends StatelessWidget {
               width: 5,
             ),
             Text(
-              "${calculateAge(client.birthDate!)} years old",
+              "${client.birthDate == null ? null : calculateAge(client.birthDate!)} years old",
               style: TextStyle(
                 fontSize: AppFonts.defaultSize,
                 color: ColorPalette.gray.shade800,

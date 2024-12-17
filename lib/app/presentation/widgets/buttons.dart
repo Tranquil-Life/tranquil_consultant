@@ -6,30 +6,44 @@ import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 class CustomButton extends StatelessWidget {
   final String? text;
   final Widget? child;
+  final Color? bgColor;
+  final Color? textColor;
+  final bool? showBorder;
   final Function()? onPressed;
-  const CustomButton({Key? key, this.text, required this.onPressed, this.child})
-      : super(key: key);
+
+  const CustomButton(
+      {super.key,
+      this.text,
+      required this.onPressed,
+      this.child,
+      this.bgColor,
+      this.showBorder = false,
+      this.textColor});
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-        backgroundColor: ColorPalette.green,
+        backgroundColor: bgColor ?? ColorPalette.green,
         minimumSize: Size(displayWidth(context), 44),
         shadowColor: ColorPalette.black,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.0),
+            side: BorderSide(width: showBorder! ? 1 : 0, color: ColorPalette.green)),
       ),
       onPressed: onPressed,
       child: child ??
           Text(text!,
-              style: const TextStyle(
-                  fontSize: AppFonts.defaultSize, color: ColorPalette.white)),
+              style: TextStyle(
+                  fontSize: AppFonts.defaultSize,
+                  color: textColor ?? ColorPalette.white)),
     );
   }
 }
 
 class WidgetsThemeData {
   final Color primaryColor;
+
   WidgetsThemeData({required this.primaryColor})
       : textButtonTheme = TextButtonThemeData(
           style: TextButton.styleFrom(foregroundColor: primaryColor),

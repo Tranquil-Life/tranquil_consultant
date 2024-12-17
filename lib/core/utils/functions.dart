@@ -2,14 +2,22 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:add_2_calendar/add_2_calendar.dart';
+import 'package:dio/dio.dart' as dio;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:get/get.dart';
+import 'package:http/http.dart';
+import 'package:http_parser/http_parser.dart';
 import 'package:intl/intl.dart';
+import 'package:path/path.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:tl_consultant/app/config.dart';
+import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/widgets/IOSDatePicker.dart';
-import 'package:tl_consultant/core/utils/extensions/date_time_extension.dart';
+import 'package:tl_consultant/app/presentation/widgets/custom_snackbar.dart';
+
 
 void setStatusBarBrightness(bool dark, [Duration? delayedTime]) async {
   await Future.delayed(delayedTime ?? const Duration(milliseconds: 300));
@@ -181,4 +189,85 @@ int calculateAge(String birthDate) {
   }
 
   return age;
+}
+
+String formatDuration(double milliseconds) {
+  int totalSeconds = (milliseconds ~/ 1000); // Convert to total seconds
+  int minutes = totalSeconds ~/ 60;
+  int seconds = totalSeconds % 60;
+  return '$minutes:${seconds.toString().padLeft(2, '0')}';
+}
+
+Future shareFile(File toShare) async {
+  try {
+    final file = File(toShare.path);  // Ensure you're passing the correct path
+
+    // Debugging the file path and existence
+    // print('File path: ${file.path}');
+    // print('File exists: ${file.existsSync()}');
+
+    // Check if the file exists before trying to share
+    if (file.existsSync()) {
+      await Share.shareXFiles([XFile(file.path)]);
+    } else {
+      CustomSnackBar.showSnackBar(
+          context: Get.context!,
+          title: "Error",
+          message: "File does not exist",
+          backgroundColor: ColorPalette.red);
+    }
+  } catch (e) {
+    CustomSnackBar.showSnackBar(
+        context: Get.context!,
+        title: "Error",
+        message: "Failed to share video",
+        backgroundColor: ColorPalette.red);
+  }
+}
+
+// Future<Map<String, dynamic>> convertFilesToMultipart(
+//     Map<String, dynamic> data) async {
+//   Map<String, dynamic> multipartData = Map<String, dynamic>.from(data);
+//
+//   // Iterate over the keys of the map
+//   for (String key in multipartData.keys) {
+//     var value = multipartData[key];
+//
+//     // Check if value is a File and convert to MultipartFile
+//     if (value is File) {
+//       multipartData[key] = await dio.MultipartFile.fromFile
+//     }
+//
+//     // Check if value is a List<File> and convert each File to MultipartFile
+//     else if (value is List<File>) {
+//       multipartData[key] = await Future.wait(value.map((file) async {
+//         return await dio.MultipartFile.fromFile(
+//           file.path,
+//           filename: basename(file.path),
+//         );
+//       }).toList());
+//     }
+//   }
+//
+//   return multipartData;
+// }
+
+Future<Map<String, dynamic>> convertFilesToMultipart(
+    Map<String, dynamic> data) async {
+  // Iterate over the map and check for keys with File values
+  Map<String, dynamic> newData = Map<String, dynamic>.from(data);
+
+  for (String key in newData.keys) {
+    if (newData[key] is File) {
+      File file = newData[key] as File;
+
+      // Replace the file with a MultipartFile
+      newData[key] = await dio.MultipartFile.fromFile(
+        file.path,
+        filename: basename(file.path), // Extract filename from path
+      );
+    }
+  }
+
+  return newData;
 }
