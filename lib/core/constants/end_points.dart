@@ -18,6 +18,7 @@ abstract class ProfileEndPoints {
   static const getContinent =
       'https://raw.githubusercontent.com/samayo/country-json/master/src/country-by-continent.json';
   static const updateLocation = '$thisUserType/updateMyLocation';
+  static const deleteQualification = '$thisUserType/deleteQualification';
 }
 
 abstract class ConsultationEndPoints {

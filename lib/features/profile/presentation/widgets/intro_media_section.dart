@@ -28,7 +28,7 @@ class IntroMediaSection extends StatelessWidget {
             fontWeight: FontWeight.w400,
           ),
         ),
-        profileController.introVideo.value.isEmpty
+        profileController.introVideo.value!.isEmpty
             ? GestureDetector(
                 child: NoVideoRecordState(),
                 onTap: () {
@@ -57,85 +57,87 @@ class IntroMediaSection extends StatelessWidget {
                   decoration: TextDecoration.underline,
                   color: ColorPalette.green),
             )),
-        Container(
-          padding: const EdgeInsets.all(12),
-          width: displayWidth(context),
-          decoration: BoxDecoration(
-            color: ColorPalette.green.shade300,
-            borderRadius: BorderRadius.circular(8.0),
-            border: Border.all(width: 1, color: ColorPalette.gray.shade100),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Row(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(right: 12),
-                      child: Container(
-                        height: 40,
-                        width: 40,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8.0),
-                            border:
-                                Border.all(width: 1, color: Color(0xFF62B778))),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: SvgPicture.asset(
-                              height: 24,
-                              width: 24,
-                              "assets/images/icons/musicnote.svg"),
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Play Audio",
-                            style: TextStyle(
-                              color: ColorPalette.gray.shade400,
-                              fontSize: AppFonts.baseSize,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                          Text(
-                            "57 secs",
-                            style: TextStyle(
-                              color: ColorPalette.gray.shade300,
-                              fontSize: AppFonts.defaultSize,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              GestureDetector(
-                  onTap: () {},
-                  child: SvgPicture.asset("assets/images/icons/trash.svg"))
-            ],
-          ),
-        ),
-        TextButton(
-            style: TextButton.styleFrom(
-              padding: EdgeInsets.zero,
-              alignment: Alignment.centerLeft,
-            ),
-            onPressed: () {},
-            child: Text(
-              "Retake audio recording",
-              style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w400,
-                  decoration: TextDecoration.underline,
-                  color: ColorPalette.green),
-            )),
+
+        //AUDIO RECORD
+        // Container(
+        //   padding: const EdgeInsets.all(12),
+        //   width: displayWidth(context),
+        //   decoration: BoxDecoration(
+        //     color: ColorPalette.green.shade300,
+        //     borderRadius: BorderRadius.circular(8.0),
+        //     border: Border.all(width: 1, color: ColorPalette.gray.shade100),
+        //   ),
+        //   child: Row(
+        //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        //     children: [
+        //       Expanded(
+        //         child: Row(
+        //           children: [
+        //             Padding(
+        //               padding: const EdgeInsets.only(right: 12),
+        //               child: Container(
+        //                 height: 40,
+        //                 width: 40,
+        //                 decoration: BoxDecoration(
+        //                     borderRadius: BorderRadius.circular(8.0),
+        //                     border:
+        //                         Border.all(width: 1, color: Color(0xFF62B778))),
+        //                 child: Padding(
+        //                   padding: const EdgeInsets.all(8.0),
+        //                   child: SvgPicture.asset(
+        //                       height: 24,
+        //                       width: 24,
+        //                       "assets/images/icons/musicnote.svg"),
+        //                 ),
+        //               ),
+        //             ),
+        //             Expanded(
+        //               child: Column(
+        //                 mainAxisAlignment: MainAxisAlignment.center,
+        //                 crossAxisAlignment: CrossAxisAlignment.start,
+        //                 children: [
+        //                   Text(
+        //                     "Play Audio",
+        //                     style: TextStyle(
+        //                       color: ColorPalette.gray.shade400,
+        //                       fontSize: AppFonts.baseSize,
+        //                       fontWeight: FontWeight.w400,
+        //                     ),
+        //                   ),
+        //                   Text(
+        //                     "57 secs",
+        //                     style: TextStyle(
+        //                       color: ColorPalette.gray.shade300,
+        //                       fontSize: AppFonts.defaultSize,
+        //                       fontWeight: FontWeight.w400,
+        //                     ),
+        //                   ),
+        //                 ],
+        //               ),
+        //             ),
+        //           ],
+        //         ),
+        //       ),
+        //       GestureDetector(
+        //           onTap: () {},
+        //           child: SvgPicture.asset("assets/images/icons/trash.svg"))
+        //     ],
+        //   ),
+        // ),
+        // TextButton(
+        //     style: TextButton.styleFrom(
+        //       padding: EdgeInsets.zero,
+        //       alignment: Alignment.centerLeft,
+        //     ),
+        //     onPressed: () {},
+        //     child: Text(
+        //       "Retake audio recording",
+        //       style: TextStyle(
+        //           fontSize: 12,
+        //           fontWeight: FontWeight.w400,
+        //           decoration: TextDecoration.underline,
+        //           color: ColorPalette.green),
+        //     )),
       ],
     );
   }

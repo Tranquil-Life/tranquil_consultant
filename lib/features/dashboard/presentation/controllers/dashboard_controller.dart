@@ -15,6 +15,8 @@ import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
 
 class DashboardController extends GetxController {
+  static DashboardController instance = Get.find();
+
   RxInt currentIndex = 0.obs;
 
   var currentMeetingCount = 0.obs;
@@ -25,39 +27,29 @@ class DashboardController extends GetxController {
   var currentMeetingST = "".obs;
   var currentMeetingId = 0.obs;
 
+  var country = "".obs;
+  var city = "".obs;
+  var timezone = "".obs;
+
   Future<void> onTap(int index) async {
     currentIndex.value = index;
   }
 
-  // checkLocation() async {
-  //
-  //   /** METHOD 1 **/
-  //
-  //
-  //   /** METHOD 2 **/
-  //
-  //   var result = await getCurrLocation();
-  //   double latitude = result['latitude'];
-  //   double longitude = result['longitude'];
-  //   List<Placemark> placemarks = result['placemarks'];
-  //   String country = placemarks.first.country!;
-  //   String state = placemarks.first.administrativeArea!;
-  //   var location = "$country/$state";
-  //   var continent = await ProfileController().getContinent(placemarks);
-  //   print("CONTINE: $continent");
-  //   var timeZoneIdentifier =
-  //       TimeZoneUtil.getTzIdentifier(continent: continent, state: state);
-  //   final timeZone = tz.getLocation('America/Los_Angeles').currentTimeZone;
-  //   var hourInMilliSecs = 3600000;
-  //   var formattedTimeZone = timeZone.offset / hourInMilliSecs;
-  //
-  //   print(location);
-  //   print(userDataStore.user['location']);
-  //   if (location != userDataStore.user['location']) {
-  //     updateMyLocation(
-  //         latitude, longitude, formattedTimeZone, location, timeZoneIdentifier);
-  //   }
-  // }
+  getMyLocationInfo() async {
+    var result = await getCurrLocation();
+    List<Placemark> placemarks = result['placemarks'];
+    String currCountry = placemarks.first.country!;
+    String state = placemarks.first.administrativeArea!;
+    int timezoneOffset = DateTime.now().timeZoneOffset.inMilliseconds;
+    var hourInMilliSecs = 3600000;
+    var formattedTimeZone = timezoneOffset / hourInMilliSecs;
+
+    country.value = currCountry;
+    city.value = state;
+    timezone.value = "$formattedTimeZone";
+
+    print("COUNTRY: ${country.value}");
+  }
 
   // updateMyLocation(double latitude, double longitude, double timeZone,
   //     String location, String timeZoneIdentifier) async {
@@ -115,7 +107,7 @@ class DashboardController extends GetxController {
   void onInit() {
     ProfileController.instance.restoreUser();
 
-    // checkLocation();
+    getMyLocationInfo();
 
     super.onInit();
   }

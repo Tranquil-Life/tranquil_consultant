@@ -39,7 +39,7 @@ class CustomTabBar extends StatelessWidget {
           height: 20,
           width: 150,
           margin: const EdgeInsets.only(bottom: 5, top: 5),
-          padding: EdgeInsets.only(left: 5),
+          padding: EdgeInsets.only(left: controller.index == 0 ? 5 : 40 ),
           child: Text(
             label1 ?? '',
             style: const TextStyle(fontSize: AppFonts.baseSize),

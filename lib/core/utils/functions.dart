@@ -225,38 +225,11 @@ Future shareFile(File toShare) async {
   }
 }
 
-// Future<Map<String, dynamic>> convertFilesToMultipart(
-//     Map<String, dynamic> data) async {
-//   Map<String, dynamic> multipartData = Map<String, dynamic>.from(data);
-//
-//   // Iterate over the keys of the map
-//   for (String key in multipartData.keys) {
-//     var value = multipartData[key];
-//
-//     // Check if value is a File and convert to MultipartFile
-//     if (value is File) {
-//       multipartData[key] = await dio.MultipartFile.fromFile
-//     }
-//
-//     // Check if value is a List<File> and convert each File to MultipartFile
-//     else if (value is List<File>) {
-//       multipartData[key] = await Future.wait(value.map((file) async {
-//         return await dio.MultipartFile.fromFile(
-//           file.path,
-//           filename: basename(file.path),
-//         );
-//       }).toList());
-//     }
-//   }
-//
-//   return multipartData;
-// }
-
 Future<Map<String, dynamic>> convertFilesToMultipart(
     Map<String, dynamic> data) async {
-  // Iterate over the map and check for keys with File values
   Map<String, dynamic> newData = Map<String, dynamic>.from(data);
 
+  // Iterate over the map and check for keys with File values
   for (String key in newData.keys) {
     if (newData[key] is File) {
       File file = newData[key] as File;
@@ -270,4 +243,26 @@ Future<Map<String, dynamic>> convertFilesToMultipart(
   }
 
   return newData;
+}
+
+String truncateWithEllipsis(int maxLength, String text) {
+  return (text.length <= maxLength)
+      ? text
+      : '${text.substring(0, maxLength)}...';
+}
+
+List<String> getTitlesAfterComma(String input) {
+  // Split the string at the first comma
+  List<String> parts = input.split(',');
+
+  if (parts.length < 2) {
+    // If there's no comma or no content after the comma, return an empty list
+    return [];
+  }
+
+  // Get everything after the first comma
+  String titlesPart = parts.sublist(1).join(',');
+
+  // Split the titles part into individual titles and trim whitespace
+  return titlesPart.split(',').map((title) => title.trim()).toList();
 }

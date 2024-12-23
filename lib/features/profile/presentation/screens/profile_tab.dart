@@ -1,20 +1,24 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/theme/fonts.dart';
 import 'package:tl_consultant/app/presentation/widgets/swipeable.dart';
 import 'package:tl_consultant/app/presentation/widgets/unfocus_bg.dart';
 import 'package:tl_consultant/app/presentation/widgets/user_avatar.dart';
+import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/utils/extensions/date_time_extension.dart';
 import 'package:tl_consultant/core/utils/functions.dart';
 import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
+import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
 import 'package:tl_consultant/features/journal/presentation/widgets/tab_bar.dart';
 import 'package:tl_consultant/features/profile/data/models/user_model.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
+import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
 
-import 'package:tl_consultant/features/profile/presentation/screens/tabs/Bio_view.dart';
+import 'package:tl_consultant/features/profile/presentation/screens/tabs/bio_view.dart';
 import 'package:tl_consultant/features/profile/presentation/screens/tabs/qualifications_view.dart';
 import 'package:tl_consultant/features/settings/presentation/widgets/sign_out_dialog.dart';
 
@@ -28,14 +32,25 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen>
     with TickerProviderStateMixin {
   late TabController controller = TabController(length: 2, vsync: this);
+  final GlobalKey profileKey = GlobalKey();
+  final DashboardController dashboardController =
+      Get.put(DashboardController());
+  final ProfileController profileController = Get.put(ProfileController());
 
   int index = 0;
 
   UserModel? client;
 
+  getMyLocationInfo() {
+    profileController.countryTEC.text = dashboardController.country.value;
+    profileController.cityTEC.text = dashboardController.city.value;
+    profileController.timeZoneTEC.text = dashboardController.timezone.value;
+  }
+
   @override
   void initState() {
     super.initState();
+    getMyLocationInfo();
     client = UserModel.fromJson(userDataStore.user);
     listenToController();
   }
@@ -50,41 +65,50 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   @override
   Widget build(BuildContext context) {
-    return UnFocusWidget(child: Scaffold(
-      backgroundColor: ColorPalette.scaffoldColor,
-      body: SingleChildScrollView(
-        child: Padding(
-          padding:
-          const EdgeInsets.only(top: 8, left: 24, right: 24, bottom: 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // const SizedBox(height: 40),
-              ProfileHead(client: client!,),
-              const SizedBox(height: 24),
-              const ProfileRow(),
-              const SizedBox(height: 24),
-              PersonalInfo(client: client!),
-              const SizedBox(height: 40),
-              CustomTabBar(
+    getMyLocationInfo();
+
+    return UnFocusWidget(
+        child: SingleChildScrollView(
+      child: Padding(
+        padding:
+            const EdgeInsets.only(left: 24, right: 24, bottom: 24, top: 24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ProfileHead(
+              client: client!,
+              profileController: profileController,
+            ),
+            const SizedBox(height: 24),
+            const ProfileRow(),
+            const SizedBox(height: 24),
+            PersonalInfo(client: client!),
+            const SizedBox(height: 40),
+            CustomTabBar(
+              controller: controller,
+              onTap: (i) {},
+              label1: "My Bio",
+              label2: "Qualifications",
+            ),
+            const SizedBox(height: 20),
+
+            //Bio & Qualifications
+            SizedBox(
+              height: displayHeight(context) * 0.5,
+              child: TabBarView(
                 controller: controller,
-                onTap: (i) {},
-                label1: "My Bio",
-                label2: "Qualifications",
+                children: [
+                  BioTabView(),
+                  SingleChildScrollView(
+                    physics: NeverScrollableScrollPhysics(),
+                    child: QualificationsTabView(
+                        profileController: profileController),
+                  ),
+                ],
               ),
-              const SizedBox(height: 20),
-              SizedBox(
-                height: displayHeight(context) * 0.5,
-                child: TabBarView(
-                  controller: controller,
-                  children: [
-                    BioTabView(client: client),
-                    QualificationsTabView(),
-                  ],
-                ),
-              ),
-            ],
-          ),
+            ),
+            SizedBox(height: 40)
+          ],
         ),
       ),
     ));
@@ -92,9 +116,11 @@ class _ProfileScreenState extends State<ProfileScreen>
 }
 
 class ProfileHead extends StatefulWidget {
-  const ProfileHead({super.key, required this.client});
+  const ProfileHead(
+      {super.key, required this.client, required this.profileController});
 
   final UserModel client;
+  final ProfileController profileController;
 
   @override
   State<ProfileHead> createState() => _ProfileHeadState();
@@ -103,6 +129,21 @@ class ProfileHead extends StatefulWidget {
 class _ProfileHeadState extends State<ProfileHead> {
   final GlobalKey actionKey = GlobalKey();
 
+  String containsTitle(String lastName) {
+    var exists = false;
+    for (var e in titleOptions) {
+      if (lastName.contains(e)) {
+        exists = true;
+      }
+    }
+
+    if (exists) {
+      return "${widget.profileController.lastNameTEC.text}, ${widget.profileController.titles.join(',')}";
+    } else {
+      return widget.profileController.lastNameTEC.text.split(',').first;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -110,7 +151,7 @@ class _ProfileHeadState extends State<ProfileHead> {
         CircleAvatar(
           backgroundColor: ColorPalette.gray[100],
           radius: 52,
-          child: MyAvatarWidget(size: 52),
+          child: MyAvatarWidget(size: 52*2),
         ),
         const SizedBox(
           width: 8,
@@ -118,13 +159,14 @@ class _ProfileHeadState extends State<ProfileHead> {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              "${widget.client.firstName} ${widget.client.lastName}",
+            Obx(()=>Text(
+              truncateWithEllipsis((displayWidth(context) / 20).toInt(),
+                  "${widget.profileController.firstNameTEC.text} ${containsTitle(widget.profileController.titles.join(', '))}"),
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
               ),
-            ),
+            ),),
             SizedBox(
               height: 2,
             ),
@@ -145,7 +187,7 @@ class _ProfileHeadState extends State<ProfileHead> {
                   color: ColorPalette.blue.shade600,
                 ),
                 Text(
-                  widget.client.location,
+                  "${widget.profileController.countryTEC.text}/${widget.profileController.cityTEC.text}",
                   style: TextStyle(
                     color: ColorPalette.blue.shade600,
                     fontSize: AppFonts.defaultSize,
@@ -232,9 +274,9 @@ class ProfileRow extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        ProfileRowItem(title: "Sessions", figure: "50"),
-        ProfileRowItem(title: "Clients", figure: "7"),
-        ProfileRowItem(title: "Earned", figure: "\$5900")
+        Expanded(child: ProfileRowItem(title: "Sessions", figure: "50"),),
+        SizedBox(width: 24),
+        Expanded(child: ProfileRowItem(title: "Clients", figure: "7"),)
       ],
     );
   }
@@ -249,7 +291,6 @@ class ProfileRowItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 100,
       decoration: BoxDecoration(
         border: Border.all(color: ColorPalette.gray[900]!),
         color: ColorPalette.green[200],
@@ -291,61 +332,60 @@ class PersonalInfo extends StatelessWidget {
 
   final UserModel client;
 
-
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          "Personal info",
-          style: TextStyle(
-              fontSize: AppFonts.baseSize, fontWeight: FontWeight.w400),
-        ),
-        SizedBox(height: 12),
-        Row(
-          children: [
-            Icon(
-              Icons.male,
-              color: ColorPalette.gray.shade800,
-            ),
-            Text(
-              "${client.gender}",
-              style: TextStyle(
-                fontSize: AppFonts.defaultSize,
-                color: ColorPalette.gray.shade800,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-          ],
-        ),
-        SizedBox(
-          height: 8,
-        ),
-        Row(
-          children: [
-            SvgPicture.asset(
-              height: 16,
-              width: 16,
-              "assets/images/icons/timer.svg",
-              color: ColorPalette.gray.shade800,
-            ),
-            SizedBox(
-              width: 5,
-            ),
-            Text(
-              "${client.birthDate == null ? null : calculateAge(client.birthDate!)} years old",
-              style: TextStyle(
-                fontSize: AppFonts.defaultSize,
-                color: ColorPalette.gray.shade800,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-          ],
-        ),
-        SizedBox(
-          height: 8,
-        ),
+        // Text(
+        //   "Personal info",
+        //   style: TextStyle(
+        //       fontSize: AppFonts.baseSize, fontWeight: FontWeight.w400),
+        // ),
+        // SizedBox(height: 12),
+        // Row(
+        //   children: [
+        //     Icon(
+        //       Icons.male,
+        //       color: ColorPalette.gray.shade800,
+        //     ),
+        //     Text(
+        //       "${client.gender}",
+        //       style: TextStyle(
+        //         fontSize: AppFonts.defaultSize,
+        //         color: ColorPalette.gray.shade800,
+        //         fontWeight: FontWeight.w400,
+        //       ),
+        //     ),
+        //   ],
+        // ),
+        // SizedBox(
+        //   height: 8,
+        // ),
+        // Row(
+        //   children: [
+        //     SvgPicture.asset(
+        //       height: 16,
+        //       width: 16,
+        //       "assets/images/icons/timer.svg",
+        //       color: ColorPalette.gray.shade800,
+        //     ),
+        //     SizedBox(
+        //       width: 5,
+        //     ),
+        //     Text(
+        //       "${client.birthDate == null ? null : calculateAge(client.birthDate!)} years old",
+        //       style: TextStyle(
+        //         fontSize: AppFonts.defaultSize,
+        //         color: ColorPalette.gray.shade800,
+        //         fontWeight: FontWeight.w400,
+        //       ),
+        //     ),
+        //   ],
+        // ),
+        // SizedBox(
+        //   height: 8,
+        // ),
         Row(
           children: [
             SvgPicture.asset(
@@ -358,10 +398,12 @@ class PersonalInfo extends StatelessWidget {
               width: 5,
             ),
             Text(
-              "${client.emailVerifiedAt?.folded}",
+              "${client.emailVerifiedAt == null ? "Verify your account" : client.emailVerifiedAt?.folded}",
               style: TextStyle(
                 fontSize: AppFonts.defaultSize,
-                color: ColorPalette.gray.shade800,
+                color: client.emailVerifiedAt == null
+                    ? ColorPalette.red
+                    : ColorPalette.gray.shade800,
                 fontWeight: FontWeight.w400,
               ),
             ),

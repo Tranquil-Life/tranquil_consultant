@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/theme/tranquil_icons.dart';
 import 'package:tl_consultant/core/utils/functions.dart';
+import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/chat_controller.dart';
 import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
 import 'package:tl_consultant/features/dashboard/presentation/widgets/nav_item.dart';
@@ -17,7 +18,7 @@ import 'package:tl_consultant/features/wallet/presentation/screens/wallet_tab.da
 part 'package:tl_consultant/features/dashboard/presentation/widgets/nav_bar.dart';
 
 class Dashboard extends StatefulWidget {
-  const Dashboard({Key? key}) : super(key: key);
+  const Dashboard({super.key});
 
   @override
   State<Dashboard> createState() => _DashboardState();
@@ -28,7 +29,7 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   void initState() {
-    print(userDataStore.user);
+    dashboardController.getMyLocationInfo();
 
     setStatusBarBrightness(true);
     super.initState();
@@ -48,13 +49,14 @@ class _DashboardState extends State<Dashboard> {
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Stack(
           fit: StackFit.expand,
           alignment: Alignment.bottomCenter,
           children: [
             Positioned.fill(
-              bottom: MediaQuery.of(context).padding.bottom + 20,
+              bottom: MediaQuery.of(context).padding.bottom + 60,
               child: Obx(
                 () => IndexedStack(
                   index: dashboardController.currentIndex.value,

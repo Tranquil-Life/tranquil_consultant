@@ -13,9 +13,8 @@ class NoVideoRecordState extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       width: displayWidth(context),
       decoration: BoxDecoration(
-        color: ColorPalette.green.shade300,
         borderRadius: BorderRadius.circular(8.0),
-        border: Border.all(width: 1, color: ColorPalette.gray.shade100),
+        border: Border.all(width: 1, color: ColorPalette.red),
       ),
       child: Row(
         children: [
@@ -25,6 +24,7 @@ class NoVideoRecordState extends StatelessWidget {
               height: 40,
               width: 40,
               decoration: BoxDecoration(
+                  color: ColorPalette.green.shade300,
                   borderRadius: BorderRadius.circular(8.0),
                   border: Border.all(
                       width: 1, color: Color(0xFF62B778))),

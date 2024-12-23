@@ -8,16 +8,12 @@ import 'package:tl_consultant/features/profile/presentation/screens/edit_profile
 import 'package:tl_consultant/features/profile/presentation/widgets/custom_form_field.dart';
 
 class BioTabView extends StatelessWidget {
-  const BioTabView({super.key, this.client});
+  BioTabView({super.key});
 
-  final UserModel? client;
-
-  // final profileController = Get.put(ProfileController());
+  final profileController = Get.put(ProfileController());
 
   @override
   Widget build(BuildContext context) {
-    // return bioFormField(inputBio, profileController.bioTEC);
-
     return GestureDetector(
       onTap: () => Get.to(const EditProfileScreen()),
       child: Row(
@@ -26,9 +22,11 @@ class BioTabView extends StatelessWidget {
         children: [
           Flexible(
             child: Text(
-              "${client!.bio.isEmpty ? noInputBio : client?.bio}",
+              profileController.bioTEC.text.isEmpty
+                  ? noInputBio
+                  : profileController.bioTEC.text,
               style: TextStyle(
-                  color: client!.bio.isEmpty
+                  color: profileController.bioTEC.text.isEmpty
                       ? ColorPalette.gray[800]
                       : ColorPalette.black),
             ),

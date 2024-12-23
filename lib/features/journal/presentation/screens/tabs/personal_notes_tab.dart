@@ -26,13 +26,21 @@ class _PersonalNotesTabState extends State<PersonalNotesTab> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
+    return Expanded(
+        child: Stack(
       children: [
-        Obx(
-          () => CurrentView(
-              layout: _.layout.value,
-              notes: _.personalNotesList,
-              controller: _),
+        SingleChildScrollView(
+          child: Column(
+            children: [
+              Obx(
+                () => CurrentView(
+                    layout: _.layout.value,
+                    notes: _.personalNotesList,
+                    controller: _),
+              ),
+              SizedBox(height: 40),
+            ],
+          ),
         ),
         Positioned(
           right: 25,
@@ -47,9 +55,9 @@ class _PersonalNotesTabState extends State<PersonalNotesTab> {
               color: Colors.white,
             ),
           ),
-        )
+        ),
       ],
-    );
+    ));
   }
 }
 

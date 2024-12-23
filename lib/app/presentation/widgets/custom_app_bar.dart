@@ -18,6 +18,7 @@ class AppBarAction {
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String? title;
   final bool hideBackButton;
+  final Color? backgroundColor;
   final bool? centerTitle;
   final Color? titleColor;
   final List<AppBarAction>? actions;
@@ -34,14 +35,14 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.onBackPressed,
     this.centerTitle,
     this.backIcon,
-    this.fontFamily,
+    this.fontFamily, this.backgroundColor,
   });
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
       surfaceTintColor: const Color(0x00ffffff),
-      backgroundColor: Colors.transparent,
+      backgroundColor: backgroundColor ?? Colors.transparent,
       centerTitle: centerTitle,
       elevation: 0,
       toolbarTextStyle: TextStyle(

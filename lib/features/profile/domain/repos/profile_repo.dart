@@ -11,4 +11,6 @@ abstract class ProfileRepo<T, F extends QueryParams> extends ApiService {
 
   // Future<Either<ApiError, dynamic>> currentContinent();
   Future<Either<ApiError, dynamic>> uploadVideo(Map<String, dynamic> req);
+
+  Future<Either<ApiError, dynamic>> deleteQualification(int id);
 }

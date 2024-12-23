@@ -25,10 +25,12 @@ class ProfileRepoImpl extends ProfileRepo {
         .then((value) => handleResponse(value));
   }
 
-  // @override
-  // Future<Either<ApiError, dynamic>> currentContinent() async {
-  //   return await catchSocketException(
-  //           () => getReq(ProfileEndPoints.getContinent, false, true))
-  //       .then((value) => handleResponse(value));
-  // }
+  @override
+  Future<Either<ApiError, dynamic>> deleteQualification(int id) async{
+    return await catchSocketException(
+            () => postReq(ProfileEndPoints.deleteQualification, body: {'id': id}))
+        .then((value) => handleResponse(value));
+  }
+
+
 }

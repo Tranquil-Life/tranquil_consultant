@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/widgets/custom_form_field.dart';
 import 'package:tl_consultant/app/presentation/widgets/drop_down_menu.dart';
+import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
 
 CustomFormField nameFormField(String hint, TextEditingController controller) {
@@ -14,16 +16,14 @@ CustomFormField nameFormField(String hint, TextEditingController controller) {
 }
 
 CustomFormField titleFormField(
-  String hint,
-    ProfileController profileController
-) {
+    String hint, ProfileController profileController, Function()? onTap) {
   final dropdownControllerTitle = DropdownController(initialValue: "Psy.D");
   return CustomFormField(
     readOnly: true,
-    suffix: DropdownWidget(
-      options: profileController.titles,
-      controller: dropdownControllerTitle,
-      title: "",
+    hintColor: ColorPalette.gray.shade800,
+    suffix: GestureDetector(
+      onTap: onTap,
+      child: const Icon(Icons.keyboard_arrow_down),
     ),
     verContentPadding: 12,
     horContentPadding: 12,
@@ -133,8 +133,16 @@ CustomFormField yearGraduatedField(
   );
 }
 
-CustomFormField modalities(String hint, TextEditingController controller) {
+CustomFormField modalities(
+    String hint, ProfileController profileController, Function()? onTap) {
   return CustomFormField(
+    textEditingController: profileController.modalitiesTEC,
+    readOnly: true,
+    hintColor: ColorPalette.gray.shade800,
+    suffix: GestureDetector(
+      onTap: onTap,
+      child: const Icon(Icons.keyboard_arrow_down),
+    ),
     verContentPadding: 12,
     horContentPadding: 12,
     hint: hint,

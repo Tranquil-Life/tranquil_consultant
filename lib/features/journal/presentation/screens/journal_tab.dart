@@ -35,79 +35,60 @@ class _JournalTabState extends State<JournalTab> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: UnFocusWidget(
-        child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                CustomTabBar(
+    return UnFocusWidget(
+      child: Padding(
+          padding: const EdgeInsets.only(left: 16, right: 16, top: 16),
+          child: Column(
+            children: [
+              CustomTabBar(
+                controller: notesController.tabController,
+                onTap: (i) {},
+                label1: "My notes",
+                label2: "Client notes",
+              ),
+              const SizedBox(height: 24),
+              Padding(
+                padding: EdgeInsets.only(right: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    GestureDetector(
+                      onTap: () {},
+                      child: Wrap(
+                        direction: Axis.horizontal,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          Obx(() => GestureDetector(
+                            child: SvgPicture.asset(
+                                notesController.layout.value != grid ? gridViewIcon : listViewIcon,
+                                height: 30,
+                                width: 30),
+                            onTap: () {
+                              if (notesController.layout.value == grid) {
+                                notesController.layout.value = list;
+                              } else {
+                                notesController.layout.value = grid;
+                              }
+                            },
+                          ))
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+              Expanded(
+                child: TabBarView(
                   controller: notesController.tabController,
-                  onTap: (i) {},
-                  label1: "My notes",
-                  label2: "Client notes",
+                  children: [
+                    const PersonalNotesTab(),
+                    SharedNotesTab(),
+                  ],
                 ),
-                const SizedBox(height: 24),
-                Padding(
-                  padding: EdgeInsets.only(right: 8),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      // GestureDetector(
-                      //   onTap: () {
-                      //       //...
-                      //   },
-                      //   child: Wrap(
-                      //     direction: Axis.horizontal,
-                      //     crossAxisAlignment: WrapCrossAlignment.center,
-                      //     children: [Icon(Icons.filter_list), Text("Filters")],
-                      //   ),
-                      // ),
-                      GestureDetector(
-                        onTap: () {},
-                        child: Wrap(
-                          direction: Axis.horizontal,
-                          crossAxisAlignment: WrapCrossAlignment.center,
-                          children: [
-                            // Icon(Icons.keyboard_arrow_down_outlined),
-                            // Text(
-                            //   "Sort by",
-                            // ),
-                            // SizedBox(
-                            //   width: 24,
-                            // ),
-                            Obx(() => GestureDetector(
-                                  child: SvgPicture.asset(
-                                      notesController.layout.value != grid ? gridViewIcon : listViewIcon,
-                                      height: 30,
-                                      width: 30),
-                                  onTap: () {
-                                    if (notesController.layout.value == grid) {
-                                      notesController.layout.value = list;
-                                    } else {
-                                      notesController.layout.value = grid;
-                                    }
-                                  },
-                                ))
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 24),
-                Expanded(
-                  child: TabBarView(
-                    controller: notesController.tabController,
-                    children: [
-                      const PersonalNotesTab(),
-                      SharedNotesTab(),
-                    ],
-                  ),
-                ),
-              ],
-            )),
-      ),
+              ),
+            ],
+          )),
     );
   }
 }

@@ -12,7 +12,8 @@ class UserModel extends User{
     required super.authToken,
     super.avatarUrl,
     required super.phoneNumber,
-    //required super.usesBitmoji,
+    super.videoIntroUrl,
+    super.specialties,
     required super.emailVerifiedAt,
     // required super.hasAnsweredQuestions,
     // required super.usesBitmoji,
@@ -21,6 +22,8 @@ class UserModel extends User{
     // super.gender,
     // super.staffId,
     // super.companyName,
+    super.totalMeetings,
+    super.totalClients,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) =>

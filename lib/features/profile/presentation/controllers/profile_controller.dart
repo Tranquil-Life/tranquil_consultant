@@ -3,25 +3,23 @@ import 'dart:io';
 
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart' as dio;
-import 'package:dio/dio.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/foundation.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
-import 'package:path/path.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/widgets/custom_snackbar.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
-import 'package:tl_consultant/core/constants/end_points.dart';
 import 'package:tl_consultant/core/utils/functions.dart';
+import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
 import 'package:tl_consultant/features/media/data/media_repo.dart';
 import 'package:tl_consultant/features/profile/data/models/user_model.dart';
 import 'package:tl_consultant/features/profile/data/repos/profile_repo.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 import 'package:tl_consultant/features/profile/domain/entities/edit_user.dart';
+import 'package:tl_consultant/features/profile/domain/entities/qualification.dart';
 import 'package:tl_consultant/features/profile/domain/entities/user.dart';
 import 'package:video_player/video_player.dart';
 
@@ -36,14 +34,18 @@ class ProfileController extends GetxController {
   ProfileRepoImpl profileRepo = ProfileRepoImpl();
   MediaRepoImpl mediaRepo = MediaRepoImpl();
 
-  var isInitialized = false.obs; // Track if initialization is complete
   var introVideoDuration = 0.obs;
 
   var profilePic = UserModel.fromJson(userDataStore.user).avatarUrl.obs;
   var introVideo = UserModel.fromJson(userDataStore.user).videoIntroUrl.obs;
+  var meetingsCount = UserModel.fromJson(userDataStore.user).totalMeetings;
+  var clientsCount = UserModel.fromJson(userDataStore.user).totalClients;
   RxDouble uploadProgress = 0.0.obs;
   var uploading = false.obs;
   var compressing = false.obs;
+  var deletingId =
+      Rxn<int?>(); // Use null to indicate no qualification is being deleted
+
   final TextEditingController firstNameTEC = TextEditingController(
       text: UserModel.fromJson(userDataStore.user).firstName);
   final TextEditingController lastNameTEC = TextEditingController(
@@ -55,7 +57,6 @@ class ProfileController extends GetxController {
   final TextEditingController bioTEC =
       TextEditingController(text: UserModel.fromJson(userDataStore.user).bio);
   final TextEditingController timeZoneTEC = TextEditingController();
-  final TextEditingController titleTEC = TextEditingController();
   final TextEditingController certificationTEC = TextEditingController();
   final TextEditingController institutionTEC = TextEditingController();
   final TextEditingController yearGraduatedTEC = TextEditingController();
@@ -63,46 +64,74 @@ class ProfileController extends GetxController {
 
   var updatingProfile = false.obs;
 
-  final titles = [
-    'Dr',
-    'LPC',
-    'LMHC',
-    'LCSW',
-    'MFT or LMFT',
-    'LBA or BCBA',
-    'LPC, LMFT, LCSW',
-    'Reverend, e.t.c',
-    'CADC',
-    'ATR or ATR-BC',
-    'LPA',
-    'BCC'
-  ];
+  var qualifications = <Qualification>[].obs;
+  RxList modalities = UserModel.fromJson(userDataStore.user).specialties!.obs;
+  RxList titles = [].obs;
+  var topics = [].obs;
 
-  var qualifications = <Map<String, dynamic>>[].obs;
-
-  initializeVideoPlayer() async{
-    videoPlayerController = VideoPlayerController.networkUrl(Uri.parse(introVideo.value));
+  initializeVideoPlayer() async {
+    videoPlayerController =
+        VideoPlayerController.networkUrl(Uri.parse(introVideo.value!));
     // Wait for the controller to initialize
     await videoPlayerController.initialize();
-    isInitialized.value = true;
 
     introVideoDuration.value = videoPlayerController.value.duration.inSeconds;
   }
 
+  List<Qualification> getQualifications() {
+    qualifications.clear();
+
+    int lastId = userDataStore.qualifications
+        .where((item) => item.containsKey('id'))
+        .fold<int>(
+            0,
+            (previousValue, item) =>
+                item['id'] > previousValue ? item['id'] as int : previousValue);
+
+    for (var item in userDataStore.qualifications) {
+      if (!item.containsKey('id') || item['id'] == null) {
+        lastId += 1; // Increment lastId for new entries
+        item['id'] = lastId;
+      }
+
+      qualifications.add(Qualification.fromJson(item));
+    }
+
+    return qualifications;
+  }
+
+  containsTitle(String lastName) {
+    bool exists = false;
+    for (var e in titleOptions) {
+      if (lastName.contains(e)) {
+        exists = true;
+      }
+    }
+
+    if (exists) {
+      lastNameTEC.text = lastName.split(',').first;
+    }
+  }
+
   Future updateUser() async {
     updatingProfile.value = true;
+    containsTitle(lastNameTEC.text);
 
     User user = User(
-      firstName: firstNameTEC.text,
-      lastName: lastNameTEC.text,
-      phoneNumber: phoneTEC.text,
-      location: "${cityTEC.text}/${countryTEC.text}",
-      timezone: timeZoneTEC.text,
-      bio: bioTEC.text,
-    );
+        firstName: firstNameTEC.text,
+        lastName: titles.isEmpty
+            ? lastNameTEC.text
+            : "${lastNameTEC.text}, ${titles.join(', ')}",
+        avatarUrl: profilePic.value,
+        phoneNumber: phoneTEC.text,
+        location: "${cityTEC.text}/${countryTEC.text}",
+        timezone: timeZoneTEC.text,
+        bio: bioTEC.text,
+        videoIntroUrl: introVideo.value,
+        specialties: modalities);
 
     var request = <String, dynamic>{};
-    var qualificationReq = {'qualifications': qualifications};
+    var qualificationReq = {'qualifications': userDataStore.qualifications};
 
     request.addAll(user.toJson());
     request.addAll(qualificationReq);
@@ -116,14 +145,14 @@ class ProfileController extends GetxController {
           message: l.message!,
           backgroundColor: ColorPalette.red),
       (r) {
-        editUser.value =
-            EditUser(baseUser: UserModel.fromJson(r['data']['user']));
-        User user = UserModel.fromJson(r['data']['user']);
-        qualifications.value =
-            List<Map<String, dynamic>>.from(r['data']['qualifications']);
-        updateProfile(user);
+        print(r);
+        editUser.value = EditUser(baseUser: UserModel.fromJson(r['user']));
+        User user = UserModel.fromJson(r['user']);
+        var qualifications = r['qualifications'] ?? [];
 
-        CustomSnackBar.showSnackBar(
+        updateProfile(user, qualifications);
+
+        return CustomSnackBar.showSnackBar(
             context: Get.context!,
             title: "Success",
             message: "Profile updated",
@@ -134,7 +163,7 @@ class ProfileController extends GetxController {
     updatingProfile.value = false;
   }
 
-  void updateProfile(User user) {
+  void updateProfile(User user, List qualifications) {
     userDataStore.user['avatar_url'] = user.avatarUrl;
     userDataStore.user['f_name'] = user.firstName;
     userDataStore.user['l_name'] = user.lastName;
@@ -144,84 +173,20 @@ class ProfileController extends GetxController {
     userDataStore.user['staff_id'] = user.staffId;
     userDataStore.user['company_name'] = user.companyName;
     userDataStore.user['bio'] = user.bio;
+    userDataStore.user['video_intro'] = user.videoIntroUrl!;
+    userDataStore.user['specialties'] = user.specialties;
     // userDataStore.user['is_verified'] = user.isVerified;
 
     userDataStore.user = userDataStore.user;
+    if (qualifications.isEmpty) {
+      userDataStore.qualifications =
+          List<Map<String, dynamic>>.from(qualifications);
+    }
   }
 
   restoreUser() {
     editUser.value = EditUser(baseUser: UserModel.fromJson(userDataStore.user));
   }
-
-  // getContinent(placemarks) async {
-  //   Either either = await profileRepo.currentContinent();
-  //
-  //   var continent = "";
-  //
-  //   either.fold((l) {
-  //     if (l.message.toString().contains('CERTIFICATE_VERIFY_FAILED')) {
-  //       CustomSnackBar.showSnackBar(
-  //           context: Get.context!,
-  //           title: "Internet Error",
-  //           message: "Change your internet provider",
-  //           backgroundColor: ColorPalette.red);
-  //     } else {
-  //       CustomSnackBar.showSnackBar(
-  //           context: Get.context!,
-  //           title: "Error",
-  //           message: l.message,
-  //           backgroundColor: ColorPalette.red);
-  //     }
-  //   }, (r) {
-  //     final jsonData = r;
-  //
-  //     final countries = jsonData;
-  //
-  //     for (var country in countries) {
-  //       if (country['country'] == placemarks.first.country) {
-  //         continent = country['continent'];
-  //         break;
-  //       }
-  //     }
-  //   });
-  //
-  //   return continent;
-  // }
-
-  getMyLocationInfo() async {
-    var result = await getCurrLocation();
-    List<Placemark> placemarks = result['placemarks'];
-    String country = placemarks.first.country!;
-    String state = placemarks.first.administrativeArea!;
-    int timezoneOffset = DateTime.now().timeZoneOffset.inMilliseconds;
-    var hourInMilliSecs = 3600000;
-    var formattedTimeZone = timezoneOffset / hourInMilliSecs;
-
-    countryTEC.text = country;
-    cityTEC.text = state;
-    timeZoneTEC.text = "$formattedTimeZone";
-  }
-
-  // Future uploadVideo(File file) async{
-  //   dio.FormData formData = dio.FormData.fromMap({
-  //     "upload_preset": "",  // Ensure you have this correctly set
-  //     "file": await dio.MultipartFile.fromFile(file.path, filename: basename(file.path)),
-  //   });
-  //
-  //   dio.Response response = await dio.Dio().post(
-  //     'https://api.cloudinary.com/v1_1/tranquil-life/upload',
-  //     data: formData,
-  //     options: dio.Options(
-  //       headers: {
-  //         'Content-Type': 'multipart/form-data',
-  //         'Authorization': 'Bearer ',  // Make sure to use the updated token
-  //       },
-  //     ),
-  //   );
-  //
-  //   print(response.data);
-  //
-  // }
 
   getExtension(String uploadType) {
     switch (uploadType) {
@@ -234,6 +199,36 @@ class ProfileController extends GetxController {
     }
   }
 
+  void deleteQualification(int? id, int index) async {
+    deletingId.value = id!; // Set the current deleting ID
+    Future.delayed(Duration(seconds: 2), () {
+      //remove from the userDataStore
+      userDataStore.qualifications.removeAt(index);
+      //remove from the DB
+      deleteQualificationFromDB(id);
+
+      deletingId.value = null; // Reset after deletion
+
+      getQualifications();
+    });
+  }
+
+  Future deleteQualificationFromDB(int id) async {
+    Either either = await profileRepo.deleteQualification(id);
+    either.fold(
+        (l) => CustomSnackBar.showSnackBar(
+            context: Get.context!,
+            title: "Error",
+            message: l.message!,
+            backgroundColor: ColorPalette.red), (r) {
+      CustomSnackBar.showSnackBar(
+          context: Get.context!,
+          title: "Success",
+          message: "Qualification deleted",
+          backgroundColor: ColorPalette.green);
+    });
+  }
+
   Future<String?> uploadFile(File uploadFile, String uploadType) async {
     uploadProgress.value = 0.0;
     compressing.value = false;
@@ -241,8 +236,6 @@ class ProfileController extends GetxController {
     final int fileSizeInBytes = await uploadFile.length();
     final double fileSizeInKB = fileSizeInBytes / 1024;
     final double fileSizeInMB = fileSizeInKB / 1024;
-
-    print('File size before compression: $fileSizeInMB MB');
 
     try {
       // Define the storage path and image name
@@ -256,13 +249,11 @@ class ProfileController extends GetxController {
       if (uploadFile.path.endsWith('.jpg') ||
           uploadFile.path.endsWith('.jpeg') ||
           uploadFile.path.endsWith('.png')) {
-
-        //TODO: Compress images
+        //TODO: Compress image
         compressedFile = uploadFile;
       } else if (uploadFile.path.endsWith('.mp4') ||
           uploadFile.path.endsWith('.mov') ||
           uploadFile.path.endsWith('.avi')) {
-
         compressing.value = true;
         // Compress video
         compressedFile = await mediaRepo.compressVideo(uploadFile);
@@ -284,6 +275,8 @@ class ProfileController extends GetxController {
       }
 
       compressing.value = false;
+
+      uploading.value = true;
 
       // Get the system temp directory to save the file
       final Directory systemTempDir = Directory.systemTemp;
@@ -317,19 +310,32 @@ class ProfileController extends GetxController {
       // Get the download URL of the uploaded file
       final String downloadUrl = await taskSnapshot.ref.getDownloadURL();
 
-      if(uploadType == videoIntro){
+      if (uploadType == videoIntro) {
         introVideo.value = downloadUrl;
+
+        uploading.value = false;
 
         await Future.delayed(Duration(seconds: 1));
 
         Get.back();
 
         await initializeVideoPlayer();
+      } else if (uploadType == profileImage) {
+        profilePic.value = downloadUrl;
+
+        uploading.value = false;
+
+        await Future.delayed(Duration(seconds: 1));
+
+        CustomSnackBar.showSnackBar(
+            context: Get.context!,
+            title: "Success",
+            message: "Upload successful",
+            backgroundColor: ColorPalette.green);
       }
 
       // Return the download URL
       return downloadUrl;
-
     } catch (e) {
       CustomSnackBar.showSnackBar(
           context: Get.context!,
@@ -337,48 +343,15 @@ class ProfileController extends GetxController {
           message: "Error uploading file: $e",
           backgroundColor: ColorPalette.red);
 
-      return null; // Return null if there's an error
+      return null;
     }
   }
 
-// Future uploadVideo(File file) async{
-//   final int fileSizeInBytes = await file.length();
-//   final double fileSizeInKB = fileSizeInBytes / 1024;
-//   final double fileSizeInMB = fileSizeInKB / 1024;
-//
-//   print('File size: $fileSizeInBytes bytes');
-//   print('File size: $fileSizeInKB KB');
-//   print('File size: $fileSizeInMB MB');
-//
-//     // Prepare data for the file upload
-//     final String field = "file"; // Ensure this matches the API's expected field name.
-//
-//     // Create FormData from the file
-//     dio.FormData formData = dio.FormData.fromMap({
-//       "upload_type": "video_intro", // Other fields as necessary
-//       field: await dio.MultipartFile.fromFile(file.path, filename: basename(file.path)),
-//     });
-//
-//     // Set the headers if needed (e.g., authorization)
-//     Options options = Options(
-//       headers: {
-//         'Authorization': 'Bearer ${UserModel.fromJson(userDataStore.user).authToken}', // Replace with your auth token if necessary
-//         'Accept': 'application/json',
-//         'Content-Type': 'multipart/form-data',
-//       },
-//     );
-//
-//     final response = await dioObj.post(
-//       baseUrl+MediaEndpoints.uploadFile, // Replace with your actual API endpoint
-//       data: formData,
-//       options: options,
-//     );
-//
-//     // Handle the response
-//     if (response.statusCode == 200) {
-//       print("Upload successful: ${response.data}");
-//     } else {
-//       print("Error uploading: ${response.statusCode}");
-//     }
-// }
+  @override
+  void onInit() {
+    getQualifications();
+    titles.value = getTitlesAfterComma(lastNameTEC.text);
+
+    super.onInit();
+  }
 }

@@ -302,13 +302,28 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
                                         bgColor: ColorPalette.white),
                                     SizedBox(height: 20),
 
-                                    Obx(()=>CustomButton(
-                                        onPressed: uploadTextState == successfulUploadMsg ? null : () async{
-                                           await profileController
-                                                  .uploadFile(File(video.path),
-                                                  videoIntro);
+                                    Obx(() => CustomButton(
+                                        onPressed: (uploadTextState() ==
+                                                    successfulUploadMsg ||
+                                                uploadTextState() ==
+                                                    compressingVideoMsg ||
+                                                uploadTextState().contains(
+                                                    uploadingVideoMsg))
+                                            ? null
+                                            : () async {
+                                                print("upload: recording");
 
-                                        },
+                                                await profileController
+                                                    .uploadFile(
+                                                        File(video.path),
+                                                        videoIntro);
+                                              },
+                                        textColor: uploadTextState() ==
+                                            successfulUploadMsg ||
+                                            uploadTextState() ==
+                                                compressingVideoMsg ||
+                                            uploadTextState().contains(
+                                                uploadingVideoMsg) ? ColorPalette.green : ColorPalette.white,
                                         text: uploadTextState()))
                                   ],
                                 )),
@@ -430,10 +445,10 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
 
   String uploadTextState() {
     if (profileController.compressing.value) {
-      return "Compressing video...";
-    } else if (profileController.uploadProgress.value > 0.0 &&
-        profileController.uploadProgress.value < 100.0) {
-      return "Uploading video: ${profileController.uploadProgress.value.toStringAsFixed(2)}%";
+      return compressingVideoMsg;
+    } else if ((profileController.uploadProgress.value > 0.0 &&
+        profileController.uploadProgress.value < 100.0) || profileController.uploading.value) {
+      return "$uploadingVideoMsg: ${profileController.uploadProgress.value.toStringAsFixed(2)}%";
     } else if (profileController.uploadProgress.value.toInt() == 100) {
       return successfulUploadMsg;
     } else {

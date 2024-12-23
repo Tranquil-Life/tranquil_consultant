@@ -171,26 +171,20 @@ class _TransactionsState extends State<Transactions> {
                         style: TextStyle(fontSize: AppFonts.defaultSize))
                   ],
                 ))
-            : SizedBox(
-                height: 220,
-                child: ListView.builder(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    itemCount: transactions.length,
-                    padding: EdgeInsets.zero,
-                    itemBuilder: (_, index) {
-                      final transaction = transactions[index];
-                      // Access transaction attributes and create widgets to display the data
-                      final amount = transaction['amount'];
-                      final isCredit = transaction['is_credit'];
-                      // final status = transaction['status'];
-                      final updatedAt =
-                          DateTime.parse(transaction['updated_at']);
-                      final formattedDate = updatedAt.formatted;
-                      return TransactionItem(
-                          amount: formatCurrency!.format(amount),
-                          time: formattedDate,
-                          withdrawn: isCredit);
-                    }))
+            :
+                 Column(
+                    children: transactions.map((e) {
+                final amount = e['amount'];
+                final isCredit = e['is_credit'];
+                final updatedAt = DateTime.parse(e['updated_at']);
+                final formattedDate = updatedAt.formatted;
+                return TransactionItem(
+                    amount: formatCurrency!.format(amount),
+                    time: formattedDate,
+                    withdrawn: isCredit);
+              }).toList()
+
+                    )
       ],
     );
   }

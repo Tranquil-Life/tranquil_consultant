@@ -12,11 +12,9 @@ class SharedNotesTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Obx(
-        () => CurrentView(
-            view: _.layout.value, notes: _.sharedNotesList, controller: _),
-      ),
+    return Obx(
+          () => CurrentView(
+          view: _.layout.value, notes: _.sharedNotesList, controller: _),
     );
   }
 }

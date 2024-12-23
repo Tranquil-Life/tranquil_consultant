@@ -20,4 +20,5 @@ class SvgElements {
   static get svgShareIcon => "assets/images/icons/share.svg";
   static get svgModifySpeedIcon => "assets/images/icons/modify_speed.svg";
   static get svgDeleteIcon => "assets/images/icons/trash.svg";
+  static get svgHexagonCloseIcon => "assets/images/icons/hexagon_close.svg";
 }

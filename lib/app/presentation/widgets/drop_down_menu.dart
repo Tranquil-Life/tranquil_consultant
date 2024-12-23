@@ -8,13 +8,15 @@ class DropdownWidget extends StatelessWidget {
   final String title;
   final List<String> options;
   final DropdownController controller;
+  final Function(String option)? onTap;
 
   const DropdownWidget({
-    Key? key,
+    super.key,
     required this.title,
     required this.options,
     required this.controller,
-  }) : super(key: key);
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +44,7 @@ class DropdownWidget extends StatelessWidget {
         onChanged: controller.updateValue,
         items: options.map((String option) {
           return DropdownMenuItem<String>(
+            onTap: onTap!(option),
             value: option,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),

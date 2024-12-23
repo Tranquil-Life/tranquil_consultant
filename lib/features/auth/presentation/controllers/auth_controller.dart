@@ -102,6 +102,9 @@ class AuthController extends GetxController {
 
       if (data['error'] == false && data['data'] != null) {
         userDataStore.user = data['data']['user'];
+        userDataStore.qualifications = List<Map<String, dynamic>>.from(data['data']['qualifications']);
+        print("Meetings count: ${data['data']['meetings_count']}");
+        print("Client count: ${data['data']['clients_count']}");
 
         AppData.isSignedIn = true;
 

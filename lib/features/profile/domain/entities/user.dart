@@ -31,12 +31,15 @@ class User {
   final String location;
   @JsonKey(name: 'bio')
   final String bio;
+
   final String? timezone;
   final List? specialties;
   @JsonKey(name: 'email_verified_at', fromJson: isVerifiedFromJson)
   final DateTime? emailVerifiedAt;
-  final String videoIntroUrl;
+  final String? videoIntroUrl;
   final String? birthDate, gender, staffId, companyName;
+  final int totalMeetings;
+  final int totalClients;
 
   User({
     this.id,
@@ -54,9 +57,11 @@ class User {
     this.staffId,
     this.companyName,
     this.avatarUrl = '',
-    this.videoIntroUrl = '',
+    this.videoIntroUrl,
     this.location = "",
     this.timezone,
+    this.totalMeetings = 0,
+    this.totalClients = 0,
   });
 
 

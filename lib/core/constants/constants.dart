@@ -47,3 +47,39 @@ const noInputBio = "No bio available. Please add a short description about yours
 const hintBio = "I am a licensed mental health therapist with a decade of experience. I help clients overcome various challenges and enhance their well-being. I apply various therapy modalities to ensure my clients receive the best treatment and care. I offers a safe, supportive, and collaborative space for my clients where they can grow and thrive.";
 
 const successfulUploadMsg = "Upload successful";
+const compressingVideoMsg = "Compressing video...";
+const uploadingVideoMsg = "Uploading video";
+
+List<String> modalityOptions = [
+  "Attachment-Based Therapy",
+  "Acceptance & Commitment Therapy",
+  "Behavioral Therapy",
+  "Behavioral Health Therapy",
+  "Bioenergetic Analysis",
+  "Cognitive Therapy",
+  "Cognitive Behavioral Therapy",
+  "Counseling",
+  "Dialectical Behavioral Therapy",
+  "Dreamwork Therapy",
+  "Emotional Freedom Technique",
+  "Existential Therapy",
+  "Eye Movement Desensitization & Reprocessing",
+  "Family & Systemic Psychotherapy",
+  "Gestalt Therapy",
+  "Integrative Therapy",
+];
+
+final titleOptions = [
+  'Dr',
+  'LPC',
+  'LMHC',
+  'LCSW',
+  'MFT or LMFT',
+  'LBA or BCBA',
+  'LPC, LMFT, LCSW',
+  'Reverend, e.t.c',
+  'CADC',
+  'ATR or ATR-BC',
+  'LPA',
+  'BCC'
+];
