@@ -1,19 +1,13 @@
-import 'dart:convert';
-import 'dart:io';
+
 
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
-import 'package:dio/dio.dart' as dio;
 
-import 'package:get/get.dart';
-import 'package:path/path.dart';
 import 'package:tl_consultant/core/constants/end_points.dart';
 import 'package:tl_consultant/core/errors/api_error.dart';
 import 'package:tl_consultant/features/profile/data/models/user_model.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 import 'package:tl_consultant/features/profile/domain/entities/user.dart';
-import 'package:http/http.dart' as http;
 
 class ApiData {
   final int? statusCode;
@@ -23,7 +17,7 @@ class ApiData {
 }
 
 class ApiService {
-  final Dio dioo = Dio();
+  final Dio dio = Dio();
 
   static const certVerifyFailed = "CERTIFICATE_VERIFY_FAILED";
 
@@ -52,11 +46,14 @@ class ApiService {
       Function function) async {
     try {
       return await function();
-    } on dio.DioError catch (e) {
+    } on DioException catch (e) {
       // Handle Dio errors explicitly
       if (e.response != null) {
         // print("Dio Error Response: ${e.response!.data}");
-        return Left(ApiError(message: e.response!.data['message'] ?? e.response!.statusMessage ?? "Unknown error"));
+        return Left(ApiError(
+            message: e.response!.data['message'] ??
+                e.response!.statusMessage ??
+                "Unknown error"));
       } else {
         // print("Dio Error: ${e.message}");
         return Left(ApiError(message: e.message));
@@ -72,14 +69,14 @@ class ApiService {
       {dynamic body}) async {
     String url = baseUrl + subPath;
     final headers = _getHeaders();
-    dio.Response<dynamic> response;
+    Response<dynamic> response;
 
     bool hasMultipartFile = containsMultipartFile(body);
 
     if (hasMultipartFile) {
-      dio.FormData form = dio.FormData.fromMap(body);
+      FormData form = FormData.fromMap(body);
 
-      response = await dioo.post(
+      response = await dio.post(
         url,
         data: form,
         options: Options(
@@ -87,14 +84,14 @@ class ApiService {
             'Content-Type': 'multipart/form-data',
             'Accept': 'application/json',
             'Authorization':
-            'Bearer ${UserModel.fromJson(userDataStore.user).authToken}',
+                'Bearer ${UserModel.fromJson(userDataStore.user).authToken}',
           },
         ),
       );
     } else {
-      response = await dioo.post(
+      response = await dio.post(
         url,
-        data: jsonEncode(body),
+        data: body,
         options: Options(headers: headers),
       );
     }
@@ -106,35 +103,45 @@ class ApiService {
     } else {
       // Log and return error if status code is not as expected
       print("ERROR: ${response.data}");
-      return Left(ApiError(message: response.data['message'] ?? "Unknown error"));
+      return Left(
+          ApiError(message: response.data['message'] ?? "Unknown error"));
     }
   }
 
   Future<Either<ApiError, dynamic>> getReq(String subPath,
       [bool exchange = false, bool countries = false]) async {
     final headers = _getHeaders();
+    String url = (exchange ? "" : baseUrl) + subPath;
 
     if (countries) {
-      var result = await http.get(Uri.parse((subPath)));
+      var response = await dio.get(subPath);
       //print('Response: ${result.statusCode} - ${result.body}');
 
-      if (result.statusCode == 200) {
-        return Right(jsonDecode(result.body));
+      if (response.statusCode == 200 ||
+          response.statusCode == 201 ||
+          response.statusCode == 204) {
+        return Right(response.data);
       } else {
-        return Left(ApiError(message: jsonDecode(result.body)['message']));
+        // Log and return error if status code is not as expected
+        print("ERROR: ${response.data}");
+        return Left(
+            ApiError(message: response.data['message'] ?? "Unknown error"));
       }
     } else {
-      var result = await http.get(
-          Uri.parse((exchange ? "" : baseUrl) + subPath),
-          headers: headers);
-      // print('Response: ${result.statusCode} - ${result.body}');
+      var response = await dio.get(
+        url,
+        options: Options(headers: headers),
+      );
 
-      // await Future.delayed(const Duration(seconds: 1));
-
-      if (result.statusCode == 200) {
-        return Right(jsonDecode(result.body));
+      if (response.statusCode == 200 ||
+          response.statusCode == 201 ||
+          response.statusCode == 204) {
+        return Right(response.data);
       } else {
-        return Left(ApiError(message: jsonDecode(result.body)['message']));
+        // Log and return error if status code is not as expected
+        print("ERROR: ${response.data}");
+        return Left(
+            ApiError(message: response.data['message'] ?? "Unknown error"));
       }
     }
   }
@@ -142,20 +149,22 @@ class ApiService {
   Future<Either<ApiError, bool>> deleteReq(String subPath,
       {dynamic body}) async {
     final headers = _getHeaders();
+    String url = baseUrl + subPath;
 
-    var result = await http.delete(Uri.parse(baseUrl + subPath),
-        body: jsonEncode(body), headers: headers);
+    var response =
+        await dio.delete(url, data: body, options: Options(headers: headers));
 
-    if (result.statusCode == 204) {
+    if (response.statusCode == 204) {
       return const Right(true);
     } else {
-      return Left(ApiError(message: jsonDecode(result.body)['message']));
+      return Left(
+          ApiError(message: response.data['message'] ?? "Unknown error"));
     }
   }
 
   bool containsMultipartFile(Map<String, dynamic> data) {
     for (var value in data.values) {
-      if (value is http.MultipartFile || value is List<http.MultipartFile>) {
+      if (value is MultipartFile || value is List<MultipartFile>) {
         return true; // Found a MultipartFile
       }
     }

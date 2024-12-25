@@ -26,21 +26,13 @@ class _PersonalNotesTabState extends State<PersonalNotesTab> {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-        child: Stack(
+    return Stack(
       children: [
-        SingleChildScrollView(
-          child: Column(
-            children: [
-              Obx(
-                () => CurrentView(
-                    layout: _.layout.value,
-                    notes: _.personalNotesList,
-                    controller: _),
-              ),
-              SizedBox(height: 40),
-            ],
-          ),
+        Obx(
+          () => CurrentView(
+              layout: _.layout.value,
+              notes: _.personalNotesList,
+              controller: _),
         ),
         Positioned(
           right: 25,
@@ -57,7 +49,7 @@ class _PersonalNotesTabState extends State<PersonalNotesTab> {
           ),
         ),
       ],
-    ));
+    );
   }
 }
 
@@ -84,8 +76,9 @@ class CurrentView extends StatelessWidget {
         itemCount: notes.length,
         shrinkWrap: true,
         controller: controller.scrollController,
+        padding: const EdgeInsets.only(bottom: 40), // Add padding to the bottom
         itemBuilder: (context, index) => NoteWidget(
-              personalNote: notes[index],
-            )));
+          personalNote: notes[index],
+        ),));
   }
 }

@@ -38,8 +38,8 @@ class ProfileController extends GetxController {
 
   var profilePic = UserModel.fromJson(userDataStore.user).avatarUrl.obs;
   var introVideo = UserModel.fromJson(userDataStore.user).videoIntroUrl.obs;
-  var meetingsCount = UserModel.fromJson(userDataStore.user).totalMeetings;
-  var clientsCount = UserModel.fromJson(userDataStore.user).totalClients;
+  var meetingsCount = UserModel.fromJson(userDataStore.user).totalMeetings.obs;
+  var clientsCount = UserModel.fromJson(userDataStore.user).totalClients.obs;
   RxDouble uploadProgress = 0.0.obs;
   var uploading = false.obs;
   var compressing = false.obs;

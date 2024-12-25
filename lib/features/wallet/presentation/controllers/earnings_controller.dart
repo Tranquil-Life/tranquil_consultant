@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:dartz/dartz.dart';
 import 'package:get/get.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/widgets/custom_snackbar.dart';
@@ -18,24 +19,22 @@ class EarningsController extends GetxController {
   var pendingClearance = 0.00.obs;
 
   Future getEarningsInfo() async {
-    var result = await repo.getWallet();
-    if (result.isRight()) {
-      result.map((r) {
-        Earnings earnings = EarningsModel.fromJson(r['data']);
-        balance.value = roundToFiveSignificantFigures(earnings.balance);
-        withdrawn.value = roundToFiveSignificantFigures(earnings.withdrawn);
-        availableForWithdrawal.value =
-            roundToFiveSignificantFigures(earnings.availableForWithdrawal);
-        pendingClearance.value =
-            roundToFiveSignificantFigures(earnings.pendingClearance);
-      });
-    } else {
-      result.leftMap((l) => CustomSnackBar.showSnackBar(
-          context: Get.context!,
-          title: "Error",
-          message: l.message!,
-          backgroundColor: ColorPalette.red));
-    }
+    Either either = await repo.getWallet();
+
+    either.fold(
+        (l) => CustomSnackBar.showSnackBar(
+            context: Get.context!,
+            title: "Error",
+            message: l.message!,
+            backgroundColor: ColorPalette.red), (r) {
+      Earnings earnings = EarningsModel.fromJson(r['data']);
+      balance.value = roundToFiveSignificantFigures(earnings.balance);
+      withdrawn.value = roundToFiveSignificantFigures(earnings.withdrawn);
+      availableForWithdrawal.value =
+          roundToFiveSignificantFigures(earnings.availableForWithdrawal);
+      pendingClearance.value =
+          roundToFiveSignificantFigures(earnings.pendingClearance);
+    });
   }
 
   double roundToFiveSignificantFigures(double number) {

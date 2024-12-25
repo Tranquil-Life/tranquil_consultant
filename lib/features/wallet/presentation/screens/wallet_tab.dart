@@ -143,7 +143,7 @@ class _WalletTabState extends State<WalletTab> {
               ],
             ),
             const SizedBox(height: 40),
-            const Transactions(),
+            const TransactionsSection(),
             SizedBox(height: 40)
 
           ]),

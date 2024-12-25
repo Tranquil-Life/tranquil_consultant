@@ -66,3 +66,9 @@ abstract class ChatEndPoints {
   static getOlderMessages({required int chatId, required int lastMessageId}) =>
       'client/get-older-messages/$chatId/$lastMessageId';
 }
+
+abstract class ActivityEndpoints {
+  static getNotifications({required int page, required int limit}) =>
+      '$thisUserType/myActivity/$page/$limit';
+  static const unreadNotifications = '$thisUserType/unreadNotifications';
+}

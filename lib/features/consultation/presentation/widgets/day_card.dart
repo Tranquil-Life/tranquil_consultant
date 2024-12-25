@@ -34,7 +34,7 @@ class DayCard extends StatelessWidget {
             child: Text(
               day.substring(0, 3),
               style: TextStyle(
-                  color: Colors.white, fontSize: AppFonts.defaultSize),
+                  color: selected ? Colors.white : ColorPalette.black, fontSize: AppFonts.defaultSize),
             ),
           )),
     );

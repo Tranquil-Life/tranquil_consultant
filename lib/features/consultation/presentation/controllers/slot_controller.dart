@@ -42,7 +42,10 @@ class SlotController extends GetxController {
           "-${DateTimeExtension.now.month.toString().padLeft(2, "0")}"
           "-${DateTimeExtension.now.day.toString().padLeft(2, "0")} $element",
           true);
+      // var dateInUTC = dateTime.add(Duration(hours: -6));
+
       var dateLocal = dateTime.toLocal();
+      // var dateLocal = dateInUTC;
 
       timeSlots.add("${dateLocal.hour.toString().padLeft(2, "0")}"
           ":${dateLocal.minute.toString().padLeft(2, "0")}");
@@ -97,14 +100,6 @@ class SlotController extends GetxController {
         getSlotsInLocal();
       }
 
-      // result.map((r) {
-      //   apiSlots = r['slots'];
-      //   availableDays(r['days']);
-      //
-      //   if (apiSlots.isNotEmpty) {
-      //     getSlotsInLocal();
-      //   }
-      // });
     });
   }
 

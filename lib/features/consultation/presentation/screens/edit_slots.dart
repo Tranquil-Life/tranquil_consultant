@@ -55,105 +55,106 @@ class _EditSlotsState extends State<EditSlots> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(title: 'Edit Availability'),
+      appBar: CustomAppBar(
+        backgroundColor: Colors.grey[200],
+        title: 'Edit Availability',
+      ),
       backgroundColor: Colors.grey[200],
       body: Padding(
-        padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
-        child: Stack(
-          children: [
-            DaySectionPicker(onDaySelected: (isNightSelected) {
-              sortTime(isNightSelected);
-            }),
-            Obx(
-              () => slotController.loading.value
-                  ? const Positioned(
-                      top: 200,
-                      left: 150,
-                      child:
-                          CircularProgressIndicator(color: ColorPalette.green),
-                    )
-                  : Container(
-                      height: 400,
-                      margin: EdgeInsets.only(
-                          top: selectedSection == DaySectionOption.day
-                              ? 48
-                              : 18),
-                      child: TimePickerWidget(
-                        onTimeChosen: (newTime, index) {
-                          time = newTime;
-                        },
-                        times: times,
+        padding: const EdgeInsets.fromLTRB(24, 12, 24, 16),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              DaySectionPicker(onDaySelected: (isNightSelected) {
+                sortTime(isNightSelected);
+              }),
+              Obx(
+                    () => slotController.loading.value
+                    ? const CircularProgressIndicator(color: ColorPalette.green)
+                    : Container(
+                  height: 250,
+                  margin: EdgeInsets.only(
+                    bottom: 70,
+                      top: selectedSection == DaySectionOption.day
+                          ? 48
+                          : 18),
+                  child: TimePickerWidget(
+                    onTimeChosen: (newTime, index) {
+                      time = newTime;
+                    },
+                    times: times,
+                  ),
+                ),
+              ),
+              Obx(
+                    () => slotController.loading.value
+                    ? const Center(
+                    child:
+                    CircularProgressIndicator(color: ColorPalette.green))
+                    : Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Wrap(
+                    alignment: WrapAlignment.start,
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.only(bottom: 24),
+                        child: Text(
+                          'Select available days',
+                          style: TextStyle(
+                              fontSize: AppFonts.defaultSize,
+                              fontFamily: AppFonts.josefinSansSemiBold),
+                        ),
                       ),
-                    ),
-            ),
-            Obx(
-              () => slotController.loading.value
-                  ? const Center(
-                      child:
-                          CircularProgressIndicator(color: ColorPalette.green))
-                  : Align(
-                      alignment: Alignment.bottomCenter,
-                      child: Wrap(
-                        alignment: WrapAlignment.start,
-                        children: [
-                          const Padding(
-                            padding: EdgeInsets.only(bottom: 24),
-                            child: Text(
-                              'Select available days',
-                              style: TextStyle(
-                                  fontSize: AppFonts.defaultSize,
-                                  fontFamily: AppFonts.josefinSansSemiBold),
-                            ),
-                          ),
-                          SizedBox(
-                            height: 80,
-                            child: ListView.builder(
-                              itemCount: days.length,
-                              scrollDirection: Axis.horizontal,
-                              padding: const EdgeInsets.only(right: 16),
-                              itemBuilder: (_, index) {
-                                final day = days[index];
-                                return Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 8),
-                                    child: DayCard(
-                                      day,
-                                      selected: slotController.selectedDays
-                                          .contains(day),
-                                      onChosen: () {
-                                        if (slotController.selectedDays
-                                            .contains(day)) {
-                                          slotController.selectedDays
-                                              .remove(day);
-                                        } else {
-                                          slotController.selectedDays.add(day);
-                                        }
-                                        setState(() {});
-                                      },
-                                    ));
-                              },
-                            ),
-                          ),
+                      SizedBox(
+                        height: 80,
+                        child: ListView.builder(
+                          itemCount: days.length,
+                          scrollDirection: Axis.horizontal,
+                          padding: const EdgeInsets.only(right: 16),
+                          itemBuilder: (_, index) {
+                            final day = days[index];
+                            return Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8),
+                                child: DayCard(
+                                  day,
+                                  selected: slotController.selectedDays
+                                      .contains(day),
+                                  onChosen: () {
+                                    if (slotController.selectedDays
+                                        .contains(day)) {
+                                      slotController.selectedDays
+                                          .remove(day);
+                                    } else {
+                                      slotController.selectedDays.add(day);
+                                    }
+                                    setState(() {});
+                                  },
+                                ));
+                          },
+                        ),
+                      ),
 
-                          //save button
-                          Padding(
-                            padding: const EdgeInsets.only(top: 48, bottom: 32),
-                            child: CustomButton(
-                                child: const Text("Save",
-                                    style: TextStyle(
-                                        fontSize: AppFonts.defaultSize,
-                                        color: ColorPalette.white)),
-                                onPressed: () {
-                                  slotController.saveSlots(
-                                      availableDays:
-                                          slotController.selectedDays);
-                                }),
-                          )
-                        ],
-                      ),
-                    ),
-            )
-          ],
+                      //save button
+                      Padding(
+                        padding: const EdgeInsets.only(top: 48, bottom: 32),
+                        child: CustomButton(
+                            child: const Text("Save",
+                                style: TextStyle(
+                                    fontSize: AppFonts.defaultSize,
+                                    color: ColorPalette.white)),
+                            onPressed: () {
+                              slotController.saveSlots(
+                                  availableDays:
+                                  slotController.selectedDays);
+                            }),
+                      )
+                    ],
+                  ),
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );

@@ -35,16 +35,16 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.onBackPressed,
     this.centerTitle,
     this.backIcon,
-    this.fontFamily, this.backgroundColor,
+    this.fontFamily,
+    this.backgroundColor,
   });
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      surfaceTintColor: const Color(0x00ffffff),
+      elevation: 0,
       backgroundColor: backgroundColor ?? Colors.transparent,
       centerTitle: centerTitle,
-      elevation: 0,
       toolbarTextStyle: TextStyle(
         fontSize: 17,
         color: ColorPalette.green[800],
@@ -103,6 +103,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
 class _NormalButton extends StatelessWidget {
   const _NormalButton(this.data, {super.key});
+
   final AppBarAction data;
 
   @override

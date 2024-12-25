@@ -13,7 +13,6 @@ import 'package:tl_consultant/features/onboarding/presentation/screens/onboardin
 import 'package:tl_consultant/features/onboarding/presentation/screens/splash.dart';
 import 'package:tl_consultant/features/profile/presentation/screens/profile_tab.dart';
 import 'package:tl_consultant/features/settings/presentation/screens/settings_screen.dart';
-import 'package:tl_consultant/features/wallet/presentation/screens/earnings_tab.dart';
 import 'package:tl_consultant/features/wallet/presentation/screens/wallet_tab.dart';
 
 part 'app_routes.dart';

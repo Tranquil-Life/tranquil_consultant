@@ -70,12 +70,12 @@ class NotesController extends GetxController with GetTickerProviderStateMixin {
 
     Either either = await journalRepo.getPersonalNotes(
         page: page.value, limit: limit.value);
-    either.fold(
-        (l) => CustomSnackBar.showSnackBar(
+    either.fold((l) => CustomSnackBar.showSnackBar(
             context: Get.context!,
             title: "Error",
             message: l.message.toString(),
-            backgroundColor: ColorPalette.red), (r) {
+            backgroundColor: ColorPalette.red),
+            (r) {
       personalNotesList.clear();
 
       var data = r['data'];

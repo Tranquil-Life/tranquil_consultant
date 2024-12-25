@@ -17,6 +17,7 @@ import 'package:tl_consultant/features/journal/presentation/widgets/tab_bar.dart
 import 'package:tl_consultant/features/profile/data/models/user_model.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
+import 'package:tl_consultant/features/profile/presentation/screens/edit_profile.dart';
 
 import 'package:tl_consultant/features/profile/presentation/screens/tabs/bio_view.dart';
 import 'package:tl_consultant/features/profile/presentation/screens/tabs/qualifications_view.dart';
@@ -80,7 +81,7 @@ class _ProfileScreenState extends State<ProfileScreen>
               profileController: profileController,
             ),
             const SizedBox(height: 24),
-            const ProfileRow(),
+             ProfileRow(profileController: profileController),
             const SizedBox(height: 24),
             PersonalInfo(client: client!),
             const SizedBox(height: 40),
@@ -246,7 +247,7 @@ class _ProfileHeadState extends State<ProfileHead> {
       ),
       items: [
         PopupMenuItem(
-          onTap: () {},
+          onTap: () => Get.to(const EditProfileScreen()),
           value: 'edit',
           child: Text('Edit profile'),
         ),
@@ -266,7 +267,9 @@ class _ProfileHeadState extends State<ProfileHead> {
 }
 
 class ProfileRow extends StatelessWidget {
-  const ProfileRow({super.key});
+  const ProfileRow({super.key, required this.profileController});
+
+  final ProfileController profileController;
 
   @override
   Widget build(BuildContext context) {
@@ -274,9 +277,9 @@ class ProfileRow extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(child: ProfileRowItem(title: "Sessions", figure: "50"),),
+        Expanded(child: ProfileRowItem(title: "Sessions", figure: "${profileController.meetingsCount.value}"),),
         SizedBox(width: 24),
-        Expanded(child: ProfileRowItem(title: "Clients", figure: "7"),)
+        Expanded(child: ProfileRowItem(title: "Clients", figure: "${profileController.clientsCount.value}"),)
       ],
     );
   }
@@ -334,80 +337,26 @@ class PersonalInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return  Row(
       children: [
-        // Text(
-        //   "Personal info",
-        //   style: TextStyle(
-        //       fontSize: AppFonts.baseSize, fontWeight: FontWeight.w400),
-        // ),
-        // SizedBox(height: 12),
-        // Row(
-        //   children: [
-        //     Icon(
-        //       Icons.male,
-        //       color: ColorPalette.gray.shade800,
-        //     ),
-        //     Text(
-        //       "${client.gender}",
-        //       style: TextStyle(
-        //         fontSize: AppFonts.defaultSize,
-        //         color: ColorPalette.gray.shade800,
-        //         fontWeight: FontWeight.w400,
-        //       ),
-        //     ),
-        //   ],
-        // ),
-        // SizedBox(
-        //   height: 8,
-        // ),
-        // Row(
-        //   children: [
-        //     SvgPicture.asset(
-        //       height: 16,
-        //       width: 16,
-        //       "assets/images/icons/timer.svg",
-        //       color: ColorPalette.gray.shade800,
-        //     ),
-        //     SizedBox(
-        //       width: 5,
-        //     ),
-        //     Text(
-        //       "${client.birthDate == null ? null : calculateAge(client.birthDate!)} years old",
-        //       style: TextStyle(
-        //         fontSize: AppFonts.defaultSize,
-        //         color: ColorPalette.gray.shade800,
-        //         fontWeight: FontWeight.w400,
-        //       ),
-        //     ),
-        //   ],
-        // ),
-        // SizedBox(
-        //   height: 8,
-        // ),
-        Row(
-          children: [
-            SvgPicture.asset(
-              height: 16,
-              width: 16,
-              "assets/images/icons/calendar.svg",
-              color: ColorPalette.gray.shade800,
-            ),
-            SizedBox(
-              width: 5,
-            ),
-            Text(
-              "${client.emailVerifiedAt == null ? "Verify your account" : client.emailVerifiedAt?.folded}",
-              style: TextStyle(
-                fontSize: AppFonts.defaultSize,
-                color: client.emailVerifiedAt == null
-                    ? ColorPalette.red
-                    : ColorPalette.gray.shade800,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-          ],
+        SvgPicture.asset(
+          height: 16,
+          width: 16,
+          "assets/images/icons/calendar.svg",
+          color: ColorPalette.gray.shade800,
+        ),
+        SizedBox(
+          width: 5,
+        ),
+        Text(
+          "${client.emailVerifiedAt == null ? "Verify your account" : client.emailVerifiedAt?.folded}",
+          style: TextStyle(
+            fontSize: AppFonts.defaultSize,
+            color: client.emailVerifiedAt == null
+                ? ColorPalette.red
+                : ColorPalette.gray.shade800,
+            fontWeight: FontWeight.w400,
+          ),
         ),
       ],
     );
