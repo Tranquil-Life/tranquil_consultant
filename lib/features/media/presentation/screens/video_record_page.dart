@@ -39,6 +39,7 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
 
   @override
   void initState() {
+
     profileController.uploadProgress.value = 0.0;
     initAnimation();
     initCamera();
@@ -72,6 +73,8 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
     animationController.forward(); // Start the animation
   }
 
+  /// Video Recording related functions
+  ///
   initCamera() async {
     final cameras = await availableCameras();
     final front = cameras.firstWhere(
@@ -98,8 +101,7 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
     setState(() => _isLoading = false);
   }
 
-  // Simulate a long-running task
-  Future<void> performTask() async {
+  Future<void> startRecording() async {
     if (!isRecording) {
       await _cameraController.prepareForVideoRecording();
       await _cameraController.startVideoRecording();
@@ -142,6 +144,8 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
     }
   }
 
+  /// Video Player related functions
+  ///
   Future initVideoPlayer() async {
     _videoPlayerController = VideoPlayerController.file(File(video.path))
       ..addListener(() {
@@ -295,7 +299,9 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
                                     SizedBox(height: 40),
 
                                     CustomButton(
-                                        onPressed: () {},
+                                        onPressed: () {
+
+                                        },
                                         text: "Retake video",
                                         textColor: ColorPalette.green,
                                         showBorder: true,
@@ -353,7 +359,7 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
                                 Spacer(),
                                 GestureDetector(
                                   onTap: () {
-                                    performTask();
+                                    startRecording();
                                   },
                                   child: Stack(
                                     alignment: Alignment.center,

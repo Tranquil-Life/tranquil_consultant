@@ -5,6 +5,7 @@ import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/theme/fonts.dart';
 import 'package:tl_consultant/app/presentation/widgets/buttons.dart';
 import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
+import 'package:tl_consultant/core/utils/helpers/svg_elements.dart';
 import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:video_player/video_player.dart';
 
@@ -54,9 +55,7 @@ class _VideoRecordStateState extends State<VideoRecordState> {
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: SvgPicture.asset(
-                          height: 24,
-                          width: 24,
-                          "assets/images/icons/video-play.svg"),
+                          SvgElements.svgVideoPlayIcon),
                     ),
                   ),
                 ),

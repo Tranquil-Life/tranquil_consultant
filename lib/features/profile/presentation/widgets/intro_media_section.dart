@@ -1,14 +1,11 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/theme/fonts.dart';
-import 'package:tl_consultant/app/presentation/widgets/buttons.dart';
-import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 import 'package:tl_consultant/features/media/presentation/screens/video_record_page.dart';
 import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:tl_consultant/features/profile/presentation/widgets/no_video_record_state.dart';
+import 'package:tl_consultant/features/profile/presentation/widgets/video_player.dart';
 import 'package:tl_consultant/features/profile/presentation/widgets/video_record_state.dart';
 
 class IntroMediaSection extends StatelessWidget {
@@ -37,7 +34,14 @@ class IntroMediaSection extends StatelessWidget {
               )
             : GestureDetector(
           onTap: (){
-            // playVideo();
+            if(profileController.introVideo.value!.isNotEmpty){
+              showDialog(context: context, builder: (_){
+                return AlertDialog(
+                  content: VideoPlayerWidget(videoUrl: profileController.introVideo.value!),
+                );
+              });
+            }
+
           },
           child: VideoRecordState(profileController: profileController,),
         ),

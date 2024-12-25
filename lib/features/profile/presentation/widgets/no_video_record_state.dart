@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/theme/fonts.dart';
 import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
+import 'package:tl_consultant/core/utils/helpers/svg_elements.dart';
 
 class NoVideoRecordState extends StatelessWidget {
   const NoVideoRecordState({super.key});
@@ -31,9 +32,7 @@ class NoVideoRecordState extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: SvgPicture.asset(
-                    height: 24,
-                    width: 24,
-                    "assets/images/icons/video-play.svg"),
+                    SvgElements.svgVideoPlayIcon),
               ),
             ),
           ),
