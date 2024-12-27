@@ -17,7 +17,9 @@ import 'package:tl_consultant/features/auth/presentation/controllers/auth_contro
 //email field
 CustomFormField emailFormField(){
   return CustomFormField(
-    hint: 'Email',
+    verContentPadding: 11.5,
+    horContentPadding: 12,
+    hint: 'enter email address',
     textEditingController: AuthController.instance.emailTEC,
     textInputType: TextInputType.emailAddress,
     validator: (val) {
@@ -46,17 +48,32 @@ IntlPhoneField phoneField(){
     dropdownIconPosition: IconPosition.trailing,
     flagsButtonPadding: const EdgeInsets.only(left: 12),
     // controller: controller,
-    decoration: const InputDecoration(
-      counterStyle: TextStyle(color: ColorPalette.white),
+    decoration: InputDecoration(
+      counterStyle: const TextStyle(color: ColorPalette.white),
       hintText: 'Phone number',
-      hintStyle: TextStyle(
+      hintStyle: const TextStyle(
           fontSize: 18, color: Colors.grey),
       errorStyle: authScreensErrorStyle,
       border: InputBorder.none,
       fillColor: ColorPalette.white,
       filled: true,
-      contentPadding: EdgeInsets.symmetric(
-          vertical: 22.0, horizontal: 24.0),
+      contentPadding: const EdgeInsets.symmetric(
+          vertical: 11.5, horizontal: 12.0),
+      focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0),
+          borderSide:
+          BorderSide(width: 1, color: ColorPalette.gray.shade900)),
+      enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0),
+          borderSide:
+          BorderSide(width: 1, color: ColorPalette.gray.shade900)),
+      focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0),
+          borderSide: const BorderSide(width: 1, color: ColorPalette.red)),
+      errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0),
+          borderSide: const BorderSide(width: 1, color: ColorPalette.red)),
+
     ),
     onChanged: (val) {
       var number = val.number.startsWith('0')
@@ -70,6 +87,8 @@ IntlPhoneField phoneField(){
 //Password field
 CustomFormField passwordField(){
   return CustomFormField(
+    verContentPadding: 11.5,
+    horContentPadding: 12,
     obscureText: !AuthController.instance.isPasswordVisible.value,
     textInputType: TextInputType.visiblePassword,
     textEditingController: AuthController.instance.passwordTEC,
@@ -102,6 +121,8 @@ CustomFormField passwordField(){
 CustomFormField confirmPwdField(){
   return CustomFormField(
     hint: 'Confirm Password',
+    verContentPadding: 11.5,
+    horContentPadding: 12,
     obscureText: !AuthController.instance.isPasswordVisible.value,
     textInputType: TextInputType.visiblePassword,
     validator: (val) {

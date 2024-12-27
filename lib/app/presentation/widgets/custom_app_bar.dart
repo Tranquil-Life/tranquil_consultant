@@ -7,11 +7,13 @@ class AppBarAction {
   final Widget child;
   final bool isCustomButton;
   final Function()? onPressed;
+  final Color? actionBgColor;
 
-  const AppBarAction({
+  const AppBarAction( {
     required this.child,
     this.onPressed,
     this.isCustomButton = true,
+    this.actionBgColor,
   });
 }
 
@@ -19,6 +21,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String? title;
   final bool hideBackButton;
   final Color? backgroundColor;
+  final Color? actionBgColor;
   final bool? centerTitle;
   final Color? titleColor;
   final List<AppBarAction>? actions;
@@ -36,7 +39,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.centerTitle,
     this.backIcon,
     this.fontFamily,
-    this.backgroundColor,
+    this.backgroundColor, this.actionBgColor,
   });
 
   @override
@@ -88,7 +91,10 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           padding: const EdgeInsets.only(right: 8),
           child: Center(
             child: e.isCustomButton
-                ? AppBarButton(icon: e.child, onPressed: e.onPressed)
+                ? AppBarButton(
+                icon: e.child,
+                onPressed: e.onPressed,
+                backgroundColor: actionBgColor ?? ColorPalette.green)
                 : _NormalButton(e),
           ),
         );

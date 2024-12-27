@@ -83,3 +83,14 @@ final titleOptions = [
   'LPA',
   'BCC'
 ];
+
+const solo = "solo";
+const agency = "agency";
+const video = "video";
+const picture = "picture";
+
+const verifyIdentityTitle = "Verify your identity";
+const agencyVerifyIdentityMsg = "Confirm your affiliation with our partner agency  by entering the verification code supplied by your organization. This will ensure a smooth and secure connection between you and Tranquil Life";
+const contactAgencyForCodeMsg = "It seems the code you used is incorrect. Please check the code and try again to make sure it is correct. If the issue persists, contact your clinic or reach out to our support team at";
+const verifyFailedMsg = "Verification failed";
+const verifySuccessMsg = "Verification confirmed";

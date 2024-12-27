@@ -84,7 +84,6 @@ class _TitleState extends State<Title> {
   DateTime? meetingDate;
   User therapist = UserModel.fromJson(userDataStore.user);
 
-
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -121,8 +120,7 @@ class _TitleState extends State<Title> {
                 //activity
                 GestureDetector(
                   onTap: () {
-                    // Navigator.of(context)
-                    //     .pushNamed(NotificationScreen.routeName);
+                    Get.to(NotificationScreen());
                   },
                   child: Stack(
                     alignment: AlignmentDirectional.topEnd,

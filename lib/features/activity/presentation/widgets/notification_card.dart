@@ -40,71 +40,62 @@ class NotificationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SwipeableWidget(
-      canLongPress: true,
-      swipedWidget: Align(
-        alignment: Alignment.centerRight,
-        child: _DeleteIcon(
-          onPressed: () {},
-        ),
-      ),
-      child: Stack(
-        alignment: AlignmentDirectional.topEnd,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(16),
-            margin: const EdgeInsets.symmetric(vertical: 12),
-            decoration: BoxDecoration(
-              color: Colors.grey[100],
-              borderRadius: BorderRadius.circular(8),
-              boxShadow: const [
-                BoxShadow(
-                  blurRadius: 4,
-                  color: Colors.black12,
-                  offset: Offset(0, 3),
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: MyDefaultTextStyle(
-                    style: TextStyle(fontSize: 12.5, height: 1.4, fontFamily: AppFonts.josefinSansRegular),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(timeago.format(time), style: TextStyle(fontSize: 10),),
-                        SizedBox(height: 8),
-                        Text(
-                          body
-                        ),
-                      ],
-                    ),
+    return Stack(
+      alignment: AlignmentDirectional.topEnd,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(16),
+          margin: const EdgeInsets.symmetric(vertical: 12, horizontal: 6),
+          decoration: BoxDecoration(
+            color: Colors.grey[100],
+            borderRadius: BorderRadius.circular(8),
+            boxShadow: const [
+              BoxShadow(
+                blurRadius: 4,
+                color: Colors.black12,
+                offset: Offset(0, 3),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: MyDefaultTextStyle(
+                  style: TextStyle(fontSize: 12.5, height: 1.4, fontFamily: AppFonts.josefinSansRegular),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(timeago.format(time), style: TextStyle(fontSize: 10),),
+                      SizedBox(height: 8),
+                      Text(
+                        body
+                      ),
+                    ],
                   ),
                 ),
-                SizedBox(width: 12),
-              ],
-            ),
-          ),
-          Positioned(
-            right: 24,
-            child: Container(
-              padding: const EdgeInsets.all(4),
-              decoration: BoxDecoration(
-                color: ColorPalette.green,
-                borderRadius: BorderRadius.circular(8),
               ),
-              child: _iconFromType(NotificationType.fromValue(type)),
-            ),
+              SizedBox(width: 12),
+            ],
           ),
-        ],
-      ),
+        ),
+        Positioned(
+          right: 24,
+          child: Container(
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              color: ColorPalette.green,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: _iconFromType(NotificationType.fromValue(type)),
+          ),
+        ),
+      ],
     );
   }
 }
 
 class _DeleteIcon extends StatelessWidget {
-  const _DeleteIcon({Key? key, required this.onPressed}) : super(key: key);
+  const _DeleteIcon({required this.onPressed});
   final Function() onPressed;
 
   @override

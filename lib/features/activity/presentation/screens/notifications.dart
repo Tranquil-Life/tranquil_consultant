@@ -39,6 +39,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: ColorPalette.scaffoldColor,
       appBar: const CustomAppBar(title: 'Activity'),
       body: Padding(
         padding: const EdgeInsets.all(16),

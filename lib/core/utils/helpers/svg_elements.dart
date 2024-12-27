@@ -23,4 +23,10 @@ class SvgElements {
   static get svgHexagonCloseIcon => "assets/images/icons/hexagon_close.svg";
   static get svgVideoPlayIcon => "assets/images/icons/video_play.svg";
   static get svgVideoPlayOutlineIcon => "assets/images/icons/video_play_outline.svg";
+
+  static get svgUserIcon => "assets/images/icons/user_icon.svg";
+  static get svgPersonGroupIcon => "assets/images/icons/person_group.svg";
+
+  static get svgDoubleCheckmarkIcon => "assets/images/icons/double_checkmark.svg";
+  static get svgImageIcon => "assets/images/icons/image.svg";
 }

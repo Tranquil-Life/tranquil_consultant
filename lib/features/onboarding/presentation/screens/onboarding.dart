@@ -5,6 +5,7 @@ import 'package:tl_consultant/app/presentation/routes/app_pages.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/theme/fonts.dart';
 import 'package:tl_consultant/app/presentation/widgets/buttons.dart';
+import 'package:tl_consultant/features/auth/presentation/screens/register/therapist_type.dart';
 
 class OnBoardingScreen extends StatefulWidget {
   const OnBoardingScreen({Key? key}) : super(key: key);
@@ -126,7 +127,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                               _goToPage(page + 1);
                             } else {
                               //AppData.isOnboardingCompleted = true;
-                              Get.offAllNamed(Routes.SIGN_IN);
+                              Get.offAll(AccountTypeScreen());
                             }
                           });
 

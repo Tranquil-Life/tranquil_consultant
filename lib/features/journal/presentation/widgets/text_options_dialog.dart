@@ -105,7 +105,7 @@ class _TextOptionsDialogState extends State<TextOptionsDialog> {
               ),
             )),
         Container(
-          height: displayHeight(context) * 0.4,
+          height: 360,
           padding: EdgeInsets.only(left: 16, right: 16, top: 40, bottom: 40),
           width: displayWidth(context),
           decoration: BoxDecoration(
@@ -170,7 +170,7 @@ class _TextOptionsDialogState extends State<TextOptionsDialog> {
                   ),
                 ],
               ),
-              SizedBox(height: 40),
+              Spacer(),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
