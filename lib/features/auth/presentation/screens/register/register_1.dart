@@ -8,6 +8,8 @@ import 'package:tl_consultant/app/presentation/widgets/custom_app_bar.dart';
 import 'package:tl_consultant/app/presentation/widgets/unfocus_bg.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
+import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';
+import 'package:tl_consultant/features/auth/presentation/controllers/verification_controller.dart';
 import 'package:tl_consultant/features/auth/presentation/screens/register/agency_based_verification.dart';
 import 'package:tl_consultant/features/auth/presentation/screens/register/solo_based_verification.dart';
 import 'package:tl_consultant/features/auth/presentation/widgets/form_fields.dart';
@@ -21,6 +23,9 @@ class Register1 extends StatefulWidget {
 }
 
 class _Register1State extends State<Register1> {
+  final authController = Get.put(AuthController());
+  final verificationController = Get.put(VerificationController());
+
   @override
   Widget build(BuildContext context) {
     return UnFocusWidget(
@@ -29,7 +34,6 @@ class _Register1State extends State<Register1> {
           title: 'Get started',
           centerTitle: false,
           backgroundColor: ColorPalette.scaffoldColor,
-
         ),
         backgroundColor: ColorPalette.scaffoldColor,
         body: SafeArea(
@@ -61,54 +65,55 @@ class _Register1State extends State<Register1> {
                     style: TextStyle(color: ColorPalette.gray[600]),
                   ),
                   SizedBox(height: 8),
-                  emailFormField(),
-
+                  emailFormField(authController),
                   SizedBox(height: 12),
                   Text(
                     'Phone number',
                     style: TextStyle(color: ColorPalette.gray[600]),
                   ),
                   SizedBox(height: 8),
-                  phoneField(),
-
+                  phoneField(authController),
                   Text(
                     'Password',
                     style: TextStyle(color: ColorPalette.gray[600]),
                   ),
                   SizedBox(height: 8),
-                  Obx(()=>passwordField()),
-
+                  Obx(() => passwordField(authController)),
                   SizedBox(height: 12),
-
                   Text(
                     'Confirm password',
                     style: TextStyle(color: ColorPalette.gray[600]),
                   ),
                   SizedBox(height: 8),
-                  Obx(()=>confirmPwdField()),
-
+                  Obx(() => confirmPwdField()),
                   SizedBox(
-                    height: displayHeight(context)/10,
+                    height: displayHeight(context) / 10,
                   ),
+                  Obx(()=>CustomButton(
+                    onPressed: () async {
+                      if (authController.selectedType.value == solo) {
+                        await verificationController.requestVerificationToken(
+                            email: authController.emailTEC.text,
+                            therapistKind: authController.selectedType.value);
 
-                  CustomButton(
-                    onPressed: () {
-                      if(authController.selectedType.value == solo){
-                        Get.to(SoloBasedVerification());
-                      }else{
+                      } else {
                         Get.to(AgencyBasedVerification());
                       }
-                    },
-                    text: "Continue",
-                  ),
 
+                    },
+                    child: verificationController.requesting.value
+                        ? CircularProgressIndicator(color: ColorPalette.white)
+                        : Text(
+                      "Continue",
+                      style: TextStyle(color: ColorPalette.white),
+                    ),
+                  )),
                   const SizedBox(
                     height: 40,
                   ),
                   GestureDetector(
                     onTap: () {
-
-                      //..
+                      //To Sign in page
                     },
                     child: Align(
                       alignment: Alignment.center,
@@ -123,13 +128,14 @@ class _Register1State extends State<Register1> {
                                   fontFamily: AppFonts.josefinSansRegular),
                             ),
                           ],
-                          style: TextStyle(color: ColorPalette.gray.shade300, fontFamily: AppFonts.josefinSansRegular),
+                          style: TextStyle(
+                              color: ColorPalette.gray.shade300,
+                              fontFamily: AppFonts.josefinSansRegular),
                         ),
                         textAlign: TextAlign.center,
                       ),
                     ),
                   ),
-
                   const SizedBox(
                     height: 40,
                   ),

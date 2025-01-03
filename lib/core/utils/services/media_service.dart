@@ -84,7 +84,7 @@ abstract class MediaService {
     if (result == null) return null;
 
     if (uploadType == "cv") {
-      AuthController.instance.uploadCv(file: File(result.files.first.path!));
+      // AuthController.instance.uploadCv(file: File(result.files.first.path!));
     }
 
     return File(result.files.first.path!);

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/theme/fonts.dart';
 import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
@@ -81,8 +82,14 @@ class PictureUploadOption extends StatelessWidget {
               ),
             ),
 
-            if (authController.pictureUrl.value.isNotEmpty)
-              SvgPicture.asset(SvgElements.svgDoubleCheckmarkIcon)        ],
+            Obx((){
+              if (authController.pictureUrl.value.isNotEmpty){
+                return SvgPicture.asset(SvgElements.svgDoubleCheckmarkIcon);
+              }else{
+                return SizedBox();
+              }
+            })
+          ],
         ),
       ),
     );

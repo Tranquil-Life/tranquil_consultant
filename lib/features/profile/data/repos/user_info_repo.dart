@@ -29,7 +29,7 @@ class UserInfoRepoImpl extends UserInfoRepo{
 
       var request = http.MultipartRequest('POST', uri);
 
-      request.fields['username'] = "${AuthController.instance.params.firstName}_${AuthController.instance.params.lastName}" ;
+      // request.fields['username'] = "${AuthController.instance.params.firstName}_${AuthController.instance.params.lastName}" ;
       request.fields['upload_type'] = "cv" ;
 
       var multiport = http.MultipartFile(
@@ -68,7 +68,7 @@ class UserInfoRepoImpl extends UserInfoRepo{
 
       var request = http.MultipartRequest('POST', uri);
 
-      request.fields['username'] = "${AuthController.instance.params.firstName}_${AuthController.instance.params.lastName}" ;
+      // request.fields['username'] = "${AuthController.instance.params.firstName}_${AuthController.instance.params.lastName}" ;
       request.fields['upload_type'] = "photo_id" ;
 
       var multiport = http.MultipartFile(

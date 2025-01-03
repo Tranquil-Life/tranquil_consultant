@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:dartz/dartz.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
@@ -27,13 +28,15 @@ class AuthController extends GetxController {
 
   UserDataStore userDataStore = UserDataStore();
   UserInfoRepoImpl userInfoRepoImpl = UserInfoRepoImpl();
+  AuthRepoImpl authRepo = AuthRepoImpl();
   MediaRepoImpl mediaRepo = MediaRepoImpl();
 
   TextEditingController emailTEC =
       // TextEditingController(text: "apple2@gmail.com");
-      TextEditingController(text: "barry@gmail.com");
+      TextEditingController();
+
   // TextEditingController passwordTEC = TextEditingController(text: "password");
-  TextEditingController passwordTEC = TextEditingController(text: "12345678");
+  TextEditingController passwordTEC = TextEditingController();
 
   TextEditingController cvTEC = TextEditingController();
   TextEditingController identityTEC = TextEditingController();
@@ -73,23 +76,30 @@ class AuthController extends GetxController {
   var selectedType = ''.obs;
 
   Future signUp() async {
-    Either either = await AuthRepoImpl().register(params);
+    params.email = emailTEC.text;
+    params.videoIntro = videoUrl.value;
+    params.pictureUrl = pictureUrl.value;
+    params.therapistKind = selectedType.value;
+
+    Either either = await authRepo.register(params);
     either.fold(
         (l) => CustomSnackBar.showSnackBar(
             context: Get.context!,
-            title: "Error",
             message: l.message.toString(),
             backgroundColor: ColorPalette.red), (r) async {
       Map<String, dynamic> data = r;
-
-      if (data['error'] == false && data['data'] != null) {
-        userDataStore.user = data['data'];
-      }
+      userDataStore.user = data['data']['user'];
+      userDataStore.qualifications =
+          List<Map<String, dynamic>>.from(data['data']['qualifications']);
+      userDataStore.user['meetings_count'] = data['data']['meetings_count'];
+      userDataStore.user['clients_count'] = data['data']['clients_count'];
 
       AppData.isSignedIn = true;
-      // User user = UserModel.fromJson(userDataStore.user);
+      User user = UserModel.fromJson(userDataStore.user);
 
-      // print(user.toJson());
+      if (kDebugMode) {
+        print(user.toJson());
+      }
 
       await Get.offAllNamed(Routes.DASHBOARD);
       emailTEC.clear();
@@ -113,18 +123,20 @@ class AuthController extends GetxController {
 
       if (data['error'] == false && data['data'] != null) {
         userDataStore.user = data['data']['user'];
-        userDataStore.qualifications = List<Map<String, dynamic>>.from(data['data']['qualifications']);
-        print("Meetings count: ${data['data']['meetings_count']}");
-        print("Client count: ${data['data']['clients_count']}");
+        userDataStore.qualifications =
+            List<Map<String, dynamic>>.from(data['data']['qualifications']);
+        userDataStore.user['meetings_count'] = data['data']['meetings_count'];
+        userDataStore.user['clients_count'] = data['data']['clients_count'];
 
         AppData.isSignedIn = true;
+
+        await updateFcmToken();
 
         await Get.offAllNamed(Routes.DASHBOARD);
 
         emailTEC.clear();
         passwordTEC.clear();
       }
-
     });
 
     loading.value = false;
@@ -132,107 +144,15 @@ class AuthController extends GetxController {
 
   Future resetPassword() async {
     var either = await AuthRepoImpl().resetPassword(emailTEC.text);
-    if (either.isRight()) {
-      bool val = either.isRight();
-      debugPrint(val.toString());
-    } else {
-      either.leftMap((l) => CustomSnackBar.showSnackBar(
-          context: Get.context!,
-          title: "Error",
-          message: l.message.toString(),
-          backgroundColor: ColorPalette.red));
-    }
-  }
-
-  //Future<String> generateFcmToken() async {
-    // var result = await AuthRepoImpl().generateFcmToken();
-    // String token = "";
-    // if (result.isRight()) {
-    //   result.map((r) => token = r);
-    //
-    //   return token;
-    // } else {
-    //   result.leftMap((l) => CustomSnackBar.showSnackBar(
-    //       context: Get.context!,
-    //       title: "Error",
-    //       message: l.message.toString(),
-    //       backgroundColor: ColorPalette.red));
-    //
-    //   return "";
-    // }
-  //}
-
-  // Future updateFcmToken() async {
-  //   String fcmToken = await generateFcmToken();
-  //
-  //   if (fcmToken.isNotEmpty) {
-  //     // Sends the current token to the endpoint
-  //     await sendFcmTokenToDB(fcmToken);
-  //   }
-  // }
-
-  // Future sendFcmTokenToDB(String fcmToken) async {
-  //   var result = await AuthRepoImpl().sendFcmTokenToDB(fcmToken);
-  //   if (result.isRight()) {
-  //     result.map((r) => print(r.toString()));
-  //   } else {
-  //     result.leftMap((l) => CustomSnackBar.showSnackBar(
-  //         context: Get.context!,
-  //         title: "Error",
-  //         message: l.message.toString(),
-  //         backgroundColor: ColorPalette.red));
-  //   }
-  // }
-
-  uploadCv({File? file}) async {
-    var fileSize = await getFileSize(file!.path, 1);
-    if (fileSize == "Too large") {
-      CustomSnackBar.showSnackBar(
-          context: Get.context!,
-          title: "Error",
-          message: fileMaxSize,
-          backgroundColor: ColorPalette.red);
-    } else {
-      uploading.value = true;
-
-      var result = await userInfoRepoImpl.uploadCv(file);
-
-      if (result.isRight()) {
-        result.map((r) {
-          params.cvUrl = r;
-          uploadUrl.value = params.cvUrl;
-        });
-      } else {
-        result.leftMap((l) {
-          CustomSnackBar.showSnackBar(
-              context: Get.context!,
-              title: "Error",
-              message: l.message.toString(),
-              backgroundColor: ColorPalette.red);
-        });
-      }
-    }
-  }
-
-  uploadID({File? file}) async {
-    uploading.value = true;
-
-    var result = await userInfoRepoImpl.uploadID(file!);
-
-    if (result.isRight()) {
-      result.map((r) {
-        params.identityUrl = r;
-        uploadUrl.value = params.identityUrl;
-      });
-    } else {
-      result.leftMap((l) {
-        CustomSnackBar.showSnackBar(
+    either.fold(
+        (l) => CustomSnackBar.showSnackBar(
             context: Get.context!,
             title: "Error",
             message: l.message.toString(),
-            backgroundColor: ColorPalette.red);
-      });
-    }
+            backgroundColor: ColorPalette.red), (r) {
+      bool val = either.isRight();
+      debugPrint(val.toString());
+    });
   }
 
   getExtension(String uploadType) {
@@ -304,7 +224,7 @@ class AuthController extends GetxController {
 
       // Create a new file from the temp directory with a unique name
       final file =
-      File('${systemTempDir.path}/$fileName${getExtension(uploadType)}');
+          File('${systemTempDir.path}/$fileName${getExtension(uploadType)}');
 
       // Write the byte data into the file
       await file.writeAsBytes(byteData.buffer
@@ -335,7 +255,6 @@ class AuthController extends GetxController {
         await Future.delayed(Duration(seconds: 1));
 
         Get.back();
-
       } else if (uploadType == profileImage) {
         pictureUrl.value = downloadUrl;
 
@@ -363,6 +282,35 @@ class AuthController extends GetxController {
     }
   }
 
+  Future updateFcmToken() async {
+    String fcmToken = await generateFcmToken();
+
+    if (fcmToken.isNotEmpty) {
+      // Sends the current token to the endpoint
+      await sendTokenToEndpoint(fcmToken);
+    }
+  }
+
+  Future sendTokenToEndpoint(String fcmToken) async {
+    Either either = await authRepo.sendTokenToEndpoint(fcmToken);
+    either.fold((l) => CustomSnackBar.errorSnackBar(l.message.toString()),
+        (r) => debugPrint(r.toString()));
+  }
+
+  Future<String> generateFcmToken() async {
+    String token = "";
+
+    Either either = await authRepo.generateFcmToken();
+    either.fold((l) {
+      CustomSnackBar.errorSnackBar(l.message.toString());
+      return token;
+    }, (r) {
+      token = r;
+      return token;
+    });
+
+    return token;
+  }
 
   clearData() {
     emailTEC.clear();

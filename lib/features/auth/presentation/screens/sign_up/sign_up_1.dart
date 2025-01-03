@@ -11,7 +11,7 @@ import 'package:tl_consultant/features/auth/presentation/widgets/form_fields.dar
 import 'package:tl_consultant/features/auth/presentation/widgets/means_of_id_field.dart';
 
 class SignUpScreen1 extends StatefulWidget {
-  const SignUpScreen1({Key? key}) : super(key: key);
+  const SignUpScreen1({super.key});
 
   @override
   State<SignUpScreen1> createState() => _SignUpScreen1State();
@@ -24,7 +24,7 @@ class _SignUpScreen1State extends State<SignUpScreen1> {
 
   @override
   void didChangeDependencies() {
-    authController.dateTEC.text = authController.params.birthDate;
+    // authController.dateTEC.text = authController.params.birthDate;
     super.didChangeDependencies();
   }
 
@@ -86,7 +86,7 @@ class _SignUpScreen1State extends State<SignUpScreen1> {
                               );
                               if (date != null) {
                                 authController.dateTEC.text = date.formatted;
-                                authController.params.birthDate = date.folded;
+                                // authController.params.birthDate = date.folded;
                               }
                             },
                           ),
@@ -96,7 +96,7 @@ class _SignUpScreen1State extends State<SignUpScreen1> {
                   ),
 
                   //attach resumé
-                  CurriculumVitaeField(),
+                  // CurriculumVitaeField(),
 
                   //Attach ID
                   MeansOfIdField()

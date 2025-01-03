@@ -10,6 +10,7 @@ import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/utils/functions.dart';
 import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 import 'package:tl_consultant/core/utils/helpers/svg_elements.dart';
+import 'package:tl_consultant/features/auth/presentation/widgets/means_of_id_field.dart';
 import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:video_player/video_player.dart';
 
@@ -300,7 +301,7 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
 
                                     CustomButton(
                                         onPressed: () {
-
+                                          //Retake video
                                         },
                                         text: "Retake video",
                                         textColor: ColorPalette.green,
@@ -317,9 +318,7 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
                                                     uploadingVideoMsg))
                                             ? null
                                             : () async {
-                                                print("upload: recording");
-
-                                                await profileController
+                                                await authController
                                                     .uploadFile(
                                                         File(video.path),
                                                         videoIntro);
@@ -448,6 +447,8 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
                 ],
               ));
   }
+
+  //TODO: Specify the upload route using the intial naviagation route
 
   String uploadTextState() {
     if (profileController.compressing.value) {

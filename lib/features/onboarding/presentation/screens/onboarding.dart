@@ -5,7 +5,10 @@ import 'package:tl_consultant/app/presentation/routes/app_pages.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/theme/fonts.dart';
 import 'package:tl_consultant/app/presentation/widgets/buttons.dart';
-import 'package:tl_consultant/features/auth/presentation/screens/register/therapist_type.dart';
+import 'package:tl_consultant/features/auth/presentation/screens/register/therapist_type_screen.dart';
+import 'package:tl_consultant/features/auth/presentation/screens/sign_in/sign_in.dart';
+import 'package:tl_consultant/features/auth/presentation/widgets/means_of_id_field.dart';
+import 'package:tl_consultant/features/onboarding/presentation/controllers/onboarding_controller.dart';
 
 class OnBoardingScreen extends StatefulWidget {
   const OnBoardingScreen({Key? key}) : super(key: key);
@@ -15,6 +18,8 @@ class OnBoardingScreen extends StatefulWidget {
 }
 
 class _OnBoardingScreenState extends State<OnBoardingScreen> {
+  OnboardingController controller = Get.put(OnboardingController());
+
   static const _text = [
     'Let\'s help people live better and tranquil lives',
     'Connect with a global clientele.'
@@ -126,8 +131,8 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                             if (page < _text.length - 1) {
                               _goToPage(page + 1);
                             } else {
-                              //AppData.isOnboardingCompleted = true;
-                              Get.offAll(AccountTypeScreen());
+                              controller.saveOnboardedStatus();
+                              Get.offAll(SignInScreen());
                             }
                           });
 

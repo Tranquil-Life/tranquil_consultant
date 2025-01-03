@@ -7,7 +7,7 @@ UserModel _$UserModelFromJson(Map<String, dynamic> json) => UserModel(
   lastName: json['l_name'] ?? '',
   authToken: json['auth_token'],
   phoneNumber: json['phone'] ?? '',
-  emailVerifiedAt: json['email_verified_at'],
+  emailVerifiedAt: json['email_verified_at'] != null ? DateTime.parse(json['email_verified_at']) : null,
   avatarUrl: json['avatar_url'] ?? '',
   birthDate: json['birth_date'],
   bio: json['bio'] ?? '',

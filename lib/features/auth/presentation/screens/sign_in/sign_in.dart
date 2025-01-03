@@ -5,6 +5,9 @@ import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/widgets/buttons.dart';
 import 'package:tl_consultant/app/presentation/widgets/my_default_text_theme.dart';
 import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';
+import 'package:tl_consultant/features/auth/presentation/screens/register/introduce_yourself.dart';
+import 'package:tl_consultant/features/auth/presentation/screens/register/register_1.dart';
+import 'package:tl_consultant/features/auth/presentation/screens/register/therapist_type_screen.dart';
 import 'package:tl_consultant/features/auth/presentation/widgets/bg.dart';
 import 'package:tl_consultant/features/auth/presentation/widgets/forgot_password.dart';
 import 'package:tl_consultant/features/auth/presentation/widgets/form_fields.dart';
@@ -61,7 +64,7 @@ class _SignInScreenState extends State<SignInScreen> {
                             padding: const EdgeInsets.symmetric(vertical: 12),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(8),
-                              child: emailFormField(),
+                              child: emailFormField(authController),
                             ),
                           ),
                           Padding(
@@ -69,7 +72,7 @@ class _SignInScreenState extends State<SignInScreen> {
                             child: Obx(()
                             => ClipRRect(
                               borderRadius: BorderRadius.circular(8),
-                              child: passwordField(),
+                              child: passwordField(authController),
                             )),
                           ),
                         ],
@@ -122,14 +125,14 @@ class _SignInScreenState extends State<SignInScreen> {
                     MyDefaultTextStyle(
                       style: const TextStyle(fontSize: 20, color: Colors.white),
                       child: GestureDetector(
-                        onTap: ()=>Get.toNamed(Routes.SIGN_UP_0),
+                        onTap: ()=> Get.offAll(AccountTypeScreen()),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             const Text("Don't have an account?"),
                             const SizedBox(width: 8),
                             GestureDetector(
-                              onTap: () => Get.toNamed(Routes.SIGN_UP_0),
+                              onTap: () => Get.to(AccountTypeScreen()),
                               child: const Text(
                                 'Sign up',
                                 style: TextStyle(color: ColorPalette.yellow),

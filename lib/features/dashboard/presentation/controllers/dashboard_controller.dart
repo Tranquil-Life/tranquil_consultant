@@ -48,42 +48,7 @@ class DashboardController extends GetxController {
     city.value = state;
     timezone.value = "$formattedTimeZone";
 
-    print("COUNTRY: ${country.value}");
   }
-
-  // updateMyLocation(double latitude, double longitude, double timeZone,
-  //     String location, String timeZoneIdentifier) async {
-  //   debugPrint(
-  //       "lat: $latitude\nlong: $longitude\ntz: $timeZone\nlocation: $location\ntzIdentifier: $timeZoneIdentifier");
-  //
-  //   var either = await LocationRepoImpl().updateLocation(
-  //       latitude: latitude,
-  //       longitude: longitude,
-  //       timeZone: timeZone,
-  //       location: location,
-  //       timeZoneIdentifier: 'America/Los_Angeles');
-  //
-  //   either.fold(
-  //     (l) {
-  //       print("IDENTIFIER: ${l.message}");
-  //
-  //       CustomSnackBar.showSnackBar(
-  //         context: Get.context!,
-  //         title: "Error",
-  //         message: "UPDATE LOCATION: ${l.message!}",
-  //         backgroundColor: ColorPalette.red,
-  //       );
-  //     },
-  //     (r) {
-  //       Map data = r['data'];
-  //       print("IDENTIFIER: $data");
-  //       userDataStore.user['timezone_identifier'] = data['timezone_identifier'];
-  //     },
-  //   );
-  //
-  //   userDataStore.user = userDataStore.user;
-  //   getMeetings();
-  // }
 
   getMeetings() async {
     await MeetingsController().loadFirstMeetings();
@@ -105,7 +70,7 @@ class DashboardController extends GetxController {
 
   @override
   void onInit() {
-    ProfileController.instance.restoreUser();
+    // ProfileController.instance.restoreUser();
 
     getMyLocationInfo();
 

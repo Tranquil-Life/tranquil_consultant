@@ -10,6 +10,10 @@ abstract class AuthEndPoints {
   static const passwordReset = '$thisUserType/requestPasswordReset';
   static const logOut = '$thisUserType/logOut';
   static const updateFcmToken = '$thisUserType/generate-device-id';
+  static const generateAgoraToken = '$thisUserType/generateToken';
+  static const checkAuthStatus = '$thisUserType/isAuthenticated';
+  static const requestVerificationToken = '$thisUserType/accountVerifyRequest';
+  static const verifyAccount = '$thisUserType/verifyAccount';
 }
 
 abstract class ProfileEndPoints {

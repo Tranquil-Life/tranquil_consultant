@@ -90,12 +90,14 @@ class _IntroduceYourselfPageState extends State<IntroduceYourselfPage> {
                 SizedBox(
                   height: displayHeight(context) / 10,
                 ),
-                CustomButton(
-                    onPressed: (authController.videoUrl.isEmpty ||
-                            authController.pictureUrl.isEmpty)
+                Obx(()=>CustomButton(
+                    onPressed: (
+                        authController.pictureUrl.value.isEmpty)
                         ? null
-                        : () {},
-                    text: "Complete sign up"),
+                        : () {
+                      authController.signUp();
+                    },
+                    text: "Complete sign up")),
                 SizedBox(
                   height: 40,
                 ),

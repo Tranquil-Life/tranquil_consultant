@@ -16,9 +16,16 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   void initState() {
-    Future.delayed(const Duration(seconds: 3), () async {
-      Get.toNamed(Routes.ONBOARDING);
+    Future.delayed(const Duration(seconds: 6), () async {
+      final bool isUserOnboarded = await controller.checkOnboardingStatus();
+
+      if (isUserOnboarded) {
+        controller.checkAuthStatus();
+      } else {
+        Get.toNamed(Routes.ONBOARDING);
+      }
     });
+
     super.initState();
   }
 

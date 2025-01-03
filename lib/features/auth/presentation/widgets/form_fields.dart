@@ -1,26 +1,20 @@
-import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:intl_phone_field/country_picker_dialog.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
-import 'package:tl_consultant/app/presentation/theme/fonts.dart';
 import 'package:tl_consultant/app/presentation/theme/properties.dart';
 import 'package:tl_consultant/app/presentation/widgets/custom_form_field.dart';
-import 'package:tl_consultant/app/presentation/widgets/dialogs.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
-import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
-import 'package:tl_consultant/core/utils/services/media_service.dart';
 import 'package:tl_consultant/core/utils/services/validators.dart';
 import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';
 
 //email field
-CustomFormField emailFormField(){
+CustomFormField emailFormField(AuthController authController){
   return CustomFormField(
     verContentPadding: 11.5,
     horContentPadding: 12,
     hint: 'enter email address',
-    textEditingController: AuthController.instance.emailTEC,
+    textEditingController: authController.emailTEC,
     textInputType: TextInputType.emailAddress,
     validator: (val) {
       if (val!.isEmpty) {
@@ -36,9 +30,9 @@ CustomFormField emailFormField(){
 }
 
 //Phone number field
-IntlPhoneField phoneField(){
+IntlPhoneField phoneField(AuthController authController){
   return IntlPhoneField(
-    initialValue: AuthController.instance.params.phone,
+    initialValue: authController.params.phone,
     dropdownTextStyle: const TextStyle(color: ColorPalette.black),
     pickerDialogStyle: PickerDialogStyle(
       padding: const EdgeInsets.symmetric(
@@ -79,25 +73,25 @@ IntlPhoneField phoneField(){
       var number = val.number.startsWith('0')
           ? val.number.substring(1)
           : val.number;
-      AuthController.instance.params.phone = '${val.countryCode}$number';
+      authController.params.phone = '${val.countryCode}$number';
     },
   );
 }
 
 //Password field
-CustomFormField passwordField(){
+CustomFormField passwordField(AuthController authController){
   return CustomFormField(
     verContentPadding: 11.5,
     horContentPadding: 12,
-    obscureText: !AuthController.instance.isPasswordVisible.value,
+    obscureText: !authController.isPasswordVisible.value,
     textInputType: TextInputType.visiblePassword,
-    textEditingController: AuthController.instance.passwordTEC,
+    textEditingController: authController.passwordTEC,
     hint: 'Password',
     suffix: GestureDetector(
       onTap: (){
-        AuthController.instance.isPasswordVisible.value = !AuthController.instance.isPasswordVisible.value;
+        authController.isPasswordVisible.value = !authController.isPasswordVisible.value;
       },
-      child: AuthController.instance.isPasswordVisible.value
+      child: authController.isPasswordVisible.value
           ? Icon(
         Icons.visibility,
         color: ColorPalette.green,
@@ -113,7 +107,7 @@ CustomFormField passwordField(){
       }
       return null;
     },
-    //onChanged: (text)=> AuthController.instance.params.password = text,
+    onChanged: (text)=> authController.params.password = text,
   );
 }
 
@@ -141,7 +135,7 @@ CustomFormField confirmPwdField(){
 CustomFormField firstNameField(){
   return CustomFormField(
     hint: 'First Name',
-    initialValue: AuthController.instance.params.firstName,
+    // initialValue: AuthController.instance.params.firstName,
     textInputType: TextInputType.name,
     textInputAction: TextInputAction.next,
     textCapitalization: TextCapitalization.words,
@@ -151,7 +145,7 @@ CustomFormField firstNameField(){
       }
       return null;
     },
-    onChanged: (text)=> AuthController.instance.params.firstName = text,
+    // onChanged: (text)=> AuthController.instance.params.firstName = text,
   );
 }
 
@@ -159,7 +153,7 @@ CustomFormField firstNameField(){
 CustomFormField lastNameField(){
   return CustomFormField(
     hint: 'Last Name',
-    initialValue: AuthController.instance.params.lastName,
+    // initialValue: AuthController.instance.params.lastName,
     textInputType: TextInputType.name,
     textInputAction: TextInputAction.next,
     textCapitalization: TextCapitalization.words,
@@ -169,7 +163,7 @@ CustomFormField lastNameField(){
       }
       return null;
     },
-    onChanged: (text)=> AuthController.instance.params.lastName = text,
+    // onChanged: (text)=> AuthController.instance.params.lastName = text,
   );
 }
 
@@ -185,7 +179,7 @@ CustomFormField dateOfBirthField(){
       }
       return null;
     },
-    onChanged: (text)=> AuthController.instance.params.birthDate = text,
+    // onChanged: (text)=> AuthController.instance.params.birthDate = text,
   );
 }
 
@@ -199,11 +193,11 @@ CustomFormField cvField({Function()? onTap}){
     readOnly: true,
     onTap: onTap,
     validator: (val) {
-      if (AuthController.instance.params.cvUrl.isEmpty) return null;
+      // if (AuthController.instance.params.cvUrl.isEmpty) return null;
       if (val!.isEmpty) return emptyCvField;
       return null;
     },
-    onChanged: (text)=>AuthController.instance.params.cvUrl = text,
+    // onChanged: (text)=>AuthController.instance.params.cvUrl = text,
   );
 }
 
@@ -217,11 +211,11 @@ CustomFormField meansOfIdField({Function()? onTap}){
     readOnly: true,
     onTap: onTap,
     validator: (val) {
-      if (AuthController.instance.params.identityUrl.isEmpty) return null;
-      if (val!.isEmpty) return emptyIdField;
+      // if (AuthController.instance.params.identityUrl.isEmpty) return null;
+      // if (val!.isEmpty) return emptyIdField;
       return null;
     },
-    onChanged: (text)=>AuthController.instance.params.identityUrl = text,
+    // onChanged: (text)=>AuthController.instance.params.identityUrl = text,
   );
 }
 
@@ -240,14 +234,16 @@ CustomFormField currentRegion(){
       }
       return null;
     },
-    onChanged: (text)=> AuthController.instance.params.currentLocation = text);
+    // onChanged: (text)=> AuthController.instance.params.currentLocation = text
+
+  );
 }
 
 //linkedin
 CustomFormField linkedinField(){
   return CustomFormField(
     hint: 'LinkedIn profile URL',
-    initialValue: AuthController.instance.params.linkedinUrl,
+    // initialValue: AuthController.instance.params.linkedinUrl,
     textInputType: TextInputType.text,
     textInputAction: TextInputAction.next,
     textCapitalization: TextCapitalization.words,
@@ -257,7 +253,7 @@ CustomFormField linkedinField(){
       }
       return null;
     },
-    onChanged: (text)=> AuthController.instance.params.linkedinUrl = text,
+    // onChanged: (text)=> AuthController.instance.params.linkedinUrl = text,
   );
 }
 
@@ -269,14 +265,14 @@ CustomFormField expertiseField({Function()? onTap}){
     readOnly: true,
     onTap: onTap,
     validator: (val) {
-      if (AuthController.instance.params.expertise.isEmpty) return null;
+      // if (AuthController.instance.params.expertise.isEmpty) return null;
       if (val!.isEmpty) return emptyIdField;
       return null;
     },
     onChanged: (text){
-      AuthController.instance.params.expertise.clear();
-
-      AuthController.instance.params.expertise.add(text);
+      // AuthController.instance.params.expertise.clear();
+      //
+      // AuthController.instance.params.expertise.add(text);
     },
   );
 }
@@ -288,13 +284,13 @@ CustomFormField yearsOfExperienceField({Function()? onTap}){
     readOnly: true,
     onTap: onTap,
     validator: (val) {
-      if (AuthController.instance.params.yearsOfExperience.isEmpty) return null;
+      // if (AuthController.instance.params.yearsOfExperience.isEmpty) return null;
       if (val!.isEmpty) return emptyIdField;
       return null;
     },
     onChanged: (text){
-      AuthController.instance.params.yearsOfExperience = text;
-      print("OnChanged:YEARS: ${AuthController.instance.params.yearsOfExperience}");
+      // AuthController.instance.params.yearsOfExperience = text;
+      // print("OnChanged:YEARS: ${AuthController.instance.params.yearsOfExperience}");
     },
   );
 }
@@ -306,7 +302,7 @@ CustomFormField pLanguageField({Function()? onTap}){
     readOnly: true,
     onTap: onTap,
     validator: (val) {
-      if (AuthController.instance.params.languages.isEmpty) return null;
+      // if (AuthController.instance.params.languages.isEmpty) return null;
       if (val!.isEmpty) return emptyIdField;
       return null;
     },

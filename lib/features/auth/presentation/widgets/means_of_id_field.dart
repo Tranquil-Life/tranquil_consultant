@@ -116,7 +116,7 @@ class _MeansOfIdFieldState extends State<MeansOfIdField> {
             ).whenComplete((){
               authController.uploading.value = false;
               authController.uploadUrl.value = "";
-              authController.identityTEC.text = authController.params.identityUrl;
+              // authController.identityTEC.text = authController.params.identityUrl;
             });
 
           },
@@ -203,19 +203,7 @@ class UploadDialog extends StatelessWidget {
                             borderRadius: BorderRadius.all(Radius.circular(12)),
                             child: GestureDetector(
                               onTap:() async{
-                                if(authController.params.firstName.isNotEmpty
-                                    && authController.params.lastName.isNotEmpty)
-                                {
-                                  await MediaService.selectImage();
-                                }
-                                else{
-                                  CustomSnackBar.showSnackBar(
-                                      context: context,
-                                      title: "Error",
-                                      message: "First name and last name are required",
-                                      backgroundColor: ColorPalette.red
-                                  );
-                                }
+                                //..
                               },
                               child: Container(
                                 height: 200,
@@ -286,7 +274,7 @@ class UploadDialog extends StatelessWidget {
                                       onPressed: (){
                                         authController.uploading.value = false;
                                         value.uploadUrl.value = "";
-                                        authController.identityTEC.text = authController.params.identityUrl;
+                                        // authController.identityTEC.text = authController.params.identityUrl;
 
                                         Get.back();
                                       },

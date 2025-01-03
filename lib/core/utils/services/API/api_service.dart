@@ -1,5 +1,3 @@
-
-
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 
@@ -51,7 +49,7 @@ class ApiService {
       if (e.response != null) {
         // print("Dio Error Response: ${e.response!.data}");
         return Left(ApiError(
-            message: e.response!.data['message'] ??
+            message: displayErrorMessages(e.response!.data) ??
                 e.response!.statusMessage ??
                 "Unknown error"));
       } else {
@@ -138,8 +136,6 @@ class ApiService {
           response.statusCode == 204) {
         return Right(response.data);
       } else {
-        // Log and return error if status code is not as expected
-        print("ERROR: ${response.data}");
         return Left(
             ApiError(message: response.data['message'] ?? "Unknown error"));
       }
@@ -169,5 +165,27 @@ class ApiService {
       }
     }
     return false; // No MultipartFile found
+  }
+
+  String displayErrorMessages(Map<String, dynamic> jsonResponse) {
+    // Check if the response contains the "errors" key
+    if (jsonResponse.containsKey('errors') && jsonResponse['errors'] != null) {
+      Map<String, dynamic> errors = jsonResponse['errors'];
+
+      // Flatten the error messages into a single list
+      List<String> allErrorMessages = [];
+      errors.forEach((field, messages) {
+        for (var message in messages) {
+          allErrorMessages.add(message);
+        }
+      });
+
+      // Join all error messages into a single string
+      String errorString = allErrorMessages.join(", ");
+
+      return errorString;
+    } else {
+      return jsonResponse['message'].toString();
+    }
   }
 }
