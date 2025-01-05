@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:tl_consultant/app/presentation/routes/app_pages.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/theme/fonts.dart';
 import 'package:tl_consultant/app/presentation/widgets/buttons.dart';
@@ -12,8 +13,6 @@ import 'package:tl_consultant/app/presentation/widgets/unfocus_bg.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:tl_consultant/features/auth/presentation/controllers/verification_controller.dart';
-import 'package:tl_consultant/features/auth/presentation/screens/register/introduce_yourself.dart';
-import 'package:tl_consultant/features/auth/presentation/widgets/means_of_id_field.dart';
 
 class SoloBasedVerification extends StatefulWidget {
   const SoloBasedVerification({super.key});
@@ -182,7 +181,7 @@ class _SoloBasedVerificationState extends State<SoloBasedVerification> {
                   if (verificationState() == true)
                     CustomButton(
                         onPressed: () {
-                          Get.to(IntroduceYourselfPage());
+                          Get.toNamed(Routes.INTRODUCE_YOURSELF);
                         },
                         text: "Proceed to account creation"),
                   SizedBox(height: 40),

@@ -11,7 +11,10 @@ import 'package:tl_consultant/features/auth/presentation/controllers/auth_contro
 import 'package:tl_consultant/features/consultation/presentation/controllers/meetings_controller.dart';
 import 'package:tl_consultant/features/home/presentation/controllers/home_controller.dart';
 import 'package:tl_consultant/features/journal/presentation/controllers/notes_controller.dart';
+import 'package:tl_consultant/features/profile/data/models/user_model.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
+import 'package:tl_consultant/features/profile/domain/entities/qualification.dart';
+import 'package:tl_consultant/features/profile/domain/entities/user.dart';
 import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
 
 class DashboardController extends GetxController {
@@ -70,12 +73,14 @@ class DashboardController extends GetxController {
 
   @override
   void onInit() {
+
     // ProfileController.instance.restoreUser();
 
     getMyLocationInfo();
 
     super.onInit();
   }
+
 
   clearData() {
     currentIndex.value = 0;

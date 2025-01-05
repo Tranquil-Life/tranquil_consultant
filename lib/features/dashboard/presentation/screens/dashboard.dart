@@ -11,6 +11,11 @@ import 'package:tl_consultant/features/dashboard/presentation/widgets/nav_item.d
 import 'package:tl_consultant/features/home/presentation/screens/home_tab.dart';
 import 'package:tl_consultant/features/home/presentation/widgets/count_indicator.dart';
 import 'package:tl_consultant/features/journal/presentation/screens/journal_tab.dart';
+import 'package:tl_consultant/features/profile/data/models/user_model.dart';
+import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
+import 'package:tl_consultant/features/profile/domain/entities/user.dart';
+import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
+import 'package:tl_consultant/features/profile/presentation/screens/edit_profile.dart';
 import 'package:tl_consultant/features/profile/presentation/screens/profile_tab.dart';
 import 'package:tl_consultant/features/wallet/presentation/screens/wallet_tab.dart';
 
@@ -25,10 +30,20 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> {
   final dashboardController = Get.put(DashboardController());
+  final profileController = Get.put(ProfileController());
+
+  checkForEmptyProfileInfo(){
+    profileController.getQualifications();
+    User user = UserModel.fromJson(userDataStore.user);
+    if(user.firstName.isEmpty || user.bio.isEmpty || user.specialties!.isEmpty || user.videoIntroUrl!.isEmpty || profileController.qualifications.isEmpty ){
+      Get.to(EditProfileScreen());
+    }
+  }
 
   @override
   void initState() {
     dashboardController.getMyLocationInfo();
+    checkForEmptyProfileInfo();
 
     setStatusBarBrightness(true);
     super.initState();

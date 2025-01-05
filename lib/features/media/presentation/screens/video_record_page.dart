@@ -1,15 +1,18 @@
 import 'dart:io';
 
 import 'package:camera/camera.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:tl_consultant/app/presentation/routes/app_pages.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/widgets/buttons.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/utils/functions.dart';
 import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 import 'package:tl_consultant/core/utils/helpers/svg_elements.dart';
+import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:tl_consultant/features/auth/presentation/widgets/means_of_id_field.dart';
 import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:video_player/video_player.dart';
@@ -24,6 +27,7 @@ class VideoRecordingPage extends StatefulWidget {
 class _VideoRecordingPageState extends State<VideoRecordingPage>
     with SingleTickerProviderStateMixin {
   final ProfileController profileController = Get.put(ProfileController());
+  final AuthController authController = Get.put(AuthController());
   late CameraController _cameraController;
   late VideoPlayerController _videoPlayerController;
   late AnimationController animationController;
@@ -38,8 +42,11 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
   bool inVideoPlayerState = false;
   double _currentPosition = 0.0;
 
+  String previousRoute = '';
+
   @override
   void initState() {
+    previousRoute = Get.previousRoute;
 
     profileController.uploadProgress.value = 0.0;
     initAnimation();
@@ -318,17 +325,27 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
                                                     uploadingVideoMsg))
                                             ? null
                                             : () async {
-                                                await authController
-                                                    .uploadFile(
-                                                        File(video.path),
-                                                        videoIntro);
+                                                if (previousRoute ==
+                                                    Routes.INTRODUCE_YOURSELF) {
+                                                  await authController
+                                                      .uploadFile(
+                                                          File(video.path),
+                                                          videoIntro);
+                                                } else {
+                                                  await profileController
+                                                      .uploadFile(
+                                                          File(video.path),
+                                                          videoIntro);
+                                                }
                                               },
                                         textColor: uploadTextState() ==
-                                            successfulUploadMsg ||
-                                            uploadTextState() ==
-                                                compressingVideoMsg ||
-                                            uploadTextState().contains(
-                                                uploadingVideoMsg) ? ColorPalette.green : ColorPalette.white,
+                                                    successfulUploadMsg ||
+                                                uploadTextState() ==
+                                                    compressingVideoMsg ||
+                                                uploadTextState()
+                                                    .contains(uploadingVideoMsg)
+                                            ? ColorPalette.green
+                                            : ColorPalette.white,
                                         text: uploadTextState()))
                                   ],
                                 )),
@@ -451,15 +468,32 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
   //TODO: Specify the upload route using the intial naviagation route
 
   String uploadTextState() {
-    if (profileController.compressing.value) {
-      return compressingVideoMsg;
-    } else if ((profileController.uploadProgress.value > 0.0 &&
-        profileController.uploadProgress.value < 100.0) || profileController.uploading.value) {
-      return "$uploadingVideoMsg: ${profileController.uploadProgress.value.toStringAsFixed(2)}%";
-    } else if (profileController.uploadProgress.value.toInt() == 100) {
-      return successfulUploadMsg;
-    } else {
-      return "Save video and upload";
+
+    if(previousRoute == Routes.INTRODUCE_YOURSELF){
+      if (authController.compressing.value) {
+        return compressingVideoMsg;
+      } else if ((authController.uploadProgress.value > 0.0 &&
+          authController.uploadProgress.value < 100.0) ||
+          authController.uploading.value) {
+        return "$uploadingVideoMsg: ${authController.uploadProgress.value.toStringAsFixed(2)}%";
+      } else if (authController.uploadProgress.value.toInt() == 100) {
+        return successfulUploadMsg;
+      } else {
+        return "Save video and upload";
+      }
+    }else{
+      if (profileController.compressing.value) {
+        return compressingVideoMsg;
+      } else if ((profileController.uploadProgress.value > 0.0 &&
+          profileController.uploadProgress.value < 100.0) ||
+          profileController.uploading.value) {
+        return "$uploadingVideoMsg: ${profileController.uploadProgress.value.toStringAsFixed(2)}%";
+      } else if (profileController.uploadProgress.value.toInt() == 100) {
+        return successfulUploadMsg;
+      } else {
+        return "Save video and upload";
+      }
     }
+
   }
 }

@@ -2,18 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tl_consultant/app/presentation/routes/app_pages.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
+import 'package:tl_consultant/app/presentation/theme/fonts.dart';
 import 'package:tl_consultant/app/presentation/widgets/buttons.dart';
 import 'package:tl_consultant/app/presentation/widgets/my_default_text_theme.dart';
 import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';
-import 'package:tl_consultant/features/auth/presentation/screens/register/introduce_yourself.dart';
-import 'package:tl_consultant/features/auth/presentation/screens/register/register_1.dart';
+import 'package:tl_consultant/features/auth/presentation/screens/forgot_password_page.dart';
 import 'package:tl_consultant/features/auth/presentation/screens/register/therapist_type_screen.dart';
 import 'package:tl_consultant/features/auth/presentation/widgets/bg.dart';
-import 'package:tl_consultant/features/auth/presentation/widgets/forgot_password.dart';
 import 'package:tl_consultant/features/auth/presentation/widgets/form_fields.dart';
 
 class SignInScreen extends StatefulWidget {
-  const SignInScreen({Key? key}) : super(key: key);
+  const SignInScreen({super.key});
 
   @override
   State<SignInScreen> createState() => _SignInScreenState();
@@ -83,12 +82,13 @@ class _SignInScreenState extends State<SignInScreen> {
                       alignment: Alignment.centerRight,
                       child: TextButton(
                         onPressed: () {
-                          isModalOpen = true;
-                          showModalBottomSheet(
-                            context: context,
-                            backgroundColor: Colors.transparent,
-                            builder: (_) => const ForgotPasswordBottomSheet(),
-                          ).then((value) => isModalOpen = false);
+                          Get.to(ForgotPasswordPage());
+                          // isModalOpen = true;
+                          // showModalBottomSheet(
+                          //   context: context,
+                          //   backgroundColor: Colors.transparent,
+                          //   builder: (_) => const ForgotPasswordBottomSheet(),
+                          // ).then((value) => isModalOpen = false);
                         },
                         child: const Text(
                           'Forgot password',
@@ -122,26 +122,29 @@ class _SignInScreenState extends State<SignInScreen> {
                 child: Column(
                   children: [
                     const Spacer(),
-                    MyDefaultTextStyle(
-                      style: const TextStyle(fontSize: 20, color: Colors.white),
-                      child: GestureDetector(
-                        onTap: ()=> Get.offAll(AccountTypeScreen()),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Text("Don't have an account?"),
-                            const SizedBox(width: 8),
-                            GestureDetector(
-                              onTap: () => Get.to(AccountTypeScreen()),
-                              child: const Text(
-                                'Sign up',
-                                style: TextStyle(color: ColorPalette.yellow),
+                    GestureDetector(
+                      onTap: ()=> Get.to(()=>AccountTypeScreen()),
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: RichText(
+                          text: TextSpan(
+                            text: 'Don\'t have an account? ',
+                            children: const [
+                              TextSpan(
+                                text: 'Sign up',
+                                style: TextStyle(
+                                    color: ColorPalette.yellow,
+                                    fontSize: 16,
+                                    fontFamily: AppFonts.josefinSansRegular),
                               ),
-                            ),
-                          ],
+                            ],
+                            style: TextStyle(color: ColorPalette.white, fontFamily: AppFonts.josefinSansRegular, fontSize: 16),
+                          ),
+                          textAlign: TextAlign.center,
                         ),
                       ),
                     ),
+
                     const SizedBox(height: 8),
                   ],
                 ),

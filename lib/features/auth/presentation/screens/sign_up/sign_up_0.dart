@@ -104,7 +104,7 @@ class _SignUpScreen0State extends State<SignUpScreen0> {
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(8),
-                          child: confirmPwdField(),
+                          child: confirmPwdField(authController),
                         )
                     ),
                   ],

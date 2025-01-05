@@ -1,4 +1,6 @@
 class SvgElements {
+  static get svgPlantImage => 'assets/images/onboarding/plant.svg';
+
   static get svgAttachIcon => "assets/images/icons/attach.svg";
   static get svgBitmojiIcon => "assets/images/icons/bitmoji.svg";
   static get svgBoldIcon => "assets/images/icons/bold.svg";

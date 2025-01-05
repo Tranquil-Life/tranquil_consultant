@@ -45,7 +45,7 @@ class _HomeTabState extends State<HomeTab> {
         const _BG(),
         Column(
           children: [
-            const AppBar(),
+            // const AppBar(),
             Expanded(
               child: SingleChildScrollView(
                 child: Column(

@@ -59,7 +59,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               tag: 'back_button',
               child: Center(
                 child: AppBarButton(
-                  backgroundColor: ColorPalette.green,
+                  backgroundColor: ColorPalette.green[800],
                   onPressed: onBackPressed ?? Navigator.of(context).pop,
                   icon: const Padding(
                     padding: EdgeInsets.all(1),

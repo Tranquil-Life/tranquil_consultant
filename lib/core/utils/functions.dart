@@ -121,31 +121,30 @@ Future getFileSize(String filepath, int decimals) async {
 }
 
 Future<Map<String, dynamic>> getCurrLocation() async {
-  late Position position;
+  Position position;
   // Request location permissions
   LocationPermission permission = await Geolocator.requestPermission();
-  List<Placemark> placemarks = [];
   if (permission == LocationPermission.denied) {
     print("Location permission denied");
-  } else {
-    position = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.best,
-    );
-
-    // Use geocoding to get the placemarks for the current location
-    placemarks = await placemarkFromCoordinates(
-      position.latitude,
-      position.longitude,
-    );
+    return {"error": "Location permission denied"};
   }
 
-  var data = <String, dynamic>{
+  // Get current position
+  position = await Geolocator.getCurrentPosition(
+    desiredAccuracy: LocationAccuracy.best,
+  );
+
+  // Use geocoding to get the placemarks
+  List<Placemark> placemarks = await placemarkFromCoordinates(
+    position.latitude,
+    position.longitude,
+  );
+
+  return {
     "latitude": position.latitude,
     "longitude": position.longitude,
-    "placemarks": placemarks
+    "placemarks": placemarks,
   };
-
-  return data;
 }
 
 List<TextSpan> parseNoteText(String text) {

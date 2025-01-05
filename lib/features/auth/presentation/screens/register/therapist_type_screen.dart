@@ -11,7 +11,8 @@ import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 import 'package:tl_consultant/core/utils/helpers/svg_elements.dart';
 
 import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';
-import 'package:tl_consultant/features/auth/presentation/screens/register/register_1.dart';
+import 'package:tl_consultant/features/auth/presentation/screens/register/register.dart';
+import 'package:tl_consultant/features/auth/presentation/widgets/modals/entry_code.dart';
 import 'package:tl_consultant/features/auth/presentation/widgets/therapist_type_item.dart';
 
 class AccountTypeScreen extends StatefulWidget {
@@ -45,7 +46,7 @@ class _AccountTypeScreenState extends State<AccountTypeScreen> {
       appBar: CustomAppBar(
         title: 'Get started',
         centerTitle: false,
-        onBackPressed: () {},
+        onBackPressed: () => Get.back(),
       ),
       backgroundColor: ColorPalette.scaffoldColor,
       body: SafeArea(
@@ -127,7 +128,12 @@ class _AccountTypeScreenState extends State<AccountTypeScreen> {
                     ),
                     CustomButton(
                       onPressed: authController.selectedType.value.isEmpty ? null : () {
-                        Get.to(Register1());
+                        showModalBottomSheet(
+                          context: context,
+                          backgroundColor: Colors.transparent,
+                          builder: (_) => const EntryCodeModal(),
+                        );
+
                       },
                       text: "Select type & proceed",
                     ),
@@ -151,7 +157,7 @@ class _AccountTypeScreenState extends State<AccountTypeScreen> {
                                     fontFamily: AppFonts.josefinSansRegular),
                               ),
                             ],
-                            style: TextStyle(color: ColorPalette.gray.shade300, fontFamily: AppFonts.josefinSansRegular),
+                            style: TextStyle(color: ColorPalette.gray.shade300, fontFamily: AppFonts.josefinSansRegular, fontSize: 16),
                           ),
                           textAlign: TextAlign.center,
                         ),

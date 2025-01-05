@@ -15,14 +15,14 @@ import 'package:tl_consultant/features/auth/presentation/screens/register/solo_b
 import 'package:tl_consultant/features/auth/presentation/widgets/form_fields.dart';
 import 'package:tl_consultant/features/auth/presentation/widgets/means_of_id_field.dart';
 
-class Register1 extends StatefulWidget {
-  const Register1({super.key});
+class Register extends StatefulWidget {
+  const Register({super.key});
 
   @override
-  State<Register1> createState() => _Register1State();
+  State<Register> createState() => _RegisterState();
 }
 
-class _Register1State extends State<Register1> {
+class _RegisterState extends State<Register> {
   final authController = Get.put(AuthController());
   final verificationController = Get.put(VerificationController());
 
@@ -85,7 +85,7 @@ class _Register1State extends State<Register1> {
                     style: TextStyle(color: ColorPalette.gray[600]),
                   ),
                   SizedBox(height: 8),
-                  Obx(() => confirmPwdField()),
+                  Obx(() => confirmPwdField(authController)),
                   SizedBox(
                     height: displayHeight(context) / 10,
                   ),

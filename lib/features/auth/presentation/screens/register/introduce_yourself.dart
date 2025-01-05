@@ -16,7 +16,7 @@ import 'package:tl_consultant/features/auth/presentation/widgets/video_record_op
 import 'package:tl_consultant/features/media/presentation/screens/video_record_page.dart';
 
 class IntroduceYourselfPage extends StatefulWidget {
-  IntroduceYourselfPage({super.key});
+  const IntroduceYourselfPage({super.key});
 
   @override
   State<IntroduceYourselfPage> createState() => _IntroduceYourselfPageState();

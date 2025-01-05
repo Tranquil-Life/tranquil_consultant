@@ -112,18 +112,18 @@ CustomFormField passwordField(AuthController authController){
 }
 
 //Confirm password
-CustomFormField confirmPwdField(){
+CustomFormField confirmPwdField(AuthController authController){
   return CustomFormField(
     hint: 'Confirm Password',
     verContentPadding: 11.5,
     horContentPadding: 12,
-    obscureText: !AuthController.instance.isPasswordVisible.value,
+    obscureText: !authController.isPasswordVisible.value,
     textInputType: TextInputType.visiblePassword,
     validator: (val) {
       if (val!.isEmpty) {
         return 'Please re-type your password';
       }
-      if (AuthController.instance.passwordTEC.text != val) {
+      if (authController.passwordTEC.text != val) {
         return 'Your passwords do not match';
       }
       return null;

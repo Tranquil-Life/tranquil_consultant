@@ -53,6 +53,10 @@ class AuthController extends GetxController {
 
   String title = "Sign Up";
   RxBool isPasswordVisible = false.obs;
+  final isLengthValid = false.obs;
+  final hasSpecialChar = false.obs;
+  final hasDigit = false.obs;
+  final hasLetter = false.obs;
 
   RxBool uploading = false.obs;
   RxString fileSize = "0 KB".obs;

@@ -4,18 +4,14 @@ import 'package:get/get.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/theme/fonts.dart';
 import 'package:tl_consultant/app/presentation/widgets/buttons.dart';
-import 'package:tl_consultant/app/presentation/widgets/custom_snackbar.dart';
 import 'package:tl_consultant/app/presentation/widgets/custom_webview.dart';
 import 'package:tl_consultant/app/presentation/widgets/dialogs.dart';
 import 'package:tl_consultant/core/utils/services/media_service.dart';
 import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:tl_consultant/features/auth/presentation/widgets/form_fields.dart';
 
-
-final authController = AuthController.instance;
-
 class MeansOfIdField extends StatefulWidget {
-  const MeansOfIdField({Key? key}) : super(key: key);
+  const MeansOfIdField({super.key});
 
   @override
   State<MeansOfIdField> createState() => _MeansOfIdFieldState();
@@ -160,7 +156,7 @@ class _MeansOfIdFieldState extends State<MeansOfIdField> {
 }
 
 class UploadDialog extends StatelessWidget {
-  UploadDialog({Key? key}) : super(key: key);
+  UploadDialog({super.key});
 
   final authController = Get.put(AuthController());
 
