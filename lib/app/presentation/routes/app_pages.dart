@@ -1,6 +1,7 @@
 library app_pages;
 
 import 'package:get/get.dart';
+import 'package:tl_consultant/features/auth/presentation/screens/forgot_password_page.dart';
 import 'package:tl_consultant/features/auth/presentation/screens/register/introduce_yourself.dart';
 import 'package:tl_consultant/features/auth/presentation/screens/sign_in/sign_in.dart';
 import 'package:tl_consultant/features/auth/presentation/screens/sign_up/sign_up_0.dart';
@@ -35,6 +36,7 @@ class AppPages {
     GetPage(name: Routes.SIGN_IN, page: () => SignInScreen()),
     GetPage(name: Routes.INTRODUCE_YOURSELF, page: () => IntroduceYourselfPage()),
     GetPage(name: Routes.VERIFY_RESET_ACCOUNT, page: () => VerifyResetAccountPage()),
+    GetPage(name: Routes.FORGOT_PASSWORD, page: () => ForgotPasswordPage()),
     GetPage(name: Routes.UPDATE_PASSWORD, page: () => UpdatePasswordPage()),
     GetPage(name: Routes.DASHBOARD, page: () => const Dashboard()),
     GetPage(name: Routes.EDIT_SLOTS, page: () => EditSlots()),

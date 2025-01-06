@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:tl_consultant/app/presentation/routes/app_pages.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/theme/fonts.dart';
+import 'package:tl_consultant/app/presentation/widgets/buttons.dart';
 import 'package:tl_consultant/app/presentation/widgets/custom_app_bar.dart';
 import 'package:tl_consultant/app/presentation/widgets/custom_scaffold.dart';
 import 'package:tl_consultant/app/presentation/widgets/unfocus_bg.dart';
@@ -16,6 +18,12 @@ class UpdatePasswordPage extends StatelessWidget {
   UpdatePasswordPage({super.key});
 
   final authController = Get.put(AuthController());
+
+  void _continue() {
+    if (authController.isAllCriteriaMet) {
+      Get.offAllNamed(Routes.SIGN_IN);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +73,52 @@ class UpdatePasswordPage extends StatelessWidget {
                 height: 8,
               ),
               confirmPwdField(authController),
+              const SizedBox(
+                height: 8,
+              ),
+              Obx(()=>buildCriteriaRow(
+                "Must match password above",
+                authController.isPasswordsMatching.value,
+                initialColor: ColorPalette.gray.shade300,
+              )),
+              Spacer(),
 
+              Obx(()=>CustomButton(
+                  onPressed: !authController.isAllCriteriaMet
+                      ? null
+                      : _continue, text: "Reset password")),
+
+              SizedBox(height: 44),
+
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: GestureDetector(
+                  onTap: () {
+                    Get.offNamed(Routes.SIGN_IN);
+                  },
+                  child: RichText(
+                    text: TextSpan(
+                      text: 'I have an account. ',
+                      children: const [
+                        TextSpan(
+                          text: 'Sign me in',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400,
+                            color: ColorPalette.green,
+                          ),
+                        ),
+                      ],
+                      style: TextStyle(
+                        color: ColorPalette.gray.shade300,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              )
             ],
           ),
         ));

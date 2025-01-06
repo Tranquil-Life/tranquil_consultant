@@ -36,7 +36,7 @@ class AuthController extends GetxController {
       TextEditingController();
 
   // TextEditingController passwordTEC = TextEditingController(text: "password");
-  TextEditingController passwordTEC = TextEditingController();
+  TextEditingController confirmPasswordTEC = TextEditingController();
 
   TextEditingController cvTEC = TextEditingController();
   TextEditingController identityTEC = TextEditingController();
@@ -57,6 +57,11 @@ class AuthController extends GetxController {
   final hasSpecialChar = false.obs;
   final hasDigit = false.obs;
   final hasLetter = false.obs;
+  final isPasswordsMatching = false.obs;
+
+  //For sign in validation
+  final emailIsValid = false.obs;
+  final passwordIsValid = false.obs;
 
   RxBool uploading = false.obs;
   RxString fileSize = "0 KB".obs;
@@ -107,7 +112,7 @@ class AuthController extends GetxController {
 
       await Get.offAllNamed(Routes.DASHBOARD);
       emailTEC.clear();
-      passwordTEC.clear();
+      confirmPasswordTEC.clear();
     });
   }
 
@@ -139,7 +144,7 @@ class AuthController extends GetxController {
         await Get.offAllNamed(Routes.DASHBOARD);
 
         emailTEC.clear();
-        passwordTEC.clear();
+        confirmPasswordTEC.clear();
       }
     });
 
@@ -316,9 +321,81 @@ class AuthController extends GetxController {
     return token;
   }
 
+  String? signInValidation() {
+    if(emailTEC.text.isEmpty){
+      emailIsValid.value = false;
+      return 'Email address is required';
+    }else if(params.password.isEmpty){
+      passwordIsValid.value = false;
+      return 'Password is required';
+    }else if(emailTEC.text.isEmpty && params.password.isEmpty){
+      return 'Both fields are required';
+    }
+    emailIsValid.value = true;
+    passwordIsValid.value = true;
+
+    return null;
+
+  }
+
+  String? validatePassword() {
+    if (params.password.isEmpty) {
+      _resetPasswordCriteria();
+      return 'Password is required';
+    }
+
+    isLengthValid.value =
+        params.password.length > 8 && !params.password.contains(' ');
+    hasSpecialChar.value =
+        RegExp(r'[!@#%^&*(),.?":{}|<>]').hasMatch(params.password);
+    hasDigit.value = RegExp(r'\d').hasMatch(params.password);
+    hasLetter.value = RegExp(r'[a-zA-Z]').hasMatch(params.password);
+    isPasswordsMatching.value = params.password == confirmPasswordTEC.text;
+
+    return isAllCriteriaMet ? null : 'Password does not meet criteria';
+  }
+
+  String? validatePasswordMatch() {
+    if (params.password.isEmpty || confirmPasswordTEC.text.isEmpty) {
+      isPasswordsMatching.value = false;
+      return '';
+    }
+
+    if (params.password != confirmPasswordTEC.text) {
+      isPasswordsMatching.value = false;
+      return '';
+    }
+
+    isPasswordsMatching.value = true;
+    return null;
+  }
+
+  bool get isAllCriteriaMet =>
+      isLengthValid.value &&
+      hasSpecialChar.value &&
+      hasDigit.value &&
+      hasLetter.value &&
+      isPasswordsMatching.value;
+
+  void _resetPasswordCriteria() {
+    isLengthValid.value = false;
+    hasSpecialChar.value = false;
+    hasDigit.value = false;
+    hasLetter.value = false;
+    isPasswordsMatching.value = false;
+  }
+
+  void _resetSignInCriteria() {
+    isLengthValid.value = false;
+    hasSpecialChar.value = false;
+    hasDigit.value = false;
+    hasLetter.value = false;
+    isPasswordsMatching.value = false;
+  }
+
   clearData() {
     emailTEC.clear();
-    passwordTEC.clear();
+    confirmPasswordTEC.clear();
     cvTEC.clear();
     identityTEC.clear();
     dateTEC.clear();

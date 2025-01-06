@@ -16,16 +16,20 @@ CustomFormField emailFormField(AuthController authController){
     hint: 'enter email address',
     textEditingController: authController.emailTEC,
     textInputType: TextInputType.emailAddress,
-    validator: (val) {
-      if (val!.isEmpty) {
-        return 'Please input your email';
-      }
-      if (!Validator.isEmail(val)) {
-        return 'Please input a valid email address';
-      }
-
-      return null;
+    validator: (_)=>authController.signInValidation(),
+    onChanged: (_){
+      authController.signInValidation();
     },
+    // validator: (val) {
+    //   if (val!.isEmpty) {
+    //     return 'Please input your email';
+    //   }
+    //   if (!Validator.isEmail(val)) {
+    //     return 'Please input a valid email address';
+    //   }
+    //
+    //   return null;
+    // },
   );
 }
 
@@ -85,7 +89,6 @@ CustomFormField passwordField(AuthController authController){
     horContentPadding: 12,
     obscureText: !authController.isPasswordVisible.value,
     textInputType: TextInputType.visiblePassword,
-    textEditingController: authController.passwordTEC,
     hint: 'Password',
     suffix: GestureDetector(
       onTap: (){
@@ -98,16 +101,14 @@ CustomFormField passwordField(AuthController authController){
       )
           : const Icon(Icons.visibility_off),
     ),
-    validator: (val){
-      if (val!.isEmpty) {
-        return 'Please input a strong password';
-      }
-      if (val.length < 6) {
-        return 'Your password should be at least 6 characters long';
-      }
-      return null;
+    validator: (_) => authController.validatePassword(),
+    onChanged: (text) {
+      authController.params.password = text;
+      authController.validatePassword();
+
+      authController.signInValidation();
+
     },
-    onChanged: (text)=> authController.params.password = text,
   );
 }
 
@@ -115,18 +116,14 @@ CustomFormField passwordField(AuthController authController){
 CustomFormField confirmPwdField(AuthController authController){
   return CustomFormField(
     hint: 'Confirm Password',
+    textEditingController: authController.confirmPasswordTEC,
     verContentPadding: 11.5,
     horContentPadding: 12,
     obscureText: !authController.isPasswordVisible.value,
     textInputType: TextInputType.visiblePassword,
-    validator: (val) {
-      if (val!.isEmpty) {
-        return 'Please re-type your password';
-      }
-      if (authController.passwordTEC.text != val) {
-        return 'Your passwords do not match';
-      }
-      return null;
+    validator:(_)=> authController.validatePasswordMatch(),
+    onChanged: (text) {
+      authController.validatePasswordMatch();
     },
   );
 }

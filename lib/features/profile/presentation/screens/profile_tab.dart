@@ -349,7 +349,7 @@ class PersonalInfo extends StatelessWidget {
           width: 5,
         ),
         Text(
-          "${client.emailVerifiedAt == null ? "Verify your account" : client.emailVerifiedAt?.folded}",
+          "Awaiting approval...",
           style: TextStyle(
             fontSize: AppFonts.defaultSize,
             color: client.emailVerifiedAt == null

@@ -22,4 +22,5 @@ abstract class Routes {
   static const SETTINGS = '/settings';
   static const VERIFY_RESET_ACCOUNT = '/verify-reset-account';
   static const UPDATE_PASSWORD = '/update-password';
+  static const FORGOT_PASSWORD = '/forgot-password';
 }
