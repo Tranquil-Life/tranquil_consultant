@@ -9,7 +9,8 @@ import 'package:tl_consultant/core/utils/services/validators.dart';
 import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';
 
 //email field
-CustomFormField emailFormField(AuthController authController){
+CustomFormField emailFormField(AuthController authController,
+    {Function(String)? onChanged}){
   return CustomFormField(
     verContentPadding: 11.5,
     horContentPadding: 12,
@@ -17,9 +18,8 @@ CustomFormField emailFormField(AuthController authController){
     textEditingController: authController.emailTEC,
     textInputType: TextInputType.emailAddress,
     validator: (_)=>authController.signInValidation(),
-    onChanged: (_){
-      authController.signInValidation();
-    },
+    onChanged: onChanged ?? (_)=>
+      authController.signInValidation(),
     // validator: (val) {
     //   if (val!.isEmpty) {
     //     return 'Please input your email';

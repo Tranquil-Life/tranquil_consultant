@@ -53,7 +53,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         color: ColorPalette.green[800],
         fontFamily: fontFamily,
       ),
-      leading: (Navigator.of(context).canPop() || onBackPressed != null) &&
+      leading: centerTitle == true ? null : (Navigator.of(context).canPop() || onBackPressed != null) &&
               !hideBackButton
           ? Hero(
               tag: 'back_button',

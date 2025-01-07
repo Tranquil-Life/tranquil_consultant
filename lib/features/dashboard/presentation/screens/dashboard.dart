@@ -32,18 +32,10 @@ class _DashboardState extends State<Dashboard> {
   final dashboardController = Get.put(DashboardController());
   final profileController = Get.put(ProfileController());
 
-  checkForEmptyProfileInfo(){
-    profileController.getQualifications();
-    User user = UserModel.fromJson(userDataStore.user);
-    if(user.firstName.isEmpty || user.bio.isEmpty || user.specialties!.isEmpty || user.videoIntroUrl!.isEmpty || profileController.qualifications.isEmpty ){
-      Get.to(EditProfileScreen());
-    }
-  }
-
   @override
   void initState() {
     dashboardController.getMyLocationInfo();
-    checkForEmptyProfileInfo();
+    checkForEmptyProfileInfo(profileController);
 
     setStatusBarBrightness(true);
     super.initState();
@@ -68,9 +60,7 @@ class _DashboardState extends State<Dashboard> {
       ),
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.white,
-      body:
-
-      SafeArea(
+      body: SafeArea(
         child: Stack(
           fit: StackFit.expand,
           alignment: Alignment.bottomCenter,

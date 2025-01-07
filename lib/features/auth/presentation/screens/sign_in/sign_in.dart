@@ -45,6 +45,7 @@ class _SignInScreenState extends State<SignInScreen> {
       key: _scaffoldKey,
       appBarTitle: 'Sign in to your account',
         hideBackButton: true,
+        centerTitle: true,
         content: Padding(
           padding: EdgeInsets.only(left: 24, right: 24, bottom: 24),
           child: Column(

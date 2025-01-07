@@ -60,12 +60,11 @@ class _VerifyResetAccountPageState extends State<VerifyResetAccountPage> {
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
-      appBarTitle: 'Verify account',
+        appBarTitle: 'Verify account',
         content: Padding(
-        padding: EdgeInsets.only(left: 24, right: 24, bottom: 24),
-        child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+            padding: EdgeInsets.only(left: 24, right: 24, bottom: 24),
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               const SizedBox(
                 height: 24,
               ),
@@ -114,10 +113,7 @@ class _VerifyResetAccountPageState extends State<VerifyResetAccountPage> {
                 // errorAnimationController: errorController,
                 controller: pinController,
                 onCompleted: (v) {
-                  Get.toNamed(Routes.UPDATE_PASSWORD);
-
-                  //todo: Uncomment after testing
-                  // verificationController.verifyToken(pinController.text);
+                  verificationController.verifyResetToken(pinController.text);
                   setState(() {});
                 },
                 onChanged: (value) {
@@ -150,9 +146,14 @@ class _VerifyResetAccountPageState extends State<VerifyResetAccountPage> {
                     child: Padding(
                         padding: EdgeInsets.only(top: 60),
                         child: GestureDetector(
-                            onTap: () {
-                              if(timer == null || !timer!.isActive){
+                            onTap: () async{
+                              if (timer == null || !timer!.isActive) {
                                 startTimer();
+                                var sent = await verificationController.requestPwdResetToken(
+                                    email: authController.emailTEC.text);
+                                if(sent){
+                                  Get.toNamed(Routes.VERIFY_RESET_ACCOUNT);
+                                }
                               }
                             },
                             child: Wrap(
@@ -175,12 +176,11 @@ class _VerifyResetAccountPageState extends State<VerifyResetAccountPage> {
                                   ),
                               ],
                             )))),
-
               Spacer(),
               if (verificationState() == true)
                 CustomButton(
                     onPressed: () {
-                      //...
+                      Get.toNamed(Routes.UPDATE_PASSWORD);
                     },
                     text: "Proceed"),
               SizedBox(height: 40),
@@ -213,9 +213,11 @@ class _VerifyResetAccountPageState extends State<VerifyResetAccountPage> {
   }
 
   verificationState() {
-    if (verificationController.isConfirmed.value && verificationController.isVerified.value) {
+    if (verificationController.isConfirmed.value &&
+        verificationController.isVerified.value) {
       return true;
-    } else if (verificationController.isConfirmed.value && !verificationController.isVerified.value) {
+    } else if (verificationController.isConfirmed.value &&
+        !verificationController.isVerified.value) {
       return false;
     } else {
       return null;

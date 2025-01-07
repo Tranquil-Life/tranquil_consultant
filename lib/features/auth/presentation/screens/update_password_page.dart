@@ -11,6 +11,7 @@ import 'package:tl_consultant/app/presentation/widgets/unfocus_bg.dart';
 import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 import 'package:tl_consultant/core/utils/helpers/svg_elements.dart';
 import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';
+import 'package:tl_consultant/features/auth/presentation/controllers/verification_controller.dart';
 import 'package:tl_consultant/features/auth/presentation/widgets/form_fields.dart';
 import 'package:tl_consultant/features/auth/presentation/widgets/password_criteria.dart';
 
@@ -18,10 +19,19 @@ class UpdatePasswordPage extends StatelessWidget {
   UpdatePasswordPage({super.key});
 
   final authController = Get.put(AuthController());
+  final verificationController = Get.put(VerificationController());
 
-  void _continue() {
+  void _continue() async{
     if (authController.isAllCriteriaMet) {
-      Get.offAllNamed(Routes.SIGN_IN);
+      var updated = await authController.updatePassword(
+          token: verificationController.verificationToken.value,
+          password: authController.params.password);
+
+      if(updated){
+        await Future.delayed(Duration(seconds: 2));
+
+        Get.toNamed(Routes.SIGN_IN);
+      }
     }
   }
 
@@ -54,7 +64,7 @@ class UpdatePasswordPage extends StatelessWidget {
                     fontWeight: FontWeight.w400,
                     color: ColorPalette.black),
               ),
-              passwordField(authController),
+              Obx(() => passwordField(authController)),
               const SizedBox(
                 height: 8,
               ),
@@ -76,20 +86,17 @@ class UpdatePasswordPage extends StatelessWidget {
               const SizedBox(
                 height: 8,
               ),
-              Obx(()=>buildCriteriaRow(
-                "Must match password above",
-                authController.isPasswordsMatching.value,
-                initialColor: ColorPalette.gray.shade300,
-              )),
+              Obx(() => buildCriteriaRow(
+                    "Must match password above",
+                    authController.isPasswordsMatching.value,
+                    initialColor: ColorPalette.gray.shade300,
+                  )),
               Spacer(),
-
-              Obx(()=>CustomButton(
-                  onPressed: !authController.isAllCriteriaMet
-                      ? null
-                      : _continue, text: "Reset password")),
-
+              Obx(() => CustomButton(
+                  onPressed:
+                      !authController.isAllCriteriaMet ? null : _continue,
+                  text: "Reset password")),
               SizedBox(height: 44),
-
               Align(
                 alignment: Alignment.bottomCenter,
                 child: GestureDetector(

@@ -112,5 +112,34 @@ class AuthRepoImpl extends AuthRepo {
         .then((value) => handleResponse(value));
   }
 
+  @override
+  Future<Either<ApiError, dynamic>> requestResetPwdToken({required String email}) async{
+    var request = {"email": email};
+
+    return await catchSocketException(() =>
+        postReq(AuthEndPoints.requestResetPwdToken, body: request))
+        .then((value) => handleResponse(value));
+  }
+
+  @override
+  Future<Either<ApiError, dynamic>> verifyResetToken(String token) async{
+    var request = {"token": token};
+
+    return await catchSocketException(() =>
+        postReq(AuthEndPoints.verifyResetToken, body: request))
+        .then((value) => handleResponse(value));
+  }
+
+
+  @override
+  Future<Either<ApiError, dynamic>> updatePassword({required String token, required String password}) async{
+    var request = {"token": token, 'password': password};
+
+    return await catchSocketException(() =>
+        postReq(AuthEndPoints.updatePassword, body: request))
+        .then((value) => handleResponse(value));
+  }
+
+
 
 }

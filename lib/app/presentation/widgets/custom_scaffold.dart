@@ -13,11 +13,13 @@ class CustomScaffold extends StatelessWidget {
       this.appBar,
       this.appBarTitle,
       this.hideBackButton = false,
+      this.centerTitle = false,
       required this.content, this.globalScaffoldKey});
 
   final PreferredSizeWidget? appBar;
   final String? appBarTitle;
   final bool hideBackButton;
+  final bool centerTitle;
   final Widget content;
   final Key? globalScaffoldKey;
 
@@ -31,7 +33,8 @@ class CustomScaffold extends StatelessWidget {
       appBar: appBar ??
           CustomAppBar(
             title: appBarTitle,
-            centerTitle: false,
+            centerTitle: centerTitle,
+            backgroundColor: ColorPalette.scaffoldColor,
             onBackPressed: hideBackButton == true ? null : () => Get.back(),
           ),
       body: SafeArea(

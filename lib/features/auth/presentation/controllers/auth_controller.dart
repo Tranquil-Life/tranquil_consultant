@@ -322,20 +322,19 @@ class AuthController extends GetxController {
   }
 
   String? signInValidation() {
-    if(emailTEC.text.isEmpty){
+    if (emailTEC.text.isEmpty) {
       emailIsValid.value = false;
       return 'Email address is required';
-    }else if(params.password.isEmpty){
+    } else if (params.password.isEmpty) {
       passwordIsValid.value = false;
       return 'Password is required';
-    }else if(emailTEC.text.isEmpty && params.password.isEmpty){
+    } else if (emailTEC.text.isEmpty && params.password.isEmpty) {
       return 'Both fields are required';
     }
     emailIsValid.value = true;
     passwordIsValid.value = true;
 
     return null;
-
   }
 
   String? validatePassword() {
@@ -368,6 +367,28 @@ class AuthController extends GetxController {
 
     isPasswordsMatching.value = true;
     return null;
+  }
+
+  Future updatePassword(
+      {required String token, required String password}) async {
+    var updated = false;
+    Either either =
+        await authRepo.updatePassword(token: token, password: password);
+    either.fold(
+        (l) => CustomSnackBar.showSnackBar(
+            context: Get.context!,
+            title: "Error",
+            message: l.message.toString(),
+            backgroundColor: ColorPalette.red), (r) async {
+          updated = true;
+
+      CustomSnackBar.showSnackBar(
+          context: Get.context!,
+          message: "Password updated successfully",
+          backgroundColor: ColorPalette.green);
+    });
+
+    return updated;
   }
 
   bool get isAllCriteriaMet =>

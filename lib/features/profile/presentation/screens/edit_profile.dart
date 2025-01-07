@@ -11,6 +11,9 @@ import 'package:tl_consultant/app/presentation/widgets/custom_app_bar.dart';
 import 'package:tl_consultant/app/presentation/widgets/unfocus_bg.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/utils/services/media_service.dart';
+import 'package:tl_consultant/features/profile/data/models/user_model.dart';
+import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
+import 'package:tl_consultant/features/profile/domain/entities/user.dart';
 import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:tl_consultant/features/profile/presentation/widgets/edit_profile_fields.dart';
 
@@ -25,6 +28,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   ProfileController profileController = Get.put(ProfileController());
   final GlobalKey editProfileKey = GlobalKey();
 
+  String pageTitle(){
+    User user = UserModel.fromJson(userDataStore.user);
+    if (user.firstName.isEmpty ||
+        user.bio.isEmpty ||
+        user.specialties!.isEmpty ||
+        user.videoIntroUrl!.isEmpty ||
+        profileController.qualifications.isEmpty) {
+      return "Complete your profile";
+    }else{
+      return "Edit your profile";
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return UnFocusWidget(
@@ -32,7 +48,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         key: editProfileKey,
         backgroundColor: ColorPalette.scaffoldColor,
         appBar: CustomAppBar(
-          title: "Edit Profile",
+          title: pageTitle(),
           centerTitle: false,
           backgroundColor: Colors.white
         ),

@@ -17,6 +17,11 @@ import 'package:tl_consultant/app/config.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/widgets/IOSDatePicker.dart';
 import 'package:tl_consultant/app/presentation/widgets/custom_snackbar.dart';
+import 'package:tl_consultant/features/profile/data/models/user_model.dart';
+import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
+import 'package:tl_consultant/features/profile/domain/entities/user.dart';
+import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
+import 'package:tl_consultant/features/profile/presentation/screens/edit_profile.dart';
 
 
 void setStatusBarBrightness(bool dark, [Duration? delayedTime]) async {
@@ -264,4 +269,17 @@ List<String> getTitlesAfterComma(String input) {
 
   // Split the titles part into individual titles and trim whitespace
   return titlesPart.split(',').map((title) => title.trim()).toList();
+}
+
+checkForEmptyProfileInfo(ProfileController profileController) async {
+  await Future.delayed(Duration(seconds: 2));
+  profileController.getQualifications();
+  User user = UserModel.fromJson(userDataStore.user);
+  if (user.firstName.isEmpty ||
+      user.bio.isEmpty ||
+      user.specialties!.isEmpty ||
+      user.videoIntroUrl!.isEmpty ||
+      profileController.qualifications.isEmpty) {
+    Get.to(() => EditProfileScreen());
+  }
 }

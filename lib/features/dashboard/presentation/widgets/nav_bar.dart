@@ -10,6 +10,7 @@ class NavBar extends StatefulWidget {
 class _NavBarState extends State<NavBar> {
   final dashboardController = Get.put(DashboardController());
   final chatController = Get.put(ChatController());
+  final profileController = Get.put(ProfileController());
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +31,7 @@ class _NavBarState extends State<NavBar> {
                         isSelected: dashboardController.currentIndex.value == 0,
                         onTap: () async {
                           await dashboardController.onTap(0);
+                          checkForEmptyProfileInfo(profileController);
                         },
                       ),
                       Item(
@@ -38,6 +40,7 @@ class _NavBarState extends State<NavBar> {
                         isSelected: dashboardController.currentIndex.value == 1,
                         onTap: () async {
                           await dashboardController.onTap(1);
+                          checkForEmptyProfileInfo(profileController);
                         },
                       ),
                       const SizedBox(width: 32),
@@ -47,6 +50,7 @@ class _NavBarState extends State<NavBar> {
                         isSelected: dashboardController.currentIndex.value == 2,
                         onTap: () async {
                           await dashboardController.onTap(2);
+                          checkForEmptyProfileInfo(profileController);
                         },
                       ),
                       Item(

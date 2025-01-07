@@ -89,25 +89,27 @@ class _RegisterState extends State<Register> {
                   SizedBox(
                     height: displayHeight(context) / 10,
                   ),
-                  Obx(()=>CustomButton(
-                    onPressed: () async {
-                      if (authController.selectedType.value == solo) {
-                        await verificationController.requestVerificationToken(
-                            email: authController.emailTEC.text,
-                            therapistKind: authController.selectedType.value);
-
-                      } else {
-                        Get.to(AgencyBasedVerification());
-                      }
-
-                    },
-                    child: verificationController.requesting.value
-                        ? CircularProgressIndicator(color: ColorPalette.white)
-                        : Text(
-                      "Continue",
-                      style: TextStyle(color: ColorPalette.white),
-                    ),
-                  )),
+                  Obx(() => CustomButton(
+                        onPressed: () async {
+                          if (authController.selectedType.value == solo) {
+                            var sent = await verificationController
+                                .requestVerificationToken(
+                                    email: authController.emailTEC.text);
+                            if (sent) {
+                              Get.to(SoloBasedVerification());
+                            }
+                          } else {
+                            Get.to(AgencyBasedVerification());
+                          }
+                        },
+                        child: verificationController.requesting.value
+                            ? CircularProgressIndicator(
+                                color: ColorPalette.white)
+                            : Text(
+                                "Continue",
+                                style: TextStyle(color: ColorPalette.white),
+                              ),
+                      )),
                   const SizedBox(
                     height: 40,
                   ),

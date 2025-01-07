@@ -118,7 +118,7 @@ class _SoloBasedVerificationState extends State<SoloBasedVerification> {
                     // errorAnimationController: errorController,
                     controller: pinController,
                     onCompleted: (v) {
-                      verificationController.verifyToken(pinController.text);
+                      verificationController.verifyAccount(pinController.text);
                       setState(() {});
                     },
                     onChanged: (value) {
@@ -152,8 +152,11 @@ class _SoloBasedVerificationState extends State<SoloBasedVerification> {
                             padding: EdgeInsets.only(top: 60),
                             child: GestureDetector(
                                 onTap: () {
-                                  if(timer == null || !timer!.isActive){
+                                  if (timer == null || !timer!.isActive) {
                                     startTimer();
+                                    verificationController
+                                        .requestVerificationToken(
+                                            email: authController.emailTEC.text);
                                   }
                                 },
                                 child: Wrap(
@@ -165,7 +168,8 @@ class _SoloBasedVerificationState extends State<SoloBasedVerification> {
                                           ? 'Resend in'
                                           : 'Resend code',
                                       style: TextStyle(
-                                          color: ColorPalette.green, fontSize: 16),
+                                          color: ColorPalette.green,
+                                          fontSize: 16),
                                     ),
                                     if (timer != null && timer!.isActive)
                                       Text(
@@ -176,7 +180,6 @@ class _SoloBasedVerificationState extends State<SoloBasedVerification> {
                                       ),
                                   ],
                                 )))),
-
                   Spacer(),
                   if (verificationState() == true)
                     CustomButton(
@@ -219,9 +222,11 @@ class _SoloBasedVerificationState extends State<SoloBasedVerification> {
   }
 
   verificationState() {
-    if (verificationController.isConfirmed.value && verificationController.isVerified.value) {
+    if (verificationController.isConfirmed.value &&
+        verificationController.isVerified.value) {
       return true;
-    } else if (verificationController.isConfirmed.value && !verificationController.isVerified.value) {
+    } else if (verificationController.isConfirmed.value &&
+        !verificationController.isVerified.value) {
       return false;
     } else {
       return null;

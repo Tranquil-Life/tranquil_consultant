@@ -90,7 +90,7 @@ class _AgencyBasedVerificationState extends State<AgencyBasedVerification> {
                 // errorAnimationController: errorController,
                 controller: pinController,
                 onCompleted: (v) {
-                  verificationController.verifyToken(pinController.text);
+                  verificationController.verifyAccount(pinController.text);
                   setState(() {});
                 },
                 onChanged: (value) {
