@@ -68,6 +68,8 @@ class _IntroduceYourselfPageState extends State<IntroduceYourselfPage> {
                       selectedOption = video;
                     });
 
+                    videoRecordingController.resetUploadVars();
+
                     await Future.delayed(Duration(seconds: 1));
                     Get.to(() => const VideoRecordingPage());
 

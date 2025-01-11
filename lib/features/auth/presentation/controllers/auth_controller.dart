@@ -60,6 +60,8 @@ class AuthController extends GetxController {
   var loading = false.obs;
 
   var introVideo = "".obs;
+  var introVideoDuration = 0.obs;
+
   var profilePic = "".obs;
 
   String? currentAddress;

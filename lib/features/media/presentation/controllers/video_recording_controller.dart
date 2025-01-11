@@ -24,7 +24,7 @@ class VideoRecordingController extends GetxController{
   late VideoPlayerController videoPlayerController;
 
 
-  initializeVideoPlayer(ProfileController profileController) async {
+  initializeVideoPlayer(dynamic profileController) async {
     videoPlayerController =
         VideoPlayerController.networkUrl(Uri.parse(profileController.introVideo.value!));
     // Wait for the controller to initialize
