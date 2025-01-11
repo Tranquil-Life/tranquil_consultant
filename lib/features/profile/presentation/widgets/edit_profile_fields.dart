@@ -7,6 +7,7 @@ import 'package:tl_consultant/app/presentation/theme/fonts.dart';
 import 'package:tl_consultant/app/presentation/widgets/broken_vertical_line.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/utils/helpers/svg_elements.dart';
+import 'package:tl_consultant/features/media/presentation/controllers/video_recording_controller.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:tl_consultant/features/profile/presentation/widgets/custom_form_field.dart';
@@ -14,9 +15,13 @@ import 'package:tl_consultant/features/profile/presentation/widgets/intro_media_
 import 'package:tl_consultant/features/profile/presentation/widgets/qualification_fields.dart';
 
 class EditProfileFields extends StatefulWidget {
-  const EditProfileFields({super.key, required this.profileController});
+  const EditProfileFields(
+      {super.key,
+      required this.profileController,
+      required this.videoRecordingController});
 
   final ProfileController profileController;
+  final VideoRecordingController videoRecordingController;
 
   @override
   State<EditProfileFields> createState() => _EditProfileFieldsState();
@@ -354,7 +359,9 @@ class _EditProfileFieldsState extends State<EditProfileFields> {
         ),
         const SizedBox(height: 20),
 
-        IntroMediaSection(profileController: widget.profileController),
+        IntroMediaSection(
+            profileController: widget.profileController,
+            videoRecordingController: widget.videoRecordingController),
       ],
     );
   }

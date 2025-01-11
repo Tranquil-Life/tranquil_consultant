@@ -6,13 +6,14 @@ import 'package:tl_consultant/app/presentation/theme/fonts.dart';
 import 'package:tl_consultant/app/presentation/widgets/buttons.dart';
 import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 import 'package:tl_consultant/core/utils/helpers/svg_elements.dart';
+import 'package:tl_consultant/features/media/presentation/controllers/video_recording_controller.dart';
 import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
-import 'package:video_player/video_player.dart';
 
 class VideoRecordState extends StatefulWidget {
-  const VideoRecordState({super.key, required this.profileController});
+  const VideoRecordState({super.key, required this.profileController, required this.videoRecordingController});
 
   final ProfileController profileController;
+  final VideoRecordingController videoRecordingController;
 
 
   @override
@@ -20,10 +21,9 @@ class VideoRecordState extends StatefulWidget {
 }
 
 class _VideoRecordStateState extends State<VideoRecordState> {
-
   @override
   void initState() {
-    widget.profileController.initializeVideoPlayer();
+    widget.videoRecordingController.initializeVideoPlayer(widget.profileController);
     super.initState();
   }
 

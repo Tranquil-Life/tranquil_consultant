@@ -14,6 +14,7 @@ import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 import 'package:tl_consultant/core/utils/helpers/svg_elements.dart';
 import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:tl_consultant/features/auth/presentation/widgets/means_of_id_field.dart';
+import 'package:tl_consultant/features/media/presentation/controllers/video_recording_controller.dart';
 import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:video_player/video_player.dart';
 
@@ -26,8 +27,9 @@ class VideoRecordingPage extends StatefulWidget {
 
 class _VideoRecordingPageState extends State<VideoRecordingPage>
     with SingleTickerProviderStateMixin {
-  final ProfileController profileController = Get.put(ProfileController());
-  final AuthController authController = Get.put(AuthController());
+  final videoRecordingController = Get.put(VideoRecordingController());
+  final profileController = Get.put(ProfileController());
+  final authController = Get.put(AuthController());
   late CameraController _cameraController;
   late VideoPlayerController _videoPlayerController;
   late AnimationController animationController;
@@ -48,7 +50,7 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
   void initState() {
     previousRoute = Get.previousRoute;
 
-    profileController.uploadProgress.value = 0.0;
+    videoRecordingController.uploadProgress.value = 0.0;
     initAnimation();
     initCamera();
 
@@ -307,8 +309,15 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
                                     SizedBox(height: 40),
 
                                     CustomButton(
-                                        onPressed: () {
-                                          //Retake video
+                                        onPressed: () async{
+                                          Get.back();
+
+                                          await Future.delayed(Duration(seconds: 1));
+
+                                          videoRecordingController.resetUploadVars();
+
+                                          Get.to(() => const VideoRecordingPage());
+
                                         },
                                         text: "Retake video",
                                         textColor: ColorPalette.green,
@@ -327,15 +336,15 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
                                             : () async {
                                                 if (previousRoute ==
                                                     Routes.INTRODUCE_YOURSELF) {
-                                                  await authController
+                                                  await videoRecordingController
                                                       .uploadFile(
                                                           File(video.path),
-                                                          videoIntro);
+                                                          videoIntro, authController);
                                                 } else {
-                                                  await profileController
+                                                  await videoRecordingController
                                                       .uploadFile(
                                                           File(video.path),
-                                                          videoIntro);
+                                                          videoIntro, profileController);
                                                 }
                                               },
                                         textColor: uploadTextState() ==
@@ -356,77 +365,78 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
                       SizedBox(height: 24),
                       if (!inVideoPlayerState)
                         //The recorder controller icons
-                        Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 24),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Container(
-                                  height: 40,
-                                  width: 40,
-                                  padding: EdgeInsets.all(12),
-                                  decoration: BoxDecoration(
-                                      border: Border.all(
-                                          width: 1, color: ColorPalette.green),
-                                      borderRadius: BorderRadius.circular(100)),
-                                  child:
-                                      SvgPicture.asset(SvgElements.svgPlayIcon),
-                                ),
-                                Spacer(),
-                                GestureDetector(
-                                  onTap: () {
-                                    startRecording();
-                                  },
-                                  child: Stack(
-                                    alignment: Alignment.center,
-                                    // Align both widgets perfectly at the center
-                                    children: [
-                                      // Base Container - the circle with a border
-                                      Container(
-                                        height: 60,
-                                        width: 60,
-                                        decoration: BoxDecoration(
-                                          border: Border.all(
-                                              width: 6,
-                                              color: Colors.green.shade200),
-                                          borderRadius:
-                                              BorderRadius.circular(100),
-                                        ),
-                                        child: Center(
-                                          child: Container(
-                                            padding: EdgeInsets.all(14),
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(100),
-                                              color: ColorPalette.green,
-                                            ),
-                                            height: 32,
-                                            width: 32,
-                                          ),
-                                        ),
-                                      ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
 
-                                      // Circular Progress Indicator
-                                      if (isRecording)
-                                        SizedBox(
-                                          height:
-                                              54, // Match the container size
-                                          width: 54,
-                                          child: CircularProgressIndicator(
-                                            value: _animation.value,
-                                            strokeWidth: 4,
-                                            valueColor:
-                                                AlwaysStoppedAnimation<Color>(
-                                                    Colors.green),
-                                          ),
+                            // Container(
+                            //   height: 40,
+                            //   width: 40,
+                            //   padding: EdgeInsets.all(12),
+                            //   decoration: BoxDecoration(
+                            //       border: Border.all(
+                            //           width: 1, color: ColorPalette.green),
+                            //       borderRadius: BorderRadius.circular(100)),
+                            //   child:
+                            //       SvgPicture.asset(SvgElements.svgPlayIcon),
+                            // ),
+                            Expanded(child: Container()),
+                            Expanded(flex:3, child: GestureDetector(
+                              onTap: () {
+                                startRecording();
+                              },
+                              child: Stack(
+                                alignment: Alignment.center,
+                                // Align both widgets perfectly at the center
+                                children: [
+                                  // Base Container - the circle with a border
+                                  Container(
+                                    height: 60,
+                                    width: 60,
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                          width: 6,
+                                          color: Colors.green.shade200),
+                                      borderRadius:
+                                      BorderRadius.circular(100),
+                                    ),
+                                    child: Center(
+                                      child: Container(
+                                        padding: EdgeInsets.all(14),
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                          BorderRadius.circular(100),
+                                          color: ColorPalette.green,
                                         ),
-                                    ],
+                                        height: 32,
+                                        width: 32,
+                                      ),
+                                    ),
                                   ),
-                                ),
-                                Spacer(),
-                                GestureDetector(
-                                  onTap: () => stopRecording(),
-                                  child: Container(
+
+                                  // Circular Progress Indicator
+                                  if (isRecording)
+                                    SizedBox(
+                                      height:
+                                      54, // Match the container size
+                                      width: 54,
+                                      child: CircularProgressIndicator(
+                                        value: _animation.value,
+                                        strokeWidth: 4,
+                                        valueColor:
+                                        AlwaysStoppedAnimation<Color>(
+                                            Colors.green),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ),),
+
+                            Expanded(flex: 1, child: GestureDetector(
+                              onTap: () => stopRecording(),
+                              child: Wrap(
+                                children: [
+                                  Container(
                                     height: 40,
                                     width: 40,
                                     padding: EdgeInsets.all(12),
@@ -435,13 +445,15 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
                                             width: 1,
                                             color: ColorPalette.green),
                                         borderRadius:
-                                            BorderRadius.circular(100)),
+                                        BorderRadius.circular(100)),
                                     child: SvgPicture.asset(
                                         SvgElements.svgStopIcon),
-                                  ),
-                                )
-                              ],
+                                  )
+                                ],
+                              ),
                             ))
+                          ],
+                        )
                     ],
                   ),
                   Positioned(
@@ -468,31 +480,16 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
   //TODO: Specify the upload route using the intial naviagation route
 
   String uploadTextState() {
-
-    if(previousRoute == Routes.INTRODUCE_YOURSELF){
-      if (authController.compressing.value) {
-        return compressingVideoMsg;
-      } else if ((authController.uploadProgress.value > 0.0 &&
-          authController.uploadProgress.value < 100.0) ||
-          authController.uploading.value) {
-        return "$uploadingVideoMsg: ${authController.uploadProgress.value.toStringAsFixed(2)}%";
-      } else if (authController.uploadProgress.value.toInt() == 100) {
-        return successfulUploadMsg;
-      } else {
-        return "Save video and upload";
-      }
-    }else{
-      if (profileController.compressing.value) {
-        return compressingVideoMsg;
-      } else if ((profileController.uploadProgress.value > 0.0 &&
-          profileController.uploadProgress.value < 100.0) ||
-          profileController.uploading.value) {
-        return "$uploadingVideoMsg: ${profileController.uploadProgress.value.toStringAsFixed(2)}%";
-      } else if (profileController.uploadProgress.value.toInt() == 100) {
-        return successfulUploadMsg;
-      } else {
-        return "Save video and upload";
-      }
+    if (videoRecordingController.compressing.value) {
+      return compressingVideoMsg;
+    } else if ((videoRecordingController.uploadProgress.value > 0.0 &&
+        videoRecordingController.uploadProgress.value < 100.0) ||
+        videoRecordingController.uploading.value) {
+      return "$uploadingVideoMsg: ${videoRecordingController.uploadProgress.value.toStringAsFixed(2)}%";
+    } else if (videoRecordingController.uploadProgress.value.toInt() == 100) {
+      return successfulUploadMsg;
+    } else {
+      return "Save video and upload";
     }
 
   }

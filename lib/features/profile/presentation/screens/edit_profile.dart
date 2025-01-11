@@ -11,6 +11,7 @@ import 'package:tl_consultant/app/presentation/widgets/custom_app_bar.dart';
 import 'package:tl_consultant/app/presentation/widgets/unfocus_bg.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/utils/services/media_service.dart';
+import 'package:tl_consultant/features/media/presentation/controllers/video_recording_controller.dart';
 import 'package:tl_consultant/features/profile/data/models/user_model.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 import 'package:tl_consultant/features/profile/domain/entities/user.dart';
@@ -25,10 +26,11 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
-  ProfileController profileController = Get.put(ProfileController());
-  final GlobalKey editProfileKey = GlobalKey();
+  final profileController = Get.put(ProfileController());
+  final videoRecordingController = Get.put(VideoRecordingController());
+  final editProfileKey = GlobalKey();
 
-  String pageTitle(){
+  String pageTitle() {
     User user = UserModel.fromJson(userDataStore.user);
     if (user.firstName.isEmpty ||
         user.bio.isEmpty ||
@@ -36,7 +38,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         user.videoIntroUrl!.isEmpty ||
         profileController.qualifications.isEmpty) {
       return "Complete your profile";
-    }else{
+    } else {
       return "Edit your profile";
     }
   }
@@ -48,10 +50,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         key: editProfileKey,
         backgroundColor: ColorPalette.scaffoldColor,
         appBar: CustomAppBar(
-          title: pageTitle(),
-          centerTitle: false,
-          backgroundColor: Colors.white
-        ),
+            title: pageTitle(),
+            centerTitle: false,
+            backgroundColor: Colors.white),
         body: Padding(
             padding: const EdgeInsets.only(left: 24, right: 24),
             child: SingleChildScrollView(
@@ -65,8 +66,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   const SizedBox(
                     height: 50,
                   ),
-                  EditProfileFields(profileController: profileController),
-
+                  EditProfileFields(
+                    profileController: profileController,
+                    videoRecordingController: videoRecordingController,
+                  ),
                   SizedBox(
                     height: 30,
                   ),
@@ -110,7 +113,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           child: const Text(
                             'Save Changes',
                             style: TextStyle(
-                                color: Colors.white, fontSize: AppFonts.defaultSize),
+                                color: Colors.white,
+                                fontSize: AppFonts.defaultSize),
                           ),
                         ),
                       ),
@@ -132,7 +136,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       builder: (BuildContext context) {
         return AlertDialog(
           shape:
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
           backgroundColor: ColorPalette.white,
           content: Column(
             mainAxisSize: MainAxisSize.min,
@@ -218,11 +222,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       },
     );
   }
-
 }
 
 class EditProfileHead extends StatefulWidget {
-   const EditProfileHead({super.key});
+  const EditProfileHead({super.key});
 
   @override
   State<EditProfileHead> createState() => _EditProfileHeadState();
@@ -230,27 +233,34 @@ class EditProfileHead extends StatefulWidget {
 
 class _EditProfileHeadState extends State<EditProfileHead> {
   ProfileController profileController = Get.put(ProfileController());
+  VideoRecordingController videoRecordingController =
+      Get.put(VideoRecordingController());
 
   @override
   Widget build(BuildContext context) {
     return Center(
       child: Column(
         children: [
-          Obx(()=>CircleAvatar(
-            backgroundImage: profileController.profilePic.value.isEmpty ?
-            AssetImage("assets/images/profile/therapist.png") : NetworkImage(profileController.profilePic.value),
-            radius: 60,
-          ),),
+          Obx(
+            () => CircleAvatar(
+              backgroundImage: profileController.profilePic.value.isEmpty
+                  ? AssetImage("assets/images/profile/therapist.png")
+                  : NetworkImage(profileController.profilePic.value),
+              radius: 60,
+            ),
+          ),
           const SizedBox(
             height: 14,
           ),
           SizedBox(
             width: 200,
             child: CustomButton(
-              onPressed: () async{
-                File? file = await MediaService.selectImage(ImageSource.gallery);
+              onPressed: () async {
+                File? file =
+                    await MediaService.selectImage(ImageSource.gallery);
                 // await profileController.uploadVideo(File(video.path));
-                await profileController.uploadFile(file!, profileImage);
+                await videoRecordingController.uploadFile(
+                    file!, profileImage, profileController);
               },
               child: const Text(
                 'Edit profile picture',

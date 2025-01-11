@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/theme/fonts.dart';
+import 'package:tl_consultant/features/media/presentation/controllers/video_recording_controller.dart';
 import 'package:tl_consultant/features/media/presentation/screens/video_record_page.dart';
 import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:tl_consultant/features/profile/presentation/widgets/no_video_record_state.dart';
@@ -9,9 +10,13 @@ import 'package:tl_consultant/features/profile/presentation/widgets/video_player
 import 'package:tl_consultant/features/profile/presentation/widgets/video_record_state.dart';
 
 class IntroMediaSection extends StatelessWidget {
-  const IntroMediaSection({super.key, required this.profileController});
+  const IntroMediaSection(
+      {super.key,
+      required this.profileController,
+      required this.videoRecordingController});
 
   final ProfileController profileController;
+  final VideoRecordingController videoRecordingController;
 
   @override
   Widget build(BuildContext context) {
@@ -33,24 +38,30 @@ class IntroMediaSection extends StatelessWidget {
                 },
               )
             : GestureDetector(
-          onTap: (){
-            if(profileController.introVideo.value!.isNotEmpty){
-              showDialog(context: context, builder: (_){
-                return AlertDialog(
-                  content: VideoPlayerWidget(videoUrl: profileController.introVideo.value!),
-                );
-              });
-            }
-
-          },
-          child: VideoRecordState(profileController: profileController,),
-        ),
+                onTap: () {
+                  if (profileController.introVideo.value!.isNotEmpty) {
+                    showDialog(
+                        context: context,
+                        builder: (_) {
+                          return AlertDialog(
+                            content: VideoPlayerWidget(
+                                videoUrl: profileController.introVideo.value!),
+                          );
+                        });
+                  }
+                },
+                child: VideoRecordState(
+                    profileController: profileController,
+                    videoRecordingController: videoRecordingController),
+              ),
         TextButton(
             style: TextButton.styleFrom(
               padding: EdgeInsets.zero,
               alignment: Alignment.centerLeft,
             ),
             onPressed: () {
+              videoRecordingController.resetUploadVars();
+
               Get.to(() => const VideoRecordingPage());
             },
             child: Text(

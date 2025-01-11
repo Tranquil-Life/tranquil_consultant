@@ -83,7 +83,7 @@ class PictureUploadOption extends StatelessWidget {
             ),
 
             Obx((){
-              if (authController.pictureUrl.value.isNotEmpty){
+              if (authController.profilePic.value.isNotEmpty){
                 return SvgPicture.asset(SvgElements.svgDoubleCheckmarkIcon);
               }else{
                 return SizedBox();

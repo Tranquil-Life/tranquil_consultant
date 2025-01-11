@@ -81,7 +81,7 @@ class VideoRecordOption extends StatelessWidget {
               ),
             ),
             Obx(() {
-              if (authController.videoUrl.value.isNotEmpty) {
+              if (authController.introVideo.value.isNotEmpty) {
                 return SvgPicture.asset(SvgElements.svgDoubleCheckmarkIcon);
               } else {
                 return SizedBox();

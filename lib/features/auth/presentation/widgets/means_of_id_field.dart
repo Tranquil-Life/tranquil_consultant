@@ -9,6 +9,7 @@ import 'package:tl_consultant/app/presentation/widgets/dialogs.dart';
 import 'package:tl_consultant/core/utils/services/media_service.dart';
 import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:tl_consultant/features/auth/presentation/widgets/form_fields.dart';
+import 'package:tl_consultant/features/media/presentation/controllers/video_recording_controller.dart';
 
 class MeansOfIdField extends StatefulWidget {
   const MeansOfIdField({super.key});
@@ -18,7 +19,8 @@ class MeansOfIdField extends StatefulWidget {
 }
 
 class _MeansOfIdFieldState extends State<MeansOfIdField> {
-  AuthController authController = Get.put(AuthController());
+  final authController = Get.put(AuthController());
+  final videoRecordingController = Get.put(VideoRecordingController());
 
   String dLicense = "Driver’s License";
   String passport = "Passport";
@@ -110,8 +112,8 @@ class _MeansOfIdFieldState extends State<MeansOfIdField> {
                 )
 
             ).whenComplete((){
-              authController.uploading.value = false;
-              authController.uploadUrl.value = "";
+              videoRecordingController.uploading.value = false;
+              // videoRecordingController.uploadUrl.value = "";
               // authController.identityTEC.text = authController.params.identityUrl;
             });
 
@@ -132,8 +134,8 @@ class _MeansOfIdFieldState extends State<MeansOfIdField> {
               onPressed: () {
                 Get.back();
 
-                MediaService.openCamera()
-                    .then((value) => showDialog(context: context, builder: (_)=>UploadDialog()));
+                // MediaService.openCamera()
+                //     .then((value) => showDialog(context: context, builder: (_)=>UploadDialog()));
 
               },
             ),
@@ -145,8 +147,8 @@ class _MeansOfIdFieldState extends State<MeansOfIdField> {
               onPressed: () {
                 Get.back();
 
-                MediaService.selectImage()
-                .then((value) => showDialog(context: context, builder: (_)=>UploadDialog()));
+                // MediaService.selectImage()
+                // .then((value) => showDialog(context: context, builder: (_)=>UploadDialog()));
               },
             ),
           ],
@@ -155,138 +157,138 @@ class _MeansOfIdFieldState extends State<MeansOfIdField> {
   }
 }
 
-class UploadDialog extends StatelessWidget {
-  UploadDialog({super.key});
-
-  final authController = Get.put(AuthController());
-
-  @override
-  Widget build(BuildContext context) {
-    return UploadFileDialog(
-      child: GetBuilder<AuthController>(
-        init: AuthController(),
-        builder: (value){
-          return Obx(()=>SizedBox(
-              height: value.uploading.value ? 350 : 264,
-              child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child:
-                  Column(
-                    mainAxisAlignment: value.uploading.value ? MainAxisAlignment.start :MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if(value.uploadUrl.value.isNotEmpty)
-                        DottedBorder(
-                            borderType: BorderType.RRect,
-                            radius: Radius.circular(12),
-                            padding: EdgeInsets.all(6),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.all(Radius.circular(12)),
-                              child: GestureDetector(
-                                child: SizedBox(
-                                  height: 200,
-                                  child: CustomWebView(url: value.uploadUrl.value),
-                                ),
-                              ),
-                            )
-                        )
-                      else
-                        DottedBorder(
-                          borderType: BorderType.RRect,
-                          radius: Radius.circular(12),
-                          padding: EdgeInsets.all(6),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.all(Radius.circular(12)),
-                            child: GestureDetector(
-                              onTap:() async{
-                                //..
-                              },
-                              child: Container(
-                                height: 200,
-                                color: Colors.grey[200],
-                                child: Center(
-                                  child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: value.uploading.value ?
-                                      [
-                                        const Icon(Icons.upload, color: ColorPalette.green, size: 40),
-                                        const SizedBox(height: 8),
-                                        const Text("Uploading...")
-                                      ] :
-                                      [
-                                        const Icon(Icons.upload, color: ColorPalette.green),
-                                        RichText(
-                                          text: TextSpan(
-                                            text: 'Browse ',
-                                            children: const [
-                                              TextSpan(
-                                                text: 'your files',
-                                                style: TextStyle(
-                                                    fontSize: 16,
-                                                    color: ColorPalette.black
-                                                ),
-                                              ),
-                                            ],
-                                            style: TextStyle(
-                                                fontSize: 20,
-                                                height: 1.4,
-                                                fontFamily: AppFonts.josefinSansRegular,
-                                                color: Theme.of(Get.context!).primaryColor
-                                            ),
-                                          ),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                        const Text("Maximum upload size of 2 MB")
-                                      ]
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-
-                      Visibility(
-                        visible: value.uploading.value,
-                        child: Column(
-                          children: [
-                            SizedBox(height: 8),
-                            Row(
-                              children: [
-                                const Icon(Icons.picture_as_pdf, color: ColorPalette.green),
-                                SizedBox(width: 4),
-                                Text(value.uploadUrl.value.length > 30 ? "${value.uploadUrl.value.substring(0, 30)}..." : ""),
-                                SizedBox(width: 4),
-                                Icon(Icons.cancel, color: Colors.grey,)
-                              ],
-                            ),
-
-                            Align(
-                                alignment: Alignment.bottomCenter,
-                                child: Center(
-                                  child: SizedBox(
-                                    width: 300,
-                                    child: CustomButton(
-                                      text: "Done",
-                                      onPressed: (){
-                                        authController.uploading.value = false;
-                                        value.uploadUrl.value = "";
-                                        // authController.identityTEC.text = authController.params.identityUrl;
-
-                                        Get.back();
-                                      },
-                                    ),
-                                  ),
-                                )
-                            )
-                          ],
-                        ),
-                      )
-                    ],
-                  )
-              )
-          ));
-        },
-      ),
-    );
-  }
-}
+// class UploadDialog extends StatelessWidget {
+//   UploadDialog({super.key});
+//
+//   final authController = Get.put(AuthController());
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return UploadFileDialog(
+//       child: GetBuilder<AuthController>(
+//         init: AuthController(),
+//         builder: (value){
+//           return Obx(()=>SizedBox(
+//               height: value.uploading.value ? 350 : 264,
+//               child: Padding(
+//                   padding: const EdgeInsets.all(16),
+//                   child:
+//                   Column(
+//                     mainAxisAlignment: value.uploading.value ? MainAxisAlignment.start :MainAxisAlignment.center,
+//                     crossAxisAlignment: CrossAxisAlignment.start,
+//                     children: [
+//                       if(value.uploadUrl.value.isNotEmpty)
+//                         DottedBorder(
+//                             borderType: BorderType.RRect,
+//                             radius: Radius.circular(12),
+//                             padding: EdgeInsets.all(6),
+//                             child: ClipRRect(
+//                               borderRadius: BorderRadius.all(Radius.circular(12)),
+//                               child: GestureDetector(
+//                                 child: SizedBox(
+//                                   height: 200,
+//                                   child: CustomWebView(url: value.uploadUrl.value),
+//                                 ),
+//                               ),
+//                             )
+//                         )
+//                       else
+//                         DottedBorder(
+//                           borderType: BorderType.RRect,
+//                           radius: Radius.circular(12),
+//                           padding: EdgeInsets.all(6),
+//                           child: ClipRRect(
+//                             borderRadius: BorderRadius.all(Radius.circular(12)),
+//                             child: GestureDetector(
+//                               onTap:() async{
+//                                 //..
+//                               },
+//                               child: Container(
+//                                 height: 200,
+//                                 color: Colors.grey[200],
+//                                 child: Center(
+//                                   child: Column(
+//                                       mainAxisAlignment: MainAxisAlignment.center,
+//                                       children: value.uploading.value ?
+//                                       [
+//                                         const Icon(Icons.upload, color: ColorPalette.green, size: 40),
+//                                         const SizedBox(height: 8),
+//                                         const Text("Uploading...")
+//                                       ] :
+//                                       [
+//                                         const Icon(Icons.upload, color: ColorPalette.green),
+//                                         RichText(
+//                                           text: TextSpan(
+//                                             text: 'Browse ',
+//                                             children: const [
+//                                               TextSpan(
+//                                                 text: 'your files',
+//                                                 style: TextStyle(
+//                                                     fontSize: 16,
+//                                                     color: ColorPalette.black
+//                                                 ),
+//                                               ),
+//                                             ],
+//                                             style: TextStyle(
+//                                                 fontSize: 20,
+//                                                 height: 1.4,
+//                                                 fontFamily: AppFonts.josefinSansRegular,
+//                                                 color: Theme.of(Get.context!).primaryColor
+//                                             ),
+//                                           ),
+//                                           textAlign: TextAlign.center,
+//                                         ),
+//                                         const Text("Maximum upload size of 2 MB")
+//                                       ]
+//                                   ),
+//                                 ),
+//                               ),
+//                             ),
+//                           ),
+//                         ),
+//
+//                       Visibility(
+//                         visible: value.uploading.value,
+//                         child: Column(
+//                           children: [
+//                             SizedBox(height: 8),
+//                             Row(
+//                               children: [
+//                                 const Icon(Icons.picture_as_pdf, color: ColorPalette.green),
+//                                 SizedBox(width: 4),
+//                                 Text(value.uploadUrl.value.length > 30 ? "${value.uploadUrl.value.substring(0, 30)}..." : ""),
+//                                 SizedBox(width: 4),
+//                                 Icon(Icons.cancel, color: Colors.grey,)
+//                               ],
+//                             ),
+//
+//                             Align(
+//                                 alignment: Alignment.bottomCenter,
+//                                 child: Center(
+//                                   child: SizedBox(
+//                                     width: 300,
+//                                     child: CustomButton(
+//                                       text: "Done",
+//                                       onPressed: (){
+//                                         authController.uploading.value = false;
+//                                         value.uploadUrl.value = "";
+//                                         // authController.identityTEC.text = authController.params.identityUrl;
+//
+//                                         Get.back();
+//                                       },
+//                                     ),
+//                                   ),
+//                                 )
+//                             )
+//                           ],
+//                         ),
+//                       )
+//                     ],
+//                   )
+//               )
+//           ));
+//         },
+//       ),
+//     );
+//   }
+// }

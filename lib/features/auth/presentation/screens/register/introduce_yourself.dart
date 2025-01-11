@@ -13,6 +13,7 @@ import 'package:tl_consultant/core/utils/services/media_service.dart';
 import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:tl_consultant/features/auth/presentation/widgets/picture_upload_option.dart';
 import 'package:tl_consultant/features/auth/presentation/widgets/video_record_option.dart';
+import 'package:tl_consultant/features/media/presentation/controllers/video_recording_controller.dart';
 import 'package:tl_consultant/features/media/presentation/screens/video_record_page.dart';
 
 class IntroduceYourselfPage extends StatefulWidget {
@@ -23,7 +24,8 @@ class IntroduceYourselfPage extends StatefulWidget {
 }
 
 class _IntroduceYourselfPageState extends State<IntroduceYourselfPage> {
-  final AuthController authController = Get.put(AuthController());
+  final authController = Get.put(AuthController());
+  final videoRecordingController = Get.put(VideoRecordingController());
 
   var selectedOption = '';
 
@@ -84,7 +86,7 @@ class _IntroduceYourselfPageState extends State<IntroduceYourselfPage> {
                     await Future.delayed(Duration(seconds: 1));
                     File? file = await MediaService.selectImage(ImageSource.gallery);
                     // await profileController.uploadVideo(File(video.path));
-                    await authController.uploadFile(file!, profileImage);
+                    await videoRecordingController.uploadFile(file!, profileImage, authController);
                   },
                 ),
                 SizedBox(
@@ -92,7 +94,7 @@ class _IntroduceYourselfPageState extends State<IntroduceYourselfPage> {
                 ),
                 Obx(()=>CustomButton(
                     onPressed: (
-                        authController.pictureUrl.value.isEmpty)
+                        authController.profilePic.value.isEmpty)
                         ? null
                         : () {
                       authController.signUp();
