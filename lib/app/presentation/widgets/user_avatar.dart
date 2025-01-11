@@ -89,8 +89,7 @@ class UserAvatar extends StatelessWidget {
 }
 
 class MyAvatarWidget extends StatefulWidget {
-  const MyAvatarWidget({Key? key, required this.size, this.decoration})
-      : super(key: key);
+  const MyAvatarWidget({super.key, required this.size, this.decoration});
 
   final double size;
   final BoxDecoration? decoration;
@@ -101,16 +100,14 @@ class MyAvatarWidget extends StatefulWidget {
 
 class _MyAvatarWidgetState extends State<MyAvatarWidget> {
   final profileController = Get.put(ProfileController());
-  User client = UserModel.fromJson(userDataStore.user);
 
   @override
   Widget build(BuildContext context) {
-    return Obx(()=>
-    UserAvatar(
+    return Obx(()=>UserAvatar(
       size: widget.size,
       decoration: widget.decoration,
-      imageUrl: profileController.editUser.value.avatarUrl,
-      source: client.usesBitmoji! ? AvatarSource.bitmojiUrl : AvatarSource.url,
+      imageUrl: profileController.profilePic.value,
+      source: AvatarSource.url,
     ));
   }
 }

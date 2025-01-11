@@ -1,4 +1,6 @@
 class SvgElements {
+  static get svgPlantImage => 'assets/images/onboarding/plant.svg';
+
   static get svgAttachIcon => "assets/images/icons/attach.svg";
   static get svgBitmojiIcon => "assets/images/icons/bitmoji.svg";
   static get svgBoldIcon => "assets/images/icons/bold.svg";
@@ -11,5 +13,22 @@ class SvgElements {
   static get svgMicIcon => "assets/images/icons/mic.svg";
   static get svgUnderlineIcon => "assets/images/icons/underline.svg";
   
-  static get svgbalanceBgImg => "assets/images/balance_bg.svg";
+  static get svgBalanceBgImg => "assets/images/balance_bg.svg";
+
+  static get svgPlayIcon => "assets/images/icons/play.svg";
+  static get svgStopIcon => "assets/images/icons/stop.svg";
+  static get svgPauseIcon => "assets/images/icons/pause.svg";
+  static get svgDownloadIcon => "assets/images/icons/download.svg";
+  static get svgShareIcon => "assets/images/icons/share.svg";
+  static get svgModifySpeedIcon => "assets/images/icons/modify_speed.svg";
+  static get svgDeleteIcon => "assets/images/icons/trash.svg";
+  static get svgHexagonCloseIcon => "assets/images/icons/hexagon_close.svg";
+  static get svgVideoPlayIcon => "assets/images/icons/video_play.svg";
+  static get svgVideoPlayOutlineIcon => "assets/images/icons/video_play_outline.svg";
+
+  static get svgUserIcon => "assets/images/icons/user_icon.svg";
+  static get svgPersonGroupIcon => "assets/images/icons/person_group.svg";
+
+  static get svgDoubleCheckmarkIcon => "assets/images/icons/double_checkmark.svg";
+  static get svgImageIcon => "assets/images/icons/image.svg";
 }

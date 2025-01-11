@@ -1,184 +1,132 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/theme/fonts.dart';
-import 'package:tl_consultant/app/presentation/theme/tranquil_icons.dart';
 import 'package:tl_consultant/app/presentation/widgets/buttons.dart';
 import 'package:tl_consultant/app/presentation/widgets/custom_app_bar.dart';
-import 'package:tl_consultant/app/presentation/widgets/user_avatar.dart';
-import 'package:tl_consultant/features/profile/domain/entities/edit_user.dart';
+import 'package:tl_consultant/app/presentation/widgets/unfocus_bg.dart';
+import 'package:tl_consultant/core/constants/constants.dart';
+import 'package:tl_consultant/core/utils/services/media_service.dart';
+import 'package:tl_consultant/features/media/presentation/controllers/video_recording_controller.dart';
+import 'package:tl_consultant/features/profile/data/models/user_model.dart';
+import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
+import 'package:tl_consultant/features/profile/domain/entities/user.dart';
 import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
-import 'package:tl_consultant/features/profile/presentation/widgets/custom_form_field.dart';
-import 'package:tl_consultant/features/settings/presentation/widgets/settings_button.dart';
-import 'package:tl_consultant/features/settings/presentation/widgets/sign_out_dialog.dart';
+import 'package:tl_consultant/features/profile/presentation/widgets/edit_profile_fields.dart';
 
 class EditProfileScreen extends StatefulWidget {
-  const EditProfileScreen({Key? key}) : super(key: key);
+  const EditProfileScreen({super.key});
 
   @override
   State<EditProfileScreen> createState() => _EditProfileScreenState();
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: const CustomAppBar(
-        title: "Edit Profile",
-        centerTitle: false,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const EditProfileHead(),
-              const SizedBox(
-                height: 30,
-              ),
-              EditProfileFields(),
-            ],
-          ),
-        ),
-      ),
-    );
+  final profileController = Get.put(ProfileController());
+  final videoRecordingController = Get.put(VideoRecordingController());
+  final editProfileKey = GlobalKey();
+
+  String pageTitle() {
+    User user = UserModel.fromJson(userDataStore.user);
+    if (user.firstName.isEmpty ||
+        user.bio.isEmpty ||
+        user.specialties!.isEmpty ||
+        user.videoIntroUrl!.isEmpty ||
+        profileController.qualifications.isEmpty) {
+      return "Complete your profile";
+    } else {
+      return "Edit your profile";
+    }
   }
-}
-
-class EditProfileHead extends StatelessWidget {
-  const EditProfileHead({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            children: [
-              UserAvatar(),
-              const SizedBox(
-                height: 30,
-              ),
-              SizedBox(
-                width: 200,
-                child: CustomButton(
-                  onPressed: () {},
-                  child: const Text(
-                    'Edit profile picutre',
-                    style: TextStyle(
-                        color: Colors.white, fontSize: AppFonts.defaultSize),
+    return UnFocusWidget(
+      child: Scaffold(
+        key: editProfileKey,
+        backgroundColor: ColorPalette.scaffoldColor,
+        appBar: CustomAppBar(
+            title: pageTitle(),
+            centerTitle: false,
+            backgroundColor: Colors.white),
+        body: Padding(
+            padding: const EdgeInsets.only(left: 24, right: 24),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    height: 30,
                   ),
-                ),
+                  const EditProfileHead(),
+                  const SizedBox(
+                    height: 50,
+                  ),
+                  EditProfileFields(
+                    profileController: profileController,
+                    videoRecordingController: videoRecordingController,
+                  ),
+                  SizedBox(
+                    height: 30,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            _showDiscardChangesDialog(context);
+                          },
+                          child: Container(
+                            height: 44,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8.0),
+                              border: Border.all(
+                                width: 1,
+                                color: ColorPalette.green.shade500,
+                              ),
+                            ),
+                            alignment: Alignment.center,
+                            child: Text(
+                              "Cancel",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w400,
+                                color: ColorPalette.green.shade500,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 20,
+                      ),
+                      Expanded(
+                        child: CustomButton(
+                          onPressed: () {
+                            profileController.updateUser();
+                          },
+                          child: const Text(
+                            'Save Changes',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: AppFonts.defaultSize),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 40,
+                  ),
+                ],
               ),
-              SettingsButton(
-                label: 'Sign out',
-                prefixIconData: TranquilIcons.sign_out,
-                prefixIconColor: ColorPalette.red,
-                onPressed: () => showDialog(
-                  context: context,
-                  builder: (_) => SignOutDialog(),
-                ),
-              ),
-            ],
-          ),
-        ),
+            )),
       ),
-    );
-  }
-}
-
-class EditProfileFields extends StatelessWidget {
-  EditProfileFields({Key? key}) : super(key: key);
-  final TextEditingController firstNameController = TextEditingController();
-  final TextEditingController lastNameController = TextEditingController();
-  final TextEditingController countryController = TextEditingController();
-  final TextEditingController cityController = TextEditingController();
-  final TextEditingController bioController = TextEditingController();
-  final TextEditingController title = TextEditingController();
-  final TextEditingController certificationController = TextEditingController();
-  final TextEditingController institutionController = TextEditingController();
-  final TextEditingController yearGraduatedController = TextEditingController();
-  final TextEditingController modalitiesController = TextEditingController();
-  @override
-  Widget build(BuildContext context) {
-    ProfileController profileController = Get.put(ProfileController());
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text("IDENTITY"),
-        const SizedBox(height: 20),
-        const Text("First name"),
-        nameFormField(
-            profileController.editUser.value.firstName, firstNameController),
-        const Text("Last name"),
-        nameFormField(
-          profileController.editUser.value.lastName,
-          lastNameController,
-        ),
-        const Text("Title"),
-        titleFormField(""),
-        const SizedBox(height: 20),
-        const Text("LOCATION"),
-        const SizedBox(height: 20),
-        const Text("Country"),
-        countryFormField(
-            profileController.editUser.value.location, countryController),
-        const Text("City"),
-        cityFormField(
-            profileController.editUser.value.location, cityController),
-        const Text("Bio"),
-        bioFormField(profileController.editUser.value.bio, bioController),
-        const SizedBox(height: 20),
-        const Text("QUALIFICATIONS", key: Key('qualifications_title')),
-        const SizedBox(height: 20),
-        const Text("Name of Certification"),
-        nameofcertification("", certificationController),
-        const Text("Institution/Awarding body"),
-        institution("", institutionController),
-        const Text("Year graduated/awarded"),
-        yearGraduated("", yearGraduatedController),
-        const Text("Modalities practiced"),
-        modalities("", modalitiesController),
-        const SizedBox(height: 20),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            SizedBox(
-              width: 150,
-              child: CustomButton(
-                onPressed: () {
-                  _showDiscardChangesDialog(context);
-                },
-                child: const Text(
-                  'Cancel',
-                  style: TextStyle(
-                      color: Colors.white, fontSize: AppFonts.defaultSize),
-                ),
-              ),
-            ),
-            SizedBox(
-              width: 180,
-              child: CustomButton(
-                onPressed: () {
-                  profileController.updateUser(
-                    EditUser(
-                      firstName: firstNameController.text,
-                      lastName: lastNameController.text,
-                    ),
-                  );
-                },
-                child: const Text(
-                  'Save Changes',
-                  style: TextStyle(
-                      color: Colors.white, fontSize: AppFonts.defaultSize),
-                ),
-              ),
-            ),
-          ],
-        )
-      ],
     );
   }
 
@@ -187,42 +135,142 @@ class EditProfileFields extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Center(child: Text("Discard Changes?")),
-          content: const Text(
-              "Do you want to exit this page without saving your changes?"),
-          actions: <Widget>[
-            Row(
-              children: [
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: CustomButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      text: "Close",
-                      // child: const Text('Cancel'),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+          backgroundColor: ColorPalette.white,
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(
+                height: 20,
+              ),
+              Text(
+                "Discard changes",
+                style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                    color: ColorPalette.black),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              SvgPicture.asset("assets/images/icons/container.svg"),
+              SizedBox(
+                height: 20,
+              ),
+              Text(
+                "Do you want to exit this page without saving your changes?",
+                style: TextStyle(
+                    fontSize: AppFonts.defaultSize,
+                    fontWeight: FontWeight.w400,
+                    color: ColorPalette.gray.shade800),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Container(
+                          height: 44,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8.0),
+                            border: Border.all(
+                              width: 1,
+                              color: ColorPalette.green.shade500,
+                            ),
+                          ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            "Close",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400,
+                              color: ColorPalette.green.shade500,
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
                   ),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: CustomButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                        Navigator.of(context).pop();
-                        // Pop EditProfileScreen and go back to the previous screen
-                      },
-                      text: "Cancel",
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: CustomButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          Navigator.of(context).pop();
+                          // Pop EditProfileScreen and go back to the previous screen
+                        },
+                        text: "Cancel",
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+            ],
+          ),
         );
       },
+    );
+  }
+}
+
+class EditProfileHead extends StatefulWidget {
+  const EditProfileHead({super.key});
+
+  @override
+  State<EditProfileHead> createState() => _EditProfileHeadState();
+}
+
+class _EditProfileHeadState extends State<EditProfileHead> {
+  ProfileController profileController = Get.put(ProfileController());
+  VideoRecordingController videoRecordingController =
+      Get.put(VideoRecordingController());
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        children: [
+          Obx(
+            () => CircleAvatar(
+              backgroundImage: profileController.profilePic.value.isEmpty
+                  ? AssetImage("assets/images/profile/therapist.png")
+                  : NetworkImage(profileController.profilePic.value),
+              radius: 60,
+            ),
+          ),
+          const SizedBox(
+            height: 14,
+          ),
+          SizedBox(
+            width: 200,
+            child: CustomButton(
+              onPressed: () async {
+                File? file =
+                    await MediaService.selectImage(ImageSource.gallery);
+                // await profileController.uploadVideo(File(video.path));
+                await videoRecordingController.uploadFile(
+                    file!, profileImage, profileController);
+              },
+              child: const Text(
+                'Edit profile picture',
+                style: TextStyle(
+                    color: ColorPalette.white, fontSize: AppFonts.baseSize),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

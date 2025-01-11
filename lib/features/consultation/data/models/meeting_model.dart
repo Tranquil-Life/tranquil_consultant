@@ -1,5 +1,5 @@
 import 'package:tl_consultant/core/constants/constants.dart';
-import 'package:tl_consultant/core/helpers/timezone_converter.dart';
+import 'package:tl_consultant/core/utils/helpers/timezone_converter.dart';
 import 'package:tl_consultant/features/consultation/data/models/client_model.dart';
 import 'package:tl_consultant/features/consultation/domain/entities/meeting.dart';
 

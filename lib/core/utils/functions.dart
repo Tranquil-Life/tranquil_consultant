@@ -2,14 +2,27 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:add_2_calendar/add_2_calendar.dart';
+import 'package:dio/dio.dart' as dio;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:get/get.dart';
+import 'package:http/http.dart';
+import 'package:http_parser/http_parser.dart';
 import 'package:intl/intl.dart';
+import 'package:path/path.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:tl_consultant/app/config.dart';
+import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/widgets/IOSDatePicker.dart';
-import 'package:tl_consultant/core/utils/extensions/date_time_extension.dart';
+import 'package:tl_consultant/app/presentation/widgets/custom_snackbar.dart';
+import 'package:tl_consultant/features/profile/data/models/user_model.dart';
+import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
+import 'package:tl_consultant/features/profile/domain/entities/user.dart';
+import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
+import 'package:tl_consultant/features/profile/presentation/screens/edit_profile.dart';
+
 
 void setStatusBarBrightness(bool dark, [Duration? delayedTime]) async {
   await Future.delayed(delayedTime ?? const Duration(milliseconds: 300));
@@ -113,31 +126,30 @@ Future getFileSize(String filepath, int decimals) async {
 }
 
 Future<Map<String, dynamic>> getCurrLocation() async {
-  late Position position;
+  Position position;
   // Request location permissions
   LocationPermission permission = await Geolocator.requestPermission();
-  List<Placemark> placemarks = [];
   if (permission == LocationPermission.denied) {
     print("Location permission denied");
-  } else {
-    position = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.best,
-    );
-
-    // Use geocoding to get the placemarks for the current location
-    placemarks = await placemarkFromCoordinates(
-      position.latitude,
-      position.longitude,
-    );
+    return {"error": "Location permission denied"};
   }
 
-  var data = <String, dynamic>{
+  // Get current position
+  position = await Geolocator.getCurrentPosition(
+    desiredAccuracy: LocationAccuracy.best,
+  );
+
+  // Use geocoding to get the placemarks
+  List<Placemark> placemarks = await placemarkFromCoordinates(
+    position.latitude,
+    position.longitude,
+  );
+
+  return {
     "latitude": position.latitude,
     "longitude": position.longitude,
-    "placemarks": placemarks
+    "placemarks": placemarks,
   };
-
-  return data;
 }
 
 List<TextSpan> parseNoteText(String text) {
@@ -162,4 +174,112 @@ List<TextSpan> parseNoteText(String text) {
     }
   }
   return spans;
+}
+
+int calculateAge(String birthDate) {
+  // Parse the input string to a DateTime object
+  DateTime parsedDate = DateFormat("dd-MM-yyyy").parse(birthDate);
+
+  // Get today's date
+  DateTime today = DateTime.now();
+
+  // Calculate the difference in years
+  int age = today.year - parsedDate.year;
+
+  // Adjust for cases where the birthday hasn't occurred yet this year
+  if (today.month < parsedDate.month ||
+      (today.month == parsedDate.month && today.day < parsedDate.day)) {
+    age--;
+  }
+
+  return age;
+}
+
+String formatDuration(double milliseconds) {
+  int totalSeconds = (milliseconds ~/ 1000); // Convert to total seconds
+  int minutes = totalSeconds ~/ 60;
+  int seconds = totalSeconds % 60;
+  return '$minutes:${seconds.toString().padLeft(2, '0')}';
+}
+
+Future shareFile(File toShare) async {
+  try {
+    final file = File(toShare.path);  // Ensure you're passing the correct path
+
+    // Debugging the file path and existence
+    // print('File path: ${file.path}');
+    // print('File exists: ${file.existsSync()}');
+
+    // Check if the file exists before trying to share
+    if (file.existsSync()) {
+      await Share.shareXFiles([XFile(file.path)]);
+    } else {
+      CustomSnackBar.showSnackBar(
+          context: Get.context!,
+          title: "Error",
+          message: "File does not exist",
+          backgroundColor: ColorPalette.red);
+    }
+  } catch (e) {
+    CustomSnackBar.showSnackBar(
+        context: Get.context!,
+        title: "Error",
+        message: "Failed to share video",
+        backgroundColor: ColorPalette.red);
+  }
+}
+
+Future<Map<String, dynamic>> convertFilesToMultipart(
+    Map<String, dynamic> data) async {
+  Map<String, dynamic> newData = Map<String, dynamic>.from(data);
+
+  // Iterate over the map and check for keys with File values
+  for (String key in newData.keys) {
+    if (newData[key] is File) {
+      File file = newData[key] as File;
+
+      // Replace the file with a MultipartFile
+      newData[key] = await dio.MultipartFile.fromFile(
+        file.path,
+        filename: basename(file.path), // Extract filename from path
+      );
+    }
+  }
+
+  return newData;
+}
+
+String truncateWithEllipsis(int maxLength, String text) {
+  return (text.length <= maxLength)
+      ? text
+      : '${text.substring(0, maxLength)}...';
+}
+
+List<String> getTitlesAfterComma(String input) {
+  // Split the string at the first comma
+  List<String> parts = input.split(',');
+
+  if (parts.length < 2) {
+    // If there's no comma or no content after the comma, return an empty list
+    return [];
+  }
+
+  // Get everything after the first comma
+  String titlesPart = parts.sublist(1).join(',');
+
+  // Split the titles part into individual titles and trim whitespace
+  return titlesPart.split(',').map((title) => title.trim()).toList();
+}
+
+checkForEmptyProfileInfo(ProfileController profileController) async {
+  await Future.delayed(Duration(seconds: 2));
+  profileController.getQualifications();
+  User user = UserModel.fromJson(userDataStore.user);
+  if (user.firstName.isEmpty ||
+      user.bio.isEmpty ||
+      user.specialties!.isEmpty ||
+      user.videoIntroUrl!.isEmpty ||
+      profileController.qualifications.isEmpty) {
+    Get.to(() => EditProfileScreen());
+  }
 }

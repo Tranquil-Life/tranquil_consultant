@@ -12,16 +12,25 @@ class ProfileRepoImpl extends ProfileRepo {
   ProfileRepoImpl();
 
   @override
-  Future<Either<ApiError, dynamic>> updateProfile(User user) async {
+  Future<Either<ApiError, dynamic>> updateProfile(Map<String, dynamic> req) async {
     return await catchSocketException(
-            () => postReq(ProfileEndPoints.edit, body: user.toJson()))
+            () => postReq(ProfileEndPoints.edit, body: req))
         .then((value) => handleResponse(value));
   }
 
   @override
-  Future<Either<ApiError, dynamic>> currentContinent() async {
+  Future<Either<ApiError, dynamic>> uploadVideo(Map<String, dynamic> req) async{
     return await catchSocketException(
-            () => getReq(ProfileEndPoints.getContinent, false, true))
+            () => postReq(MediaEndpoints.uploadFile, body: req))
         .then((value) => handleResponse(value));
   }
+
+  @override
+  Future<Either<ApiError, dynamic>> deleteQualification(int id) async{
+    return await catchSocketException(
+            () => postReq(ProfileEndPoints.deleteQualification, body: {'id': id}))
+        .then((value) => handleResponse(value));
+  }
+
+
 }

@@ -51,6 +51,7 @@ class ChatRepoImpl extends ChatRepo {
     return await catchSocketException(
             () => getReq(ChatEndPoints.getRecentMessages(chatId: chatId)))
         .then((value) => handleResponse(value));
+
   }
 
   @override

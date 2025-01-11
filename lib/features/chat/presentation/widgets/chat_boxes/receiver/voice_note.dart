@@ -5,7 +5,6 @@ import 'package:tl_consultant/features/chat/presentation/widgets/chat_boxes/rece
 import 'package:tl_consultant/features/chat/presentation/widgets/chat_boxes/shared/voice_note_layout.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 
-
 class ReceiverChatVoiceNote extends StatelessWidget {
   const ReceiverChatVoiceNote(this.message, {Key? key}) : super(key: key);
   final Message message;
@@ -19,7 +18,7 @@ class ReceiverChatVoiceNote extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          VoiceNoteLayout(message: message),
+          //VoiceNoteLayout(message: message),
         ],
       ),
     );

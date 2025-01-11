@@ -51,6 +51,7 @@ class _CreateNoteState extends State<CreateNote> {
           title: "New note",
           actions: [
             AppBarAction(
+              actionBgColor: ColorPalette.green,
               child: inPreviewMode
                   ? SvgPicture.asset(
                       editMode,
@@ -147,8 +148,8 @@ class _CreateNoteState extends State<CreateNote> {
                                   },
                                   child: editOptionItem(formatTextIcon),
                                 ),
-                                editOptionItem(attachIconPath, width: 24),
-                                editOptionItem(micIconPath, width: 24),
+                                editOptionItem(attachIconPath, width: 24, color: ColorPalette.gray),
+                                editOptionItem(micIconPath, width: 24, color: ColorPalette.gray),
                               ],
                             ),
                             SizedBox(
@@ -167,7 +168,7 @@ class _CreateNoteState extends State<CreateNote> {
     );
   }
 
-  editOptionItem(String icon, {double? width}) {
+  editOptionItem(String icon, {double? width, Color? color}) {
     return Container(
       height: 40,
       width: 40,
@@ -178,7 +179,7 @@ class _CreateNoteState extends State<CreateNote> {
           child: SvgPicture.asset(
         icon,
         width: width,
-        color: ColorPalette.black,
+        color: color ?? ColorPalette.black,
       )),
     );
   }

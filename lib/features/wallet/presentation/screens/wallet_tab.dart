@@ -36,7 +36,7 @@ class _WalletTabState extends State<WalletTab> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-        padding: EdgeInsets.all(16),
+        padding: EdgeInsets.only(left: 16, top: 16, right: 16),
         child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
           Container(
             decoration: BoxDecoration(
@@ -48,7 +48,7 @@ class _WalletTabState extends State<WalletTab> {
                 child: Stack(
                   clipBehavior: Clip.none,
                   children: [
-                    SvgPicture.asset(SvgElements.svgbalanceBgImg),
+                    SvgPicture.asset(SvgElements.svgBalanceBgImg),
                     Container(
                         alignment: Alignment.center,
                         padding: EdgeInsets.only(top: 24),
@@ -67,7 +67,7 @@ class _WalletTabState extends State<WalletTab> {
                                 GestureDetector(
                                     child: Icon(Icons.refresh_outlined,
                                         color:
-                                            ColorPalette.black.withOpacity(.6)),
+                                        ColorPalette.black.withOpacity(.6)),
                                     onTap: () async => await getEarnings()),
                                 Text(
                                     formatCurrency!.format(
@@ -111,7 +111,7 @@ class _WalletTabState extends State<WalletTab> {
               onPressed: () {},
               child: const Center(
                 child:
-                    Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                   Text(
                     'Withdraw to account',
                     style: TextStyle(
@@ -142,7 +142,9 @@ class _WalletTabState extends State<WalletTab> {
             ],
           ),
           const SizedBox(height: 40),
-          const Transactions()
+          const TransactionsSection(),
+          SizedBox(height: 40)
+
         ]));
   }
 
@@ -151,7 +153,7 @@ class _WalletTabState extends State<WalletTab> {
         height: 100,
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(width: 1, color: ColorPalette.grey)),
+            border: Border.all(width: 1, color: ColorPalette.gray)),
         child: Center(
           child: Container(
               margin: const EdgeInsets.only(left: 4, right: 4),
@@ -159,7 +161,7 @@ class _WalletTabState extends State<WalletTab> {
               height: 90,
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(4),
-                  border: Border.all(width: 1, color: ColorPalette.grey)),
+                  border: Border.all(width: 1, color: ColorPalette.gray)),
               child: Center(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,

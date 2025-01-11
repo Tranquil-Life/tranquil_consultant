@@ -39,9 +39,9 @@ class EditUser extends User {
               baseUser?.avatarUrl ??
               userDataStore.user['avatar_url'] ??
               "",
-          isVerified: isVerified ??
-              baseUser?.isVerified ??
-              userDataStore.user['email_verified_at'],
+          // isVerified: isVerified ??
+          //     baseUser?.isVerified ??
+          //     userDataStore.user['email_verified_at'],
           usesBitmoji: usesBitmoji ??
               baseUser?.usesBitmoji ??
               userDataStore.user['uses_bitmoji'],

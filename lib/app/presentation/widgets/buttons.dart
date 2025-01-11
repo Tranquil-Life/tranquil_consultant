@@ -3,42 +3,51 @@ import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/theme/fonts.dart';
 import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 
-class CustomButton extends StatelessWidget{
+class CustomButton extends StatelessWidget {
   final String? text;
   final Widget? child;
+  final Color? bgColor;
+  final Color? textColor;
+  final bool? showBorder;
   final Function()? onPressed;
-  const CustomButton({Key? key,
-    this.text,
-    required this.onPressed, this.child}) : super(key: key);
+
+  const CustomButton(
+      {super.key,
+      this.text,
+      required this.onPressed,
+      this.child,
+      this.bgColor,
+      this.showBorder = false,
+      this.textColor});
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-        backgroundColor: ColorPalette.green,
-        minimumSize: Size(displayWidth(context), 56),
-        elevation: 4,
+        backgroundColor: bgColor ?? ColorPalette.green,
+        minimumSize: Size(displayWidth(context), 44),
         shadowColor: ColorPalette.black,
         shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8.0)
-        ),
+            borderRadius: BorderRadius.circular(8.0),
+            side: BorderSide(width: showBorder! ? 1 : 0, color: ColorPalette.green)),
       ),
       onPressed: onPressed,
-      child: child ?? Text(text!, 
-      style: const TextStyle(
-        fontSize: AppFonts.defaultSize, 
-        color: ColorPalette.white
-      )),
+      child: child ??
+          Text(text!,
+              style: TextStyle(
+                  fontSize: AppFonts.defaultSize,
+                  color: textColor ?? ColorPalette.white)),
     );
   }
 }
 
 class WidgetsThemeData {
   final Color primaryColor;
+
   WidgetsThemeData({required this.primaryColor})
       : textButtonTheme = TextButtonThemeData(
-    style: TextButton.styleFrom(foregroundColor: primaryColor),
-  ),
+          style: TextButton.styleFrom(foregroundColor: primaryColor),
+        ),
         outlinedButtonTheme = OutlinedButtonThemeData(
           style: OutlinedButton.styleFrom(
             fixedSize: const Size(380, 56),
@@ -55,15 +64,15 @@ class WidgetsThemeData {
 
   final elevatedButtonTheme = ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        fixedSize: const Size(380, 56),
-        foregroundColor: Colors.white,
-        textStyle: const TextStyle(
-          fontWeight: FontWeight.normal,
-          fontSize: 18,
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      ));
+    fixedSize: const Size(380, 56),
+    foregroundColor: Colors.white,
+    textStyle: const TextStyle(
+      fontWeight: FontWeight.normal,
+      fontSize: 18,
+    ),
+    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+  ));
 
   static const inputDecorationTheme = InputDecorationTheme(
     filled: true,

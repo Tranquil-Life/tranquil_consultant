@@ -3,11 +3,11 @@ import 'package:tl_consultant/app/presentation/theme/colors.dart';
 
 class AppBarButton extends StatelessWidget {
   const AppBarButton({
-    Key? key,
+    super.key,
     required this.icon,
     required this.onPressed,
     this.backgroundColor,
-  }) : super(key: key);
+  });
 
   final Widget icon;
   final Color? backgroundColor;
@@ -50,7 +50,7 @@ class AppBarButton extends StatelessWidget {
 }
 
 class BackButtonWhite extends StatelessWidget {
-  const BackButtonWhite({Key? key}) : super(key: key);
+  const BackButtonWhite({super.key});
 
   @override
   Widget build(BuildContext context) {

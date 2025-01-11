@@ -70,12 +70,12 @@ class NotesController extends GetxController with GetTickerProviderStateMixin {
 
     Either either = await journalRepo.getPersonalNotes(
         page: page.value, limit: limit.value);
-    either.fold(
-        (l) => CustomSnackBar.showSnackBar(
+    either.fold((l) => CustomSnackBar.showSnackBar(
             context: Get.context!,
             title: "Error",
             message: l.message.toString(),
-            backgroundColor: ColorPalette.red), (r) {
+            backgroundColor: ColorPalette.red),
+            (r) {
       personalNotesList.clear();
 
       var data = r['data'];
@@ -111,15 +111,22 @@ class NotesController extends GetxController with GetTickerProviderStateMixin {
       if (result.isRight()) {
         List<PersonalNote> fetchedNotes = [];
 
-        result.map((r) => fetchedNotes =
-            (r as List).map((e) => PersonalNoteModel.fromJson(e)).toList());
-        if (fetchedNotes.isNotEmpty) {
-          personalNotesList.addAll(fetchedNotes);
-        } else {
-          // This means there is no more data
-          // and therefore, we will not send another GET request
-          hasNextPage.value = false;
-        }
+        result.map((r) {
+          final data = (r as Map<String, dynamic>)['data'];
+          if (data is List) {
+            fetchedNotes = data.map((e) => PersonalNoteModel.fromJson(e)).toList();
+          } else {
+            fetchedNotes = [];
+          }
+
+          if (fetchedNotes.isNotEmpty) {
+            personalNotesList.addAll(fetchedNotes);
+          } else {
+            // No more data; stop further GET requests
+            hasNextPage.value = false;
+          }
+        });
+
 
         isMorePersonalNotesLoading.value = false;
       } else {

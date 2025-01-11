@@ -1,35 +1,31 @@
+import 'dart:io';
+
+import 'package:camera/camera.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:tl_consultant/app.dart';
 import 'package:timezone/data/latest.dart' as tz;
 
+late List<CameraDescription> cameras;
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+
+  // Listen for messages
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    print('Message received: ${message.notification?.title}');
+  });
+
+  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+    print('Notification clicked: ${message.notification?.title}');
+  });
+
+  cameras = await availableCameras();
   await GetStorage.init();
   runApp(const App());
 
-  tz.initializeTimeZones();
-
-  await Future.wait([
-    if (kIsWeb)
-      Firebase.initializeApp(
-        options: const FirebaseOptions(
-          apiKey: "AIzaSyDvEsztETqHYAwfJx0ocpjPTZccMNDMc-k",
-          authDomain: "tranquil-life-llc.firebaseapp.com",
-          databaseURL: "https://tranquil-life-llc-default-rtdb.firebaseio.com",
-          projectId: "tranquil-life-llc",
-          storageBucket: "tranquil-life-llc.appspot.com",
-          messagingSenderId: "16125004014",
-          appId: "1:16125004014:web:1a1ccb278c740a6d5f8bff",
-          measurementId: "G-ZRTEN0GQKV",
-        ),
-      )
-    else
-      Firebase.initializeApp(),
-  ]);
-
-  // firebaseFireStore = FirebaseFirestore.instance
-  //   ..settings = const Settings(persistenceEnabled: true);
 }

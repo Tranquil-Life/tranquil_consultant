@@ -1,13 +1,17 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/theme/fonts.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/utils/extensions/date_time_extension.dart';
+import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
+import 'package:tl_consultant/features/wallet/domain/entities/transaction.dart';
+import 'package:tl_consultant/features/wallet/presentation/controllers/transactions_controller.dart';
 
-part 'transactions.dart';
+part 'transactions_section.dart';
 
 class TransactionItem extends StatelessWidget {
   const TransactionItem(

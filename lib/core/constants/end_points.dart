@@ -10,6 +10,17 @@ abstract class AuthEndPoints {
   static const passwordReset = '$thisUserType/requestPasswordReset';
   static const logOut = '$thisUserType/logOut';
   static const updateFcmToken = '$thisUserType/generate-device-id';
+  static const generateAgoraToken = '$thisUserType/generateToken';
+  static const checkAuthStatus = '$thisUserType/isAuthenticated';
+
+  //Verify account
+  static const requestVerificationToken = '$thisUserType/accountVerifyRequest';
+  static const verifyAccount = '$thisUserType/verifyAccount';
+
+  //Reset password
+  static const requestResetPwdToken = '$thisUserType/requestPasswordReset';
+  static const verifyResetToken = '$thisUserType/verifyPasswordResetToken';
+  static const updatePassword = '$thisUserType/resetPassword';
 }
 
 abstract class ProfileEndPoints {
@@ -18,6 +29,7 @@ abstract class ProfileEndPoints {
   static const getContinent =
       'https://raw.githubusercontent.com/samayo/country-json/master/src/country-by-continent.json';
   static const updateLocation = '$thisUserType/updateMyLocation';
+  static const deleteQualification = '$thisUserType/deleteQualification';
 }
 
 abstract class ConsultationEndPoints {
@@ -64,4 +76,10 @@ abstract class ChatEndPoints {
       'client/get-recent-messages/$chatId';
   static getOlderMessages({required int chatId, required int lastMessageId}) =>
       'client/get-older-messages/$chatId/$lastMessageId';
+}
+
+abstract class ActivityEndpoints {
+  static getNotifications({required int page, required int limit}) =>
+      '$thisUserType/myActivity/$page/$limit';
+  static const unreadNotifications = '$thisUserType/unreadNotifications';
 }

@@ -10,5 +10,12 @@ abstract class AuthRepo<T, F extends QueryParams> extends ApiService {
   Future<Either<ApiError, T>> signIn(String email, String password);
   Future<Either<ApiError, dynamic>> resetPassword(String email);
   Future<Either<ApiError, dynamic>> signOut();
-  Future<Either<ApiError, dynamic>> refreshFcmToken(String fcmToken);
+  Future<Either<ApiError, dynamic>> generateFcmToken();
+  Future<Either<ApiError, dynamic>> sendTokenToEndpoint(String newToken);
+  Future<Either<ApiError, dynamic>> isAuthenticated();
+  Future<Either<ApiError, dynamic>> requestVerificationToken({required String email});
+  Future<Either<ApiError, dynamic>> verifyAccount(String token);
+  Future<Either<ApiError, dynamic>> requestResetPwdToken({required String email});
+  Future<Either<ApiError, dynamic>> verifyResetToken(String token);
+  Future<Either<ApiError, dynamic>> updatePassword({required String token, required String password});
 }

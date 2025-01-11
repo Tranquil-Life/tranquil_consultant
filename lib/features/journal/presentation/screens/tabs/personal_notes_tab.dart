@@ -47,7 +47,7 @@ class _PersonalNotesTabState extends State<PersonalNotesTab> {
               color: Colors.white,
             ),
           ),
-        )
+        ),
       ],
     );
   }
@@ -76,8 +76,9 @@ class CurrentView extends StatelessWidget {
         itemCount: notes.length,
         shrinkWrap: true,
         controller: controller.scrollController,
+        padding: const EdgeInsets.only(bottom: 40), // Add padding to the bottom
         itemBuilder: (context, index) => NoteWidget(
-              personalNote: notes[index],
-            )));
+          personalNote: notes[index],
+        ),));
   }
 }

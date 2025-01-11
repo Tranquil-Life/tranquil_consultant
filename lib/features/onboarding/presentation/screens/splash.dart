@@ -1,11 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tl_consultant/app/presentation/routes/app_pages.dart';
 import 'package:tl_consultant/features/onboarding/presentation/controllers/onboarding_controller.dart';
 
-class SplashScreen extends StatelessWidget {
+class SplashScreen extends StatefulWidget {
+
+  const SplashScreen({Key? key}) : super(key: key);
+
+  @override
+  State<SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
   OnboardingController controller = Get.put(OnboardingController());
 
-  SplashScreen({Key? key}) : super(key: key);
+  @override
+  void initState() {
+    Future.delayed(const Duration(seconds: 6), () async {
+      final bool isUserOnboarded = await controller.checkOnboardingStatus();
+
+      if (isUserOnboarded) {
+        controller.checkAuthStatus();
+      } else {
+        Get.toNamed(Routes.ONBOARDING);
+      }
+    });
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

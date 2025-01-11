@@ -36,8 +36,61 @@ const messagesCollection = "chat_messages";
 //upload types
 const profileImage = "profile_image";
 const voiceNote = "chat_audio";
+const videoIntro = "video_intro";
 
 //notes list view types
 
 const grid = "grid";
 const list = "list";
+
+const noInputBio = "No bio available. Please add a short description about yourself.";
+const hintBio = "I am a licensed mental health therapist with a decade of experience. I help clients overcome various challenges and enhance their well-being. I apply various therapy modalities to ensure my clients receive the best treatment and care. I offers a safe, supportive, and collaborative space for my clients where they can grow and thrive.";
+
+const successfulUploadMsg = "Upload successful";
+const compressingVideoMsg = "Compressing video...";
+const uploadingVideoMsg = "Uploading video";
+
+List<String> modalityOptions = [
+  "Attachment-Based Therapy",
+  "Acceptance & Commitment Therapy",
+  "Behavioral Therapy",
+  "Behavioral Health Therapy",
+  "Bioenergetic Analysis",
+  "Cognitive Therapy",
+  "Cognitive Behavioral Therapy",
+  "Counseling",
+  "Dialectical Behavioral Therapy",
+  "Dreamwork Therapy",
+  "Emotional Freedom Technique",
+  "Existential Therapy",
+  "Eye Movement Desensitization & Reprocessing",
+  "Family & Systemic Psychotherapy",
+  "Gestalt Therapy",
+  "Integrative Therapy",
+];
+
+final titleOptions = [
+  'Dr',
+  'LPC',
+  'LMHC',
+  'LCSW',
+  'MFT or LMFT',
+  'LBA or BCBA',
+  'LPC, LMFT, LCSW',
+  'Reverend, e.t.c',
+  'CADC',
+  'ATR or ATR-BC',
+  'LPA',
+  'BCC'
+];
+
+const solo = "solo";
+const agency = "agency";
+const video = "video";
+const picture = "picture";
+
+const verifyIdentityTitle = "Verify your identity";
+const agencyVerifyIdentityMsg = "Confirm your affiliation with our partner agency by entering the verification code supplied by your organization. This will ensure a smooth and secure connection between you and Tranquil Life";
+const contactAgencyForCodeMsg = "It seems the code you used is incorrect. Please check the code and try again to make sure it is correct. If the issue persists, contact your clinic or reach out to our team at ";
+const verifyFailedMsg = "Verification failed";
+const verifySuccessMsg = "Verification confirmed";

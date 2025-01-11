@@ -1,4 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:tl_consultant/features/profile/data/models/user_model.dart';
+import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 
 part 'user.g.dart';
 
@@ -29,17 +31,25 @@ class User {
   final String location;
   @JsonKey(name: 'bio')
   final String bio;
+
+  final String? timezone;
+  final List? specialties;
   @JsonKey(name: 'email_verified_at', fromJson: isVerifiedFromJson)
-  final bool? isVerified;
+  final DateTime? emailVerifiedAt;
+  final String? videoIntroUrl;
   final String? birthDate, gender, staffId, companyName;
+  final int totalMeetings;
+  final int totalClients;
 
   User({
     this.id,
     this.email,
-    this.isVerified,
+    this.emailVerifiedAt,
     this.firstName = "",
     this.lastName = "",
     this.phoneNumber = "",
+    this.bio = "",
+    this.specialties,
     this.authToken,
     this.usesBitmoji,
     this.birthDate,
@@ -47,23 +57,14 @@ class User {
     this.staffId,
     this.companyName,
     this.avatarUrl = '',
+    this.videoIntroUrl,
     this.location = "",
-    this.bio = "",
+    this.timezone,
+    this.totalMeetings = 0,
+    this.totalClients = 0,
   });
 
-  User copyWith({
-    String? fname,
-    int? id,
-    String? phoneNumber,
-    String? birthDate,
-  }) =>
-      User(
-          firstName: fname ?? firstName,
-          lastName: lastName,
-          id: id ?? this.id,
-          phoneNumber: phoneNumber ?? this.phoneNumber,
-          birthDate: birthDate ?? this.birthDate,
-          usesBitmoji: usesBitmoji);
+
 
   Map<String, dynamic> toJson() => _$UserToJson(this);
 }

@@ -4,42 +4,53 @@ import 'package:tl_consultant/app/presentation/theme/colors.dart';
 // ignore: must_be_immutable
 class CustomFormField extends StatelessWidget {
   final String hint;
+  final Color? hintColor;
+  final String? errorText;
   final String? initialValue;
+  final Function(String)? onFieldSubmitted;
   final TextEditingController? textEditingController;
   final bool showCursor;
+  final double? verContentPadding;
+  final double? horContentPadding;
   final Function()? onTap;
   final TextInputType? textInputType;
   final bool readOnly, obscureText;
   final Widget? suffix, prefix;
+  int? maxLines, maxLength;
   final String? Function(String?)? validator;
   void Function(String)? onChanged;
   final TextInputAction? textInputAction;
   final TextCapitalization textCapitalization;
 
-  CustomFormField({Key? key,
-    this.hint = "",
-    this.textEditingController,
-    this.showCursor = false,
-    this.onTap,
-    this.textInputType,
-    this.readOnly = false,
-    this.obscureText= false,
-    this.suffix,
-    this.prefix,
-    this.validator,
-    this.initialValue,
-    this.textInputAction,
-    this.textCapitalization = TextCapitalization.none,
-    this.onChanged
-  }) : super(key: key);
+  CustomFormField(
+      {super.key,
+      this.hint = "",
+      this.textEditingController,
+      this.showCursor = false,
+      this.onTap,
+      this.textInputType,
+      this.readOnly = false,
+      this.obscureText = false,
+      this.suffix,
+      this.errorText,
+      this.prefix,
+      this.maxLength,
+      this.maxLines,
+      this.validator,
+      this.initialValue,
+      this.textInputAction,
+      this.verContentPadding,
+      this.horContentPadding,
+      this.textCapitalization = TextCapitalization.none,
+      this.onChanged, this.hintColor, this.onFieldSubmitted});
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      style: const TextStyle(fontSize: 18, color: ColorPalette.black),
+      style: TextStyle(fontSize: 18, color: ColorPalette.black),
       autocorrect: false,
       readOnly: readOnly,
-      initialValue: initialValue,
+      // initialValue: initialValue,
       obscureText: obscureText,
       controller: textEditingController,
       validator: validator,
@@ -47,23 +58,40 @@ class CustomFormField extends StatelessWidget {
       textCapitalization: textCapitalization,
       onChanged: onChanged,
       onTap: onTap,
+      onFieldSubmitted: onFieldSubmitted,
       decoration: InputDecoration(
-        hintText: hint,
-        hintStyle:
-        const TextStyle(
-            fontSize: 18, color: Colors.grey),
-        errorStyle: const TextStyle(color: Colors.white, fontSize: 14),
-        fillColor: Colors.white,
-        border: InputBorder.none,
-        filled: true,
-        contentPadding: EdgeInsets.symmetric(
-            vertical: (hint=='Password' || hint=='Display Name') ? 17.0 : 22.0, horizontal: 24.0),
-        // If  you are using latest version of flutter then lable text and hint text shown like this
-        // if you r using flutter less then 1.20.* then maybe this is not working properly
-        floatingLabelBehavior: FloatingLabelBehavior.always,
-          suffix: suffix,
+          errorText: errorText,
+          hintText: hint,
+          hintStyle: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
+              color: hintColor ?? ColorPalette.gray[200]),
+          errorStyle: const TextStyle(color: ColorPalette.white, fontSize: 14),
+          fillColor: Colors.white,
+          border: InputBorder.none,
+          focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8.0),
+              borderSide:
+                  BorderSide(width: 1, color: ColorPalette.gray.shade900)),
+          enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8.0),
+              borderSide:
+                  BorderSide(width: 1, color: ColorPalette.gray.shade900)),
+          focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8.0),
+              borderSide: const BorderSide(width: 1, color: ColorPalette.red)),
+          errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8.0),
+              borderSide: const BorderSide(width: 1, color: ColorPalette.red)),
+          filled: true,
+          contentPadding: EdgeInsets.symmetric(
+              vertical: verContentPadding ?? 22.0,
+              horizontal: horContentPadding ?? 16.0),
+          floatingLabelBehavior: FloatingLabelBehavior.always,
+          suffixIcon: suffix,
           prefix: prefix),
+      maxLines: maxLines ?? 1,
+      maxLength: maxLength,
     );
   }
 }
-

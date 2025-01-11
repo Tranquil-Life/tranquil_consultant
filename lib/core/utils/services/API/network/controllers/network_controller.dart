@@ -6,34 +6,37 @@ import 'package:get/get.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/widgets/custom_snackbar.dart';
 
-class NetworkController extends GetxController{
+class NetworkController extends GetxController {
   static NetworkController instance = Get.find();
 
   var connectionStatus = 0.obs;
 
   Connectivity connectivity = Connectivity();
   StreamSubscription<ConnectivityResult>? connectivitySubscription;
+
   @override
   void onInit() {
     initConnectivity();
-    connectivitySubscription = connectivity.onConnectivityChanged.listen(updateConnectionStatus);
+    connectivitySubscription = connectivity.onConnectivityChanged.listen(
+            updateConnectionStatus as void Function(
+                List<ConnectivityResult> event)?)
+        as StreamSubscription<ConnectivityResult>?;
 
     super.onInit();
   }
 
-  Future<void> initConnectivity() async{
+  Future<void> initConnectivity() async {
     ConnectivityResult? result;
     try {
-      result = await connectivity.checkConnectivity();
-    } on PlatformException catch(e)
-    {
+      result = (await connectivity.checkConnectivity()) as ConnectivityResult?;
+    } on PlatformException catch (e) {
       print("Network: Error: $e");
     }
     return updateConnectionStatus(result!);
   }
 
   Future<void> updateConnectionStatus(ConnectivityResult? result) async {
-    switch(result!){
+    switch (result!) {
       case ConnectivityResult.wifi:
         connectionStatus.value = 2;
         break;
@@ -51,7 +54,6 @@ class NetworkController extends GetxController{
             backgroundColor: ColorPalette.red);
         break;
     }
-
   }
 
   @override

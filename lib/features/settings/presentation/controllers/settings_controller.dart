@@ -1,3 +1,4 @@
+import 'package:dartz/dartz.dart';
 import 'package:get/get.dart';
 import 'package:tl_consultant/app/data/store.dart';
 import 'package:tl_consultant/app/presentation/routes/app_pages.dart';
@@ -12,13 +13,13 @@ class SettingsController extends GetxController {
   UserDataStore userDataStore = UserDataStore();
 
   signOut() async {
-    var result = await authRepoImpl.signOut();
-    if (result.isRight()) {
+    Either either = await authRepoImpl.signOut();
+    either.fold((l) {
+      Get.offAllNamed(Routes.SIGN_IN);
+    }, (r) async {
       await getStore.clearAllData();
 
       Get.offAllNamed(Routes.SIGN_IN);
-    } else {
-      Get.offAllNamed(Routes.SIGN_IN);
-    }
+    });
   }
 }

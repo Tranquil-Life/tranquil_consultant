@@ -100,6 +100,7 @@ class ConfirmDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dialog(
+      backgroundColor: Colors.white,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
         child: MyDefaultTextStyle(

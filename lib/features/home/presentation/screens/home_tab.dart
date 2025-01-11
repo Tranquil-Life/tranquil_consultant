@@ -10,6 +10,7 @@ import 'package:tl_consultant/app/presentation/widgets/my_default_text_theme.dar
 import 'package:tl_consultant/app/presentation/widgets/user_avatar.dart';
 import 'package:tl_consultant/core/utils/extensions/date_time_extension.dart';
 import 'package:tl_consultant/features/activity/presentation/controllers/activity_controller.dart';
+import 'package:tl_consultant/features/activity/presentation/screens/notifications.dart';
 import 'package:tl_consultant/features/consultation/domain/entities/meeting.dart';
 import 'package:tl_consultant/features/consultation/presentation/controllers/meetings_controller.dart';
 import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
@@ -44,7 +45,7 @@ class _HomeTabState extends State<HomeTab> {
         const _BG(),
         Column(
           children: [
-            const AppBar(),
+            // const AppBar(),
             Expanded(
               child: SingleChildScrollView(
                 child: Column(

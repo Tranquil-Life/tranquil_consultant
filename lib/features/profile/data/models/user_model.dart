@@ -5,21 +5,25 @@ part 'user_model.g.dart';
 
 class UserModel extends User{
   UserModel({
-    //super.email,
+    super.id,
+    super.email,
     required super.firstName,
     required super.lastName,
-    super.id,
     required super.authToken,
-    //required super.phoneNumber,
-    //required super.usesBitmoji,
-    // required super.isVerified,
+    super.avatarUrl,
+    required super.phoneNumber,
+    super.videoIntroUrl,
+    super.specialties,
+    required super.emailVerifiedAt,
     // required super.hasAnsweredQuestions,
     // required super.usesBitmoji,
-    // super.avatarUrl,
-    // super.birthDate,
+    super.birthDate,
+    super.bio,
     // super.gender,
     // super.staffId,
     // super.companyName,
+    super.totalMeetings,
+    super.totalClients,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) =>

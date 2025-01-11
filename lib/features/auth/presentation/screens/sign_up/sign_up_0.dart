@@ -77,7 +77,7 @@ class _SignUpScreen0State extends State<SignUpScreen0> {
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(8),
-                          child: emailFormField(),
+                          child: emailFormField(authController),
                         )
                     ),
 
@@ -86,7 +86,7 @@ class _SignUpScreen0State extends State<SignUpScreen0> {
                     //Phone number field
                     ClipRRect(
                       borderRadius: BorderRadius.circular(8),
-                      child: phoneField(),
+                      child: phoneField(authController),
                     ),
 
                     //Password field
@@ -95,7 +95,7 @@ class _SignUpScreen0State extends State<SignUpScreen0> {
                       child: Obx(()
                       => ClipRRect(
                         borderRadius: BorderRadius.circular(8),
-                        child: passwordField(),
+                        child: passwordField(authController),
                       )),
                     ),
 
@@ -104,7 +104,7 @@ class _SignUpScreen0State extends State<SignUpScreen0> {
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(8),
-                          child: confirmPwdField(),
+                          child: confirmPwdField(authController),
                         )
                     ),
                   ],
