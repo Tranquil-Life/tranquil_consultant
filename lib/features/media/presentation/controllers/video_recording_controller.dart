@@ -14,6 +14,7 @@ import 'package:tl_consultant/features/profile/presentation/controllers/profile_
 import 'package:video_player/video_player.dart';
 
 class VideoRecordingController extends GetxController{
+  static VideoRecordingController instance = Get.find();
 
   MediaRepoImpl mediaRepo = MediaRepoImpl();
 
@@ -22,7 +23,6 @@ class VideoRecordingController extends GetxController{
   var compressing = false.obs;
 
   late VideoPlayerController videoPlayerController;
-
 
   initializeVideoPlayer(dynamic profileController) async {
     videoPlayerController =
@@ -165,6 +165,12 @@ class VideoRecordingController extends GetxController{
   }
 
   resetUploadVars(){
+    uploadProgress.value = 0.0;
+    uploading.value = false;
+    compressing.value = false;
+  }
+
+  clearData(){
     uploadProgress.value = 0.0;
     uploading.value = false;
     compressing.value = false;

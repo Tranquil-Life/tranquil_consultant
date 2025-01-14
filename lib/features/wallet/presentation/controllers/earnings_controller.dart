@@ -21,12 +21,15 @@ class EarningsController extends GetxController {
   Future getEarningsInfo() async {
     Either either = await repo.getWallet();
 
-    either.fold(
-        (l) => CustomSnackBar.showSnackBar(
+    either.fold((l) {
+      if(l.message! != 'Attempt to read property "id" on array'){
+        return CustomSnackBar.showSnackBar(
             context: Get.context!,
             title: "Error",
             message: l.message!,
-            backgroundColor: ColorPalette.red), (r) {
+            backgroundColor: ColorPalette.red);
+      }
+    }, (r) {
       Earnings earnings = EarningsModel.fromJson(r['data']);
       balance.value = roundToFiveSignificantFigures(earnings.balance);
       withdrawn.value = roundToFiveSignificantFigures(earnings.withdrawn);
@@ -62,9 +65,10 @@ class EarningsController extends GetxController {
     return double.parse(significantFigures);
   }
 
-  @override
-  void onInit() {
-    //getEarningsInfo();
-    super.onInit();
+  clearData(){
+    balance.value = 0.00;
+    withdrawn.value = 0.00;
+    availableForWithdrawal.value = 0.00;
+    pendingClearance.value = 0.00;
   }
 }

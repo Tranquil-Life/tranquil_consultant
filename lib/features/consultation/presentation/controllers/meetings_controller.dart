@@ -43,12 +43,16 @@ class MeetingsController extends GetxController {
       var either = await ConsultationRepoImpl().getMeetings(page: page.value);
 
       either.fold(
-          (l) => CustomSnackBar.showSnackBar(
-                context: Get.context!,
-                title: "Error",
-                message: l.message.toString(),
-                backgroundColor: ColorPalette.red,
-              ), (r) async {
+          (l) {
+            print("MEETINGS: Error message: ${l.message}");
+
+            return CustomSnackBar.showSnackBar(
+              context: Get.context!,
+              title: "Error",
+              message: l.message.toString(),
+              backgroundColor: ColorPalette.red,
+            );
+          }, (r) async {
         var data = r;
 
         if (data['error'] == false && data['data'] != null) {

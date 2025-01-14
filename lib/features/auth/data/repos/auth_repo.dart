@@ -89,7 +89,7 @@ class AuthRepoImpl extends AuthRepo {
   @override
   Future<Either<ApiError, dynamic>> isAuthenticated() async {
     return await catchSocketException(() =>
-        postReq(AuthEndPoints.checkAuthStatus))
+        getReq(AuthEndPoints.checkAuthStatus))
         .then((value) => handleResponse(value));
   }
 

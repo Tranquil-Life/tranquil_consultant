@@ -69,20 +69,23 @@ class ProfileController extends GetxController {
   List<Qualification> getQualifications() {
     qualifications.clear();
 
-    int lastId = userDataStore.qualifications
-        .where((item) => item.containsKey('id'))
-        .fold<int>(
-            0,
-            (previousValue, item) =>
-                item['id'] > previousValue ? item['id'] as int : previousValue);
+    if (userDataStore.qualifications.isNotEmpty) {
+      int lastId = userDataStore.qualifications
+          .where((item) => item.containsKey('id'))
+          .fold<int>(
+              0,
+              (previousValue, item) => item['id'] > previousValue
+                  ? item['id'] as int
+                  : previousValue);
 
-    for (var item in userDataStore.qualifications) {
-      if (!item.containsKey('id') || item['id'] == null) {
-        lastId += 1; // Increment lastId for new entries
-        item['id'] = lastId;
+      for (var item in userDataStore.qualifications) {
+        if (!item.containsKey('id') || item['id'] == null) {
+          lastId += 1; // Increment lastId for new entries
+          item['id'] = lastId;
+        }
+
+        qualifications.add(Qualification.fromJson(item));
       }
-
-      qualifications.add(Qualification.fromJson(item));
     }
 
     return qualifications;
@@ -176,8 +179,6 @@ class ProfileController extends GetxController {
     editUser.value = EditUser(baseUser: UserModel.fromJson(userDataStore.user));
   }
 
-
-
   void deleteQualification(int? id, int index) async {
     deletingId.value = id!; // Set the current deleting ID
     Future.delayed(Duration(seconds: 2), () {
@@ -206,6 +207,32 @@ class ProfileController extends GetxController {
           message: "Qualification deleted",
           backgroundColor: ColorPalette.green);
     });
+  }
+
+  clearData() {
+    introVideoDuration.value = 0;
+    profilePic.value = '';
+    introVideo.value = '';
+
+    meetingsCount.value = 0;
+    clientsCount.value = 0;
+    firstNameTEC.clear();
+    lastNameTEC.clear();
+    phoneTEC.clear();
+    countryTEC.clear();
+    cityTEC.clear();
+    bioTEC.clear();
+    timeZoneTEC.clear();
+    certificationTEC.clear();
+    institutionTEC.clear();
+    yearGraduatedTEC.clear();
+    modalitiesTEC.clear();
+    updatingProfile.value = false;
+
+    qualifications.clear();
+    modalities.clear();
+    titles.clear();
+    topics.clear();
   }
 
   @override

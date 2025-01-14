@@ -17,6 +17,7 @@ import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 import 'package:tl_consultant/features/profile/domain/entities/user.dart';
 import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:tl_consultant/features/profile/presentation/widgets/edit_profile_fields.dart';
+import 'package:tl_consultant/features/wallet/presentation/controllers/earnings_controller.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -233,6 +234,7 @@ class EditProfileHead extends StatefulWidget {
 
 class _EditProfileHeadState extends State<EditProfileHead> {
   ProfileController profileController = Get.put(ProfileController());
+  EarningsController earningsController = Get.put(EarningsController());
   VideoRecordingController videoRecordingController =
       Get.put(VideoRecordingController());
 
@@ -256,11 +258,12 @@ class _EditProfileHeadState extends State<EditProfileHead> {
             width: 200,
             child: CustomButton(
               onPressed: () async {
-                File? file =
-                    await MediaService.selectImage(ImageSource.gallery);
-                // await profileController.uploadVideo(File(video.path));
-                await videoRecordingController.uploadFile(
-                    file!, profileImage, profileController);
+                await earningsController.getEarningsInfo();
+                // File? file =
+                //     await MediaService.selectImage(ImageSource.gallery);
+                // // await profileController.uploadVideo(File(video.path));
+                // await videoRecordingController.uploadFile(
+                //     file!, profileImage, profileController);
               },
               child: const Text(
                 'Edit profile picture',

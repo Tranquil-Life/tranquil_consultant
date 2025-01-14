@@ -7,6 +7,8 @@ import 'package:tl_consultant/features/activity/data/repos/notification_repo.dar
 import 'package:tl_consultant/features/activity/domain/entities/notification.dart';
 
 class ActivityController extends GetxController {
+  static ActivityController instance = Get.find();
+
   var count = 0.obs;
 
   RxList<NotificationData> notifications = <NotificationData>[].obs;
@@ -84,5 +86,13 @@ class ActivityController extends GetxController {
     Either either = await repo.getUnreadNotificationCount();
     either.fold((l) => CustomSnackBar.errorSnackBar(l.message.toString()),
             (r) => count.value = r['data']);
+  }
+
+  clearData() {
+    page.value = 1;
+    limit.value = 10;
+    hasNextPage.value = false;
+    isFirstLoadRunning.value = false;
+    isLoadMoreRunning.value = false;
   }
 }

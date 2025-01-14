@@ -13,7 +13,7 @@ Map<String, dynamic> _$UserToJson(User instance) =><String, dynamic>{
   'location': instance.location,
   'time_zone': instance.timezone,
   'specialties': instance.specialties,
-  // 'staff_id': instance.staffId,
+  'auth_token': instance.authToken,
   // 'company_name': instance.companyName,
   // 'uses_bitmoji': instance.usesBitmoji,
 };

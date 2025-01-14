@@ -121,11 +121,15 @@ class AuthController extends GetxController {
       Map<String, dynamic> data = r;
 
       if (data['error'] == false && data['data'] != null) {
+
+
         userDataStore.user = data['data']['user'];
         userDataStore.qualifications =
             List<Map<String, dynamic>>.from(data['data']['qualifications']);
         userDataStore.user['meetings_count'] = data['data']['meetings_count'];
         userDataStore.user['clients_count'] = data['data']['clients_count'];
+
+        print("User: ${userDataStore.user}");
 
         AppData.isSignedIn = true;
 
@@ -280,22 +284,36 @@ class AuthController extends GetxController {
     isPasswordsMatching.value = false;
   }
 
-  // void _resetSignInCriteria() {
-  //   isLengthValid.value = false;
-  //   hasSpecialChar.value = false;
-  //   hasDigit.value = false;
-  //   hasLetter.value = false;
-  //   isPasswordsMatching.value = false;
-  // }
-
   clearData() {
     emailTEC.clear();
     confirmPasswordTEC.clear();
     cvTEC.clear();
     identityTEC.clear();
+    currLocationTEC.clear();
+    areaOfExpertiseTEC.clear();
+    yearsOfExperienceTEC.clear();
+    languagesTEC.clear();
     dateTEC.clear();
+
     params.email = '';
     params.password = '';
+
+    isPasswordVisible.value = false;
+    isLengthValid.value = false;
+
+    hasSpecialChar.value = false;
+    hasDigit.value = false;
+    hasLetter.value = false;
+    isPasswordsMatching.value = false;
+    emailIsValid.value = false;
+    passwordIsValid.value = false;
+
+    loading.value = false;
+
+    introVideo.value = '';
+    introVideoDuration.value = 0;
+
+    profilePic.value = '';
   }
 
   @override

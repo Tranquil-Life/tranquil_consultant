@@ -34,7 +34,6 @@ class ApiService {
     return eitherResponse.fold(
       (apiError) => Left(apiError),
       (data) {
-        //   print('Handling data: $data');
         return Right(data);
       },
     );
@@ -45,21 +44,14 @@ class ApiService {
     try {
       return await function();
     } on DioException catch (e) {
-      // Handle Dio errors explicitly
       if (e.response != null) {
-        // print("Dio Error Response: ${e.response!.data}");
         return Left(ApiError(
-            message: displayErrorMessages(e.response!.data) ??
-                e.response!.statusMessage ??
-                "Unknown error"));
+            message: displayErrorMessages(e.response!.data)));
       } else {
-        // print("Dio Error: ${e.message}");
         return Left(ApiError(message: e.message));
       }
     } catch (e) {
-      // Handle other exceptions
-      // print("Unexpected Error: $e");
-      return Left(ApiError(message: "Unexpected error occurred"));
+      return Left(ApiError(message: "Unexpected error occurred: $e"));
     }
   }
 
@@ -99,46 +91,30 @@ class ApiService {
         response.statusCode == 204) {
       return Right(response.data);
     } else {
-      // Log and return error if status code is not as expected
-      print("ERROR: ${response.data}");
       return Left(
           ApiError(message: response.data['message'] ?? "Unknown error"));
     }
   }
 
   Future<Either<ApiError, dynamic>> getReq(String subPath,
-      [bool exchange = false, bool countries = false]) async {
+      [bool exchange = false]) async {
     final headers = _getHeaders();
     String url = (exchange ? "" : baseUrl) + subPath;
 
-    if (countries) {
-      var response = await dio.get(subPath);
-      //print('Response: ${result.statusCode} - ${result.body}');
+    var response = await dio.get(
+      url,
+      options: Options(headers: headers),
+    );
 
-      if (response.statusCode == 200 ||
-          response.statusCode == 201 ||
-          response.statusCode == 204) {
-        return Right(response.data);
-      } else {
-        // Log and return error if status code is not as expected
-        print("ERROR: ${response.data}");
-        return Left(
-            ApiError(message: response.data['message'] ?? "Unknown error"));
-      }
+    await Future.delayed(Duration(milliseconds: 800));
+
+    if (response.statusCode == 200 ||
+        response.statusCode == 201 ||
+        response.statusCode == 204) {
+      return Right(response.data);
     } else {
-      var response = await dio.get(
-        url,
-        options: Options(headers: headers),
-      );
-
-      if (response.statusCode == 200 ||
-          response.statusCode == 201 ||
-          response.statusCode == 204) {
-        return Right(response.data);
-      } else {
-        return Left(
-            ApiError(message: response.data['message'] ?? "Unknown error"));
-      }
+      return Left(
+          ApiError(message: response.data['message'] ?? "Unknown error"));
     }
   }
 
@@ -170,10 +146,16 @@ class ApiService {
   String displayErrorMessages(Map<String, dynamic> jsonResponse) {
     // Check if the response contains the "errors" key
     if (jsonResponse.containsKey('errors') && jsonResponse['errors'] != null) {
-      Map<String, dynamic> errors = jsonResponse['errors'];
+      List<String> allErrorMessages = [];
+      Map<String, dynamic> errors = {};
+
+      if(jsonResponse['errors'] is Map<String, dynamic>){
+        errors = jsonResponse['errors'];
+      }else if(jsonResponse['errors'] is List){
+        allErrorMessages = List<String>.from(jsonResponse['errors']);
+      }
 
       // Flatten the error messages into a single list
-      List<String> allErrorMessages = [];
       errors.forEach((field, messages) {
         for (var message in messages) {
           allErrorMessages.add(message);

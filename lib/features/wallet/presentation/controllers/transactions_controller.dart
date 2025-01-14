@@ -93,4 +93,14 @@ class TransactionsController extends GetxController {
       update();
     }
   }
+
+  clearData(){
+    currPageIndex.value = 0;
+    transactions.clear();
+    page.value = 1;
+    limit.value = 10;
+    hasNextPage.value = false;
+    isFirstLoadRunning.value = false;
+    isLoadMoreRunning.value = false;
+  }
 }
