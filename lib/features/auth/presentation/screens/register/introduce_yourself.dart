@@ -15,6 +15,8 @@ import 'package:tl_consultant/features/auth/presentation/widgets/picture_upload_
 import 'package:tl_consultant/features/auth/presentation/widgets/video_record_option.dart';
 import 'package:tl_consultant/features/media/presentation/controllers/video_recording_controller.dart';
 import 'package:tl_consultant/features/media/presentation/screens/video_record_page.dart';
+import 'package:tl_consultant/features/profile/data/models/user_model.dart';
+import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 
 class IntroduceYourselfPage extends StatefulWidget {
   const IntroduceYourselfPage({super.key});
@@ -89,6 +91,7 @@ class _IntroduceYourselfPageState extends State<IntroduceYourselfPage> {
                     File? file = await MediaService.selectImage(ImageSource.gallery);
                     // await profileController.uploadVideo(File(video.path));
                     await videoRecordingController.uploadFile(file!, profileImage, authController);
+
                   },
                 ),
                 SizedBox(

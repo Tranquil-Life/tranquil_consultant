@@ -15,6 +15,8 @@ import 'package:tl_consultant/core/utils/helpers/svg_elements.dart';
 import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:tl_consultant/features/auth/presentation/widgets/means_of_id_field.dart';
 import 'package:tl_consultant/features/media/presentation/controllers/video_recording_controller.dart';
+import 'package:tl_consultant/features/profile/data/models/user_model.dart';
+import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:video_player/video_player.dart';
 
@@ -345,6 +347,10 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
                                                       .uploadFile(
                                                           File(video.path),
                                                           videoIntro, profileController);
+
+                                                  print("Intro Video1: ${UserModel.fromJson(userDataStore.user).videoIntroUrl}");
+                                                  print("Intro Video2: ${userDataStore.user['video_intro']}");
+                                                  print("Intro Video3: ${profileController.introVideo.value}");
                                                 }
                                               },
                                         textColor: uploadTextState() ==

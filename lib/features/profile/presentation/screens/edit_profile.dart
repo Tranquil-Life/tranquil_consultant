@@ -258,12 +258,11 @@ class _EditProfileHeadState extends State<EditProfileHead> {
             width: 200,
             child: CustomButton(
               onPressed: () async {
-                await earningsController.getEarningsInfo();
-                // File? file =
-                //     await MediaService.selectImage(ImageSource.gallery);
-                // // await profileController.uploadVideo(File(video.path));
-                // await videoRecordingController.uploadFile(
-                //     file!, profileImage, profileController);
+                File? file =
+                    await MediaService.selectImage(ImageSource.gallery);
+                // await profileController.uploadVideo(File(video.path));
+                await videoRecordingController.uploadFile(
+                    file!, profileImage, profileController);
               },
               child: const Text(
                 'Edit profile picture',

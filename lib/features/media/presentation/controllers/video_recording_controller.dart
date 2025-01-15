@@ -14,15 +14,16 @@ import 'package:tl_consultant/features/profile/presentation/controllers/profile_
 import 'package:video_player/video_player.dart';
 
 class VideoRecordingController extends GetxController{
-  static VideoRecordingController instance = Get.find();
 
   MediaRepoImpl mediaRepo = MediaRepoImpl();
 
   RxDouble uploadProgress = 0.0.obs;
   var uploading = false.obs;
   var compressing = false.obs;
+  var previousUrl = ''.obs;
 
   late VideoPlayerController videoPlayerController;
+
 
   initializeVideoPlayer(dynamic profileController) async {
     videoPlayerController =
@@ -35,6 +36,12 @@ class VideoRecordingController extends GetxController{
 
   Future<String?> uploadFile(File uploadFile, String uploadType, dynamic controller) async {
     User user = UserModel.fromJson(userDataStore.user);
+
+    if(uploadType == videoIntro){
+      previousUrl.value = user.videoIntroUrl!;
+    }else if(uploadType == profileImage){
+      previousUrl.value = user.avatarUrl;
+    }
 
     resetUploadVars();
 
@@ -98,7 +105,7 @@ class VideoRecordingController extends GetxController{
       await file.writeAsBytes(byteData.buffer
           .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
 
-      Reference reference = FirebaseStorage.instance.ref('$path/${user.id}_${fileName.substring(0, 8)}');
+      Reference reference = FirebaseStorage.instance.ref('$path/${user.id}_$fileName');
       // Start the file upload and listen to the progress
       UploadTask uploadTask = reference.putFile(file);
 
@@ -117,6 +124,7 @@ class VideoRecordingController extends GetxController{
 
       if (uploadType == videoIntro) {
         controller.introVideo.value = downloadUrl;
+        userDataStore.user['video_intro'] = downloadUrl;
 
         uploading.value = false;
 
@@ -124,14 +132,19 @@ class VideoRecordingController extends GetxController{
 
         Get.back();
 
+        deleteFileFromUrl(previousUrl.value);
+
         await initializeVideoPlayer(controller);
-      }
-      else if (uploadType == profileImage) {
+
+      } else if (uploadType == profileImage) {
         controller.profilePic.value = downloadUrl;
+        userDataStore.user['avatar_url'] = downloadUrl;
 
         uploading.value = false;
 
         await Future.delayed(Duration(seconds: 1));
+
+        deleteFileFromUrl(previousUrl.value);
 
         CustomSnackBar.showSnackBar(
             context: Get.context!,
@@ -163,6 +176,22 @@ class VideoRecordingController extends GetxController{
         return '.mp4';
     }
   }
+
+  Future<void> deleteFileFromUrl(String fileUrl) async {
+    try {
+      // Extract the path from the URL
+      String decodedUrl = Uri.decodeFull(fileUrl.split('?')[0]);
+      String firebasePath = decodedUrl.split('/o/')[1];
+
+      // Delete the file from Firebase Storage
+      await FirebaseStorage.instance.ref().child(firebasePath).delete();
+
+      print("File deleted successfully.");
+    } catch (e) {
+      print("Error deleting file: $e");
+    }
+  }
+
 
   resetUploadVars(){
     uploadProgress.value = 0.0;

@@ -20,7 +20,7 @@ class IntroMediaSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return Obx(()=>Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
@@ -32,28 +32,30 @@ class IntroMediaSection extends StatelessWidget {
         ),
         profileController.introVideo.value!.isEmpty
             ? GestureDetector(
-                child: NoVideoRecordState(),
-                onTap: () {
-                  Get.to(() => const VideoRecordingPage());
-                },
-              )
+          child: NoVideoRecordState(),
+          onTap: () {
+            videoRecordingController.resetUploadVars();
+
+            Get.to(() => const VideoRecordingPage());
+          },
+        )
             : GestureDetector(
-                onTap: () {
-                  if (profileController.introVideo.value!.isNotEmpty) {
-                    showDialog(
-                        context: context,
-                        builder: (_) {
-                          return AlertDialog(
-                            content: VideoPlayerWidget(
-                                videoUrl: profileController.introVideo.value!),
-                          );
-                        });
-                  }
-                },
-                child: VideoRecordState(
-                    profileController: profileController,
-                    videoRecordingController: videoRecordingController),
-              ),
+          onTap: () {
+            if (profileController.introVideo.value!.isNotEmpty) {
+              showDialog(
+                  context: context,
+                  builder: (_) {
+                    return AlertDialog(
+                      content: VideoPlayerWidget(
+                          videoUrl: profileController.introVideo.value!),
+                    );
+                  });
+            }
+          },
+          child: VideoRecordState(
+              profileController: profileController,
+              videoRecordingController: videoRecordingController),
+        ),
         TextButton(
             style: TextButton.styleFrom(
               padding: EdgeInsets.zero,
@@ -154,6 +156,6 @@ class IntroMediaSection extends StatelessWidget {
         //           color: ColorPalette.green),
         //     )),
       ],
-    );
+    ));
   }
 }

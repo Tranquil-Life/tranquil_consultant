@@ -6,6 +6,7 @@ import 'package:tl_consultant/app/presentation/widgets/buttons.dart';
 import 'package:tl_consultant/core/utils/functions.dart';
 import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 import 'package:tl_consultant/core/utils/helpers/svg_elements.dart';
+import 'package:tl_consultant/features/media/presentation/controllers/video_recording_controller.dart';
 import 'package:tl_consultant/features/media/presentation/screens/video_record_page.dart';
 import 'package:video_player/video_player.dart';
 
@@ -19,6 +20,7 @@ class VideoPlayerWidget extends StatefulWidget {
 }
 
 class _VideoPlayerWidgetState extends State<VideoPlayerWidget> with SingleTickerProviderStateMixin {
+  final videoRecordingController = Get.put(VideoRecordingController());
   late VideoPlayerController _videoPlayerController;
   late AnimationController animationController;
   late Animation<double> _animation;
@@ -204,13 +206,17 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> with SingleTicker
 
                   SizedBox(height: 10),
 
-                  CustomButton(
-                      onPressed: () =>Get.to(() => const VideoRecordingPage()),
-                      text: "Retake video",
-                      textColor: ColorPalette.green,
-                      showBorder: true,
-                      bgColor: ColorPalette.white),
-                  SizedBox(height: 20),
+                  // CustomButton(
+                  //     onPressed: (){
+                  //       videoRecordingController.resetUploadVars();
+                  //
+                  //       Get.to(() => const VideoRecordingPage());
+                  //     },
+                  //     text: "Retake video",
+                  //     textColor: ColorPalette.green,
+                  //     showBorder: true,
+                  //     bgColor: ColorPalette.white),
+                  // SizedBox(height: 20),
 
                 ],
               )),
