@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:tl_consultant/app/presentation/widgets/buttons.dart';
+import 'package:tl_consultant/core/global/buttons.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 // #docregion platform_imports

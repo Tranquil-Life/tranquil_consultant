@@ -2,7 +2,7 @@ import 'dart:developer';
 import 'dart:io';
 import 'package:get/get.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
-import 'package:tl_consultant/app/presentation/widgets/my_default_text_theme.dart';
+import 'package:tl_consultant/core/global/my_default_text_theme.dart';
 import 'package:tl_consultant/features/chat/domain/entities/message.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/chat_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/widgets/chat_boxes/shared/chat_box_base.dart';

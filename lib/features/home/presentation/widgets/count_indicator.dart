@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
 
 class CountIndicator extends StatelessWidget {
-  const CountIndicator(this.amount, {Key? key}) : super(key: key);
+  const CountIndicator(this.amount, {super.key});
 
   final int amount;
 

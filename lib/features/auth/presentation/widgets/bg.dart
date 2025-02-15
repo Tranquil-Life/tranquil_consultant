@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:tl_consultant/app/presentation/widgets/custom_app_bar.dart';
-import 'package:tl_consultant/app/presentation/widgets/my_default_text_theme.dart';
-import 'package:tl_consultant/app/presentation/widgets/unfocus_bg.dart';
+import 'package:tl_consultant/core/global/custom_app_bar.dart';
+import 'package:tl_consultant/core/global/my_default_text_theme.dart';
+import 'package:tl_consultant/core/global/unfocus_bg.dart';
 import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 
 class BG extends StatelessWidget {

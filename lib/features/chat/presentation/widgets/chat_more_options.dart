@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
-import 'package:tl_consultant/app/presentation/widgets/dialogs.dart';
-import 'package:tl_consultant/app/presentation/widgets/user_avatar.dart';
+import 'package:tl_consultant/core/global/dialogs.dart';
+import 'package:tl_consultant/core/global/user_avatar.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/features/chat/presentation/widgets/chat_more_options/end_session_bottomsheet.dart';
 import 'package:tl_consultant/features/chat/presentation/widgets/dialogs/rate_consultation_dialog.dart';

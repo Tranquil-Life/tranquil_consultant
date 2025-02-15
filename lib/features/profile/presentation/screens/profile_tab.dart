@@ -5,9 +5,8 @@ import 'package:get/get.dart';
 
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/theme/fonts.dart';
-import 'package:tl_consultant/app/presentation/widgets/swipeable.dart';
-import 'package:tl_consultant/app/presentation/widgets/unfocus_bg.dart';
-import 'package:tl_consultant/app/presentation/widgets/user_avatar.dart';
+import 'package:tl_consultant/core/global/unfocus_bg.dart';
+import 'package:tl_consultant/core/global/user_avatar.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/utils/extensions/date_time_extension.dart';
 import 'package:tl_consultant/core/utils/functions.dart';

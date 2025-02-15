@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tl_consultant/app/presentation/widgets/user_avatar.dart';
+import 'package:tl_consultant/core/global/user_avatar.dart';
 
 class RateConsultationDialog extends StatefulWidget {
   const RateConsultationDialog({Key? key}) : super(key: key);

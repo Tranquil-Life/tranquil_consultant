@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/theme/tranquil_icons.dart';
-import 'package:tl_consultant/app/presentation/widgets/custom_app_bar.dart';
+import 'package:tl_consultant/core/global/custom_app_bar.dart';
 import 'package:tl_consultant/features/settings/presentation/widgets/settings_button.dart';
 import 'package:tl_consultant/features/settings/presentation/widgets/sign_out_dialog.dart';
 import 'package:tl_consultant/features/settings/presentation/widgets/theme_brightness_button.dart';

@@ -45,8 +45,13 @@ class ApiService {
       return await function();
     } on DioException catch (e) {
       if (e.response != null) {
-        return Left(ApiError(
-            message: displayErrorMessages(e.response!.data)));
+        if(e.response!.toString().isEmpty){
+          return Left(ApiError(message: "Unexpected error occurred: $e"));
+        }else{
+          return Left(ApiError(
+              message: displayErrorMessages(e.response!.data)));
+        }
+
       } else {
         return Left(ApiError(message: e.message));
       }

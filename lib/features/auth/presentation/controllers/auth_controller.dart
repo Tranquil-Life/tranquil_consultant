@@ -6,7 +6,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:tl_consultant/app/presentation/routes/app_pages.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
-import 'package:tl_consultant/app/presentation/widgets/custom_snackbar.dart';
+import 'package:tl_consultant/core/global/custom_snackbar.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/utils/services/app_data_store.dart';
 import 'package:tl_consultant/features/auth/data/repos/auth_repo.dart';
@@ -229,7 +229,7 @@ class AuthController extends GetxController {
     hasLetter.value = RegExp(r'[a-zA-Z]').hasMatch(params.password);
     isPasswordsMatching.value = params.password == confirmPasswordTEC.text;
 
-    return isAllCriteriaMet ? null : 'Password does not meet criteria';
+    return isAllPwdCriteriaMet ? null : 'Password does not meet criteria';
   }
 
   String? validatePasswordMatch() {
@@ -269,7 +269,7 @@ class AuthController extends GetxController {
     return updated;
   }
 
-  bool get isAllCriteriaMet =>
+  bool get isAllPwdCriteriaMet =>
       isLengthValid.value &&
       hasSpecialChar.value &&
       hasDigit.value &&

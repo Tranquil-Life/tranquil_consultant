@@ -4,10 +4,10 @@ import 'package:get/get.dart';
 import 'package:tl_consultant/app/presentation/routes/app_pages.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/theme/fonts.dart';
-import 'package:tl_consultant/app/presentation/widgets/buttons.dart';
-import 'package:tl_consultant/app/presentation/widgets/custom_app_bar.dart';
-import 'package:tl_consultant/app/presentation/widgets/custom_scaffold.dart';
-import 'package:tl_consultant/app/presentation/widgets/unfocus_bg.dart';
+import 'package:tl_consultant/core/global/buttons.dart';
+import 'package:tl_consultant/core/global/custom_app_bar.dart';
+import 'package:tl_consultant/core/global/custom_scaffold.dart';
+import 'package:tl_consultant/core/global/unfocus_bg.dart';
 import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 import 'package:tl_consultant/core/utils/helpers/svg_elements.dart';
 import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';
@@ -22,7 +22,7 @@ class UpdatePasswordPage extends StatelessWidget {
   final verificationController = Get.put(VerificationController());
 
   void _continue() async{
-    if (authController.isAllCriteriaMet) {
+    if (authController.isAllPwdCriteriaMet) {
       var updated = await authController.updatePassword(
           token: verificationController.verificationToken.value,
           password: authController.params.password);
@@ -94,7 +94,7 @@ class UpdatePasswordPage extends StatelessWidget {
               Spacer(),
               Obx(() => CustomButton(
                   onPressed:
-                      !authController.isAllCriteriaMet ? null : _continue,
+                      !authController.isAllPwdCriteriaMet ? null : _continue,
                   text: "Reset password")),
               SizedBox(height: 44),
               Align(

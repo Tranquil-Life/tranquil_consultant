@@ -1,7 +1,7 @@
 // ignore_for_file: must_be_immutable
 
 import 'dart:io';
-import 'package:tl_consultant/app/presentation/widgets/custom_loader.dart';
+import 'package:tl_consultant/core/global/custom_loader.dart';
 import 'package:tl_consultant/core/utils/extensions/chat_message_extension.dart';
 
 import 'package:flutter/material.dart';

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
-import 'package:tl_consultant/app/presentation/widgets/app_bar_button.dart';
+import 'package:tl_consultant/core/global/app_bar_button.dart';
 
 class AppBarAction {
   final Widget child;

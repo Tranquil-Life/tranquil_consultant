@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
-import 'package:tl_consultant/app/presentation/widgets/custom_form_field.dart';
-import 'package:tl_consultant/app/presentation/widgets/drop_down_menu.dart';
+import 'package:tl_consultant/core/global/custom_form_field.dart';
+import 'package:tl_consultant/core/global/drop_down_menu.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
 

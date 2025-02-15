@@ -1,7 +1,7 @@
 part of 'package:tl_consultant/features/home/presentation/screens/home_tab.dart';
 
 class AppBar extends StatefulWidget {
-  const AppBar({Key? key}) : super(key: key);
+  const AppBar({super.key});
 
   @override
   State<AppBar> createState() => _AppBarState();
@@ -71,7 +71,7 @@ class _AppBarState extends State<AppBar> {
 }
 
 class Title extends StatefulWidget {
-  const Title({Key? key, this.user}) : super(key: key);
+  const Title({super.key, this.user});
 
   final User? user;
   @override

@@ -2,7 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
-import 'package:tl_consultant/app/presentation/widgets/custom_snackbar.dart';
+import 'package:tl_consultant/core/global/custom_snackbar.dart';
 import 'package:tl_consultant/core/utils/extensions/date_time_extension.dart';
 import 'package:tl_consultant/features/consultation/data/repos/consultation_repo.dart';
 

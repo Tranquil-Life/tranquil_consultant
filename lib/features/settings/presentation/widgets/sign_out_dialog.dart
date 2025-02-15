@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tl_consultant/app/presentation/widgets/dialogs.dart';
+import 'package:tl_consultant/core/global/dialogs.dart';
 import 'package:tl_consultant/core/utils/services/app_data_store.dart';
 import 'package:tl_consultant/features/settings/presentation/controllers/settings_controller.dart';
 
