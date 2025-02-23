@@ -44,6 +44,8 @@ class ApiService {
     try {
       return await function();
     } on DioException catch (e) {
+      print(e);
+
       if (e.response != null) {
         if(e.response!.toString().isEmpty){
           return Left(ApiError(message: "Unexpected error occurred: $e"));
@@ -91,11 +93,13 @@ class ApiService {
       );
     }
 
+
     if (response.statusCode == 200 ||
         response.statusCode == 201 ||
         response.statusCode == 204) {
       return Right(response.data);
     } else {
+      print("response: ${response}");
       return Left(
           ApiError(message: response.data['message'] ?? "Unknown error"));
     }

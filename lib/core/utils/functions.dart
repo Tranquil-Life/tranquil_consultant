@@ -283,3 +283,11 @@ checkForEmptyProfileInfo(ProfileController profileController) async {
     Get.to(() => EditProfileScreen());
   }
 }
+
+String twoDigits(int n) {
+  if (n >= 10) {
+    return "$n";
+  } else {
+    return "0$n";
+  }
+}

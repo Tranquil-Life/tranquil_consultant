@@ -1,20 +1,12 @@
-import 'dart:io';
-import 'dart:io';
-
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart' as dio;
-import 'package:firebase_storage/firebase_storage.dart';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/core/global/custom_snackbar.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/utils/functions.dart';
-import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
-import 'package:tl_consultant/features/media/data/media_repo.dart';
 import 'package:tl_consultant/features/profile/data/models/user_model.dart';
 import 'package:tl_consultant/features/profile/data/repos/profile_repo.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
@@ -136,7 +128,6 @@ class ProfileController extends GetxController {
           message: l.message!,
           backgroundColor: ColorPalette.red),
       (r) {
-        print(r);
         editUser.value = EditUser(baseUser: UserModel.fromJson(r['user']));
         User user = UserModel.fromJson(r['user']);
         var qualifications = r['qualifications'] ?? [];

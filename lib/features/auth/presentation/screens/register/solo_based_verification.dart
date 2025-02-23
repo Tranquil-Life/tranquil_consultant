@@ -79,7 +79,7 @@ class _SoloBasedVerificationState extends State<SoloBasedVerification> {
                   ),
                   SizedBox(height: 8),
                   Text(
-                    "Enter the code sent to the email address ${authController.emailTEC.text} to proceed",
+                    "Enter the code sent to the email address ${authController.emailTEC.text} to proceed. Check your inbox or spam",
                     style: TextStyle(
                         fontSize: AppFonts.defaultSize,
                         fontWeight: FontWeight.w400,

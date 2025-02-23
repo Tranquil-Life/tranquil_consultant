@@ -1,5 +1,4 @@
 import 'package:tl_consultant/app/domain/query_params.dart';
-import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';
 
 class RegisterData extends QueryParams {
   RegisterData();
@@ -11,6 +10,7 @@ class RegisterData extends QueryParams {
   String videoIntro = '';
   String pictureUrl = '';
   String therapistKind = '';
+  String emailVerifiedAt = "";
   // String firstName = '';
   // String lastName = '';
   // String birthDate = '';
@@ -32,6 +32,7 @@ class RegisterData extends QueryParams {
     'video_intro': videoIntro,
     'avatar_url': pictureUrl,
     'therapist_kind': therapistKind,
+    'email_verified_at': emailVerifiedAt,
     // 'f_name': firstName,
     // 'l_name': lastName,
     // 'birth_date': birthDate,

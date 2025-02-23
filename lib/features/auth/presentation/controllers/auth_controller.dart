@@ -11,6 +11,7 @@ import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/utils/services/app_data_store.dart';
 import 'package:tl_consultant/features/auth/data/repos/auth_repo.dart';
 import 'package:tl_consultant/features/auth/domain/entities/register_data.dart';
+import 'package:tl_consultant/features/auth/presentation/controllers/verification_controller.dart';
 import 'package:tl_consultant/features/media/data/media_repo.dart';
 import 'package:tl_consultant/features/profile/data/models/user_model.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
@@ -79,6 +80,9 @@ class AuthController extends GetxController {
     params.videoIntro = introVideo.value;
     params.pictureUrl = profilePic.value;
     params.therapistKind = selectedType.value;
+    params.emailVerifiedAt = VerificationController.instance.emailVerifiedAt.value;
+
+    print(params.toJson());
 
     Either either = await authRepo.register(params);
     either.fold(
@@ -128,8 +132,6 @@ class AuthController extends GetxController {
             List<Map<String, dynamic>>.from(data['data']['qualifications']);
         userDataStore.user['meetings_count'] = data['data']['meetings_count'];
         userDataStore.user['clients_count'] = data['data']['clients_count'];
-
-        print("User: ${userDataStore.user}");
 
         AppData.isSignedIn = true;
 
