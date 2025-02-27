@@ -25,11 +25,6 @@ class _EditSlotsState extends State<EditSlots> {
   final slotController = Get.put(SlotController());
   ClientUser? clientUser;
 
-  List times = [];
-  String? time;
-
-  DateTime? dateTime = DateTime.now();
-  final dateFormat = DateFormat('yyyy-MM-dd');
   DaySectionOption? selectedSection;
 
   List days = [
@@ -42,16 +37,23 @@ class _EditSlotsState extends State<EditSlots> {
     "Saturday"
   ];
 
+  List<String> timeSlots = [];
+  List<String> selectedSlots = [];
+
   @override
   void initState() {
-    slotController.timeSlots.clear();
-    slotController.getAllSlots();
-    getDaySlots();
     super.initState();
+    slotController.getAllSlots();
+    timeSlots = generateTimeSlots(startHour: 6, endHour: 18, intervalMinutes: 60);
   }
 
-  getDaySlots() async {
-    sortTime(false);
+  /// Toggles the selection of a time slot
+  void toggleSelection(String slot) {
+    if (slotController.timeSlots.contains(slot)) {
+      slotController.timeSlots.remove(slot);
+    } else {
+      slotController.timeSlots.add(slot);
+    }
   }
 
   @override
@@ -62,218 +64,137 @@ class _EditSlotsState extends State<EditSlots> {
         title: 'Edit Availability',
       ),
       backgroundColor: Colors.grey[200],
-      body: Padding(
-        padding: const EdgeInsets.fromLTRB(24, 12, 24, 16),
-        child: SingleChildScrollView(
+      body: Obx((){
+        selectedSlots = List<String>.from(slotController.timeSlots);
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(24, 12, 24, 16),
           child: Column(
             children: [
-              DaySectionPicker(onDaySelected: (isNightSelected) {
-                sortTime(isNightSelected);
-              }),
-              Obx(
-                () => slotController.loading.value
-                    ? const CircularProgressIndicator(color: ColorPalette.green)
-                    : Container(
-                        height: 250,
-                        margin: EdgeInsets.only(
-                            bottom: 70,
-                            top: selectedSection == DaySectionOption.day
-                                ? 48
-                                : 18),
-                        child: AnimatedSize(
-                          duration: const Duration(milliseconds: 250),
-                          alignment: Alignment.center,
-                          child: MyDefaultTextStyle(
-                            style: const TextStyle(
-                                fontSize: 14, fontWeight: FontWeight.w600),
-                            child: Center(
-                              child: Wrap(
-                                spacing: 10,
-                                runSpacing: 20,
-                                children: List.generate(
-                                  times.length,
-                                  (i) {
-                                    var time = times[i];
-                                    return GestureDetector(
-                                        onTap: () {
-                                          if (slotController.timeSlots
-                                              .contains(time))
-                                          {
-                                            slotController.timeSlots
-                                                .remove(time);
-                                          } else {
-                                            slotController.timeSlots.add(time);
-                                          }
-                                        },
-                                        child: SizedBox(
-                                            width: 100,
-                                            height: 40,
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                  color: slotController
-                                                          .timeSlots
-                                                          .contains(time)
-                                                      ? Colors.green
-                                                      : Colors.white,
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          16.0),
-                                                  border: slotController
-                                                          .timeSlots
-                                                          .contains(time)
-                                                      ? Border.all(
-                                                          width: 2,
-                                                          color: ColorPalette
-                                                              .white)
-                                                      : null,
-                                                  boxShadow: slotController
-                                                          .timeSlots
-                                                          .contains(time)
-                                                      ? [
-                                                          BoxShadow(
-                                                              blurRadius: 6,
-                                                              color: Colors
-                                                                  .black12,
-                                                              offset:
-                                                                  Offset(0, 3)),
-                                                        ]
-                                                      : null),
-                                              child: Center(
-                                                child: Text(time.toString(),
-                                                    style: TextStyle(
-                                                        color: slotController
-                                                                .timeSlots
-                                                                .contains(time)
-                                                            ? Colors.white
-                                                            : null)),
-                                              ),
-                                            )
+              DaySectionPicker(
+                  onDaySelected: (isNightSelected) {
+                    sortTime(isNightSelected);
 
-                                            // TimeWidget(
-                                            //   text: time,
-                                            //   onSelected: ()Ò
-                                            //   {
-                                            //     //before selection
-                                            //     print("BEFORE SELECTION ${slotController.timeSlots}");
-                                            //     if(slotController.timeSlots.contains(time)){
-                                            //       print("ARRAY CONTAINS: $time");
-                                            //
-                                            //       slotController.removeFromSlots(time);
-                                            //
-                                            //       print("ITEM REMOVED FROM SELECTION ${slotController.timeSlots}");
-                                            //
-                                            //     }else{
-                                            //       print("ARRAY DOESN'T CONTAIN: $time");
-                                            //
-                                            //       slotController.addToSlots(time);
-                                            //
-                                            //       print("ITEM ADDED TO SELECTION ${slotController.timeSlots}");
-                                            //
-                                            //     }
-                                            //     setState(() {});
-                                            //   },
-                                            //   selectedSlots: slotController.timeSlots,
-                                            // )
-                                            ));
-                                  },
-                                ),
-                              ),
-                            ),
-                          ),
-                        )
+                    setState(() {});
+                  }),
+              const SizedBox(height: 32),
 
-                        // TimePickerWidget(
-                        //   onTimeChosen: (newTime, index) {
-                        //     time = newTime;
-                        //   },
-                        //   times: times,
-                        // ),
-                        ),
-              ),
-              Obx(
-                () => slotController.loading.value
-                    ? const Center(
-                        child: CircularProgressIndicator(
-                            color: ColorPalette.green))
-                    : Align(
-                        alignment: Alignment.bottomCenter,
-                        child: Wrap(
-                          alignment: WrapAlignment.start,
-                          children: [
-                            const Padding(
-                              padding: EdgeInsets.only(bottom: 24),
-                              child: Text(
-                                'Select available days',
-                                style: TextStyle(
-                                    fontSize: AppFonts.defaultSize,
-                                    fontFamily: AppFonts.josefinSansSemiBold),
-                              ),
+              Expanded(
+                child:  slotController.loading.value ? Center(child: CircularProgressIndicator(color: ColorPalette.green)) : GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    mainAxisSpacing: 16,
+                    crossAxisSpacing: 16,
+                    childAspectRatio: 2.3,
+                  ),
+                  itemCount: timeSlots.length,
+                  itemBuilder: (context, index) {
+                    final slot = timeSlots[index];
+                    final isSelected = selectedSlots.contains(slot);
+                    return GestureDetector(
+                      onTap: () => toggleSelection(slot),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        decoration: BoxDecoration(
+                          color: isSelected ? Colors.green : Colors.white,
+                          borderRadius: BorderRadius.circular(30),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.shade300,
+                              blurRadius: 6,
+                              offset: const Offset(0, 3),
                             ),
-                            SizedBox(
-                              height: 80,
-                              child: ListView.builder(
-                                itemCount: days.length,
-                                scrollDirection: Axis.horizontal,
-                                padding: const EdgeInsets.only(right: 16),
-                                itemBuilder: (_, index) {
-                                  final day = days[index];
-                                  return Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 8),
-                                      child: DayCard(
-                                        day,
-                                        selected: slotController.selectedDays
-                                            .contains(day),
-                                        onChosen: () {
-                                          if (slotController.selectedDays
-                                              .contains(day)) {
-                                            slotController.selectedDays
-                                                .remove(day);
-                                          } else {
-                                            slotController.selectedDays
-                                                .add(day);
-                                          }
-                                          setState(() {});
-                                        },
-                                      ));
-                                },
-                              ),
-                            ),
-
-                            //save button
-                            Padding(
-                              padding:
-                                  const EdgeInsets.only(top: 48, bottom: 32),
-                              child: CustomButton(
-                                  child: const Text("Save",
-                                      style: TextStyle(
-                                          fontSize: AppFonts.defaultSize,
-                                          color: ColorPalette.white)),
-                                  onPressed: () {
-                                    slotController.saveSlots(
-                                        availableDays:
-                                            slotController.selectedDays);
-                                  }),
-                            )
                           ],
                         ),
+                        child: Center(
+                          child: Text(
+                            slot,
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: isSelected ? Colors.white : Colors.black,
+                            ),
+                          ),
+                        ),
                       ),
-              )
+                    );
+                  },
+                ),
+              ),
+              SizedBox(height: 16),
+              Expanded(
+                  flex: 1,
+                  child: Wrap(
+                    alignment: WrapAlignment.start,
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.only(bottom: 24, top: 24),
+                        child: Text(
+                          'Select available days',
+                          style: TextStyle(
+                              fontSize: AppFonts.defaultSize,
+                              fontFamily: AppFonts.josefinSansSemiBold),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 80,
+                        child: ListView.builder(
+                          itemCount: days.length,
+                          scrollDirection: Axis.horizontal,
+                          padding: const EdgeInsets.only(right: 16),
+                          itemBuilder: (_, index) {
+                            final day = days[index];
+                            return Padding(
+                                padding:
+                                const EdgeInsets.symmetric(horizontal: 8),
+                                child: DayCard(
+                                  day,
+                                  selected:
+                                  slotController.selectedDays.contains(day),
+                                  onChosen: () {
+                                    if (slotController.selectedDays
+                                        .contains(day)) {
+                                      slotController.selectedDays.remove(day);
+                                    } else {
+                                      slotController.selectedDays.add(day);
+                                    }
+                                    setState(() {});
+                                  },
+                                ));
+                          },
+                        ),
+                      ),
+
+                      //save button
+                      Padding(
+                        padding: const EdgeInsets.only(top: 48, bottom: 32),
+                        child: CustomButton(
+                            child: const Text("Save",
+                                style: TextStyle(
+                                    fontSize: AppFonts.defaultSize,
+                                    color: ColorPalette.white)),
+                            onPressed: () {
+                              slotController.saveSlots(
+                                  availableDays: slotController.selectedDays);
+                            }),
+                      )
+                    ],
+                  ))
             ],
           ),
-        ),
-      ),
+        );
+      }),
     );
   }
 
   void sortTime(bool isNightHours) {
+    timeSlots.clear();
     if (isNightHours) {
-      times = timeOfNightRange();
       selectedSection = DaySectionOption.night;
+      timeSlots = generateTimeSlots(startHour: 19, endHour: 22, intervalMinutes: 60);
+
     } else {
-      times = timeOfDayRange();
       selectedSection = DaySectionOption.day;
+      timeSlots = generateTimeSlots(startHour: 6, endHour: 18, intervalMinutes: 60);
     }
-    setState(() {});
   }
 }

@@ -291,3 +291,22 @@ String twoDigits(int n) {
     return "0$n";
   }
 }
+
+/// Generates time slots between given hours with specified interval
+List<String> generateTimeSlots({
+  required int startHour,
+  required int endHour,
+  int intervalMinutes = 60,
+}) {
+  final List<String> slots = [];
+  TimeOfDay currentTime = TimeOfDay(hour: startHour, minute: 0);
+
+  while (currentTime.hour <= endHour) {
+    final hour = currentTime.hour.toString().padLeft(2, '0');
+    final minute = currentTime.minute.toString().padLeft(2, '0');
+    slots.add('$hour:$minute');
+    currentTime = currentTime.replacing(hour: currentTime.hour + 1);
+  }
+
+  return slots;
+}

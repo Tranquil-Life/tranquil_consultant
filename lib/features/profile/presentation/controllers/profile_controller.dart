@@ -160,9 +160,11 @@ class ProfileController extends GetxController {
     // userDataStore.user['is_verified'] = user.isVerified;
 
     userDataStore.user = userDataStore.user;
-    if (qualifications.isEmpty) {
+    if (qualifications.isNotEmpty) {
       userDataStore.qualifications =
           List<Map<String, dynamic>>.from(qualifications);
+
+      getQualifications();
     }
   }
 
