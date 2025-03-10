@@ -11,16 +11,18 @@ class CustomIconButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       clipBehavior: Clip.hardEdge,
+      height: 50,
+      width: 50,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: const [
-          BoxShadow(
-            blurRadius: 5,
-            offset: Offset(0, 3),
-            color: Colors.black12,
-          ),
-        ],
+        borderRadius: BorderRadius.circular(100),
+        // boxShadow: const [
+        //   BoxShadow(
+        //     blurRadius: 5,
+        //     offset: Offset(0, 3),
+        //     color: Colors.black12,
+        //   ),
+        // ],
       ),
       child: Material(
         type: MaterialType.transparency,

@@ -9,22 +9,22 @@ Widget buildPasswordCriteria(AuthController controller) {
       buildCriteriaRow(
         "Must be longer than 8 characters (no spaces)",
         controller.isLengthValid.value,
-        initialColor: ColorPalette.gray.shade300,
+        initialColor: ColorPalette.grey.shade300,
       ),
       buildCriteriaRow(
         "Must have at least one special character (!@#%^&*()_+, etc)",
         controller.hasSpecialChar.value,
-        initialColor: ColorPalette.gray.shade300,
+        initialColor: ColorPalette.grey.shade300,
       ),
       buildCriteriaRow(
         "Must have at least one digit (0 - 9)",
         controller.hasDigit.value,
-        initialColor: ColorPalette.gray.shade300,
+        initialColor: ColorPalette.grey.shade300,
       ),
       buildCriteriaRow(
         "Must have at least one letter (a - z)",
         controller.hasLetter.value,
-        initialColor: ColorPalette.gray.shade300,
+        initialColor: ColorPalette.grey.shade300,
       ),
     ],
   );

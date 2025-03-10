@@ -108,7 +108,7 @@ class QualificationsTabView extends StatelessWidget {
               Icon(
                 Icons.stop_circle,
                 size: 8,
-                color: ColorPalette.gray.shade800,
+                color: ColorPalette.grey.shade800,
               ),
               SizedBox(
                 width: 8,

@@ -4,7 +4,10 @@ import 'package:tl_consultant/app.dart';
 import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/app/presentation/theme/tranquil_icons.dart';
 import 'package:tl_consultant/core/global/custom_app_bar.dart';
+import 'package:tl_consultant/core/global/custom_fab.dart';
 import 'package:tl_consultant/core/utils/functions.dart';
+import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
+import 'package:tl_consultant/core/utils/helpers/svg_elements.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/chat_controller.dart';
 import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
 import 'package:tl_consultant/features/dashboard/presentation/widgets/nav_item.dart';
@@ -55,35 +58,25 @@ class _DashboardState extends State<Dashboard> {
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(0), // Completely removes AppBar height
         child: CustomAppBar(
-          backgroundColor: Colors.white, // Optional: transparent background
+          backgroundColor: Colors.grey.shade100,
         ),
       ),
       resizeToAvoidBottomInset: false,
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Stack(
-          fit: StackFit.expand,
-          alignment: Alignment.bottomCenter,
-          children: [
-            Positioned.fill(
-              bottom: MediaQuery.of(context).padding.bottom + 60,
-              child: Obx(
-                () => IndexedStack(
-                  index: dashboardController.currentIndex.value,
-                  sizing: StackFit.expand,
-                  children: [
-                    HomeTab(),
-                    WalletTab(),
-                    JournalTab(),
-                    ProfileScreen(),
-                  ],
-                ),
-              ),
-            ),
-            const NavBar(),
-          ],
-        ),
+      backgroundColor: Colors.grey.shade100,
+      floatingActionButton: CustomFAB(
+        onChatTap: () {},
+        dbController: dashboardController,
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: BottomAppBar(
+        shadowColor: Colors.grey,
+        color: ColorPalette.scaffoldColor,
+        shape: const CircularNotchedRectangle(),
+        notchMargin: displayWidth(context) * 0.025,
+        child: BottomNavBar(dashboardController: dashboardController),
+      ),
+      body: Obx(() =>
+          dashboardController.pages[dashboardController.currentIndex.value]),
     );
   }
 }

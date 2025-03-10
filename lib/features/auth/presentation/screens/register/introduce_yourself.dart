@@ -60,7 +60,7 @@ class _IntroduceYourselfPageState extends State<IntroduceYourselfPage> {
                   style: TextStyle(
                       fontSize: AppFonts.defaultSize,
                       fontWeight: FontWeight.w400,
-                      color: ColorPalette.gray.shade500),
+                      color: ColorPalette.grey.shade500),
                 ),
                 SizedBox(height: 40),
                 VideoRecordOption(
@@ -126,7 +126,7 @@ class _IntroduceYourselfPageState extends State<IntroduceYourselfPage> {
                           ),
                         ],
                         style: TextStyle(
-                            color: ColorPalette.gray.shade300,
+                            color: ColorPalette.grey.shade300,
                             fontFamily: AppFonts.josefinSansRegular),
                       ),
                       textAlign: TextAlign.center,

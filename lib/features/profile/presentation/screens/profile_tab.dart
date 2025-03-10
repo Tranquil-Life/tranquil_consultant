@@ -149,7 +149,7 @@ class _ProfileHeadState extends State<ProfileHead> {
     return Row(
       children: [
         CircleAvatar(
-          backgroundColor: ColorPalette.gray[100],
+          backgroundColor: ColorPalette.grey[100],
           radius: 52,
           child: MyAvatarWidget(size: 52*2),
         ),
@@ -294,7 +294,7 @@ class ProfileRowItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(color: ColorPalette.gray[900]!),
+        border: Border.all(color: ColorPalette.grey[900]!),
         color: ColorPalette.green[200],
         borderRadius: BorderRadius.circular(4),
       ),
@@ -342,7 +342,7 @@ class PersonalInfo extends StatelessWidget {
           height: 16,
           width: 16,
           "assets/images/icons/calendar.svg",
-          color: ColorPalette.gray.shade800,
+          color: ColorPalette.grey.shade800,
         ),
         SizedBox(
           width: 5,
@@ -353,7 +353,7 @@ class PersonalInfo extends StatelessWidget {
             fontSize: AppFonts.defaultSize,
             color: client.emailVerifiedAt == null
                 ? ColorPalette.red
-                : ColorPalette.gray.shade800,
+                : ColorPalette.grey.shade800,
             fontWeight: FontWeight.w400,
           ),
         ),

@@ -20,7 +20,7 @@ CustomFormField titleFormField(
   final dropdownControllerTitle = DropdownController(initialValue: "Psy.D");
   return CustomFormField(
     readOnly: true,
-    hintColor: ColorPalette.gray.shade800,
+    hintColor: ColorPalette.grey.shade800,
     suffix: GestureDetector(
       onTap: onTap,
       child: const Icon(Icons.keyboard_arrow_down),
@@ -138,7 +138,7 @@ CustomFormField modalities(
   return CustomFormField(
     textEditingController: profileController.modalitiesTEC,
     readOnly: true,
-    hintColor: ColorPalette.gray.shade800,
+    hintColor: ColorPalette.grey.shade800,
     suffix: GestureDetector(
       onTap: onTap,
       child: const Icon(Icons.keyboard_arrow_down),

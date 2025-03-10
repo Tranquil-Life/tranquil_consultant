@@ -300,7 +300,7 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
                                           },
                                           child: SvgPicture.asset(
                                             SvgElements.svgShareIcon,
-                                            color: ColorPalette.gray[800],
+                                            color: ColorPalette.grey[800],
                                             height: 24,
                                             width: 24,
                                           ),

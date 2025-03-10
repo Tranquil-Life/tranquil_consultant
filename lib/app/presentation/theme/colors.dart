@@ -5,7 +5,7 @@ class ColorPalette {
   static const red = Colors.red;
   static const scaffoldColor = Color(0xFFFBFBFB);
   static const white = Colors.white;
-  static const gray = MaterialColor(0xFFF2F2F2, {
+  static const grey = MaterialColor(0xFFF2F2F2, {
     100: Color(0xFFD3D3D3),
     200: Color(0xFFC3C3C3),
     300: Color(0xFF6E6E6E),
@@ -17,13 +17,16 @@ class ColorPalette {
     900: Color(0xFFD4D4D4),
   });
   static const green = MaterialColor(
-    0xff43A95D,
+    0xff388D4D,
     {
-      100: Color(0xffDDE8E0),
-      200: Color(0xffD9EEDF),
-      300: Color(0xFFEEF7F0),
-      500: Color(0xff43A95D),
-      800: Color(0xff2D713E),
+      100: Color(0xffA1D4AE),
+      200: Color(0xff82C693),
+      300: Color(0xFF62B778),
+      400: Color(0xFF43A95D),
+      600: Color(0xff2D713E),
+      700: Color(0xff21542E),
+      800: Color(0xff16381F),
+      900: Color(0xff0D2213)
     },
   );
   static const blue = MaterialColor(

@@ -165,7 +165,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 style: TextStyle(
                     fontSize: AppFonts.defaultSize,
                     fontWeight: FontWeight.w400,
-                    color: ColorPalette.gray.shade800),
+                    color: ColorPalette.grey.shade800),
                 textAlign: TextAlign.center,
               ),
               SizedBox(

@@ -52,7 +52,7 @@ class UpdatePasswordPage extends StatelessWidget {
                 style: TextStyle(
                     fontSize: AppFonts.defaultSize,
                     fontWeight: FontWeight.w400,
-                    color: ColorPalette.gray.shade500),
+                    color: ColorPalette.grey.shade500),
               ),
               const SizedBox(
                 height: 25,
@@ -89,7 +89,7 @@ class UpdatePasswordPage extends StatelessWidget {
               Obx(() => buildCriteriaRow(
                     "Must match password above",
                     authController.isPasswordsMatching.value,
-                    initialColor: ColorPalette.gray.shade300,
+                    initialColor: ColorPalette.grey.shade300,
                   )),
               Spacer(),
               Obx(() => CustomButton(
@@ -117,7 +117,7 @@ class UpdatePasswordPage extends StatelessWidget {
                         ),
                       ],
                       style: TextStyle(
-                        color: ColorPalette.gray.shade300,
+                        color: ColorPalette.grey.shade300,
                         fontSize: 16,
                         fontWeight: FontWeight.w400,
                       ),

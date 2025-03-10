@@ -17,7 +17,7 @@ class DayCard extends StatelessWidget {
           width: 80,
           height: 40,
           decoration: BoxDecoration(
-              color: selected ? ColorPalette.green : ColorPalette.gray,
+              color: selected ? ColorPalette.green : ColorPalette.grey,
               borderRadius: BorderRadius.circular(16.0),
               border: !selected
                   ? Border.all(width: 2, color: ColorPalette.white)

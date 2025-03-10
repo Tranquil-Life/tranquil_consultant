@@ -102,7 +102,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> with SingleTicker
               Text("Video recording"),
             ],
           ),
-          Divider(color: ColorPalette.gray[900],),
+          Divider(color: ColorPalette.grey[900],),
 
           SizedBox(
               height: 320,
@@ -196,7 +196,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> with SingleTicker
                         },
                         child: SvgPicture.asset(
                           SvgElements.svgShareIcon,
-                          color: ColorPalette.gray[800],
+                          color: ColorPalette.grey[800],
                           height: 24,
                           width: 24,
                         ),

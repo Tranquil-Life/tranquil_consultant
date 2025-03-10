@@ -135,6 +135,7 @@ flutter:
   assets:
     - assets/images/
     - assets/images/icons/
+    - assets/images/nav_icons/
     - assets/images/onboarding/
     - assets/images/earnings/
     - assets/images/chat/

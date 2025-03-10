@@ -28,7 +28,21 @@ class SvgElements {
 
   static get svgUserIcon => "assets/images/icons/user_icon.svg";
   static get svgPersonGroupIcon => "assets/images/icons/person_group.svg";
+  static get svgBellIcon => "assets/images/icons/bell.svg";
+
 
   static get svgDoubleCheckmarkIcon => "assets/images/icons/double_checkmark.svg";
   static get svgImageIcon => "assets/images/icons/image.svg";
+
+  //bottom nav icons
+  static get svgMoreInactive => "assets/images/nav_icons/more_inactive.svg";
+  static get svgMoreActive => "assets/images/nav_icons/more_active.svg";
+  static get svgWalletInactive => "assets/images/nav_icons/wallet_inactive.svg";
+  static get svgWalletActive => "assets/images/nav_icons/wallet_active.svg";
+  static get svgNotesInactive => "assets/images/nav_icons/notes_inactive.svg";
+  static get svgNotesActive => "assets/images/nav_icons/notes_active.svg";
+  static get svgHomeInactive => "assets/images/nav_icons/home_inactive.svg";
+  static get svgHomeActive => "assets/images/nav_icons/home_active.svg";
+  static get svgChat => "assets/images/nav_icons/chat.svg";
+
 }

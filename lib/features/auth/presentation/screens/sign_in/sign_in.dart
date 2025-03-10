@@ -57,21 +57,21 @@ class _SignInScreenState extends State<SignInScreen> {
                 style: TextStyle(
                     fontSize: AppFonts.defaultSize,
                     fontWeight: FontWeight.w400,
-                    color: ColorPalette.gray.shade500),
+                    color: ColorPalette.grey.shade500),
               ),
               const SizedBox(
                 height: 25,
               ),
               Text(
                 'Email',
-                style: TextStyle(color: ColorPalette.gray[600]),
+                style: TextStyle(color: ColorPalette.grey[600]),
               ),
               SizedBox(height: 8),
               emailFormField(authController),
               SizedBox(height: 16),
               Text(
                 'Password',
-                style: TextStyle(color: ColorPalette.gray[600]),
+                style: TextStyle(color: ColorPalette.grey[600]),
               ),
               SizedBox(height: 8),
               Obx(()=>passwordField(authController)),
@@ -120,7 +120,7 @@ class _SignInScreenState extends State<SignInScreen> {
                         ),
                       ],
                       style: TextStyle(
-                        color: ColorPalette.gray.shade300,
+                        color: ColorPalette.grey.shade300,
                         fontSize: 16,
                         fontWeight: FontWeight.w400,
                       ),

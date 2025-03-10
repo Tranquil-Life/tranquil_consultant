@@ -39,7 +39,7 @@ class NoVideoRecordState extends StatelessWidget {
           Text(
             "Record video",
             style: TextStyle(
-              color: ColorPalette.gray.shade400,
+              color: ColorPalette.grey.shade400,
               fontSize: AppFonts.baseSize,
               fontWeight: FontWeight.w400,
             ),

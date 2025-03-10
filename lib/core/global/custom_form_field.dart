@@ -65,18 +65,18 @@ class CustomFormField extends StatelessWidget {
           hintStyle: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w400,
-              color: hintColor ?? ColorPalette.gray[200]),
+              color: hintColor ?? ColorPalette.grey[200]),
           errorStyle: const TextStyle(color: ColorPalette.white, fontSize: 14),
           fillColor: Colors.white,
           border: InputBorder.none,
           focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.0),
               borderSide:
-                  BorderSide(width: 1, color: ColorPalette.gray.shade900)),
+                  BorderSide(width: 1, color: ColorPalette.grey.shade900)),
           enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.0),
               borderSide:
-                  BorderSide(width: 1, color: ColorPalette.gray.shade900)),
+                  BorderSide(width: 1, color: ColorPalette.grey.shade900)),
           focusedErrorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.0),
               borderSide: const BorderSide(width: 1, color: ColorPalette.red)),

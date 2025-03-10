@@ -48,7 +48,7 @@ class NoteWidget extends StatelessWidget {
               ),
               color: personalNote == null
                   ? sharedNote!.note == null
-                      ? ColorPalette.gray
+                      ? ColorPalette.grey
                       : Color(int.parse(sharedNote!.note!.hexColor))
                   : ColorPalette.pNoteBgColor,
               child: Padding(
@@ -218,7 +218,7 @@ class NoteWidget extends StatelessWidget {
                                 decoration: BoxDecoration(
                                     color: ColorPalette.green[100],
                                     border: Border.all(
-                                        width: 2, color: ColorPalette.gray),
+                                        width: 2, color: ColorPalette.grey),
                                     borderRadius: BorderRadius.circular(28)),
                                 child: Center(
                                   child: UserAvatar(

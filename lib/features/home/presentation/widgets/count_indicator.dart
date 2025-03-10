@@ -11,7 +11,8 @@ class CountIndicator extends StatelessWidget {
     return Transform.translate(
       offset: const Offset(8, -2),
       child: Container(
-        padding: const EdgeInsets.all(3),
+        height: 20,
+        width: 20,
         decoration: BoxDecoration(
           color: ColorPalette.red,
           shape: BoxShape.circle,
@@ -27,7 +28,7 @@ class CountIndicator extends StatelessWidget {
             style: const TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.w700,
-              fontSize: 13,
+              fontSize: 10,
             ),
           ),
         ),

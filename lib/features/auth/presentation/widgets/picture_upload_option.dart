@@ -25,7 +25,7 @@ class PictureUploadOption extends StatelessWidget {
         decoration: BoxDecoration(
           color:
           selected ? ColorPalette.green[200] : ColorPalette.green.shade300,          borderRadius: BorderRadius.circular(8.0),
-          border: Border.all(width: 1, color: ColorPalette.gray.shade100),
+          border: Border.all(width: 1, color: ColorPalette.grey.shade100),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -57,7 +57,7 @@ class PictureUploadOption extends StatelessWidget {
                         Text(
                           'Profile picture',
                           style: TextStyle(
-                            color: ColorPalette.gray.shade400,
+                            color: ColorPalette.grey.shade400,
                             fontSize: AppFonts.baseSize,
                             fontWeight: FontWeight.w400,
                           ),
@@ -67,7 +67,7 @@ class PictureUploadOption extends StatelessWidget {
                           width: displayWidth(context)/2,
                           child: Text("Upload a profile picture for your clients",
                             style: TextStyle(
-                              color: ColorPalette.gray.shade300,
+                              color: ColorPalette.grey.shade300,
                               fontSize: 12,
                               fontWeight: FontWeight.w400,
                             ),

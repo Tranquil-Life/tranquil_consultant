@@ -352,7 +352,7 @@ class _EditProfileFieldsState extends State<EditProfileFields> {
         Text(
           "Select at least 1, and no more than 5",
           style: TextStyle(
-            color: ColorPalette.gray.shade800,
+            color: ColorPalette.grey.shade800,
             fontSize: 10,
             fontWeight: FontWeight.w400,
           ),

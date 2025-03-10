@@ -60,11 +60,11 @@ IntlPhoneField phoneField(AuthController authController){
       focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),
           borderSide:
-          BorderSide(width: 1, color: ColorPalette.gray.shade900)),
+          BorderSide(width: 1, color: ColorPalette.grey.shade900)),
       enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),
           borderSide:
-          BorderSide(width: 1, color: ColorPalette.gray.shade900)),
+          BorderSide(width: 1, color: ColorPalette.grey.shade900)),
       focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),
           borderSide: const BorderSide(width: 1, color: ColorPalette.red)),

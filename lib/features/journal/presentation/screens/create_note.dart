@@ -148,8 +148,8 @@ class _CreateNoteState extends State<CreateNote> {
                                   },
                                   child: editOptionItem(formatTextIcon),
                                 ),
-                                editOptionItem(attachIconPath, width: 24, color: ColorPalette.gray),
-                                editOptionItem(micIconPath, width: 24, color: ColorPalette.gray),
+                                editOptionItem(attachIconPath, width: 24, color: ColorPalette.grey),
+                                editOptionItem(micIconPath, width: 24, color: ColorPalette.grey),
                               ],
                             ),
                             SizedBox(

@@ -35,7 +35,7 @@ class _VideoRecordStateState extends State<VideoRecordState> {
       decoration: BoxDecoration(
         color: ColorPalette.green.shade300,
         borderRadius: BorderRadius.circular(8.0),
-        border: Border.all(width: 1, color: ColorPalette.gray.shade100),
+        border: Border.all(width: 1, color: ColorPalette.grey.shade100),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -67,7 +67,7 @@ class _VideoRecordStateState extends State<VideoRecordState> {
                       Text(
                         "Play video",
                         style: TextStyle(
-                          color: ColorPalette.gray.shade400,
+                          color: ColorPalette.grey.shade400,
                           fontSize: AppFonts.baseSize,
                           fontWeight: FontWeight.w400,
                         ),
@@ -75,7 +75,7 @@ class _VideoRecordStateState extends State<VideoRecordState> {
 
                       Obx(()=>Text("${widget.profileController.introVideoDuration.value} secs",
                         style: TextStyle(
-                          color: ColorPalette.gray.shade300,
+                          color: ColorPalette.grey.shade300,
                           fontSize: AppFonts.defaultSize,
                           fontWeight: FontWeight.w400,
                         ),
@@ -137,7 +137,7 @@ void _showDeleteVideoDialog(BuildContext context) {
                 style: TextStyle(
                     fontSize: AppFonts.defaultSize,
                     fontWeight: FontWeight.w400,
-                    color: ColorPalette.gray.shade800),
+                    color: ColorPalette.grey.shade800),
                 textAlign: TextAlign.center,
               ),
               SizedBox(

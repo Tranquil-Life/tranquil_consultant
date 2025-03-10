@@ -73,7 +73,7 @@ class _VerifyResetAccountPageState extends State<VerifyResetAccountPage> {
                     style: TextStyle(
                         fontSize: AppFonts.defaultSize,
                         fontWeight: FontWeight.w400,
-                        color: ColorPalette.gray.shade500),
+                        color: ColorPalette.grey.shade500),
                   ),
                   const SizedBox(
                     height: 25,
@@ -102,7 +102,7 @@ class _VerifyResetAccountPageState extends State<VerifyResetAccountPage> {
                         activeColor: verificationState() == false
                             ? ColorPalette.red
                             : ColorPalette.green,
-                        inactiveColor: ColorPalette.gray[900],
+                        inactiveColor: ColorPalette.grey[900],
                         activeFillColor: Colors.white,
                         inactiveFillColor: Colors.white,
                         selectedColor: ColorPalette.green,
@@ -202,7 +202,7 @@ class _VerifyResetAccountPageState extends State<VerifyResetAccountPage> {
                             ),
                           ],
                           style: TextStyle(
-                              color: ColorPalette.gray.shade300,
+                              color: ColorPalette.grey.shade300,
                               fontFamily: AppFonts.josefinSansRegular),
                         ),
                         textAlign: TextAlign.center,

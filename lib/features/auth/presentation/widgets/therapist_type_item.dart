@@ -46,7 +46,7 @@ class TherapistTypeItem extends StatelessWidget {
           color: bgColor,
           borderRadius: BorderRadius.circular(8.0),
           border: Border.all(
-              width: 1, color: ColorPalette.gray.shade100),
+              width: 1, color: ColorPalette.grey.shade100),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,

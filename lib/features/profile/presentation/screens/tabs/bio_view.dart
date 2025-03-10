@@ -27,7 +27,7 @@ class BioTabView extends StatelessWidget {
                   : profileController.bioTEC.text,
               style: TextStyle(
                   color: profileController.bioTEC.text.isEmpty
-                      ? ColorPalette.gray[800]
+                      ? ColorPalette.grey[800]
                       : ColorPalette.black),
             ),
           ),

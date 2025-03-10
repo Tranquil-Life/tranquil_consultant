@@ -30,7 +30,7 @@ class VideoRecordOption extends StatelessWidget {
           color:
               selected ? ColorPalette.green[200] : ColorPalette.green.shade300,
           borderRadius: BorderRadius.circular(8.0),
-          border: Border.all(width: 1, color: ColorPalette.gray.shade100),
+          border: Border.all(width: 1, color: ColorPalette.grey.shade100),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -61,7 +61,7 @@ class VideoRecordOption extends StatelessWidget {
                         Text(
                           'Video',
                           style: TextStyle(
-                            color: ColorPalette.gray.shade400,
+                            color: ColorPalette.grey.shade400,
                             fontSize: AppFonts.baseSize,
                             fontWeight: FontWeight.w400,
                           ),
@@ -69,7 +69,7 @@ class VideoRecordOption extends StatelessWidget {
                         Text(
                           "Record an introductory video",
                           style: TextStyle(
-                            color: ColorPalette.gray.shade300,
+                            color: ColorPalette.grey.shade300,
                             fontSize: 12,
                             fontWeight: FontWeight.w400,
                           ),

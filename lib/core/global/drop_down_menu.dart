@@ -36,7 +36,7 @@ class DropdownWidget extends StatelessWidget {
               style: TextStyle(
                   fontSize: AppFonts.defaultSize,
                   fontWeight: FontWeight.w400,
-                  color: ColorPalette.gray.shade800),
+                  color: ColorPalette.grey.shade800),
             )),
         underline: const SizedBox(),
         icon: Icon(Icons.keyboard_arrow_down),
