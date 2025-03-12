@@ -8,6 +8,7 @@ import 'package:tl_consultant/core/global/buttons.dart';
 import 'package:tl_consultant/core/global/custom_app_bar.dart';
 import 'package:tl_consultant/core/global/unfocus_bg.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
+import 'package:tl_consultant/core/global/user_avatar.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/theme/fonts.dart';
 import 'package:tl_consultant/core/utils/services/media_service.dart';
@@ -88,7 +89,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               borderRadius: BorderRadius.circular(8.0),
                               border: Border.all(
                                 width: 1,
-                                color: ColorPalette.green.shade500,
+                                color: ColorPalette.green,
                               ),
                             ),
                             alignment: Alignment.center,
@@ -97,7 +98,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w400,
-                                color: ColorPalette.green.shade500,
+                                color: ColorPalette.green,
                               ),
                             ),
                           ),
@@ -243,14 +244,19 @@ class _EditProfileHeadState extends State<EditProfileHead> {
     return Center(
       child: Column(
         children: [
-          Obx(
-            () => CircleAvatar(
-              backgroundImage: profileController.profilePic.value.isEmpty
-                  ? AssetImage("assets/images/profile/therapist.png")
-                  : NetworkImage(profileController.profilePic.value),
-              radius: 60,
-            ),
+          CircleAvatar(
+            backgroundColor: ColorPalette.grey[100],
+            radius: 60,
+            child: MyAvatarWidget(size: 52 * 2),
           ),
+          // Obx(
+          //   () => CircleAvatar(
+          //     backgroundImage: profileController.profilePic.value.isEmpty
+          //         ? AssetImage("assets/images/profile/therapist.png")
+          //         : NetworkImage(profileController.profilePic.value),
+          //     radius: 60,
+          //   ),
+          // ),
           const SizedBox(
             height: 14,
           ),
