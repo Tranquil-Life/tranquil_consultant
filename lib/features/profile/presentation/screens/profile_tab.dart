@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:tl_consultant/core/global/custom_app_bar.dart';
 
 import 'package:tl_consultant/core/global/unfocus_bg.dart';
 import 'package:tl_consultant/core/global/user_avatar.dart';
@@ -68,50 +69,58 @@ class _ProfileScreenState extends State<ProfileScreen>
     getMyLocationInfo();
 
     return UnFocusWidget(
-        child: SingleChildScrollView(
-      child: Padding(
-        padding:
-            const EdgeInsets.only(left: 24, right: 24, bottom: 24, top: 24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ProfileHead(
-              client: client!,
-              profileController: profileController,
-            ),
-            const SizedBox(height: 24),
-             ProfileRow(profileController: profileController),
-            const SizedBox(height: 24),
-            PersonalInfo(client: client!),
-            const SizedBox(height: 40),
-            CustomTabBar(
-              controller: controller,
-              onTap: (i) {},
-              label1: "My Bio",
-              label2: "Qualifications",
-            ),
-            const SizedBox(height: 20),
-
-            //Bio & Qualifications
-            SizedBox(
-              height: displayHeight(context) * 0.5,
-              child: TabBarView(
-                controller: controller,
+        child: Scaffold(
+          backgroundColor: Colors.grey.shade100,
+          appBar: CustomAppBar(
+            backgroundColor: Colors.grey.shade100,
+            title: "My profile",
+            centerTitle: false,
+          ),
+          body: SingleChildScrollView(
+            child: Padding(
+              padding:
+              const EdgeInsets.only(left: 24, right: 24, bottom: 24, top: 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  BioTabView(),
-                  SingleChildScrollView(
-                    physics: NeverScrollableScrollPhysics(),
-                    child: QualificationsTabView(
-                        profileController: profileController),
+                  ProfileHead(
+                    client: client!,
+                    profileController: profileController,
                   ),
+                  const SizedBox(height: 24),
+                  ProfileRow(profileController: profileController),
+                  const SizedBox(height: 24),
+                  PersonalInfo(client: client!),
+                  const SizedBox(height: 40),
+                  CustomTabBar(
+                    controller: controller,
+                    onTap: (i) {},
+                    label1: "My Bio",
+                    label2: "Qualifications",
+                  ),
+                  const SizedBox(height: 20),
+
+                  //Bio & Qualifications
+                  SizedBox(
+                    height: displayHeight(context) * 0.5,
+                    child: TabBarView(
+                      controller: controller,
+                      children: [
+                        BioTabView(),
+                        SingleChildScrollView(
+                          physics: NeverScrollableScrollPhysics(),
+                          child: QualificationsTabView(
+                              profileController: profileController),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 40)
                 ],
               ),
             ),
-            SizedBox(height: 40)
-          ],
-        ),
-      ),
-    ));
+          ),
+        ));
   }
 }
 
@@ -313,6 +322,7 @@ class ProfileRowItem extends StatelessWidget {
               Divider(
                 endIndent: 32,
                 indent: 32,
+                color:Colors.grey.shade100,
               ),
               Text(
                 title,

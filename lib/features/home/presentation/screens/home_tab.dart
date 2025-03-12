@@ -73,10 +73,13 @@ class _HomeTabState extends State<HomeTab> {
                                 Row(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    CircleAvatar(
-                                      backgroundColor: ColorPalette.grey[100],
-                                      radius: 24,
-                                      child: MyAvatarWidget(size: 52 * 2),
+                                    GestureDetector(
+                                      onTap: ()=>Get.toNamed(Routes.PROFILE),
+                                      child: CircleAvatar(
+                                        backgroundColor: ColorPalette.grey[100],
+                                        radius: 24,
+                                        child: MyAvatarWidget(size: 52 * 2),
+                                      ),
                                     ),
                                     SizedBox(width: 12),
                                     Column(
