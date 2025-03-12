@@ -2,10 +2,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:tl_consultant/app/presentation/theme/colors.dart';
-import 'package:tl_consultant/app/presentation/theme/fonts.dart';
-import 'package:tl_consultant/app/presentation/widgets/broken_vertical_line.dart';
+import 'package:tl_consultant/core/global/broken_vertical_line.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
+import 'package:tl_consultant/core/theme/colors.dart';
+import 'package:tl_consultant/core/theme/fonts.dart';
 import 'package:tl_consultant/core/utils/helpers/svg_elements.dart';
 import 'package:tl_consultant/features/media/presentation/controllers/video_recording_controller.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
@@ -352,7 +352,7 @@ class _EditProfileFieldsState extends State<EditProfileFields> {
         Text(
           "Select at least 1, and no more than 5",
           style: TextStyle(
-            color: ColorPalette.gray.shade800,
+            color: ColorPalette.grey.shade800,
             fontSize: 10,
             fontWeight: FontWeight.w400,
           ),

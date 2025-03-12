@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:tl_consultant/app/presentation/theme/fonts.dart';
-
-import 'package:tl_consultant/app/presentation/widgets/unfocus_bg.dart';
+import 'package:tl_consultant/core/global/unfocus_bg.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/utils/helpers/svg_elements.dart';
 import 'package:tl_consultant/features/journal/presentation/controllers/notes_controller.dart';

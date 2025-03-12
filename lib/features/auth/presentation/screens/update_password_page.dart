@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:tl_consultant/app/presentation/routes/app_pages.dart';
-import 'package:tl_consultant/app/presentation/theme/colors.dart';
-import 'package:tl_consultant/app/presentation/theme/fonts.dart';
-import 'package:tl_consultant/app/presentation/widgets/buttons.dart';
-import 'package:tl_consultant/app/presentation/widgets/custom_app_bar.dart';
-import 'package:tl_consultant/app/presentation/widgets/custom_scaffold.dart';
-import 'package:tl_consultant/app/presentation/widgets/unfocus_bg.dart';
+import 'package:tl_consultant/core/global/buttons.dart';
+import 'package:tl_consultant/core/global/custom_app_bar.dart';
+import 'package:tl_consultant/core/global/custom_scaffold.dart';
+import 'package:tl_consultant/core/global/unfocus_bg.dart';
+import 'package:tl_consultant/core/theme/colors.dart';
+import 'package:tl_consultant/core/theme/fonts.dart';
 import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 import 'package:tl_consultant/core/utils/helpers/svg_elements.dart';
+import 'package:tl_consultant/core/utils/routes/app_pages.dart';
 import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:tl_consultant/features/auth/presentation/controllers/verification_controller.dart';
 import 'package:tl_consultant/features/auth/presentation/widgets/form_fields.dart';
@@ -22,7 +22,7 @@ class UpdatePasswordPage extends StatelessWidget {
   final verificationController = Get.put(VerificationController());
 
   void _continue() async{
-    if (authController.isAllCriteriaMet) {
+    if (authController.isAllPwdCriteriaMet) {
       var updated = await authController.updatePassword(
           token: verificationController.verificationToken.value,
           password: authController.params.password);
@@ -52,7 +52,7 @@ class UpdatePasswordPage extends StatelessWidget {
                 style: TextStyle(
                     fontSize: AppFonts.defaultSize,
                     fontWeight: FontWeight.w400,
-                    color: ColorPalette.gray.shade500),
+                    color: ColorPalette.grey.shade500),
               ),
               const SizedBox(
                 height: 25,
@@ -89,12 +89,12 @@ class UpdatePasswordPage extends StatelessWidget {
               Obx(() => buildCriteriaRow(
                     "Must match password above",
                     authController.isPasswordsMatching.value,
-                    initialColor: ColorPalette.gray.shade300,
+                    initialColor: ColorPalette.grey.shade300,
                   )),
               Spacer(),
               Obx(() => CustomButton(
                   onPressed:
-                      !authController.isAllCriteriaMet ? null : _continue,
+                      !authController.isAllPwdCriteriaMet ? null : _continue,
                   text: "Reset password")),
               SizedBox(height: 44),
               Align(
@@ -117,7 +117,7 @@ class UpdatePasswordPage extends StatelessWidget {
                         ),
                       ],
                       style: TextStyle(
-                        color: ColorPalette.gray.shade300,
+                        color: ColorPalette.grey.shade300,
                         fontSize: 16,
                         fontWeight: FontWeight.w400,
                       ),

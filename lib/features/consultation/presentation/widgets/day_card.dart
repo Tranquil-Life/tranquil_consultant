@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:tl_consultant/app/presentation/theme/colors.dart';
-import 'package:tl_consultant/app/presentation/theme/fonts.dart';
+import 'package:tl_consultant/core/theme/colors.dart';
+import 'package:tl_consultant/core/theme/fonts.dart';
 
 class DayCard extends StatelessWidget {
   const DayCard(this.day, {Key? key, this.onChosen, required this.selected})
@@ -17,7 +17,7 @@ class DayCard extends StatelessWidget {
           width: 80,
           height: 40,
           decoration: BoxDecoration(
-              color: selected ? ColorPalette.green : ColorPalette.gray,
+              color: selected ? ColorPalette.green : ColorPalette.grey,
               borderRadius: BorderRadius.circular(16.0),
               border: !selected
                   ? Border.all(width: 2, color: ColorPalette.white)

@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:tl_consultant/app/presentation/routes/app_pages.dart';
-import 'package:tl_consultant/app/presentation/theme/colors.dart';
-import 'package:tl_consultant/app/presentation/theme/fonts.dart';
-import 'package:tl_consultant/app/presentation/widgets/buttons.dart';
-import 'package:tl_consultant/app/presentation/widgets/custom_app_bar.dart';
-import 'package:tl_consultant/app/presentation/widgets/unfocus_bg.dart';
+import 'package:tl_consultant/core/global/buttons.dart';
+import 'package:tl_consultant/core/global/custom_app_bar.dart';
+import 'package:tl_consultant/core/global/unfocus_bg.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
+import 'package:tl_consultant/core/theme/colors.dart';
+import 'package:tl_consultant/core/theme/fonts.dart';
 import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:tl_consultant/features/auth/presentation/controllers/verification_controller.dart';
@@ -57,32 +56,32 @@ class _RegisterState extends State<Register> {
                     style: TextStyle(
                         fontSize: AppFonts.defaultSize,
                         fontWeight: FontWeight.w400,
-                        color: ColorPalette.gray.shade500),
+                        color: ColorPalette.grey.shade500),
                   ),
                   SizedBox(height: 40),
                   Text(
                     'Email',
-                    style: TextStyle(color: ColorPalette.gray[600]),
+                    style: TextStyle(color: ColorPalette.grey[600]),
                   ),
                   SizedBox(height: 8),
                   emailFormField(authController),
                   SizedBox(height: 12),
                   Text(
                     'Phone number',
-                    style: TextStyle(color: ColorPalette.gray[600]),
+                    style: TextStyle(color: ColorPalette.grey[600]),
                   ),
                   SizedBox(height: 8),
                   phoneField(authController),
                   Text(
                     'Password',
-                    style: TextStyle(color: ColorPalette.gray[600]),
+                    style: TextStyle(color: ColorPalette.grey[600]),
                   ),
                   SizedBox(height: 8),
                   Obx(() => passwordField(authController)),
                   SizedBox(height: 12),
                   Text(
                     'Confirm password',
-                    style: TextStyle(color: ColorPalette.gray[600]),
+                    style: TextStyle(color: ColorPalette.grey[600]),
                   ),
                   SizedBox(height: 8),
                   Obx(() => confirmPwdField(authController)),
@@ -131,7 +130,7 @@ class _RegisterState extends State<Register> {
                             ),
                           ],
                           style: TextStyle(
-                              color: ColorPalette.gray.shade300,
+                              color: ColorPalette.grey.shade300,
                               fontFamily: AppFonts.josefinSansRegular),
                         ),
                         textAlign: TextAlign.center,

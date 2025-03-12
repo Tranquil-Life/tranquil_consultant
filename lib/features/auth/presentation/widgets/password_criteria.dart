@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:tl_consultant/app/presentation/theme/colors.dart';
+import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';
 
 Widget buildPasswordCriteria(AuthController controller) {
@@ -9,22 +9,22 @@ Widget buildPasswordCriteria(AuthController controller) {
       buildCriteriaRow(
         "Must be longer than 8 characters (no spaces)",
         controller.isLengthValid.value,
-        initialColor: ColorPalette.gray.shade300,
+        initialColor: ColorPalette.grey.shade300,
       ),
       buildCriteriaRow(
         "Must have at least one special character (!@#%^&*()_+, etc)",
         controller.hasSpecialChar.value,
-        initialColor: ColorPalette.gray.shade300,
+        initialColor: ColorPalette.grey.shade300,
       ),
       buildCriteriaRow(
         "Must have at least one digit (0 - 9)",
         controller.hasDigit.value,
-        initialColor: ColorPalette.gray.shade300,
+        initialColor: ColorPalette.grey.shade300,
       ),
       buildCriteriaRow(
         "Must have at least one letter (a - z)",
         controller.hasLetter.value,
-        initialColor: ColorPalette.gray.shade300,
+        initialColor: ColorPalette.grey.shade300,
       ),
     ],
   );

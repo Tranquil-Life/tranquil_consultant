@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
+import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/features/profile/data/models/user_model.dart';
 import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:tl_consultant/features/profile/presentation/screens/edit_profile.dart';
@@ -27,7 +27,7 @@ class BioTabView extends StatelessWidget {
                   : profileController.bioTEC.text,
               style: TextStyle(
                   color: profileController.bioTEC.text.isEmpty
-                      ? ColorPalette.gray[800]
+                      ? ColorPalette.grey[800]
                       : ColorPalette.black),
             ),
           ),

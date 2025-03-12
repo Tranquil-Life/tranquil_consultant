@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:tl_consultant/app/presentation/theme/colors.dart';
-import 'package:tl_consultant/app/presentation/widgets/buttons.dart';
-import 'package:tl_consultant/app/presentation/widgets/custom_app_bar.dart';
-import 'package:tl_consultant/app/presentation/widgets/custom_snackbar.dart';
-import 'package:tl_consultant/app/presentation/widgets/unfocus_bg.dart';
+import 'package:tl_consultant/core/global/buttons.dart';
+import 'package:tl_consultant/core/global/custom_app_bar.dart';
+import 'package:tl_consultant/core/global/custom_snackbar.dart';
+import 'package:tl_consultant/core/global/unfocus_bg.dart';
+import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/utils/functions.dart';
 import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 import 'package:tl_consultant/core/utils/helpers/svg_elements.dart';
@@ -46,6 +46,7 @@ class _CreateNoteState extends State<CreateNote> {
   Widget build(BuildContext context) {
     return UnFocusWidget(
       child: Scaffold(
+        backgroundColor: Colors.grey.shade100,
         appBar: CustomAppBar(
           centerTitle: false,
           title: "New note",
@@ -148,8 +149,8 @@ class _CreateNoteState extends State<CreateNote> {
                                   },
                                   child: editOptionItem(formatTextIcon),
                                 ),
-                                editOptionItem(attachIconPath, width: 24, color: ColorPalette.gray),
-                                editOptionItem(micIconPath, width: 24, color: ColorPalette.gray),
+                                editOptionItem(attachIconPath, width: 24, color: ColorPalette.grey),
+                                editOptionItem(micIconPath, width: 24, color: ColorPalette.grey),
                               ],
                             ),
                             SizedBox(

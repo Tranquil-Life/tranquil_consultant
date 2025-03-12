@@ -49,90 +49,49 @@ class _MeetingsState extends State<Meetings> {
   @override
   Widget build(BuildContext context) {
     return Container(
+        width: displayWidth(context),
         padding: const EdgeInsets.fromLTRB(16, 16, 8, 3),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
-          boxShadow: const [
-            BoxShadow(
-                blurRadius: 6, color: Colors.black12, offset: Offset(0, 3)),
-          ],
         ),
         child: Column(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Your scheduled meetings',
-                  style: TextStyle(fontSize: 18),
-                ),
-                Container(
-                  width: 44,
-                  height: 26,
-                  margin: const EdgeInsets.only(right: 14),
-                  decoration: BoxDecoration(
-                    color: ColorPalette.green,
-                    borderRadius: BorderRadius.circular(24),
-                  ),
-                  child: Center(
-                    child: Text(
-                      meetingsController.meetings.length.toString(),
-                      style:
-                      const TextStyle(color: Colors.white, fontSize: 19),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
             Expanded(
-              child: meetingsController.isFirstLoadRunning.value
-                  ? const Center(
-                child: CircularProgressIndicator(
-                  color: ColorPalette.green,
-                ),
-              )
-                  : Scrollbar(
-                child: RefreshIndicator(
-                  color: ColorPalette.green,
-                  onRefresh: () async => getMeetings(),
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 10),
-                    child: ValueListenableBuilder<DateTime>(
-                      valueListenable: _timeNotifier,
-                      builder: (context, time, child) {
-                        if (meetingsController.meetings.isEmpty) {
-                          return const NoMeetingsWidget();
-                        }
-
-                        return ListView.builder(
-                            physics:
-                            const AlwaysScrollableScrollPhysics(),
-                            itemCount:
-                            meetingsController.meetings.length,
-                            padding: EdgeInsets.zero,
-                            itemBuilder: (_, index) {
-                              if (index ==
-                                  meetingsController.meetings.length) {
-                                return const Center(
-                                  child: CircularProgressIndicator(
-                                      color: ColorPalette.green),
-                                );
-                              }
-
-                              return MeetingTile(
-                                meeting: meetingsController
-                                    .meetings[index]
-                                  ..setIsExpired(_timeNotifier.value),
-                              );
-                            });
-                      },
+              child: Obx(() {
+                if (meetingsController.isFirstLoadRunning.value) {
+                  return const Center(
+                    child: CircularProgressIndicator(
+                      color: ColorPalette.green,
                     ),
-                  ),
-                ),
-              ),
+                  );
+                } else if (meetingsController.meetings.isEmpty) {
+                  return const NoMeetingsWidget();
+                } else {
+                  return Scrollbar(
+                    child: RefreshIndicator(
+                      color: ColorPalette.green,
+                      onRefresh: () async => getMeetings(),
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 10),
+                        child: ListView.builder(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          itemCount: meetingsController.meetings.length,
+                          padding: EdgeInsets.zero,
+                          itemBuilder: (_, index) {
+                            return MeetingTile(
+                              meeting: meetingsController.meetings[index]
+                                ..setIsExpired(_timeNotifier.value),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  );
+                }
+              }),
             ),
+
           ],
         ));
   }

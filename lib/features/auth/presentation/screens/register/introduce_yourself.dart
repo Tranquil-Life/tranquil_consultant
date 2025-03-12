@@ -3,11 +3,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:tl_consultant/app/presentation/theme/colors.dart';
-import 'package:tl_consultant/app/presentation/theme/fonts.dart';
-import 'package:tl_consultant/app/presentation/widgets/buttons.dart';
-import 'package:tl_consultant/app/presentation/widgets/custom_app_bar.dart';
+import 'package:tl_consultant/core/global/buttons.dart';
+import 'package:tl_consultant/core/global/custom_app_bar.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
+import 'package:tl_consultant/core/theme/colors.dart';
+import 'package:tl_consultant/core/theme/fonts.dart';
 import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 import 'package:tl_consultant/core/utils/services/media_service.dart';
 import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';
@@ -15,6 +15,8 @@ import 'package:tl_consultant/features/auth/presentation/widgets/picture_upload_
 import 'package:tl_consultant/features/auth/presentation/widgets/video_record_option.dart';
 import 'package:tl_consultant/features/media/presentation/controllers/video_recording_controller.dart';
 import 'package:tl_consultant/features/media/presentation/screens/video_record_page.dart';
+import 'package:tl_consultant/features/profile/data/models/user_model.dart';
+import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 
 class IntroduceYourselfPage extends StatefulWidget {
   const IntroduceYourselfPage({super.key});
@@ -58,7 +60,7 @@ class _IntroduceYourselfPageState extends State<IntroduceYourselfPage> {
                   style: TextStyle(
                       fontSize: AppFonts.defaultSize,
                       fontWeight: FontWeight.w400,
-                      color: ColorPalette.gray.shade500),
+                      color: ColorPalette.grey.shade500),
                 ),
                 SizedBox(height: 40),
                 VideoRecordOption(
@@ -89,6 +91,7 @@ class _IntroduceYourselfPageState extends State<IntroduceYourselfPage> {
                     File? file = await MediaService.selectImage(ImageSource.gallery);
                     // await profileController.uploadVideo(File(video.path));
                     await videoRecordingController.uploadFile(file!, profileImage, authController);
+
                   },
                 ),
                 SizedBox(
@@ -123,7 +126,7 @@ class _IntroduceYourselfPageState extends State<IntroduceYourselfPage> {
                           ),
                         ],
                         style: TextStyle(
-                            color: ColorPalette.gray.shade300,
+                            color: ColorPalette.grey.shade300,
                             fontFamily: AppFonts.josefinSansRegular),
                       ),
                       textAlign: TextAlign.center,

@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:tl_consultant/app/presentation/theme/colors.dart';
-import 'package:tl_consultant/app/presentation/theme/fonts.dart';
-import 'package:tl_consultant/app/presentation/widgets/buttons.dart';
+import 'package:tl_consultant/core/global/buttons.dart';
+import 'package:tl_consultant/core/theme/colors.dart';
+import 'package:tl_consultant/core/theme/fonts.dart';
 import 'package:tl_consultant/core/utils/helpers/svg_elements.dart';
 import 'package:tl_consultant/features/wallet/presentation/controllers/earnings_controller.dart';
 import 'package:tl_consultant/features/wallet/presentation/widgets/transaction_item.dart';
@@ -76,6 +76,7 @@ class _WalletTabState extends State<WalletTab> {
                                       color: ColorPalette.green[800],
                                       fontSize: 40,
                                       fontWeight: FontWeight.bold,
+                                        fontFamily: AppFonts.josefinSansRegular
                                     )),
                                 Icon(Icons.visibility_outlined,
                                     color: ColorPalette.black.withOpacity(.6))
@@ -87,7 +88,8 @@ class _WalletTabState extends State<WalletTab> {
                                 style: TextStyle(
                                     fontSize: 12,
                                     color: ColorPalette.black,
-                                    fontFamily: AppFonts.josefinSansRegular),
+                                    fontFamily: AppFonts.josefinSansRegular
+                                ),
                                 children: [
                                   TextSpan(
                                     text: formatCurrency!.format(
@@ -153,7 +155,7 @@ class _WalletTabState extends State<WalletTab> {
         height: 100,
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(width: 1, color: ColorPalette.gray)),
+            border: Border.all(width: 1, color: ColorPalette.grey)),
         child: Center(
           child: Container(
               margin: const EdgeInsets.only(left: 4, right: 4),
@@ -161,7 +163,7 @@ class _WalletTabState extends State<WalletTab> {
               height: 90,
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(4),
-                  border: Border.all(width: 1, color: ColorPalette.gray)),
+                  border: Border.all(width: 1, color: ColorPalette.grey[100]!)),
               child: Center(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,

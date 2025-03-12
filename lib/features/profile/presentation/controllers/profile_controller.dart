@@ -1,20 +1,12 @@
-import 'dart:io';
-import 'dart:io';
-
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart' as dio;
-import 'package:firebase_storage/firebase_storage.dart';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
-import 'package:tl_consultant/app/presentation/theme/colors.dart';
-import 'package:tl_consultant/app/presentation/widgets/custom_snackbar.dart';
+import 'package:tl_consultant/core/global/custom_snackbar.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
+import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/utils/functions.dart';
-import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
-import 'package:tl_consultant/features/media/data/media_repo.dart';
 import 'package:tl_consultant/features/profile/data/models/user_model.dart';
 import 'package:tl_consultant/features/profile/data/repos/profile_repo.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
@@ -69,20 +61,23 @@ class ProfileController extends GetxController {
   List<Qualification> getQualifications() {
     qualifications.clear();
 
-    int lastId = userDataStore.qualifications
-        .where((item) => item.containsKey('id'))
-        .fold<int>(
-            0,
-            (previousValue, item) =>
-                item['id'] > previousValue ? item['id'] as int : previousValue);
+    if (userDataStore.qualifications.isNotEmpty) {
+      int lastId = userDataStore.qualifications
+          .where((item) => item.containsKey('id'))
+          .fold<int>(
+              0,
+              (previousValue, item) => item['id'] > previousValue
+                  ? item['id'] as int
+                  : previousValue);
 
-    for (var item in userDataStore.qualifications) {
-      if (!item.containsKey('id') || item['id'] == null) {
-        lastId += 1; // Increment lastId for new entries
-        item['id'] = lastId;
+      for (var item in userDataStore.qualifications) {
+        if (!item.containsKey('id') || item['id'] == null) {
+          lastId += 1; // Increment lastId for new entries
+          item['id'] = lastId;
+        }
+
+        qualifications.add(Qualification.fromJson(item));
       }
-
-      qualifications.add(Qualification.fromJson(item));
     }
 
     return qualifications;
@@ -133,7 +128,6 @@ class ProfileController extends GetxController {
           message: l.message!,
           backgroundColor: ColorPalette.red),
       (r) {
-        print(r);
         editUser.value = EditUser(baseUser: UserModel.fromJson(r['user']));
         User user = UserModel.fromJson(r['user']);
         var qualifications = r['qualifications'] ?? [];
@@ -166,17 +160,17 @@ class ProfileController extends GetxController {
     // userDataStore.user['is_verified'] = user.isVerified;
 
     userDataStore.user = userDataStore.user;
-    if (qualifications.isEmpty) {
+    if (qualifications.isNotEmpty) {
       userDataStore.qualifications =
           List<Map<String, dynamic>>.from(qualifications);
+
+      getQualifications();
     }
   }
 
   restoreUser() {
     editUser.value = EditUser(baseUser: UserModel.fromJson(userDataStore.user));
   }
-
-
 
   void deleteQualification(int? id, int index) async {
     deletingId.value = id!; // Set the current deleting ID
@@ -206,6 +200,32 @@ class ProfileController extends GetxController {
           message: "Qualification deleted",
           backgroundColor: ColorPalette.green);
     });
+  }
+
+  clearData() {
+    introVideoDuration.value = 0;
+    profilePic.value = '';
+    introVideo.value = '';
+
+    meetingsCount.value = 0;
+    clientsCount.value = 0;
+    firstNameTEC.clear();
+    lastNameTEC.clear();
+    phoneTEC.clear();
+    countryTEC.clear();
+    cityTEC.clear();
+    bioTEC.clear();
+    timeZoneTEC.clear();
+    certificationTEC.clear();
+    institutionTEC.clear();
+    yearGraduatedTEC.clear();
+    modalitiesTEC.clear();
+    updatingProfile.value = false;
+
+    qualifications.clear();
+    modalities.clear();
+    titles.clear();
+    topics.clear();
   }
 
   @override

@@ -3,9 +3,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:tl_consultant/app/presentation/theme/fonts.dart';
-import 'package:tl_consultant/app/presentation/widgets/custom_app_bar.dart';
+import 'package:tl_consultant/core/global/custom_app_bar.dart';
+import 'package:tl_consultant/core/theme/fonts.dart';
 import 'package:tl_consultant/features/journal/domain/entities/shared_note/shared_note.dart';
 import 'package:uuid/uuid.dart';
 

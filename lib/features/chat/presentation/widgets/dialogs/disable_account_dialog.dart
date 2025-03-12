@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:tl_consultant/app/presentation/theme/colors.dart';
-import 'package:tl_consultant/app/presentation/widgets/dialogs.dart';
+import 'package:tl_consultant/core/global/dialogs.dart';
+import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/utils/services/app_data_store.dart';
 
 class DisableAccountDialog extends StatelessWidget {

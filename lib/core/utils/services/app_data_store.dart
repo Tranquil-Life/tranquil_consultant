@@ -1,4 +1,4 @@
-import 'package:tl_consultant/app/data/store.dart';
+import 'package:tl_consultant/core/data/store.dart';
 
 abstract class _Keys {
   static const isOnboardingCompleted = 'isOnboardingCompleted';

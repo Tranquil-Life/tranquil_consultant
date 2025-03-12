@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:tl_consultant/app/presentation/theme/colors.dart';
-import 'package:tl_consultant/app/presentation/widgets/buttons.dart';
+import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/utils/functions.dart';
 import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 import 'package:tl_consultant/core/utils/helpers/svg_elements.dart';
-import 'package:tl_consultant/features/media/presentation/screens/video_record_page.dart';
+import 'package:tl_consultant/features/media/presentation/controllers/video_recording_controller.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoPlayerWidget extends StatefulWidget {
@@ -19,6 +18,7 @@ class VideoPlayerWidget extends StatefulWidget {
 }
 
 class _VideoPlayerWidgetState extends State<VideoPlayerWidget> with SingleTickerProviderStateMixin {
+  final videoRecordingController = Get.put(VideoRecordingController());
   late VideoPlayerController _videoPlayerController;
   late AnimationController animationController;
   late Animation<double> _animation;
@@ -100,7 +100,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> with SingleTicker
               Text("Video recording"),
             ],
           ),
-          Divider(color: ColorPalette.gray[900],),
+          Divider(color: ColorPalette.grey[900],),
 
           SizedBox(
               height: 320,
@@ -194,7 +194,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> with SingleTicker
                         },
                         child: SvgPicture.asset(
                           SvgElements.svgShareIcon,
-                          color: ColorPalette.gray[800],
+                          color: ColorPalette.grey[800],
                           height: 24,
                           width: 24,
                         ),
@@ -204,13 +204,17 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> with SingleTicker
 
                   SizedBox(height: 10),
 
-                  CustomButton(
-                      onPressed: () =>Get.to(() => const VideoRecordingPage()),
-                      text: "Retake video",
-                      textColor: ColorPalette.green,
-                      showBorder: true,
-                      bgColor: ColorPalette.white),
-                  SizedBox(height: 20),
+                  // CustomButton(
+                  //     onPressed: (){
+                  //       videoRecordingController.resetUploadVars();
+                  //
+                  //       Get.to(() => const VideoRecordingPage());
+                  //     },
+                  //     text: "Retake video",
+                  //     textColor: ColorPalette.green,
+                  //     showBorder: true,
+                  //     bgColor: ColorPalette.white),
+                  // SizedBox(height: 20),
 
                 ],
               )),

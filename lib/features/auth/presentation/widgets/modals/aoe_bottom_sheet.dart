@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:tl_consultant/app/presentation/theme/colors.dart';
-import 'package:tl_consultant/app/presentation/theme/fonts.dart';
+import 'package:tl_consultant/core/theme/colors.dart';
+import 'package:tl_consultant/core/theme/fonts.dart';
 import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';
 
 class AreaOfExpertiseModalSheet extends StatefulWidget {
-  const AreaOfExpertiseModalSheet({Key? key}) : super(key: key);
+  const AreaOfExpertiseModalSheet({super.key});
 
   @override
   State<AreaOfExpertiseModalSheet> createState() => _AreaOfExpertiseModalSheetState();
@@ -72,7 +72,7 @@ class _AreaOfExpertiseModalSheetState extends State<AreaOfExpertiseModalSheet> {
 
     authController.specialtiesArr.value = holder_1;
 
-    print(authController.specialtiesArr.value);
+    print(authController.specialtiesArr);
     authController.areaOfExpertiseTEC.text = holder_1.join(', ');
 
     // Clear array after use.

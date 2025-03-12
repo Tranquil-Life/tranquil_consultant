@@ -4,13 +4,14 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
-import 'package:tl_consultant/app/presentation/routes/app_pages.dart';
-import 'package:tl_consultant/app/presentation/theme/colors.dart';
-import 'package:tl_consultant/app/presentation/widgets/custom_snackbar.dart';
+import 'package:tl_consultant/core/global/custom_snackbar.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
+import 'package:tl_consultant/core/theme/colors.dart';
+import 'package:tl_consultant/core/utils/routes/app_pages.dart';
 import 'package:tl_consultant/core/utils/services/app_data_store.dart';
 import 'package:tl_consultant/features/auth/data/repos/auth_repo.dart';
 import 'package:tl_consultant/features/auth/domain/entities/register_data.dart';
+import 'package:tl_consultant/features/auth/presentation/controllers/verification_controller.dart';
 import 'package:tl_consultant/features/media/data/media_repo.dart';
 import 'package:tl_consultant/features/profile/data/models/user_model.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
@@ -79,6 +80,9 @@ class AuthController extends GetxController {
     params.videoIntro = introVideo.value;
     params.pictureUrl = profilePic.value;
     params.therapistKind = selectedType.value;
+    params.emailVerifiedAt = VerificationController.instance.emailVerifiedAt.value;
+
+    print(params.toJson());
 
     Either either = await authRepo.register(params);
     either.fold(
@@ -121,6 +125,8 @@ class AuthController extends GetxController {
       Map<String, dynamic> data = r;
 
       if (data['error'] == false && data['data'] != null) {
+
+
         userDataStore.user = data['data']['user'];
         userDataStore.qualifications =
             List<Map<String, dynamic>>.from(data['data']['qualifications']);
@@ -225,7 +231,7 @@ class AuthController extends GetxController {
     hasLetter.value = RegExp(r'[a-zA-Z]').hasMatch(params.password);
     isPasswordsMatching.value = params.password == confirmPasswordTEC.text;
 
-    return isAllCriteriaMet ? null : 'Password does not meet criteria';
+    return isAllPwdCriteriaMet ? null : 'Password does not meet criteria';
   }
 
   String? validatePasswordMatch() {
@@ -265,7 +271,7 @@ class AuthController extends GetxController {
     return updated;
   }
 
-  bool get isAllCriteriaMet =>
+  bool get isAllPwdCriteriaMet =>
       isLengthValid.value &&
       hasSpecialChar.value &&
       hasDigit.value &&
@@ -280,22 +286,36 @@ class AuthController extends GetxController {
     isPasswordsMatching.value = false;
   }
 
-  // void _resetSignInCriteria() {
-  //   isLengthValid.value = false;
-  //   hasSpecialChar.value = false;
-  //   hasDigit.value = false;
-  //   hasLetter.value = false;
-  //   isPasswordsMatching.value = false;
-  // }
-
   clearData() {
     emailTEC.clear();
     confirmPasswordTEC.clear();
     cvTEC.clear();
     identityTEC.clear();
+    currLocationTEC.clear();
+    areaOfExpertiseTEC.clear();
+    yearsOfExperienceTEC.clear();
+    languagesTEC.clear();
     dateTEC.clear();
+
     params.email = '';
     params.password = '';
+
+    isPasswordVisible.value = false;
+    isLengthValid.value = false;
+
+    hasSpecialChar.value = false;
+    hasDigit.value = false;
+    hasLetter.value = false;
+    isPasswordsMatching.value = false;
+    emailIsValid.value = false;
+    passwordIsValid.value = false;
+
+    loading.value = false;
+
+    introVideo.value = '';
+    introVideoDuration.value = 0;
+
+    profilePic.value = '';
   }
 
   @override

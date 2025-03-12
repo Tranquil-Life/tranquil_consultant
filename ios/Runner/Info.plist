@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Tl Consultant</string>
+	<string>Tranquil Life Pro</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -34,19 +34,20 @@
 	<key>NSCalendarsUsageDescription</key>
 	<string>Tranquil Life needs this permission to be able to add scheduled meetings to your calendar</string>
 	<key>NSCameraUsageDescription</key>
-	<string>Tranquil Life requires permission to your camera to make calls and to take pictures and videos.</string>
+	<string>Tranquil Life requires permission to
+	your camera and photo gallery for the purpose of uploading a profile picture.</string>
 	<key>NSContactsUsageDescription</key>
 	<string>To prevent app from crashing when adding schedule meeting to calendar</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Tranquil Life uses Face ID authentication to unlock the app</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Always and when in use!</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Can I have location always?</string>
-	<key>NSLocationUsageDescription</key>
-	<string>Older devices need location.</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Need location when in use</string>
+    <string>We need your location to keep the admin updated on your real-time position and to match clients with therapists based on their time zones.</string>
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>Your location is required at all times to ensure accurate therapist availability and client matching based on time zones.</string>
+    <key>NSLocationUsageDescription</key>
+    <string>This app requires access to your location to provide accurate therapist-client matching and real-time updates for the admin.</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>We need your location while using the app to match you with clients based on time zones and provide real-time updates.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Tranquil Life requires permission to your microphone to make calls and to record voice notes and videos.</string>
 	<key>NSPhotoLibraryUsageDescription</key>

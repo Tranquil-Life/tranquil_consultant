@@ -13,10 +13,10 @@ import 'package:http_parser/http_parser.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:tl_consultant/app/config.dart';
-import 'package:tl_consultant/app/presentation/theme/colors.dart';
-import 'package:tl_consultant/app/presentation/widgets/IOSDatePicker.dart';
-import 'package:tl_consultant/app/presentation/widgets/custom_snackbar.dart';
+import 'package:tl_consultant/core/global/IOSDatePicker.dart';
+import 'package:tl_consultant/core/global/custom_snackbar.dart';
+import 'package:tl_consultant/core/theme/colors.dart';
+import 'package:tl_consultant/core/utils/app_config.dart';
 import 'package:tl_consultant/features/profile/data/models/user_model.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 import 'package:tl_consultant/features/profile/domain/entities/user.dart';
@@ -281,5 +281,44 @@ checkForEmptyProfileInfo(ProfileController profileController) async {
       user.videoIntroUrl!.isEmpty ||
       profileController.qualifications.isEmpty) {
     Get.to(() => EditProfileScreen());
+  }
+}
+
+String twoDigits(int n) {
+  if (n >= 10) {
+    return "$n";
+  } else {
+    return "0$n";
+  }
+}
+
+/// Generates time slots between given hours with specified interval
+List<String> generateTimeSlots({
+  required int startHour,
+  required int endHour,
+  int intervalMinutes = 60,
+}) {
+  final List<String> slots = [];
+  TimeOfDay currentTime = TimeOfDay(hour: startHour, minute: 0);
+
+  while (currentTime.hour <= endHour) {
+    final hour = currentTime.hour.toString().padLeft(2, '0');
+    final minute = currentTime.minute.toString().padLeft(2, '0');
+    slots.add('$hour:$minute');
+    currentTime = currentTime.replacing(hour: currentTime.hour + 1);
+  }
+
+  return slots;
+}
+
+String getGreeting() {
+  final hour = DateTime.now().hour;
+
+  if (hour < 12) {
+    return "Good morning,";
+  } else if (hour < 18) {
+    return "Good afternoon,";
+  } else {
+    return "Good evening,";
   }
 }

@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
-import 'package:tl_consultant/app/presentation/theme/colors.dart';
-import 'package:tl_consultant/app/presentation/theme/fonts.dart';
-import 'package:tl_consultant/app/presentation/widgets/buttons.dart';
-import 'package:tl_consultant/app/presentation/widgets/custom_app_bar.dart';
-import 'package:tl_consultant/app/presentation/widgets/custom_pin_code.dart';
-import 'package:tl_consultant/app/presentation/widgets/unfocus_bg.dart';
+import 'package:tl_consultant/core/global/buttons.dart';
+import 'package:tl_consultant/core/global/custom_app_bar.dart';
+import 'package:tl_consultant/core/global/custom_pin_code.dart';
+import 'package:tl_consultant/core/global/unfocus_bg.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
+import 'package:tl_consultant/core/theme/colors.dart';
+import 'package:tl_consultant/core/theme/fonts.dart';
 import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:tl_consultant/features/auth/presentation/controllers/verification_controller.dart';
 import 'package:tl_consultant/features/auth/presentation/screens/register/introduce_yourself.dart';
@@ -56,13 +56,13 @@ class _AgencyBasedVerificationState extends State<AgencyBasedVerification> {
                 style: TextStyle(
                     fontSize: AppFonts.defaultSize,
                     fontWeight: FontWeight.w400,
-                    color: ColorPalette.gray.shade500),
+                    color: ColorPalette.grey.shade500),
               ),
               SizedBox(height: 40),
               Text(
                 'Enter code',
                 style: TextStyle(
-                    color: ColorPalette.gray[600], fontWeight: FontWeight.w600),
+                    color: ColorPalette.grey[600], fontWeight: FontWeight.w600),
               ),
               SizedBox(height: 8),
               PinCodeTextField(
@@ -79,7 +79,7 @@ class _AgencyBasedVerificationState extends State<AgencyBasedVerification> {
                     activeColor: verificationState() == false
                         ? ColorPalette.red
                         : ColorPalette.green,
-                    inactiveColor: ColorPalette.gray[900],
+                    inactiveColor: ColorPalette.grey[900],
                     activeFillColor: Colors.white,
                     inactiveFillColor: Colors.white,
                     selectedColor: ColorPalette.green,
@@ -173,7 +173,7 @@ class _AgencyBasedVerificationState extends State<AgencyBasedVerification> {
                         ),
                       ],
                       style: TextStyle(
-                          color: ColorPalette.gray.shade300,
+                          color: ColorPalette.grey.shade300,
                           fontFamily: AppFonts.josefinSansRegular),
                     ),
                     textAlign: TextAlign.center,

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:tl_consultant/app/presentation/routes/app_pages.dart';
-import 'package:tl_consultant/app/presentation/theme/colors.dart';
-import 'package:tl_consultant/app/presentation/theme/fonts.dart';
-import 'package:tl_consultant/app/presentation/widgets/buttons.dart';
-import 'package:tl_consultant/app/presentation/widgets/custom_app_bar.dart';
+import 'package:tl_consultant/core/global/buttons.dart';
+import 'package:tl_consultant/core/global/custom_app_bar.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
+import 'package:tl_consultant/core/theme/colors.dart';
+import 'package:tl_consultant/core/theme/fonts.dart';
 import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 import 'package:tl_consultant/core/utils/helpers/svg_elements.dart';
+import 'package:tl_consultant/core/utils/routes/app_pages.dart';
 
 import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:tl_consultant/features/auth/presentation/screens/register/register.dart';
@@ -74,7 +74,7 @@ class _AccountTypeScreenState extends State<AccountTypeScreen> {
                     Text(
                       "Select an option to proceed",
                       style: TextStyle(
-                        color: ColorPalette.gray.shade300,
+                        color: ColorPalette.grey.shade300,
                         fontSize: AppFonts.defaultSize,
                         fontWeight: FontWeight.w400,
                       ),
@@ -99,14 +99,14 @@ class _AccountTypeScreenState extends State<AccountTypeScreen> {
                                   iconColor:
                                       authController.selectedType.value == e['type']
                                           ? ColorPalette.white
-                                          : ColorPalette.gray[600],
+                                          : ColorPalette.grey[600],
                                   radioFillColor:
                                       MaterialStateProperty.resolveWith<Color>(
                                           (Set<MaterialState> states) {
                                     return (authController.selectedType.value ==
                                             e['type'])
                                         ? ColorPalette.white
-                                        : ColorPalette.gray[900]!;
+                                        : ColorPalette.grey[900]!;
                                   }),
                                   radioValue: e['type']!,
                                   radioGroupValue:
@@ -116,10 +116,10 @@ class _AccountTypeScreenState extends State<AccountTypeScreen> {
                                   headingTextColor:
                                       authController.selectedType.value == e['type']
                                           ? ColorPalette.white
-                                          : ColorPalette.gray.shade400,
+                                          : ColorPalette.grey.shade400,
                                   bodyTextColor:  authController.selectedType.value == e['type']
                                       ? ColorPalette.white
-                                      : ColorPalette.gray.shade300, icon: e['icon']!,
+                                      : ColorPalette.grey.shade300, icon: e['icon']!,
                                 )))
                             .toList()),
 
@@ -157,7 +157,7 @@ class _AccountTypeScreenState extends State<AccountTypeScreen> {
                                     fontFamily: AppFonts.josefinSansRegular),
                               ),
                             ],
-                            style: TextStyle(color: ColorPalette.gray.shade300, fontFamily: AppFonts.josefinSansRegular, fontSize: 16),
+                            style: TextStyle(color: ColorPalette.grey.shade300, fontFamily: AppFonts.josefinSansRegular, fontSize: 16),
                           ),
                           textAlign: TextAlign.center,
                         ),

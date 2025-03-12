@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:tl_consultant/app/presentation/routes/app_pages.dart';
+import 'package:tl_consultant/core/utils/routes/app_pages.dart';
 import 'package:tl_consultant/features/onboarding/presentation/controllers/onboarding_controller.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -16,7 +16,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   void initState() {
-    Future.delayed(const Duration(seconds: 6), () async {
+    Future.delayed(const Duration(seconds: 3), () async {
       final bool isUserOnboarded = await controller.checkOnboardingStatus();
 
       if (isUserOnboarded) {

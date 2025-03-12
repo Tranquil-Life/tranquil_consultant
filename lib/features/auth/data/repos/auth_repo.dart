@@ -7,8 +7,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
-import 'package:tl_consultant/app/domain/query_params.dart';
 import 'package:tl_consultant/core/constants/end_points.dart';
+import 'package:tl_consultant/core/domain/query_params.dart';
 import 'package:tl_consultant/core/errors/api_error.dart';
 import 'package:tl_consultant/features/auth/domain/repos/auth_repo.dart';
 
@@ -89,7 +89,7 @@ class AuthRepoImpl extends AuthRepo {
   @override
   Future<Either<ApiError, dynamic>> isAuthenticated() async {
     return await catchSocketException(() =>
-        postReq(AuthEndPoints.checkAuthStatus))
+        getReq(AuthEndPoints.checkAuthStatus))
         .then((value) => handleResponse(value));
   }
 

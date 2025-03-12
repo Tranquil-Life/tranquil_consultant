@@ -1,10 +1,10 @@
 //DAY SECTION PICKER
 import 'package:flutter/material.dart';
-import 'package:tl_consultant/app/presentation/theme/tranquil_icons.dart';
+import 'package:tl_consultant/core/theme/tranquil_icons.dart';
 import 'package:tl_consultant/features/consultation/presentation/widgets/day_section_widget.dart';
 
 class DaySectionPicker extends StatefulWidget {
-  const DaySectionPicker({Key? key, this.onDaySelected}) : super(key: key);
+  const DaySectionPicker({super.key, this.onDaySelected});
   final Function(bool)? onDaySelected;
 
   @override

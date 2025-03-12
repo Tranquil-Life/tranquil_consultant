@@ -6,9 +6,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:tl_consultant/app/presentation/theme/colors.dart';
-import 'package:tl_consultant/app/presentation/widgets/user_avatar.dart';
+import 'package:tl_consultant/core/global/user_avatar.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
+import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/utils/extensions/date_time_extension.dart';
 import 'package:tl_consultant/core/utils/functions.dart';
 import 'package:tl_consultant/core/utils/helpers/svg_elements.dart';
@@ -48,7 +48,7 @@ class NoteWidget extends StatelessWidget {
               ),
               color: personalNote == null
                   ? sharedNote!.note == null
-                      ? ColorPalette.gray
+                      ? ColorPalette.grey
                       : Color(int.parse(sharedNote!.note!.hexColor))
                   : ColorPalette.pNoteBgColor,
               child: Padding(
@@ -218,7 +218,7 @@ class NoteWidget extends StatelessWidget {
                                 decoration: BoxDecoration(
                                     color: ColorPalette.green[100],
                                     border: Border.all(
-                                        width: 2, color: ColorPalette.gray),
+                                        width: 2, color: ColorPalette.grey),
                                     borderRadius: BorderRadius.circular(28)),
                                 child: Center(
                                   child: UserAvatar(

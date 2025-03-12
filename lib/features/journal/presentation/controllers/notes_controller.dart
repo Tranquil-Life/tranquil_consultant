@@ -1,9 +1,9 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:tl_consultant/app/presentation/theme/colors.dart';
-import 'package:tl_consultant/app/presentation/widgets/custom_snackbar.dart';
+import 'package:tl_consultant/core/global/custom_snackbar.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
+import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/features/journal/data/models/personal_note.dart';
 import 'package:tl_consultant/features/journal/data/repos/journal_repo.dart';
 import 'package:tl_consultant/features/journal/domain/entities/personal_note.dart';
@@ -25,6 +25,21 @@ class NotesController extends GetxController with GetTickerProviderStateMixin {
   var layout = grid.obs;
   RxList<SharedNote> sharedNotesList = <SharedNote>[].obs;
   RxList<PersonalNote> personalNotesList = <PersonalNote>[].obs;
+
+  //pagination vars
+  var page = 1.obs;
+  var limit = 10.obs;
+  // There is next page or not
+  var hasNextPage = true.obs;
+  // Used to display loading indicators when _firstLoad function is running
+  var isFirstPersonalNotesLoading = false.obs;
+  // Used to display loading indicators when _loadMore function is running
+  var isMorePersonalNotesLoading = false.obs;
+  var isFirstSharedNotesLoading = false.obs;
+  var isMoreSharedNotesLoading = false.obs;
+  var lastNoteId = 0.obs;
+  // The controller for the ListView
+  late ScrollController scrollController;
 
   var journalTabIndex = 0.obs;
 
@@ -49,21 +64,6 @@ class NotesController extends GetxController with GetTickerProviderStateMixin {
         journalTabIndex.value = 0;
     }
   }
-
-  //pagination vars
-  var page = 1.obs;
-  var limit = 10.obs;
-  // There is next page or not
-  var hasNextPage = true.obs;
-  // Used to display loading indicators when _firstLoad function is running
-  var isFirstPersonalNotesLoading = false.obs;
-  // Used to display loading indicators when _loadMore function is running
-  var isMorePersonalNotesLoading = false.obs;
-  var isFirstSharedNotesLoading = false.obs;
-  var isMoreSharedNotesLoading = false.obs;
-  var lastNoteId = 0.obs;
-  // The controller for the ListView
-  late ScrollController scrollController;
 
   Future loadFirstPersonalNotes() async {
     isFirstPersonalNotesLoading.value = true;
@@ -250,5 +250,14 @@ class NotesController extends GetxController with GetTickerProviderStateMixin {
 
   clearData() {
     page.value = 1;
+    titleController.clear();
+    bodyController.clear();
+    isBold.value = false;
+    isItalic.value = false;
+
+    noteDeleted.value = false;
+    layout.value = grid;
+    sharedNotesList.clear();
+    personalNotesList.clear();
   }
 }

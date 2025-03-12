@@ -4,12 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:tl_consultant/app/presentation/theme/colors.dart';
-import 'package:tl_consultant/app/presentation/theme/fonts.dart';
-import 'package:tl_consultant/app/presentation/widgets/buttons.dart';
-import 'package:tl_consultant/app/presentation/widgets/custom_app_bar.dart';
-import 'package:tl_consultant/app/presentation/widgets/unfocus_bg.dart';
+import 'package:tl_consultant/core/global/buttons.dart';
+import 'package:tl_consultant/core/global/custom_app_bar.dart';
+import 'package:tl_consultant/core/global/unfocus_bg.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
+import 'package:tl_consultant/core/global/user_avatar.dart';
+import 'package:tl_consultant/core/theme/colors.dart';
+import 'package:tl_consultant/core/theme/fonts.dart';
 import 'package:tl_consultant/core/utils/services/media_service.dart';
 import 'package:tl_consultant/features/media/presentation/controllers/video_recording_controller.dart';
 import 'package:tl_consultant/features/profile/data/models/user_model.dart';
@@ -17,6 +18,7 @@ import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 import 'package:tl_consultant/features/profile/domain/entities/user.dart';
 import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:tl_consultant/features/profile/presentation/widgets/edit_profile_fields.dart';
+import 'package:tl_consultant/features/wallet/presentation/controllers/earnings_controller.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -87,7 +89,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               borderRadius: BorderRadius.circular(8.0),
                               border: Border.all(
                                 width: 1,
-                                color: ColorPalette.green.shade500,
+                                color: ColorPalette.green,
                               ),
                             ),
                             alignment: Alignment.center,
@@ -96,7 +98,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w400,
-                                color: ColorPalette.green.shade500,
+                                color: ColorPalette.green,
                               ),
                             ),
                           ),
@@ -164,7 +166,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 style: TextStyle(
                     fontSize: AppFonts.defaultSize,
                     fontWeight: FontWeight.w400,
-                    color: ColorPalette.gray.shade800),
+                    color: ColorPalette.grey.shade800),
                 textAlign: TextAlign.center,
               ),
               SizedBox(
@@ -233,6 +235,7 @@ class EditProfileHead extends StatefulWidget {
 
 class _EditProfileHeadState extends State<EditProfileHead> {
   ProfileController profileController = Get.put(ProfileController());
+  EarningsController earningsController = Get.put(EarningsController());
   VideoRecordingController videoRecordingController =
       Get.put(VideoRecordingController());
 
@@ -241,14 +244,19 @@ class _EditProfileHeadState extends State<EditProfileHead> {
     return Center(
       child: Column(
         children: [
-          Obx(
-            () => CircleAvatar(
-              backgroundImage: profileController.profilePic.value.isEmpty
-                  ? AssetImage("assets/images/profile/therapist.png")
-                  : NetworkImage(profileController.profilePic.value),
-              radius: 60,
-            ),
+          CircleAvatar(
+            backgroundColor: ColorPalette.grey[100],
+            radius: 60,
+            child: MyAvatarWidget(size: 52 * 2),
           ),
+          // Obx(
+          //   () => CircleAvatar(
+          //     backgroundImage: profileController.profilePic.value.isEmpty
+          //         ? AssetImage("assets/images/profile/therapist.png")
+          //         : NetworkImage(profileController.profilePic.value),
+          //     radius: 60,
+          //   ),
+          // ),
           const SizedBox(
             height: 14,
           ),

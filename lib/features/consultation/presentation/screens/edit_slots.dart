@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:tl_consultant/app/presentation/theme/colors.dart';
-import 'package:tl_consultant/app/presentation/theme/fonts.dart';
-import 'package:tl_consultant/app/presentation/widgets/buttons.dart';
-import 'package:tl_consultant/app/presentation/widgets/custom_app_bar.dart';
+import 'package:tl_consultant/core/global/buttons.dart';
+import 'package:tl_consultant/core/global/custom_app_bar.dart';
+import 'package:tl_consultant/core/global/my_default_text_theme.dart';
+import 'package:tl_consultant/core/theme/colors.dart';
+import 'package:tl_consultant/core/theme/fonts.dart';
 import 'package:tl_consultant/core/utils/functions.dart';
 import 'package:tl_consultant/core/utils/helpers/day_section_option.dart';
 import 'package:tl_consultant/features/consultation/domain/entities/client.dart';
@@ -24,11 +25,6 @@ class _EditSlotsState extends State<EditSlots> {
   final slotController = Get.put(SlotController());
   ClientUser? clientUser;
 
-  List times = [];
-  String? time;
-
-  DateTime? dateTime = DateTime.now();
-  final dateFormat = DateFormat('yyyy-MM-dd');
   DaySectionOption? selectedSection;
 
   List days = [
@@ -41,15 +37,23 @@ class _EditSlotsState extends State<EditSlots> {
     "Saturday"
   ];
 
+  List<String> timeSlots = [];
+  List<String> selectedSlots = [];
+
   @override
   void initState() {
-    slotController.getAllSlots();
-    getDaySlots();
     super.initState();
+    slotController.getAllSlots();
+    timeSlots = generateTimeSlots(startHour: 6, endHour: 18, intervalMinutes: 60);
   }
 
-  getDaySlots() async {
-    sortTime(false);
+  /// Toggles the selection of a time slot
+  void toggleSelection(String slot) {
+    if (slotController.timeSlots.contains(slot)) {
+      slotController.timeSlots.remove(slot);
+    } else {
+      slotController.timeSlots.add(slot);
+    }
   }
 
   @override
@@ -60,44 +64,70 @@ class _EditSlotsState extends State<EditSlots> {
         title: 'Edit Availability',
       ),
       backgroundColor: Colors.grey[200],
-      body: Padding(
-        padding: const EdgeInsets.fromLTRB(24, 12, 24, 16),
-        child: SingleChildScrollView(
+      body: Obx((){
+        selectedSlots = List<String>.from(slotController.timeSlots);
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(24, 12, 24, 16),
           child: Column(
             children: [
-              DaySectionPicker(onDaySelected: (isNightSelected) {
-                sortTime(isNightSelected);
-              }),
-              Obx(
-                    () => slotController.loading.value
-                    ? const CircularProgressIndicator(color: ColorPalette.green)
-                    : Container(
-                  height: 250,
-                  margin: EdgeInsets.only(
-                    bottom: 70,
-                      top: selectedSection == DaySectionOption.day
-                          ? 48
-                          : 18),
-                  child: TimePickerWidget(
-                    onTimeChosen: (newTime, index) {
-                      time = newTime;
-                    },
-                    times: times,
+              DaySectionPicker(
+                  onDaySelected: (isNightSelected) {
+                    sortTime(isNightSelected);
+
+                    setState(() {});
+                  }),
+              const SizedBox(height: 32),
+
+              Expanded(
+                child:  slotController.loading.value ? Center(child: CircularProgressIndicator(color: ColorPalette.green)) : GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    mainAxisSpacing: 16,
+                    crossAxisSpacing: 16,
+                    childAspectRatio: 2.3,
                   ),
+                  itemCount: timeSlots.length,
+                  itemBuilder: (context, index) {
+                    final slot = timeSlots[index];
+                    final isSelected = selectedSlots.contains(slot);
+                    return GestureDetector(
+                      onTap: () => toggleSelection(slot),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        decoration: BoxDecoration(
+                          color: isSelected ? Colors.green : Colors.white,
+                          borderRadius: BorderRadius.circular(30),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.shade300,
+                              blurRadius: 6,
+                              offset: const Offset(0, 3),
+                            ),
+                          ],
+                        ),
+                        child: Center(
+                          child: Text(
+                            slot,
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: isSelected ? Colors.white : Colors.black,
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ),
-              Obx(
-                    () => slotController.loading.value
-                    ? const Center(
-                    child:
-                    CircularProgressIndicator(color: ColorPalette.green))
-                    : Align(
-                  alignment: Alignment.bottomCenter,
+              SizedBox(height: 16),
+              Expanded(
+                  flex: 1,
                   child: Wrap(
                     alignment: WrapAlignment.start,
                     children: [
                       const Padding(
-                        padding: EdgeInsets.only(bottom: 24),
+                        padding: EdgeInsets.only(bottom: 24, top: 24),
                         child: Text(
                           'Select available days',
                           style: TextStyle(
@@ -114,17 +144,16 @@ class _EditSlotsState extends State<EditSlots> {
                           itemBuilder: (_, index) {
                             final day = days[index];
                             return Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 8),
+                                padding:
+                                const EdgeInsets.symmetric(horizontal: 8),
                                 child: DayCard(
                                   day,
-                                  selected: slotController.selectedDays
-                                      .contains(day),
+                                  selected:
+                                  slotController.selectedDays.contains(day),
                                   onChosen: () {
                                     if (slotController.selectedDays
                                         .contains(day)) {
-                                      slotController.selectedDays
-                                          .remove(day);
+                                      slotController.selectedDays.remove(day);
                                     } else {
                                       slotController.selectedDays.add(day);
                                     }
@@ -145,29 +174,27 @@ class _EditSlotsState extends State<EditSlots> {
                                     color: ColorPalette.white)),
                             onPressed: () {
                               slotController.saveSlots(
-                                  availableDays:
-                                  slotController.selectedDays);
+                                  availableDays: slotController.selectedDays);
                             }),
                       )
                     ],
-                  ),
-                ),
-              )
+                  ))
             ],
           ),
-        ),
-      ),
+        );
+      }),
     );
   }
 
   void sortTime(bool isNightHours) {
+    timeSlots.clear();
     if (isNightHours) {
-      times = timeOfNightRange();
       selectedSection = DaySectionOption.night;
+      timeSlots = generateTimeSlots(startHour: 19, endHour: 22, intervalMinutes: 60);
+
     } else {
-      times = timeOfDayRange();
       selectedSection = DaySectionOption.day;
+      timeSlots = generateTimeSlots(startHour: 6, endHour: 18, intervalMinutes: 60);
     }
-    setState(() {});
   }
 }

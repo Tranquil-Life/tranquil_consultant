@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:tl_consultant/app/presentation/theme/colors.dart';
-import 'package:tl_consultant/app/presentation/widgets/custom_snackbar.dart';
+import 'package:tl_consultant/core/global/custom_snackbar.dart';
+import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/features/consultation/data/models/meeting_model.dart';
 import 'package:tl_consultant/features/consultation/data/repos/consultation_repo.dart';
 import 'package:tl_consultant/features/consultation/domain/entities/meeting.dart';
@@ -43,12 +43,16 @@ class MeetingsController extends GetxController {
       var either = await ConsultationRepoImpl().getMeetings(page: page.value);
 
       either.fold(
-          (l) => CustomSnackBar.showSnackBar(
-                context: Get.context!,
-                title: "Error",
-                message: l.message.toString(),
-                backgroundColor: ColorPalette.red,
-              ), (r) async {
+          (l) {
+            print("MEETINGS: Error message: ${l.message}");
+
+            return CustomSnackBar.showSnackBar(
+              context: Get.context!,
+              title: "Error",
+              message: l.message.toString(),
+              backgroundColor: ColorPalette.red,
+            );
+          }, (r) async {
         var data = r;
 
         if (data['error'] == false && data['data'] != null) {

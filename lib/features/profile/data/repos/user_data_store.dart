@@ -1,4 +1,4 @@
-import 'package:tl_consultant/app/data/store.dart';
+import 'package:tl_consultant/core/data/store.dart';
 import 'package:tl_consultant/features/profile/domain/repos/user_data_store.dart';
 
 abstract class _Keys {

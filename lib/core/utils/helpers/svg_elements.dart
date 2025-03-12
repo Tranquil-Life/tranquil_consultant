@@ -28,7 +28,30 @@ class SvgElements {
 
   static get svgUserIcon => "assets/images/icons/user_icon.svg";
   static get svgPersonGroupIcon => "assets/images/icons/person_group.svg";
+  static get svgBellIcon => "assets/images/icons/bell.svg";
 
   static get svgDoubleCheckmarkIcon => "assets/images/icons/double_checkmark.svg";
   static get svgImageIcon => "assets/images/icons/image.svg";
+
+  static get svgNoMeetingIcon => "assets/images/no_meeting.svg";
+  static get svgNoEventsIcon => "assets/images/no_events.svg";
+
+  //bottom nav icons
+  static get svgMoreInactive => "assets/images/nav_icons/more_inactive.svg";
+  static get svgMoreActive => "assets/images/nav_icons/more_active.svg";
+  static get svgWalletInactive => "assets/images/nav_icons/wallet_inactive.svg";
+  static get svgWalletActive => "assets/images/nav_icons/wallet_active.svg";
+  static get svgNotesInactive => "assets/images/nav_icons/notes_inactive.svg";
+  static get svgNotesActive => "assets/images/nav_icons/notes_active.svg";
+  static get svgHomeInactive => "assets/images/nav_icons/home_inactive.svg";
+  static get svgHomeActive => "assets/images/nav_icons/home_active.svg";
+  static get svgChat => "assets/images/nav_icons/chat.svg";
+
+  /// Growth kit images
+  static get svgSelfAssess => "assets/images/growth_kit/self_assessment.svg";
+  static get svgPeerSupport => "assets/images/growth_kit/peer_support.svg";
+  static get svgCourses => "assets/images/growth_kit/courses.svg";
+  static get svgWebinars => "assets/images/growth_kit/webinars.svg";
+  static get svgLibrary => "assets/images/growth_kit/library.svg";
+  static get svgAnalytics => "assets/images/growth_kit/analytics.svg";
 }

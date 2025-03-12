@@ -1,26 +1,41 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
 import 'package:timezone/timezone.dart' as tz;
-import 'package:tl_consultant/app/presentation/theme/colors.dart';
-import 'package:tl_consultant/app/presentation/widgets/custom_snackbar.dart';
+import 'package:tl_consultant/core/global/custom_snackbar.dart';
+import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/utils/helpers/timezone_converter.dart';
 import 'package:tl_consultant/core/utils/extensions/date_time_extension.dart';
 import 'package:tl_consultant/core/utils/functions.dart';
+import 'package:tl_consultant/features/activity/presentation/controllers/activity_controller.dart';
 import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:tl_consultant/features/consultation/presentation/controllers/meetings_controller.dart';
+import 'package:tl_consultant/features/growth_kit/presentation/screens/growth_kit_page.dart';
 import 'package:tl_consultant/features/home/presentation/controllers/home_controller.dart';
+import 'package:tl_consultant/features/home/presentation/screens/home_tab.dart';
 import 'package:tl_consultant/features/journal/presentation/controllers/notes_controller.dart';
+import 'package:tl_consultant/features/journal/presentation/screens/journal_tab.dart';
+import 'package:tl_consultant/features/media/presentation/controllers/video_recording_controller.dart';
 import 'package:tl_consultant/features/profile/data/models/user_model.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 import 'package:tl_consultant/features/profile/domain/entities/qualification.dart';
 import 'package:tl_consultant/features/profile/domain/entities/user.dart';
 import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
+import 'package:tl_consultant/features/wallet/presentation/controllers/earnings_controller.dart';
+import 'package:tl_consultant/features/wallet/presentation/controllers/transactions_controller.dart';
+import 'package:tl_consultant/features/wallet/presentation/screens/wallet_tab.dart';
 
 class DashboardController extends GetxController {
   static DashboardController instance = Get.find();
 
   RxInt currentIndex = 0.obs;
+  final List<Widget> pages = [
+    HomeTab(),
+    JournalTab(),
+    WalletTab(),
+    GrowthKitPage()
+  ];
 
   var currentMeetingCount = 0.obs;
   var clientId = 0.obs;
@@ -33,6 +48,7 @@ class DashboardController extends GetxController {
   var country = "".obs;
   var city = "".obs;
   var timezone = "".obs;
+
 
   Future<void> onTap(int index) async {
     currentIndex.value = index;
@@ -84,21 +100,39 @@ class DashboardController extends GetxController {
 
   clearData() {
     currentIndex.value = 0;
+
     currentMeetingCount.value = 0;
-    var clientId = 0;
-    var clientName = "";
-    var clientDp = "";
-    var currentMeetingET = "";
-    var currentMeetingST = "";
-    var currentMeetingId = 1;
+    clientId.value = 0;
+    clientName.value = "";
+    clientDp.value = "";
+    currentMeetingET.value = "";
+    currentMeetingST.value = "";
+    currentMeetingId.value = 1;
+
+    country.value = '';
+    city.value = '';
+    timezone.value = '';
   }
 
   clearAllData() {
-    AuthController.instance.clearData();
-    HomeController.instance.clearData();
-    MeetingsController.instance.clearData();
-    MeetingsController.instance.clearData();
-    NotesController.instance.clearData();
+    AuthController().clearData();
+    HomeController().clearData();
+    MeetingsController().clearData();
+    NotesController().clearData();
+    ProfileController().clearData();
+    ActivityController().clearData();
+    EarningsController().clearData();
+    TransactionsController().clearData();
+    VideoRecordingController().clearData();
+    NotesController().clearData();
     clearData();
+  }
+
+  updateIndex(int index) {
+    currentIndex.value = index;
+  }
+
+  bool isSelected(int index){
+    return currentIndex.value == index;
   }
 }
