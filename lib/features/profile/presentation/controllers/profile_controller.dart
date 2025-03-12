@@ -3,9 +3,9 @@ import 'package:dio/dio.dart' as dio;
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/core/global/custom_snackbar.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
+import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/utils/functions.dart';
 import 'package:tl_consultant/features/profile/data/models/user_model.dart';
 import 'package:tl_consultant/features/profile/data/repos/profile_repo.dart';

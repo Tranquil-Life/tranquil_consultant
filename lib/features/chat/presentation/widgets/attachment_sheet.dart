@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:tl_consultant/app/presentation/theme/properties.dart';
+import 'package:tl_consultant/core/theme/properties.dart';
 import 'package:tl_consultant/core/utils/services/media_service.dart';
 
 class AttachmentSheet extends StatelessWidget {

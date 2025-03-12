@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:language_picker/language_picker.dart';
 import 'package:language_picker/languages.dart';
-import 'package:tl_consultant/app/presentation/theme/colors.dart';
-import 'package:tl_consultant/app/presentation/theme/fonts.dart';
+import 'package:tl_consultant/core/theme/colors.dart';
+import 'package:tl_consultant/core/theme/fonts.dart';
 import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:tl_consultant/features/auth/presentation/widgets/form_fields.dart';
 
 class LanguagesField extends StatefulWidget {
-  const LanguagesField({Key? key}) : super(key: key);
+  const LanguagesField({super.key});
 
   @override
   State<LanguagesField> createState() => _LanguagesFieldState();

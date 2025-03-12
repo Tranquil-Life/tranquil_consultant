@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
+import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/features/journal/domain/entities/personal_note.dart';
 import 'package:tl_consultant/features/journal/presentation/controllers/notes_controller.dart';
 import 'package:tl_consultant/features/journal/presentation/screens/create_note.dart';

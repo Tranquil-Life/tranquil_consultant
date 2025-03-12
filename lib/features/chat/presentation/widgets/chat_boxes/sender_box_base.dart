@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:tl_consultant/app/presentation/theme/colors.dart';
+import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/features/chat/domain/entities/message.dart';
 import 'package:tl_consultant/features/chat/presentation/widgets/chat_boxes/shared/chat_box.dart';
 import 'package:tl_consultant/features/chat/presentation/widgets/dialogs/reaction_dialog.dart';

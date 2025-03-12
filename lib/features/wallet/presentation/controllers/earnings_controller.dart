@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:dartz/dartz.dart';
 import 'package:get/get.dart';
-import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/core/global/custom_snackbar.dart';
+import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/features/wallet/data/models/earnings_model.dart';
 import 'package:tl_consultant/features/wallet/data/repos/wallet_repo_impl.dart';
 import 'package:tl_consultant/features/wallet/domain/entities/earnings.dart';

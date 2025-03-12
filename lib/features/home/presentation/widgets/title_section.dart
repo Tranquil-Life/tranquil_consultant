@@ -70,87 +70,87 @@ class _AppBarState extends State<AppBar> {
   }
 }
 
-class Title extends StatefulWidget {
-  const Title({super.key, this.user});
-
-  final User? user;
-  @override
-  State<Title> createState() => _TitleState();
-}
-
-class _TitleState extends State<Title> {
-  final activityController = ActivityController();
-  var themeColor = ColorPalette.green;
-  DateTime? meetingDate;
-  User therapist = UserModel.fromJson(userDataStore.user);
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 6),
-              child: Text(
-                'Hi,',
-                style: TextStyle(color: themeColor, fontSize: 22),
-              ),
-            ),
-            const Spacer(),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                //Questionnaire
-                CustomIconButton(
-                  onPressed: () {
-                    Get.toNamed(Routes.EDIT_SLOTS);
-                  },
-                  icon: const Icon(
-                    Icons.schedule,
-                    size: 28,
-                    color: ColorPalette.green,
-                  ),
-                ),
-
-                const SizedBox(width: 12),
-
-                //activity
-                GestureDetector(
-                  onTap: () {
-                    Get.to(NotificationScreen());
-                  },
-                  child: Stack(
-                    alignment: AlignmentDirectional.topEnd,
-                    children: [
-                      CustomIconButton(
-                        icon: Icon(
-                          TranquilIcons.bell,
-                          size: 28,
-                          color: ColorPalette.green,
-                        ),
-                      ),
-                      if (activityController.count() > 0)
-                        CountIndicator(activityController.count()),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-
-        Text(
-          therapist.firstName,
-          style: TextStyle(
-            color: themeColor,
-            fontSize: 30,
-            fontWeight: FontWeight.bold,
-          ),
-        )
-      ],
-    );
-  }
-}
+// class Title extends StatefulWidget {
+//   const Title({super.key, this.user});
+//
+//   final User? user;
+//   @override
+//   State<Title> createState() => _TitleState();
+// }
+//
+// class _TitleState extends State<Title> {
+//   final activityController = ActivityController();
+//   var themeColor = ColorPalette.green;
+//   DateTime? meetingDate;
+//   User therapist = UserModel.fromJson(userDataStore.user);
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Column(
+//       crossAxisAlignment: CrossAxisAlignment.start,
+//       children: [
+//         Row(
+//           crossAxisAlignment: CrossAxisAlignment.start,
+//           children: [
+//             Padding(
+//               padding: const EdgeInsets.only(top: 6),
+//               child: Text(
+//                 'Hi,',
+//                 style: TextStyle(color: themeColor, fontSize: 22),
+//               ),
+//             ),
+//             const Spacer(),
+//             Row(
+//               mainAxisSize: MainAxisSize.min,
+//               children: [
+//                 //Questionnaire
+//                 CustomIconButton(
+//                   onPressed: () {
+//                     Get.toNamed(Routes.EDIT_SLOTS);
+//                   },
+//                   icon: const Icon(
+//                     Icons.schedule,
+//                     size: 28,
+//                     color: ColorPalette.green,
+//                   ),
+//                 ),
+//
+//                 const SizedBox(width: 12),
+//
+//                 //activity
+//                 GestureDetector(
+//                   onTap: () {
+//                     Get.to(NotificationScreen());
+//                   },
+//                   child: Stack(
+//                     alignment: AlignmentDirectional.topEnd,
+//                     children: [
+//                       CustomIconButton(
+//                         icon: Icon(
+//                           TranquilIcons.bell,
+//                           size: 28,
+//                           color: ColorPalette.green,
+//                         ),
+//                       ),
+//                       if (activityController.count() > 0)
+//                         CountIndicator(activityController.count()),
+//                     ],
+//                   ),
+//                 ),
+//               ],
+//             ),
+//           ],
+//         ),
+//
+//         Text(
+//           therapist.firstName,
+//           style: TextStyle(
+//             color: themeColor,
+//             fontSize: 30,
+//             fontWeight: FontWeight.bold,
+//           ),
+//         )
+//       ],
+//     );
+//   }
+// }

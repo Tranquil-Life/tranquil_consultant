@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/core/global/custom_snackbar.dart';
+import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/features/consultation/data/models/meeting_model.dart';
 import 'package:tl_consultant/features/consultation/data/repos/consultation_repo.dart';
 import 'package:tl_consultant/features/consultation/domain/entities/meeting.dart';

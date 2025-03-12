@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:tl_consultant/app/presentation/theme/fonts.dart';
+import 'package:tl_consultant/core/theme/fonts.dart';
 
 // ignore: must_be_immutable
 class IOSDatePicker extends StatelessWidget {
@@ -35,7 +35,12 @@ class IOSDatePicker extends StatelessWidget {
             padding: const EdgeInsets.only(right: 8),
             child: TextButton(
               onPressed: () => Navigator.of(context).pop(selectedDate),
-              child: const Text('Done', style: TextStyle(fontSize: AppFonts.defaultSize, fontFamily: AppFonts.josefinSansSemiBold),),
+              child: const Text(
+                'Done',
+                style: TextStyle(
+                    fontSize: AppFonts.defaultSize,
+                    fontFamily: AppFonts.josefinSansSemiBold),
+              ),
             ),
           ),
         ],

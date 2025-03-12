@@ -1,7 +1,7 @@
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:tl_consultant/app/presentation/theme/colors.dart';
+import 'package:tl_consultant/core/theme/colors.dart';
 
 class BottomBar extends StatelessWidget {
   const BottomBar({Key? key, this.rtcEngine}) : super(key: key);

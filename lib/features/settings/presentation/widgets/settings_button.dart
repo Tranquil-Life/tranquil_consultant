@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:tl_consultant/app/presentation/theme/colors.dart';
+import 'package:tl_consultant/core/theme/colors.dart';
 
 class SettingsButton extends StatelessWidget {
   const SettingsButton({
-    Key? key,
+    super.key,
     required this.prefixIconData,
     required this.label,
     required this.onPressed,
     this.suffixWidget,
     this.prefixIconColor,
-  }) : super(key: key);
+  });
 
   final String label;
   final IconData prefixIconData;

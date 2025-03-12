@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:tl_consultant/app/presentation/theme/colors.dart';
+import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
 
@@ -54,9 +54,9 @@ class BuildNavItem extends StatelessWidget {
                 style: TextStyle(
                   fontSize: displayWidth(context) * 0.03,
                   color: isSelected
-                      ? const Color(0xFF388D4D)
+                      ?  ColorPalette.grey[400]
                       : ColorPalette.grey[700],
-                  fontWeight: isSelected ? FontWeight.w500 : FontWeight.normal,
+                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.normal,
                 ),
               ),
             ],

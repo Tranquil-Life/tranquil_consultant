@@ -1,6 +1,6 @@
 //DAY SECTION PICKER
 import 'package:flutter/material.dart';
-import 'package:tl_consultant/app/presentation/theme/tranquil_icons.dart';
+import 'package:tl_consultant/core/theme/tranquil_icons.dart';
 import 'package:tl_consultant/features/consultation/presentation/widgets/day_section_widget.dart';
 
 class DaySectionPicker extends StatefulWidget {

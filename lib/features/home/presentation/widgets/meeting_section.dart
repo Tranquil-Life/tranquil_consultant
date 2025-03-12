@@ -54,59 +54,44 @@ class _MeetingsState extends State<Meetings> {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
-          // boxShadow: const [
-          //   BoxShadow(
-          //       blurRadius: 2, color: Colors.black12, offset: Offset(0, 1)),
-          // ],
         ),
         child: Column(
           children: [
             Expanded(
-              child: meetingsController.isFirstLoadRunning.value
-                  ? const Center(
-                      child: CircularProgressIndicator(
-                        color: ColorPalette.green,
-                      ),
-                    )
-                  : Scrollbar(
-                      child: RefreshIndicator(
-                        color: ColorPalette.green,
-                        onRefresh: () async => getMeetings(),
-                        child: Padding(
-                          padding: const EdgeInsets.only(right: 10),
-                          child: ValueListenableBuilder<DateTime>(
-                            valueListenable: _timeNotifier,
-                            builder: (context, time, child) {
-                              if (meetingsController.meetings.isEmpty) {
-                                return const NoMeetingsWidget();
-                              }
-
-                              return ListView.builder(
-                                  physics:
-                                      const AlwaysScrollableScrollPhysics(),
-                                  itemCount: meetingsController.meetings.length,
-                                  padding: EdgeInsets.zero,
-                                  itemBuilder: (_, index) {
-                                    if (index ==
-                                        meetingsController.meetings.length) {
-                                      return const Center(
-                                        child: CircularProgressIndicator(
-                                            color: ColorPalette.green),
-                                      );
-                                    }
-
-                                    return MeetingTile(
-                                      meeting:
-                                          meetingsController.meetings[index]
-                                            ..setIsExpired(_timeNotifier.value),
-                                    );
-                                  });
-                            },
-                          ),
+              child: Obx(() {
+                if (meetingsController.isFirstLoadRunning.value) {
+                  return const Center(
+                    child: CircularProgressIndicator(
+                      color: ColorPalette.green,
+                    ),
+                  );
+                } else if (meetingsController.meetings.isEmpty) {
+                  return const NoMeetingsWidget();
+                } else {
+                  return Scrollbar(
+                    child: RefreshIndicator(
+                      color: ColorPalette.green,
+                      onRefresh: () async => getMeetings(),
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 10),
+                        child: ListView.builder(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          itemCount: meetingsController.meetings.length,
+                          padding: EdgeInsets.zero,
+                          itemBuilder: (_, index) {
+                            return MeetingTile(
+                              meeting: meetingsController.meetings[index]
+                                ..setIsExpired(_timeNotifier.value),
+                            );
+                          },
                         ),
                       ),
                     ),
+                  );
+                }
+              }),
             ),
+
           ],
         ));
   }

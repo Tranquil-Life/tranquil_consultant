@@ -2,9 +2,8 @@ import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:swipe_to/swipe_to.dart';
-import 'package:tl_consultant/app/presentation/theme/colors.dart';
+import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/utils/extensions/chat_message_extension.dart';
-import 'package:tl_consultant/features/chat/data/models/message_model.dart';
 import 'package:tl_consultant/features/chat/domain/entities/message.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/chat_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/widgets/chat_boxes/receiver/text.dart';
@@ -13,8 +12,6 @@ import 'package:tl_consultant/features/chat/presentation/widgets/chat_boxes/send
 import 'package:tl_consultant/features/chat/presentation/widgets/chat_boxes/sender/text.dart';
 import 'package:tl_consultant/features/chat/presentation/widgets/chat_boxes/sender/video.dart';
 import 'package:tl_consultant/features/chat/presentation/widgets/chat_boxes/sender/voice_note.dart';
-import 'package:tl_consultant/features/chat/presentation/widgets/chat_boxes/shared/chat_box.dart';
-import 'package:tl_consultant/features/chat/presentation/widgets/chat_boxes/shared/text_layout.dart';
 
 class ChatItem extends StatefulWidget {
   const ChatItem(

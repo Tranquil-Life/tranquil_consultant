@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:tl_consultant/app/presentation/routes/app_pages.dart';
 import 'package:tl_consultant/core/global/buttons.dart';
+import 'package:tl_consultant/core/utils/routes/app_pages.dart';
 import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:tl_consultant/core/utils/extensions/date_time_extension.dart';
 import 'package:tl_consultant/core/utils/functions.dart';
 import 'package:tl_consultant/features/auth/presentation/widgets/bg.dart';
-import 'package:tl_consultant/features/auth/presentation/widgets/c_vitae_field.dart';
 import 'package:tl_consultant/features/auth/presentation/widgets/form_fields.dart';
 import 'package:tl_consultant/features/auth/presentation/widgets/means_of_id_field.dart';
 

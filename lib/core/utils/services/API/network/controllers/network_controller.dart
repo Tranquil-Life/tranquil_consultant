@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/core/global/custom_snackbar.dart';
+import 'package:tl_consultant/core/theme/colors.dart';
 
 class NetworkController extends GetxController {
   static NetworkController instance = Get.find();

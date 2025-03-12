@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:tl_consultant/app/presentation/theme/colors.dart';
-import 'package:tl_consultant/app/presentation/theme/fonts.dart';
+import 'package:tl_consultant/core/theme/colors.dart';
+import 'package:tl_consultant/core/theme/fonts.dart';
 
 class DayCard extends StatelessWidget {
   const DayCard(this.day, {Key? key, this.onChosen, required this.selected})

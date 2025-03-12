@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:tl_consultant/app/presentation/theme/colors.dart';
+import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';
 
 Widget buildPasswordCriteria(AuthController controller) {

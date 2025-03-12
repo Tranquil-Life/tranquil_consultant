@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:tl_consultant/app/presentation/theme/colors.dart';
-import 'package:tl_consultant/app/presentation/theme/fonts.dart';
 import 'package:tl_consultant/core/global/buttons.dart';
 import 'package:tl_consultant/core/global/custom_app_bar.dart';
 import 'package:tl_consultant/core/global/my_default_text_theme.dart';
+import 'package:tl_consultant/core/theme/colors.dart';
+import 'package:tl_consultant/core/theme/fonts.dart';
 import 'package:tl_consultant/core/utils/functions.dart';
 import 'package:tl_consultant/core/utils/helpers/day_section_option.dart';
 import 'package:tl_consultant/features/consultation/domain/entities/client.dart';

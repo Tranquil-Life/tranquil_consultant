@@ -1,8 +1,8 @@
 import 'dart:developer';
 import 'dart:io';
 import 'package:get/get.dart';
-import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/core/global/my_default_text_theme.dart';
+import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/features/chat/domain/entities/message.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/chat_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/widgets/chat_boxes/shared/chat_box_base.dart';
@@ -10,16 +10,20 @@ import 'package:tl_consultant/features/chat/presentation/widgets/chat_boxes/shar
 import 'package:flutter/material.dart';
 
 
-class RepliedChatBox extends StatelessWidget {
-  RepliedChatBox({
-    Key? key,
+class RepliedChatBox extends StatefulWidget {
+  const RepliedChatBox({
+    super.key,
     required this.backgroundColor,
-    this.message})
-      : super(key: key);
+    this.message});
 
   final Color backgroundColor;
   final Message? message;
 
+  @override
+  State<RepliedChatBox> createState() => _RepliedChatBoxState();
+}
+
+class _RepliedChatBoxState extends State<RepliedChatBox> {
   ChatController chatController = Get.put(ChatController());
 
   Widget _message() {
@@ -66,7 +70,7 @@ class RepliedChatBox extends StatelessWidget {
           ChatBoxBase(
             padding: 4,
             heightScale: 0.9,
-            color: backgroundColor,
+            color: widget.backgroundColor,
             child: MyDefaultTextStyle(
               inherit: true,
               style: TextStyle(

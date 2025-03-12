@@ -1,7 +1,7 @@
 part of 'package:tl_consultant/features/home/presentation/screens/home_tab.dart';
 
 class MeetingCard extends StatelessWidget {
-  MeetingCard({Key? key, required this.meeting}) : super(key: key);
+  MeetingCard({super.key, required this.meeting});
   final Meeting meeting;
 
   final now = DateTime.now();

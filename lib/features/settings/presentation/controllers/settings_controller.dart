@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:get/get.dart';
-import 'package:tl_consultant/app/data/store.dart';
-import 'package:tl_consultant/app/presentation/routes/app_pages.dart';
+import 'package:tl_consultant/core/data/store.dart';
+import 'package:tl_consultant/core/utils/routes/app_pages.dart';
 import 'package:tl_consultant/features/activity/presentation/controllers/activity_controller.dart';
 import 'package:tl_consultant/features/auth/data/repos/auth_repo.dart';
 import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';

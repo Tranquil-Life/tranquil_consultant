@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:tl_consultant/app/presentation/theme/colors.dart';
-import 'package:tl_consultant/app/presentation/theme/fonts.dart';
+import 'package:tl_consultant/core/theme/colors.dart';
+import 'package:tl_consultant/core/theme/fonts.dart';
 import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
-import 'package:tl_consultant/core/utils/helpers/svg_elements.dart';
 
 class TherapistTypeItem extends StatelessWidget {
   const TherapistTypeItem({super.key, required this.onTap, required this.bgColor, required this.iconColor, required this.radioFillColor, required this.radioValue, required this.radioGroupValue, this.headingTextColor, required this.heading, required this.body, this.bodyTextColor, required this.icon});

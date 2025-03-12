@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:tl_consultant/app/presentation/theme/colors.dart';
-import 'package:tl_consultant/app/presentation/theme/fonts.dart';
+import 'package:tl_consultant/core/theme/colors.dart';
+import 'package:tl_consultant/core/theme/fonts.dart';
 import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';
 
@@ -13,7 +13,6 @@ class YearsOfExperienceModal extends StatefulWidget {
 }
 
 class _YearsOfExperienceModalState extends State<YearsOfExperienceModal> {
-
   List options = [
     "5 - 10",
     "10 - 15",
@@ -22,8 +21,7 @@ class _YearsOfExperienceModalState extends State<YearsOfExperienceModal> {
     ">25",
   ];
 
-
-  selectOption(String option){
+  selectOption(String option) {
     AuthController.instance.yearsOfExperienceTEC.text = option;
   }
 
@@ -45,17 +43,19 @@ class _YearsOfExperienceModalState extends State<YearsOfExperienceModal> {
             Expanded(
               child: ListView.builder(
                 itemCount: options.length,
-                itemBuilder: (context, int index){
+                itemBuilder: (context, int index) {
                   final item = options[index];
                   return TextButton(
-                      onPressed:(){
+                      onPressed: () {
                         Get.back();
                         selectOption(item);
                       },
-                      child: Text(item, style: const TextStyle(color: ColorPalette.black, fontSize: AppFonts.defaultSize))
-                  );
+                      child: Text(item,
+                          style: const TextStyle(
+                              color: ColorPalette.black,
+                              fontSize: AppFonts.defaultSize)));
                 },
-              ) ,
+              ),
             )
           ],
         ),

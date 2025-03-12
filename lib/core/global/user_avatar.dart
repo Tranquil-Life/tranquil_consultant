@@ -3,12 +3,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:tl_consultant/app/presentation/theme/tranquil_icons.dart';
 import 'package:tl_consultant/core/global/pulsing_widget.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
-import 'package:tl_consultant/features/profile/data/models/user_model.dart';
-import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
-import 'package:tl_consultant/features/profile/domain/entities/user.dart';
+import 'package:tl_consultant/core/theme/tranquil_icons.dart';
 import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
 
 

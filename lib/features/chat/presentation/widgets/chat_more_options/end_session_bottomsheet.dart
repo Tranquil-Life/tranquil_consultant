@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:tl_consultant/app/presentation/theme/properties.dart';
+import 'package:tl_consultant/core/theme/properties.dart';
 import 'package:tl_consultant/features/chat/presentation/widgets/dialogs/rate_consultation_dialog.dart';
 
 class EndSessionBottomSheet extends StatefulWidget {

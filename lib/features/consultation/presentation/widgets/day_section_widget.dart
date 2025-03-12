@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tl_consultant/app/presentation/theme/colors.dart';
+import 'package:tl_consultant/core/theme/colors.dart';
 
 class DaySectionWidget extends StatefulWidget {
   const DaySectionWidget({

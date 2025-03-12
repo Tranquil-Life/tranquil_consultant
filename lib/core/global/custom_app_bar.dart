@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/core/global/app_bar_button.dart';
+import 'package:tl_consultant/core/theme/colors.dart';
 
 class AppBarAction {
   final Widget child;
@@ -59,7 +59,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               tag: 'back_button',
               child: Center(
                 child: AppBarButton(
-                  backgroundColor: ColorPalette.green[800],
+                  backgroundColor: ColorPalette.green,
                   onPressed: onBackPressed ?? Navigator.of(context).pop,
                   icon: const Padding(
                     padding: EdgeInsets.all(1),

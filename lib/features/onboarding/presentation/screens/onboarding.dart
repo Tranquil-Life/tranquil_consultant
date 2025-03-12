@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:tl_consultant/app/config.dart';
-import 'package:tl_consultant/app/presentation/routes/app_pages.dart';
-import 'package:tl_consultant/app/presentation/theme/colors.dart';
-import 'package:tl_consultant/app/presentation/theme/fonts.dart';
 import 'package:tl_consultant/core/global/buttons.dart';
+import 'package:tl_consultant/core/theme/colors.dart';
+import 'package:tl_consultant/core/theme/fonts.dart';
 import 'package:tl_consultant/features/auth/presentation/screens/register/therapist_type_screen.dart';
 import 'package:tl_consultant/features/auth/presentation/screens/sign_in/sign_in.dart';
 import 'package:tl_consultant/features/auth/presentation/widgets/means_of_id_field.dart';

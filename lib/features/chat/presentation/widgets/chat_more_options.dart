@@ -1,15 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/core/global/dialogs.dart';
 import 'package:tl_consultant/core/global/user_avatar.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
-import 'package:tl_consultant/features/chat/presentation/widgets/chat_more_options/end_session_bottomsheet.dart';
+import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/features/chat/presentation/widgets/dialogs/rate_consultation_dialog.dart';
-import 'package:tl_consultant/features/consultation/domain/entities/client.dart';
 import 'package:tl_consultant/features/consultation/domain/entities/participant.dart';
-import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
-import 'package:tl_consultant/features/profile/domain/entities/user.dart';
 
 part 'package:tl_consultant/features/chat/presentation/widgets/chat_more_options/end_session.dart';
 part 'package:tl_consultant/features/chat/presentation/widgets/dialogs/view_participant_dialog.dart';

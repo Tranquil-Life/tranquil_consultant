@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:tl_consultant/app/presentation/theme/tranquil_icons.dart';
+import 'package:tl_consultant/core/theme/tranquil_icons.dart';
 
 class ThemeBrightnessIcon extends StatelessWidget {
-  const ThemeBrightnessIcon({Key? key}) : super(key: key);
+  const ThemeBrightnessIcon({super.key});
 
   @override
   Widget build(BuildContext context) {

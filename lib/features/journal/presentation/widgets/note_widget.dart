@@ -6,9 +6,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/core/global/user_avatar.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
+import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/utils/extensions/date_time_extension.dart';
 import 'package:tl_consultant/core/utils/functions.dart';
 import 'package:tl_consultant/core/utils/helpers/svg_elements.dart';

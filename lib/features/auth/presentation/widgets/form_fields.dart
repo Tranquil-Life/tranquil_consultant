@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl_phone_field/country_picker_dialog.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
-import 'package:tl_consultant/app/presentation/theme/colors.dart';
-import 'package:tl_consultant/app/presentation/theme/properties.dart';
 import 'package:tl_consultant/core/global/custom_form_field.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
+import 'package:tl_consultant/core/theme/colors.dart';
+import 'package:tl_consultant/core/theme/properties.dart';
 import 'package:tl_consultant/core/utils/services/validators.dart';
 import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';
 

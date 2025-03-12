@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:get_storage/get_storage.dart';
-import 'package:tl_consultant/app/domain/store.dart';
+import 'package:tl_consultant/core/domain/store.dart';
 
 abstract class _Keys {
   static const isOnboardingCompleted = 'isOnboardingCompleted';

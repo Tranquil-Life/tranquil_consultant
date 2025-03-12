@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:tl_consultant/app/presentation/routes/app_pages.dart';
-import 'package:tl_consultant/app/presentation/theme/fonts.dart';
-import 'package:tl_consultant/core/global/buttons.dart';
-
+import 'package:flutter_svg/svg.dart';
+import 'package:tl_consultant/core/theme/colors.dart';
+import 'package:tl_consultant/core/theme/fonts.dart';
+import 'package:tl_consultant/core/utils/helpers/svg_elements.dart';
 
 class NoMeetingsWidget extends StatelessWidget {
   const NoMeetingsWidget({super.key});
@@ -16,16 +15,26 @@ class NoMeetingsWidget extends StatelessWidget {
         mainAxisSize: MainAxisSize.max,
         children: [
           Expanded(
-            child: Image.asset(
-                'assets/images/no_meeting.png'),
+            child: SvgPicture.asset(SvgElements.svgNoMeetingIcon),
           ),
-          const SizedBox(height: 12),
-          const Text(
-            'You have no meetings yet',
+          const SizedBox(height: 40),
+          Text(
+            'No meetings scheduled',
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontSize: AppFonts.defaultSize
-            ),
+                color: ColorPalette.grey[400],
+                fontSize: AppFonts.baseSize,
+                fontFamily: AppFonts.mulishBold,
+                fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 8),
+
+          const Text(
+            'You don’t have any scheduled sessions with clients yet',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+                fontSize: AppFonts.defaultSize,
+                fontFamily: AppFonts.mulishRegular),
           ),
           SizedBox(height: 20)
         ],

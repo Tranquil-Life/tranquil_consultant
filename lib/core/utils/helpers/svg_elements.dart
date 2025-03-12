@@ -30,9 +30,11 @@ class SvgElements {
   static get svgPersonGroupIcon => "assets/images/icons/person_group.svg";
   static get svgBellIcon => "assets/images/icons/bell.svg";
 
-
   static get svgDoubleCheckmarkIcon => "assets/images/icons/double_checkmark.svg";
   static get svgImageIcon => "assets/images/icons/image.svg";
+
+  static get svgNoMeetingIcon => "assets/images/no_meeting.svg";
+  static get svgNoEventsIcon => "assets/images/no_events.svg";
 
   //bottom nav icons
   static get svgMoreInactive => "assets/images/nav_icons/more_inactive.svg";

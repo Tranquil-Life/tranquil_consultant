@@ -1,4 +1,4 @@
-import 'package:tl_consultant/app/domain/query_params.dart';
+import 'package:tl_consultant/core/domain/query_params.dart';
 
 class RegisterData extends QueryParams {
   RegisterData();

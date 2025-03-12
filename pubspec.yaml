@@ -158,3 +158,16 @@ flutter:
     - family: josefinSansLight
       fonts:
         - asset: assets/fonts/josefin_sans/JosefinSans-Light.ttf
+
+    - family: MulishRegular
+      fonts:
+        - asset: assets/fonts/mulish/Mulish-Regular.ttf
+    - family: MulishSemiBold
+      fonts:
+        - asset: assets/fonts/mulish/Mulish-SemiBold.ttf
+    - family: MulishBold
+      fonts:
+        - asset: assets/fonts/mulish/Mulish-Bold.ttf
+    - family: MulishExtraBold
+      fonts:
+        - asset: assets/fonts/mulish/Mulish-ExtraBold.ttf

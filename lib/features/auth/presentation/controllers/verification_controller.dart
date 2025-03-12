@@ -1,12 +1,10 @@
 import 'package:dartz/dartz.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:tl_consultant/app/presentation/theme/colors.dart';
 import 'package:tl_consultant/core/global/custom_snackbar.dart';
+import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/utils/functions.dart';
 import 'package:tl_consultant/features/auth/data/repos/auth_repo.dart';
-import 'package:tl_consultant/features/auth/presentation/screens/register/agency_based_verification.dart';
-import 'package:tl_consultant/features/auth/presentation/screens/register/solo_based_verification.dart';
 
 class VerificationController extends GetxController {
   static VerificationController instance = Get.find();

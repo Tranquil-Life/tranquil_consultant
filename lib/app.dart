@@ -1,12 +1,11 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:tl_consultant/app/config.dart';
-import 'package:tl_consultant/app/presentation/routes/app_pages.dart';
-import 'package:tl_consultant/app/presentation/routes/bindings/controllers_binding.dart';
-import 'package:tl_consultant/app/presentation/theme/colors.dart';
-import 'package:tl_consultant/app/presentation/theme/fonts.dart';
+import 'package:tl_consultant/core/theme/fonts.dart';
+import 'package:tl_consultant/core/utils/app_config.dart';
 import 'package:tl_consultant/core/utils/functions.dart';
+import 'package:tl_consultant/core/utils/routes/app_pages.dart';
+import 'package:tl_consultant/core/utils/routes/bindings/controllers_binding.dart';
 
 class App extends StatefulWidget {
   const App({super.key});
@@ -47,7 +46,7 @@ class _AppState extends State<App> {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.green,
-        fontFamily: AppFonts.josefinSansRegular,
+        fontFamily: AppFonts.mulishRegular,
       ),
       initialRoute: AppPages.INITIAL,
       getPages: AppPages.routes,
