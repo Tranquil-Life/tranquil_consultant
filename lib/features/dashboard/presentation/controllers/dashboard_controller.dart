@@ -11,6 +11,7 @@ import 'package:tl_consultant/core/utils/functions.dart';
 import 'package:tl_consultant/features/activity/presentation/controllers/activity_controller.dart';
 import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:tl_consultant/features/consultation/presentation/controllers/meetings_controller.dart';
+import 'package:tl_consultant/features/growth_kit/presentation/screens/growth_kit_page.dart';
 import 'package:tl_consultant/features/home/presentation/controllers/home_controller.dart';
 import 'package:tl_consultant/features/home/presentation/screens/home_tab.dart';
 import 'package:tl_consultant/features/journal/presentation/controllers/notes_controller.dart';
@@ -33,9 +34,7 @@ class DashboardController extends GetxController {
     HomeTab(),
     JournalTab(),
     WalletTab(),
-    Container(
-      color: ColorPalette.red,
-    )
+    GrowthKitPage()
   ];
 
   var currentMeetingCount = 0.obs;

@@ -76,6 +76,7 @@ class _WalletTabState extends State<WalletTab> {
                                       color: ColorPalette.green[800],
                                       fontSize: 40,
                                       fontWeight: FontWeight.bold,
+                                        fontFamily: AppFonts.josefinSansRegular
                                     )),
                                 Icon(Icons.visibility_outlined,
                                     color: ColorPalette.black.withOpacity(.6))
@@ -87,7 +88,8 @@ class _WalletTabState extends State<WalletTab> {
                                 style: TextStyle(
                                     fontSize: 12,
                                     color: ColorPalette.black,
-                                    fontFamily: AppFonts.josefinSansRegular),
+                                    fontFamily: AppFonts.josefinSansRegular
+                                ),
                                 children: [
                                   TextSpan(
                                     text: formatCurrency!.format(

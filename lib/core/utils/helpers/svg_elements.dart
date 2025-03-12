@@ -47,4 +47,11 @@ class SvgElements {
   static get svgHomeActive => "assets/images/nav_icons/home_active.svg";
   static get svgChat => "assets/images/nav_icons/chat.svg";
 
+  /// Growth kit images
+  static get svgSelfAssess => "assets/images/growth_kit/self_assessment.svg";
+  static get svgPeerSupport => "assets/images/growth_kit/peer_support.svg";
+  static get svgCourses => "assets/images/growth_kit/courses.svg";
+  static get svgWebinars => "assets/images/growth_kit/webinars.svg";
+  static get svgLibrary => "assets/images/growth_kit/library.svg";
+  static get svgAnalytics => "assets/images/growth_kit/analytics.svg";
 }

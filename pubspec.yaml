@@ -140,6 +140,7 @@ flutter:
     - assets/images/earnings/
     - assets/images/chat/
     - assets/images/profile/
+    - assets/images/growth_kit/
 
   fonts:
     - family: TranquilIcons

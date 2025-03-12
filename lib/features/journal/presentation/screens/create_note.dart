@@ -46,6 +46,7 @@ class _CreateNoteState extends State<CreateNote> {
   Widget build(BuildContext context) {
     return UnFocusWidget(
       child: Scaffold(
+        backgroundColor: Colors.grey.shade100,
         appBar: CustomAppBar(
           centerTitle: false,
           title: "New note",
