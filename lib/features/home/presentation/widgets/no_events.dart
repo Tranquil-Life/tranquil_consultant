@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/theme/fonts.dart';
+import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 import 'package:tl_consultant/core/utils/helpers/svg_elements.dart';
 
 class NoEventsWidget extends StatelessWidget {
@@ -12,16 +13,16 @@ class NoEventsWidget extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.max,
       children: [
-        SizedBox(
-          height: 100, // Adjust height as needed
-          child: SvgPicture.asset(SvgElements.svgNoEventsIcon),
-        ),
+        SizedBox(height: 32),
+        SvgPicture.asset(SvgElements.svgNoEventsIcon, height: isSmallScreen(context) ? null : 80),
+        SizedBox(height: isSmallScreen(context) ? 12 : 24),
+
         Text(
           'No events at the moment',
           textAlign: TextAlign.center,
           style: TextStyle(
               color: ColorPalette.grey[400],
-              fontSize: AppFonts.baseSize,
+              fontSize: isSmallScreen(context) ? AppFonts.baseSize : 20,
               fontFamily: AppFonts.mulishBold,
               fontWeight: FontWeight.w600),
         ),
@@ -31,6 +32,9 @@ class NoEventsWidget extends StatelessWidget {
           textAlign: TextAlign.center,
           style: TextStyle(
             color: ColorPalette.grey[300],
+            fontSize: isSmallScreen(context)
+                ? AppFonts.defaultSize
+                : AppFonts.baseSize,
           ),
         ),
         SizedBox(height: 20)

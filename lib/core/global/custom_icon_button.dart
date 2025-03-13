@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:tl_consultant/core/theme/colors.dart';
 
 class CustomIconButton extends StatelessWidget {
-  const CustomIconButton({Key? key, required this.icon, this.onPressed})
-      : super(key: key);
+  const CustomIconButton({super.key, required this.icon, this.onPressed, this.showBorder});
 
   final Widget icon;
   final Function()? onPressed;
+  final bool? showBorder;
 
   @override
   Widget build(BuildContext context) {
@@ -16,13 +17,7 @@ class CustomIconButton extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(100),
-        // boxShadow: const [
-        //   BoxShadow(
-        //     blurRadius: 5,
-        //     offset: Offset(0, 3),
-        //     color: Colors.black12,
-        //   ),
-        // ],
+        border: showBorder == true ? Border.all(color: ColorPalette.grey) : null
       ),
       child: Material(
         type: MaterialType.transparency,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/theme/fonts.dart';
+import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 import 'package:tl_consultant/core/utils/helpers/svg_elements.dart';
 
 class NoMeetingsWidget extends StatelessWidget {
@@ -15,7 +16,7 @@ class NoMeetingsWidget extends StatelessWidget {
         mainAxisSize: MainAxisSize.max,
         children: [
           Expanded(
-            child: SvgPicture.asset(SvgElements.svgNoMeetingIcon),
+            child: SvgPicture.asset(SvgElements.svgNoMeetingIcon, height: isSmallScreen(context) ? null : 80),
           ),
           const SizedBox(height: 40),
           Text(
@@ -23,17 +24,18 @@ class NoMeetingsWidget extends StatelessWidget {
             textAlign: TextAlign.center,
             style: TextStyle(
                 color: ColorPalette.grey[400],
-                fontSize: AppFonts.baseSize,
+                fontSize: isSmallScreen(context) ? AppFonts.baseSize : 20,
                 fontFamily: AppFonts.mulishBold,
                 fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 8),
-
-          const Text(
+          Text(
             'You don’t have any scheduled sessions with clients yet',
             textAlign: TextAlign.center,
             style: TextStyle(
-                fontSize: AppFonts.defaultSize,
+                fontSize: isSmallScreen(context)
+                    ? AppFonts.defaultSize
+                    : AppFonts.baseSize,
                 fontFamily: AppFonts.mulishRegular),
           ),
           SizedBox(height: 20)

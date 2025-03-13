@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
+import 'package:tl_consultant/core/theme/fonts.dart';
 import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
 
@@ -32,17 +33,17 @@ class BuildNavItem extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         onTap: onTap,
         child: Container(
-          padding: EdgeInsets.symmetric(
+          padding: isSmallScreen(context) ? EdgeInsets.symmetric(
             horizontal: displayWidth(context) * 0.02,
             vertical: size.height * 0.001,
-          ),
+          ) : null,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             mainAxisSize: MainAxisSize.min,
             children: [
               SvgPicture.asset(
                 icon,
-                height: iconSize,
+                height: 24,
                 width: 24,
                 color: isSelected
                     ? const Color(0xFF388D4D)
@@ -52,7 +53,7 @@ class BuildNavItem extends StatelessWidget {
               Text(
                 label,
                 style: TextStyle(
-                  fontSize: displayWidth(context) * 0.03,
+                  fontSize: AppFonts.defaultSize,
                   color: isSelected
                       ?  ColorPalette.grey[400]
                       : ColorPalette.grey[700],

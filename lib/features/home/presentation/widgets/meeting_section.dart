@@ -52,7 +52,7 @@ class _MeetingsState extends State<Meetings> {
         width: displayWidth(context),
         padding: const EdgeInsets.fromLTRB(16, 16, 8, 3),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: ColorPalette.white,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Column(

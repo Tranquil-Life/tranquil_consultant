@@ -32,7 +32,7 @@ class _GrowthKitPageState extends State<GrowthKitPage> {
           SizedBox(height: 24),
           Text(
               "Find tools and resources to help you grow, connect, and level up",
-              style: TextStyle(color: ColorPalette.grey[500])),
+              style: TextStyle(color: ColorPalette.grey[500], fontSize: AppFonts.baseSize)),
           SizedBox(height: 24),
 
           Column(
@@ -40,13 +40,13 @@ class _GrowthKitPageState extends State<GrowthKitPage> {
                 GestureDetector(
                     onTap: e.onTap,
                     child: Container(
+                      width: displayWidth(context),
                       decoration: BoxDecoration(),
                       child: Stack(
-                        clipBehavior: Clip.none,
                         children: [
-                          SvgPicture.asset(e.image),
+                          SvgPicture.asset(e.image, width: displayWidth(context),),
                           Positioned(
-                            bottom: 8,
+                            bottom: isSmallScreen(context) ? 12 : 35,
                             right: 0,
                             left: 0,
                             child: Container(
@@ -70,7 +70,7 @@ class _GrowthKitPageState extends State<GrowthKitPage> {
                                   ],
                                 ),
                               ),
-                              child: Text(e.title, style: TextStyle(color: Colors.white),),
+                              child: Text(e.title, style: TextStyle(color: Colors.white, fontFamily: isSmallScreen(context) ? null : AppFonts.mulishBold),),
                             ),
                           )
                         ],

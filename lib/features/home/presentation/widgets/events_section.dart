@@ -33,7 +33,7 @@ class _EventsSectionState extends State<EventsSection> {
     return Container(
       width: displayWidth(context),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: ColorPalette.white,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(

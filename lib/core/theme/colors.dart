@@ -5,6 +5,7 @@ class ColorPalette {
   static const red = Colors.red;
   static const scaffoldColor = Color(0xFFFBFBFB);
   static const white = Colors.white;
+  static const borderColor = Color(0xFFE4E4E4);
   static const grey = MaterialColor(0xFFF2F2F2, {
     100: Color(0xFFD3D3D3),
     200: Color(0xFFC3C3C3),

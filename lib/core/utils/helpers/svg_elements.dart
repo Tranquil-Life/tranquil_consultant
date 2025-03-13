@@ -54,4 +54,8 @@ class SvgElements {
   static get svgWebinars => "assets/images/growth_kit/webinars.svg";
   static get svgLibrary => "assets/images/growth_kit/library.svg";
   static get svgAnalytics => "assets/images/growth_kit/analytics.svg";
+
+  ///Home page
+  static get svgUpscale => "assets/images/upscale.svg";
+  static get svgUpscaleExtended => "assets/images/upscale_extended.svg";
 }
