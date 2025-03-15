@@ -34,8 +34,7 @@
 	<key>NSCalendarsUsageDescription</key>
 	<string>Tranquil Life needs this permission to be able to add scheduled meetings to your calendar</string>
 	<key>NSCameraUsageDescription</key>
-	<string>Tranquil Life requires permission to
-	your camera and photo gallery for the purpose of uploading a profile picture.</string>
+	<string>Tranquil Life requires permission to your camera and photo gallery for the purpose of uploading a profile picture.</string>
 	<key>NSContactsUsageDescription</key>
 	<string>To prevent app from crashing when adding schedule meeting to calendar</string>
 	<key>NSFaceIDUsageDescription</key>
@@ -51,7 +50,7 @@
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Tranquil Life requires permission to your microphone to make calls and to record voice notes and videos.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Tranquil Life requires permission to your gallery.</string>
+    <string>Tranquil Life requires access to your gallery to allow you upload a profile picture</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>This app needs access to phone mic for audio recordings and speech recognition</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
