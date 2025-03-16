@@ -6,18 +6,22 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tl_consultant/core/global/dialogs.dart';
 import 'package:tl_consultant/core/global/user_avatar.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
+import 'package:tl_consultant/core/theme/properties.dart';
 import 'package:tl_consultant/core/utils/extensions/date_time_extension.dart';
 import 'package:tl_consultant/core/utils/functions.dart';
 import 'package:tl_consultant/core/utils/helpers/svg_elements.dart';
 import 'package:tl_consultant/features/journal/domain/entities/personal_note.dart';
 import 'package:tl_consultant/features/journal/domain/entities/shared_note/shared_note.dart';
 import 'package:tl_consultant/features/journal/presentation/controllers/notes_controller.dart';
+import 'package:tl_consultant/features/journal/presentation/screens/create_note.dart';
 
 class NoteWidget extends StatelessWidget {
   NoteWidget({super.key, this.sharedNote, this.personalNote});
+
   final PersonalNote? personalNote;
   final SharedNote? sharedNote;
 
@@ -31,26 +35,33 @@ class NoteWidget extends StatelessWidget {
         onTap: personalNote == null
             ? (sharedNote!.note == null
                 ? null
-                : () {
-                    print(sharedNote!.note);
+                : () async {
+                    //..
                   })
-            : () {
-                print(personalNote);
+            : () async {
+                await showModalBottomSheet(
+                    context: context,
+                    barrierColor: Colors.black26,
+                    backgroundColor: Colors.transparent,
+                    builder: (_) =>
+                        NoteBottomSheet(personalNote: personalNote));
               },
         child: Stack(
           clipBehavior: Clip.none,
           children: [
-            Card(
-              elevation: 1,
-              margin: EdgeInsets.zero,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15),
+            Container(
+              decoration:  BoxDecoration(
+                  color: personalNote == null
+        ? sharedNote!.note == null
+        ? ColorPalette.grey
+            : Color(int.parse(sharedNote!.note!.hexColor))
+        : ColorPalette.pNoteBgColor,
+                  borderRadius: BorderRadius.circular(8.0),
+                  boxShadow: [
+                    const BoxShadow(
+                        blurRadius: 6, color: Colors.black12, offset: Offset(0, 3))
+                  ]
               ),
-              color: personalNote == null
-                  ? sharedNote!.note == null
-                      ? ColorPalette.grey
-                      : Color(int.parse(sharedNote!.note!.hexColor))
-                  : ColorPalette.pNoteBgColor,
               child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: personalNote == null
@@ -184,13 +195,11 @@ class NoteWidget extends StatelessWidget {
                                 ),
                                 GestureDetector(
                                   onTap: () {},
-                                  child: Wrap(
-                                    direction: Axis.horizontal,
-                                    crossAxisAlignment:
-                                        WrapCrossAlignment.center,
+                                  child: Row(
                                     children: [
                                       Text(personalNote!.attachments!.length
                                           .toString()),
+                                      SizedBox(width: 4),
                                       SvgPicture.asset(attachIcon),
                                     ],
                                   ),
@@ -261,5 +270,113 @@ class NoteWidget extends StatelessWidget {
         return input;
       }
     }
+  }
+}
+
+class NoteBottomSheet extends StatelessWidget {
+  final PersonalNote? personalNote;
+  final SharedNote? sharedNote;
+
+  bool isMultiple = false;
+
+  NoteBottomSheet({super.key, this.personalNote, this.sharedNote});
+
+  NotesController notesController = Get.put(NotesController());
+
+  @override
+  Widget build(BuildContext context) {
+    // isMultiple = notes.length > 1;
+    return Container(
+        padding: const EdgeInsets.fromLTRB(8, 32, 8, 8),
+        decoration: bottomSheetDecoration,
+        child: SafeArea(
+          top: false,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _Option(
+                label: 'View Note',
+                icon: const Icon(Icons.remove_red_eye_outlined),
+                onPressed: () async {
+                  if(personalNote != null){
+                    await Get.to(
+                      const CreateNote(),
+                      arguments: {'personal_note': personalNote},
+                    );
+                  }else{
+                    await Get.to(
+                      const CreateNote(),
+                      arguments: {'shared_note': sharedNote},
+                    );
+                  }
+
+                },
+              ),
+              // const SizedBox(height: 4),
+              // _Option(
+              //   label: 'Add to favorites',
+              //   icon: const Icon(Icons.star_border_outlined),
+              //   onPressed: () {
+              //     //..
+              //   },
+              // ),
+              // const SizedBox(height: 4),
+              //
+              // if(sharedNote == null)
+              // _Option(
+              //   label: 'Delete note',
+              //   icon: const Icon(Icons.delete_outline),
+              //   onPressed: () {
+              //     Get.back();
+              //
+              //     // return showDialog(
+              //     //     context: context,
+              //     //     builder: (_) => ConfirmDialog(
+              //     //         title: 'Are you sure?',
+              //     //         bodyText:
+              //     //             '${isMultiple ? 'These notes' : 'This note'} will be permanently deleted.',
+              //     //         yesDialog: DialogOption(
+              //     //           'Delete',
+              //     //           onPressed: () async {
+              //     //             // await notesController.deleteNote([note]);
+              //     //           },
+              //     //         )));
+              //   },
+              // ),
+            ],
+          ),
+        ));
+  }
+}
+
+class _Option extends StatelessWidget {
+  const _Option({
+    Key? key,
+    required this.icon,
+    required this.label,
+    required this.onPressed,
+  }) : super(key: key);
+
+  final String label;
+  final Widget icon;
+  final Function()? onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onPressed,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 24),
+        child: Row(
+          children: [
+            icon,
+            const SizedBox(width: 16),
+            Flexible(
+              child: Text(label, style: const TextStyle(fontSize: 18)),
+            )
+          ],
+        ),
+      ),
+    );
   }
 }
