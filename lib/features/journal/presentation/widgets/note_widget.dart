@@ -17,7 +17,7 @@ import 'package:tl_consultant/features/journal/domain/entities/shared_note/share
 import 'package:tl_consultant/features/journal/presentation/controllers/notes_controller.dart';
 
 class NoteWidget extends StatelessWidget {
-  NoteWidget({Key? key, this.sharedNote, this.personalNote}) : super(key: key);
+  NoteWidget({super.key, this.sharedNote, this.personalNote});
   final PersonalNote? personalNote;
   final SharedNote? sharedNote;
 
