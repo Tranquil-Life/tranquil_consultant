@@ -1,8 +1,9 @@
 import 'package:tl_consultant/core/constants/constants.dart';
 
-const host = 'https://tranquil-api-staging-205081a15c84.herokuapp.com';
+const staging = 'https://tranquil-api-staging-205081a15c84.herokuapp.com';
+const production = 'https://tranquil-api.herokuapp.com';
 const exchangeHost = "https://v6.exchangerate-api.com/v6";
-const baseUrl = '$host/api/';
+const baseUrl = '$production/api/';
 
 abstract class AuthEndPoints {
   static const login = '$thisUserType/login';
