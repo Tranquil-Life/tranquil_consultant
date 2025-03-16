@@ -10,6 +10,8 @@ import 'package:tl_consultant/core/utils/functions.dart';
 import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 import 'package:tl_consultant/core/utils/helpers/svg_elements.dart';
 import 'package:tl_consultant/features/auth/presentation/widgets/means_of_id_field.dart';
+import 'package:tl_consultant/features/journal/domain/entities/personal_note.dart';
+import 'package:tl_consultant/features/journal/domain/entities/shared_note/shared_note.dart';
 import 'package:tl_consultant/features/journal/presentation/controllers/notes_controller.dart';
 import 'package:tl_consultant/features/journal/presentation/widgets/text_options_dialog.dart';
 
@@ -29,9 +31,35 @@ class _CreateNoteState extends State<CreateNote> {
   FocusNode focusNode = FocusNode();
 
   bool inPreviewMode = false;
-
+  bool isAlreadySaved = false;
   String previewMode = SvgElements.svgPreviewModeIcon;
   String editMode = SvgElements.svgEditModeIcon;
+  PersonalNote? personalNote;
+  SharedNote? sharedNote;
+  String mood = "";
+
+  @override
+  void initState() {
+    var data = Get.arguments;
+    if (data != null) {
+      Map args = data as Map;
+      if(args['personal_note'] != null){
+        personalNote = args['personal_note'];
+
+        notesController.titleController.text = personalNote!.heading;
+        notesController.bodyController.text = personalNote!.body;
+
+        isAlreadySaved = true;
+      }else if(args['shared_note'] != null){
+        sharedNote = args['shared_note'];
+        mood = sharedNote!.note!.mood!;
+        // bgColor = Color(int.parse(sharedNote!.hexColor!));
+
+      }
+    }
+
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -49,7 +77,7 @@ class _CreateNoteState extends State<CreateNote> {
         backgroundColor: Colors.grey.shade100,
         appBar: CustomAppBar(
           centerTitle: false,
-          title: "New note",
+          title: sharedNote == null ? isAlreadySaved ? "Edit note" : "New note" : "View note",
           actions: [
             AppBarAction(
               actionBgColor: ColorPalette.green,
@@ -101,12 +129,14 @@ class _CreateNoteState extends State<CreateNote> {
                                 keyboardType: TextInputType.multiline,
                                 maxLines: null,
                                 decoration: const InputDecoration(
-                                  hintText: "What are your thoughts?",
+                                  hintText: "What's on your mind?",
                                   border: InputBorder.none,
                                 ),
                               ))),
                   ],
                 ),
+
+                if(!isAlreadySaved)
                 Positioned(
                     bottom: 50,
                     right: 0,
@@ -156,8 +186,13 @@ class _CreateNoteState extends State<CreateNote> {
                             SizedBox(
                               width: 137,
                               child: CustomButton(
-                                onPressed: () async =>
-                                    await notesController.createNote(),
+                                onPressed: () async {
+                                  if(!isAlreadySaved){
+                                    await notesController.createNote();
+                                  }else{
+                                    //...update
+                                  }
+                                },
                                 text: "Save note",
                               ),
                             )

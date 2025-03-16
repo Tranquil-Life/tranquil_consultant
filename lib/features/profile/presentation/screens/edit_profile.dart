@@ -54,6 +54,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         appBar: CustomAppBar(
             title: pageTitle(),
             centerTitle: false,
+            fontFamily: AppFonts.josefinSansRegular,
             backgroundColor: Colors.white),
         body: Padding(
             padding: const EdgeInsets.only(left: 24, right: 24),

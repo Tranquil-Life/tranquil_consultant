@@ -38,6 +38,8 @@ class _PersonalNotesTabState extends State<PersonalNotesTab> {
           right: 25,
           bottom: 50,
           child: FloatingActionButton(
+            heroTag: "personal_notes_fab", // Unique tag to avoid conflicts
+            shape: CircleBorder(),
             backgroundColor: ColorPalette.green,
             onPressed: () {
               Get.to(const CreateNote());
@@ -69,7 +71,7 @@ class CurrentView extends StatelessWidget {
     return Obx(() => GridView.builder(
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: layout == grid ? 2 : 1,
-          childAspectRatio: 1,
+          childAspectRatio: 0.85,
           mainAxisSpacing: 16.0,
           crossAxisSpacing: 16.0,
         ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tl_consultant/core/global/app_bar_button.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
+import 'package:tl_consultant/core/theme/fonts.dart';
 
 class AppBarAction {
   final Widget child;
@@ -82,6 +83,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                   fontSize: 24,
                   fontWeight: FontWeight.w500,
                   color: titleColor ?? ColorPalette.black,
+                  fontFamily: AppFonts.josefinSansRegular
                 ),
               ),
             )
