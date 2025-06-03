@@ -60,11 +60,10 @@ class VerificationController extends GetxController {
     Either either = await authRepo.requestVerificationToken(email: email);
 
     either.fold(
-        (l) => CustomSnackBar.showSnackBar(
-            context: Get.context!,
-            title: "Error",
-            message: l.message.toString(),
-            backgroundColor: ColorPalette.red), (r) {
+        (l){
+          print(l.message);
+          return CustomSnackBar.errorSnackBar(l.message);
+        }, (r) {
       tokenSent = true;
     });
 

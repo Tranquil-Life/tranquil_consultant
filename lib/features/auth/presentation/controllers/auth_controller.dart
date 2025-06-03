@@ -183,7 +183,7 @@ class AuthController extends GetxController {
   Future sendTokenToEndpoint(String fcmToken) async {
     Either either = await authRepo.sendTokenToEndpoint(fcmToken);
     either.fold((l) => CustomSnackBar.errorSnackBar(l.message.toString()),
-        (r) => debugPrint(r.toString()));
+        (r) => debugPrint("FCM_TOKEN: $r"));
   }
 
   Future<String> generateFcmToken() async {
