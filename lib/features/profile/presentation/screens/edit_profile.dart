@@ -268,8 +268,7 @@ class _EditProfileHeadState extends State<EditProfileHead> {
                 File? file =
                     await MediaService.selectImage(ImageSource.gallery);
                 // await profileController.uploadVideo(File(video.path));
-                await videoRecordingController.uploadFile(
-                    file!, profileImage, profileController);
+                await videoRecordingController.uploadFile(file!, profileImage, profileController);
               },
               child: const Text(
                 'Edit profile picture',
