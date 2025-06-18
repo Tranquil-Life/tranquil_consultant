@@ -7,6 +7,7 @@ abstract class Routes {
   static const ONBOARDING = '/onboarding';
   static const SIGN_IN = '/sign-in';
   static const INTRODUCE_YOURSELF = '/introduce-yourself';
+  static const PROFILE_PREVIEW = '/PROFILE-PREVIEW';
   static const SIGN_UP_0 = '/sign-up-0';
   static const SIGN_UP_1 = '/sign-up-1';
   static const SIGN_UP_2 = '/sign-up-2';

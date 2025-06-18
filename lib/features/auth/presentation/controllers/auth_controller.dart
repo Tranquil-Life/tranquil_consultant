@@ -10,6 +10,7 @@ import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/utils/routes/app_pages.dart';
 import 'package:tl_consultant/core/utils/services/app_data_store.dart';
 import 'package:tl_consultant/features/auth/data/repos/auth_repo.dart';
+import 'package:tl_consultant/features/auth/data/repos/reg_data_store.dart';
 import 'package:tl_consultant/features/auth/domain/entities/register_data.dart';
 import 'package:tl_consultant/features/auth/presentation/controllers/verification_controller.dart';
 import 'package:tl_consultant/features/media/data/media_repo.dart';
@@ -27,8 +28,7 @@ class AuthController extends GetxController {
   MediaRepoImpl mediaRepo = MediaRepoImpl();
 
   TextEditingController emailTEC =
-      // TextEditingController(text: "apple2@gmail.com");
-      TextEditingController();
+      TextEditingController(text: registrationDataStore.fields[email] ?? "");
 
   // TextEditingController passwordTEC = TextEditingController(text: "password");
   TextEditingController confirmPasswordTEC = TextEditingController();

@@ -23,7 +23,6 @@ import 'package:tl_consultant/features/profile/domain/entities/user.dart';
 import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:tl_consultant/features/profile/presentation/screens/edit_profile.dart';
 
-
 void setStatusBarBrightness(bool dark, [Duration? delayedTime]) async {
   await Future.delayed(delayedTime ?? const Duration(milliseconds: 300));
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
@@ -202,24 +201,33 @@ String formatDuration(double milliseconds) {
   return '$minutes:${seconds.toString().padLeft(2, '0')}';
 }
 
-Future shareFile(File toShare) async {
+Future shareFile({File? fileToShare, String? urlToShare}) async {
+  File file;
+  Uri uri;
+
   try {
-    final file = File(toShare.path);  // Ensure you're passing the correct path
+    if (fileToShare != null) {
+      file = File(fileToShare.path);
+
+      if (file.existsSync()) {
+        await Share.shareXFiles([XFile(file.path)]);
+      } else {
+        CustomSnackBar.showSnackBar(
+            context: Get.context!,
+            title: "Error",
+            message: "File does not exist",
+            backgroundColor: ColorPalette.red);
+      }
+    } else {
+      uri = Uri.parse(urlToShare!);
+      await Share.shareUri(uri);
+    }
 
     // Debugging the file path and existence
     // print('File path: ${file.path}');
     // print('File exists: ${file.existsSync()}');
 
     // Check if the file exists before trying to share
-    if (file.existsSync()) {
-      await Share.shareXFiles([XFile(file.path)]);
-    } else {
-      CustomSnackBar.showSnackBar(
-          context: Get.context!,
-          title: "Error",
-          message: "File does not exist",
-          backgroundColor: ColorPalette.red);
-    }
   } catch (e) {
     CustomSnackBar.showSnackBar(
         context: Get.context!,

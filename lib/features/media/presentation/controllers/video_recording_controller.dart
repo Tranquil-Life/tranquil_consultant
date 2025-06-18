@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:tl_consultant/core/global/custom_snackbar.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
+import 'package:tl_consultant/features/auth/data/repos/reg_data_store.dart';
 import 'package:tl_consultant/features/media/data/media_repo.dart';
 import 'package:tl_consultant/features/profile/data/models/user_model.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
@@ -123,7 +124,8 @@ class VideoRecordingController extends GetxController{
 
       if (uploadType == videoIntro) {
         controller.introVideo.value = downloadUrl;
-        userDataStore.user['video_intro'] = downloadUrl;
+        userDataStore.user[videoIntro] = downloadUrl;
+        registrationDataStore.setField(videoIntro, downloadUrl);
 
         uploading.value = false;
 
@@ -137,7 +139,9 @@ class VideoRecordingController extends GetxController{
 
       } else if (uploadType == profileImage) {
         controller.profilePic.value = downloadUrl;
-        userDataStore.user['avatar_url'] = downloadUrl;
+        userDataStore.user[avatarUrl] = downloadUrl;
+
+        registrationDataStore.setField(avatarUrl, downloadUrl);
 
         uploading.value = false;
 

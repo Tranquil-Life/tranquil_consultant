@@ -61,7 +61,6 @@ class VerificationController extends GetxController {
 
     either.fold(
         (l){
-          print(l.message);
           return CustomSnackBar.errorSnackBar(l.message);
         }, (r) {
       tokenSent = true;

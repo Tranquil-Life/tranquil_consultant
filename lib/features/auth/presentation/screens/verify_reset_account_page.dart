@@ -69,7 +69,7 @@ class _VerifyResetAccountPageState extends State<VerifyResetAccountPage> {
                     height: 24,
                   ),
                   Text(
-                    "Enter the security code sent to ${authController.emailTEC.text} to verify your account",
+                    "Enter the security code sent to ${authController.emailTEC.text} to verify your account. Check your inbox or spam",
                     style: TextStyle(
                         fontSize: AppFonts.defaultSize,
                         fontWeight: FontWeight.w400,

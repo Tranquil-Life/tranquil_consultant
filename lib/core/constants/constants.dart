@@ -94,3 +94,11 @@ const agencyVerifyIdentityMsg = "Confirm your affiliation with our partner agenc
 const contactAgencyForCodeMsg = "It seems the code you used is incorrect. Please check the code and try again to make sure it is correct. If the issue persists, contact your clinic or reach out to our team at ";
 const verifyFailedMsg = "Verification failed";
 const verifySuccessMsg = "Verification confirmed";
+
+const email = "email";
+const firstName = "first_name";
+const lastName = "last_name";
+const phoneNumber = "phone_number";
+const avatarUrl = "avatar_url";
+
+const verificationCodeMsg = "Check your email or spam for the verification code";
