@@ -44,7 +44,9 @@ class MessagesState extends State<Messages>
       TweenSequenceItem(tween: Tween(begin: 1.0, end: 0.0), weight: 0.2),
     ]));
 
-    _addScrollListener(); //initialize the scroll listener
+    _addScrollListener();
+
+    chatController.initializePusher();//initialize the scroll listener
 
     super.initState();
   }
@@ -63,30 +65,33 @@ class MessagesState extends State<Messages>
 
   @override
   Widget build(BuildContext context) {
-    chatController.messages.sort((a, b) => b.createdAt!.compareTo(a.createdAt!));
 
-    return Obx(()=>ListView.builder(
-      physics: const BouncingScrollPhysics(),
-      reverse: true,
-      controller: _scrollController,
-      itemCount: chatController.messages.length + (chatController.isLoadMoreRunning.value ? 1 : 0),
-      itemBuilder: (context, index) {
-        // Display messages in reverse order
-        //final reversedIndex = chatController.messages.length - index - 1;
+    return Obx((){
+      chatController.messages.sort((a, b) => b.createdAt!.compareTo(a.createdAt!));
 
-        if (index == chatController.messages.length) {
-          // Display a loading indicator at the end of the list while loading more messages
-          return const Center(
-            child: CircularProgressIndicator(color: ColorPalette.green),
+      return ListView.builder(
+        physics: const BouncingScrollPhysics(),
+        reverse: true,
+        controller: _scrollController,
+        itemCount: chatController.messages.length + (chatController.isLoadMoreRunning.value ? 1 : 0),
+        itemBuilder: (context, index) {
+          // Display messages in reverse order
+          //final reversedIndex = chatController.messages.length - index - 1;
+
+          if (index == chatController.messages.length) {
+            // Display a loading indicator at the end of the list while loading more messages
+            return const Center(
+              child: CircularProgressIndicator(color: ColorPalette.green),
+            );
+          }
+
+          return ChatItem(
+            chatController.messages[index],
+            highlightAnim: highlightAnim,
+            animate: index == -1,
           );
-        }
-
-        return ChatItem(
-          chatController.messages[index],
-          highlightAnim: highlightAnim,
-          animate: index == -1,
-        );
-      },
-    ));
+        },
+      );
+    });
   }
 }

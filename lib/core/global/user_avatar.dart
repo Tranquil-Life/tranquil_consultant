@@ -72,11 +72,16 @@ class UserAvatar extends StatelessWidget {
               frameBuilder: frameBuilder,
             );
           case AvatarSource.bitmojiUrl:
-            return SvgPicture.string(
-              fluttermojiFunctions.decodeFluttermojifromString(value),
-              fit: BoxFit.cover,
-              placeholderBuilder: (_) => _placeHolder,
-            );
+            try {
+              final svgString = fluttermojiFunctions.decodeFluttermojifromString(value);
+              return SvgPicture.string(
+                svgString,
+                fit: BoxFit.cover,
+                placeholderBuilder: (_) => _placeHolder,
+              );
+            } catch (e) {
+              return _placeHolder;
+            }
           default:
             return _placeHolder;
         }

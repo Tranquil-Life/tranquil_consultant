@@ -3,7 +3,7 @@ part of 'package:tl_consultant/features/home/presentation/screens/home_tab.dart'
 class MeetingTile extends StatefulWidget {
   final Meeting meeting;
 
-  const MeetingTile({required this.meeting});
+  const MeetingTile({super.key, required this.meeting});
 
   @override
   State<MeetingTile> createState() => MeetingTileState();

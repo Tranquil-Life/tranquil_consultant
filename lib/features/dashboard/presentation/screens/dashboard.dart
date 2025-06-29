@@ -34,6 +34,7 @@ class Dashboard extends StatefulWidget {
 class _DashboardState extends State<Dashboard> {
   final dashboardController = Get.put(DashboardController());
   final profileController = Get.put(ProfileController());
+  final chatController = Get.put(ChatController());
 
   @override
   void initState() {
@@ -64,7 +65,7 @@ class _DashboardState extends State<Dashboard> {
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.grey.shade100,
       floatingActionButton: isSmallScreen(context) ? CustomFAB(
-        onChatTap: () {},
+        onChatTap: () async => await chatController.getChatInfo(),
         dbController: dashboardController,
       ) : null,
       floatingActionButtonLocation: isSmallScreen(context) ? FloatingActionButtonLocation.centerDocked : null,

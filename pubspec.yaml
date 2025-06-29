@@ -99,6 +99,8 @@ dependencies:
   firebase_messaging: ^15.1.6
   firebase_storage: ^12.3.7
 
+  pusher_channels_flutter: ^2.2.1
+
   flutter_hooks: ^0.20.5
   flutter_svg: ^2.0.9
   win32: ^5.6.0

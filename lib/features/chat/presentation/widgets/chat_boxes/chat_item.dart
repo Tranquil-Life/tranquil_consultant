@@ -16,7 +16,7 @@ import 'package:tl_consultant/features/chat/presentation/widgets/chat_boxes/send
 class ChatItem extends StatefulWidget {
   const ChatItem(
     this.message, {
-    Key? key,
+    super.key,
     required this.animate,
     required this.highlightAnim,
     this.onReactionTap,
@@ -24,7 +24,7 @@ class ChatItem extends StatefulWidget {
     this.isExpanded = false,
     this.isSender = false,
     this.onEmojiSelected,
-  }) : super(key: key);
+  });
 
   final Message message;
   final bool animate;

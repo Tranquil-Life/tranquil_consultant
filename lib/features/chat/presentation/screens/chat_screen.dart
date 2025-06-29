@@ -84,6 +84,8 @@ class _ChatScreenState extends State<ChatScreen> {
           chatController.textController.text.removeAllWhitespace.isEmpty);
     });
 
+    // chatController.initializePusher();
+
     super.initState();
   }
 

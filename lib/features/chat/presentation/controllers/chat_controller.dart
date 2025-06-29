@@ -6,15 +6,19 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
 import 'package:tl_consultant/core/global/custom_snackbar.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
+import 'package:tl_consultant/core/utils/app_config.dart';
 import 'package:tl_consultant/core/utils/extensions/chat_message_extension.dart';
 import 'package:tl_consultant/core/utils/extensions/date_time_extension.dart';
 import 'package:tl_consultant/core/utils/functions.dart';
+import 'package:tl_consultant/core/utils/routes/app_pages.dart';
 import 'package:tl_consultant/features/chat/data/models/message_model.dart';
 import 'package:tl_consultant/features/chat/data/repos/chat_repo.dart';
 import 'package:tl_consultant/features/chat/domain/entities/message.dart';
+import 'package:tl_consultant/features/consultation/domain/entities/client.dart';
 import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
 import 'package:tl_consultant/features/profile/data/models/user_model.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
@@ -29,6 +33,7 @@ class ChatController extends GetxController {
   RxList<Message> messages = <Message>[].obs;
 
   File? audioFile;
+  late PusherChannel myChannel;
 
   var callRoomId = "".obs;
   RxSet<int> remoteIds = <int>{}.obs;
@@ -41,44 +46,16 @@ class ChatController extends GetxController {
   RxInt? chatId;
   var chatChannel = "".obs;
   Rx<Message> replyMessage = Message().obs;
+
   // Used to display loading indicators when _firstLoad function is running
   var lastMessageId = 0.obs;
   var isFirstLoadRunning = false.obs;
+
   // Used to display loading indicators when _loadMore function is running
   var isLoadMoreRunning = false.obs;
   RxBool allPagesLoaded = false.obs; // Flag to check if all pages are loaded
-  //
-  // List<QueryDocumentSnapshot> messagesDocs = <QueryDocumentSnapshot>[];
-  //
-  // //listen for changes on the firestore channel
-  // listenChannel() {
-  //   firebaseFireStore
-  //       .collection(chatsCollection)
-  //       .doc(chatChannel.value)
-  //       .collection(messagesCollection)
-  //       .orderBy('created_at',
-  //           descending: true) // Assuming you have a timestamp field
-  //       .limit(1)
-  //       .snapshots()
-  //       .listen((messagesSnapshot) {
-  //     // Handle changes in the subcollection
-  //     if (messagesSnapshot.docs.isNotEmpty) {
-  //       Message message = MessageModel.fromDoc(messagesSnapshot.docs[0].data());
-  //
-  //       // Check if the message is not already in the list
-  //       if (!messages.any((existingMessage) =>
-  //           existingMessage.messageId == message.messageId)) {
-  //         debugPrint('Latest Subcollection document data: ${message.message}');
-  //
-  //         if (message.senderId != UserModel.fromJson(userDataStore.user).id) {
-  //           messages.insert(0, message);
-  //         }
-  //       }
-  //     } else {
-  //       debugPrint('No documents in the subcollection.');
-  //     }
-  //   });
-  // }
+
+  var eventDataMsg = <String, dynamic>{}.obs;
 
   Future loadRecentMessages() async {
     if (chatId != null) {
@@ -90,15 +67,15 @@ class ChatController extends GetxController {
           messages.clear();
 
           /**
-         *
-         * for (int i = 0; i < (r as List).length; i++) {
-          Message message = MessageModel.fromJson(r[i]);
-          if (!messages.any((existingMessage) =>
+           *
+           * for (int i = 0; i < (r as List).length; i++) {
+              Message message = MessageModel.fromJson(r[i]);
+              if (!messages.any((existingMessage) =>
               existingMessage.messageId == message.messageId)) {
-            messages.add(message);
-          }
-        }
-         */
+              messages.add(message);
+              }
+              }
+           */
 
           var data = r['data'];
           for (int i = 0; i < (data as List).length; i++) {
@@ -125,11 +102,9 @@ class ChatController extends GetxController {
 
       update();
       isFirstLoadRunning.value = false;
-      print(chatId!.value);
       // Additional logic related to chatId...
     } else {
       // Handle the case where chatId is null (optional).
-      print('chatId is null');
     }
   }
 
@@ -163,11 +138,12 @@ class ChatController extends GetxController {
 
   //Get specific chat history
   Future getChatInfo() async {
+
+
     loadingChatRoom.value = true;
     Either either = await repo.getChatInfo(
       consultantId: userDataStore.user['id'],
-      clientId: 11,
-      // clientId: dashboardController.clientId.value,
+      clientId: dashboardController.clientId.value,
     );
 
     Map chatInfo = {};
@@ -183,12 +159,23 @@ class ChatController extends GetxController {
     }, (r) {
       chatInfo = r['data'];
 
+
       chatId ??= RxInt(0);
       chatId!.value = chatInfo['id'];
       chatChannel.value = chatInfo['channel'];
+      dashboardController.clientId.value = chatInfo['client']['id'];
+      dashboardController.clientName.value = chatInfo['client']['display_name'];
+      dashboardController.clientDp.value = chatInfo['client']['avatar_url'];
     });
 
-    await Future.delayed(Duration.zero);
+    Get.toNamed(
+      Routes.CHAT_SCREEN,
+      arguments: <String, dynamic>{
+        "chat_id": chatId?.value,
+        "client": client,
+      },
+    );
+
 
     // await addChatToFirestore();
     await Future.delayed(const Duration(seconds: 1));
@@ -196,46 +183,84 @@ class ChatController extends GetxController {
     loadRecentMessages();
 
     loadingChatRoom.value = false;
-  }
 
-  // Future addChatToFirestore() async {
-  //   String documentId = chatChannel.value;
-  //
-  //   DocumentReference documentReference =
-  //       firebaseFireStore.collection(chatsCollection).doc(documentId);
-  //
-  //   // Get the document snapshot
-  //   DocumentSnapshot snapshot = await documentReference.get();
-  //
-  //   // Replace these with the fields and values you want to set
-  //   Map<String, dynamic> fields = {
-  //     'id': chatId!.value,
-  //     'client_id': dashboardController.clientId.value,
-  //     'consultant_id': UserModel.fromJson(userDataStore.user).id,
-  //     'channel': chatChannel.value,
-  //     'created_at': DateTimeExtension.now,
-  //     'updated_at': DateTimeExtension.now
-  //   };
-  //
-  //   try {
-  //     if (!snapshot.exists) {
-  //       // Add document to the top-level collection: chats
-  //       await documentReference.set(fields);
-  //
-  //       debugPrint('Data added successfully!');
-  //
-  //       Get.toNamed(Routes.CHAT_SCREEN, arguments: chatId?.value);
-  //     } else {
-  //       Get.toNamed(Routes.CHAT_SCREEN, arguments: chatId?.value);
-  //     }
-  //   } catch (e) {
-  //     debugPrint('Error adding data: $e');
-  //   }
-  // }
+    return chatInfo;
+  }
 
   setVoiceFile(File file) {
     audioFile = file;
     update();
+  }
+
+  void addMessage(Message message) {
+    messages.add(message);
+    messages.sort((a, b) => a.createdAt!.compareTo(b.createdAt!));
+
+    // Optionally scroll to bottom if needed
+  }
+
+  Future initializePusher() async {
+    try {
+      myChannel = PusherChannel(channelName: "my-channel");
+      await pusher.init(
+        apiKey: AppConfig.pusherKey,
+        cluster: 'eu',
+        onConnectionStateChange: (dynamic currentState, dynamic previousState) {
+
+        },
+        onError: (String message, int? code, dynamic e) {
+          // print("onError: $message code: $code exception: $e");
+        },
+        onSubscriptionSucceeded: (channelName, data) {
+
+        },
+        onEvent: (PusherEvent event) async {
+          var eventData = Map<String, dynamic>.from(jsonDecode(event.data));
+
+          // Message message = MessageModel.fromJson(eventData['message']);
+          //
+          // messages.add(message);
+
+          // print("SEE EVENT DATA: ${message.toJson()}");
+
+          if (eventData.isNotEmpty && eventData['message'] != null) {
+            print("MESSAGE: AFTER: ${eventData['message']}");
+
+            Message message = MessageModel.fromJson(eventData['message']);
+            if (!message.fromYou) {
+              // await Future.delayed(Duration(seconds: 1));
+              addMessage(message);
+
+              print("MESSAGE: AFTER: TO JSON: ${message.toJson()}");
+
+
+            }
+            // proceed with using message
+          }
+
+
+
+
+          eventDataMsg.value = eventData['message'];
+        },
+        onSubscriptionError: (String message, dynamic e) {
+        },
+        onDecryptionFailure: (String event, String reason) {
+          // print("onDecryptionFailure: $event reason: $reason");
+        },
+        onMemberAdded: (String channelName, PusherMember member) {
+          // print("onMemberAdded: $channelName member: $member");
+        },
+        onMemberRemoved: (String channelName, PusherMember member) {
+          // print("onMemberRemoved: $channelName member: $member");
+        },
+      );
+
+      myChannel = await pusher.subscribe(channelName: "my-channel");
+      await pusher.connect();
+    } catch (e) {
+      // print("ERROR: $e");
+    }
   }
 
   @override
@@ -252,3 +277,6 @@ class ChatController extends GetxController {
     super.onClose();
   }
 }
+
+PusherChannelsFlutter pusher = PusherChannelsFlutter.getInstance();
+

@@ -1,3 +1,4 @@
+import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/utils/extensions/date_time_extension.dart';
 import 'package:tl_consultant/features/chat/domain/entities/message.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
@@ -5,7 +6,7 @@ import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 enum MessageType { text, image, video, audio }
 
 extension ChatMessageExtension on Message {
-  bool get fromYou => senderId == userDataStore.user['id'];
+  bool get fromYou => senderType == consultant;
 
   bool get isSent => false;
 
