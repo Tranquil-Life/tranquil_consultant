@@ -65,17 +65,21 @@ class ChatRepoImpl extends ChatRepo {
 
   @override
   Future<Either<ApiError, dynamic>> sendChat(
-      {required int? chatId,
-      required String message,
-      required String messageType,
-      String? caption,
-      int? parentId}) async {
+      { required int? chatId,
+        required String? message,
+        required String messageType,
+        String? caption,
+        int? parentId,
+        int? clientId}) async {
     final body = {
       "chat_id": chatId,
       "message": message,
       "message_type": messageType,
       "caption": caption,
       "parent_id": parentId,
+      "sender_id": clientId,
+      "ai_chat": false
+
     };
 
     return await catchSocketException(

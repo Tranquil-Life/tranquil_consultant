@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tl_consultant/core/global/custom_snackbar.dart';
@@ -20,21 +21,35 @@ class UploadController extends GetxController {
   ChatRepoImpl chatRepo = ChatRepoImpl();
   MediaRepoImpl mediaRepo = MediaRepoImpl();
 
-  handleTextUpload({required String message, Message? quotedMessage}) async {
+  var uploading = false.obs;
+
+  handleTextUpload({
+    required int chatId,
+    required String message,
+    Message? quotedMessage,
+    required int clientID}) async {
     if (message.isEmpty) return;
+
+    final chatController = ChatController.instance;
+
 
     chatController.messageType.value = MessageType.text.toString();
 
-    var result = await chatRepo.sendChat(
-        chatId: chatController.chatId?.value,
-        message: message,
-        messageType: strMsgType(chatController.messageType.value),
-        parentId: quotedMessage!.messageId,
-        caption: null);
+    Either either = await chatRepo.sendChat(
+      chatId: chatId,
+      message: message,
+      messageType: strMsgType(chatController.messageType.value),
+      parentId: quotedMessage!.messageId,
+      caption: null,
+      clientId: clientID,
+    );
 
-    if (result.isRight()) {
-      Map messageMap = {};
-      result.map((r) => messageMap = r['data']);
+    either.fold((l) => CustomSnackBar.errorSnackBar(l.message.toString()), (r) {
+      //TODO: Comment this and put it outside the either method
+      uploading.value = false;
+
+      // var messageMap = r['data'];
+      var messageMap = r;
 
       var messageObj = Message(
         messageId: messageMap['id'],
@@ -51,21 +66,10 @@ class UploadController extends GetxController {
         updatedAt: DateTime.parse(messageMap['updated_at']),
       );
 
-      chatController.messages.insert(0, messageObj);
-
-      uploadToFirestore(messageObj);
+      ChatController.instance.messages.insert(0, messageObj);
 
       update();
-    } else {
-      result.leftMap((l) {
-        debugPrint("FAILED: ERROR: ${l.message}");
-        CustomSnackBar.showSnackBar(
-            context: Get.context!,
-            title: "Error",
-            message: l.message!,
-            backgroundColor: ColorPalette.red);
-      });
-    }
+    });
   }
 
   Future handleVoiceNoteUpload({File? file, Message? quotedMessage}) async {

@@ -15,7 +15,10 @@ class Messages extends StatefulWidget {
 
 class MessagesState extends State<Messages>
     with SingleTickerProviderStateMixin {
-  ChatController chatController = Get.put(ChatController());
+  // ChatController chatController = Get.put(ChatController());
+
+  final chatController = ChatController.instance;
+
 
   late final AnimationController animController;
   late final Animation<double> highlightAnim;

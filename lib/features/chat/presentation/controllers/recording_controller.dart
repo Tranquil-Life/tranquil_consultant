@@ -15,12 +15,13 @@ import 'package:path/path.dart' as path;
 class RecordingController extends GetxController {
   static RecordingController instance = Get.find();
   final chatController = Get.put(ChatController());
+  int recordingDuration = 0;
 
   String? localAudioPath;
   File? audioFile;
   RxBool isPlaying = false.obs;
   RxBool isRecording = false.obs;
-// var audioPlayer = AudioPlayer();
+  // var audioPlayer = AudioPlayer();
   FlutterSoundRecorder? audioRecorder;
 
   //final _onAudioDuration = StreamController<String>();
@@ -167,100 +168,100 @@ class RecordingController extends GetxController {
     super.dispose();
   }
 
-  // void initAndroidRecorder() async{
-  //   currentStatus.reactive.value;
-  //
-  //   try{
-  //     bool hasPermission = await FlutterAudioRecorder2.hasPermissions ?? false;
-  //
-  //     if (hasPermission) {
-  //       String customPath = '/${uuid.v1().substring(0, 16)}';
-  //       Directory appDocDirectory;
-  //       appDocDirectory = (await getExternalStorageDirectory())!;
-  //
-  //       // can add extension like ".mp4" ".wav" ".m4a" ".aac"
-  //       customPath = appDocDirectory.path +
-  //           customPath +
-  //           DateTime.now().millisecondsSinceEpoch.toString();
-  //
-  //       // .wav <---> AudioFormat.WAV
-  //       // .mp4 .m4a .aac <---> AudioFormat.AAC
-  //       // AudioFormat is optional, if given value, will overwrite path extension when there is conflicts.
-  //       androidRecorder =
-  //           FlutterAudioRecorder2(customPath, audioFormat: AudioFormat.WAV);
-  //
-  //       await androidRecorder!.initialized;
-  //       // after initialization
-  //       var current = await androidRecorder!.current(channel: 0);
-  //       // should be "Initialized", if all working fine
-  //       //current = current;
-  //       if(current!.status! != null){
-  //         currentStatus = current.status!;
-  //         print("recorder state: $currentStatus");
-  //       }
-  //
-  //     } else {
-  //       CustomSnackBar.showSnackBar(
-  //           context: Get.context!,
-  //           title: "Error",
-  //           message: "You must accept permissions",
-  //           backgroundColor: Colors.red);
-  //     }
-  //   } catch (e) {
-  //     print(e);
-  //   }
-  // }
+// void initAndroidRecorder() async{
+//   currentStatus.reactive.value;
+//
+//   try{
+//     bool hasPermission = await FlutterAudioRecorder2.hasPermissions ?? false;
+//
+//     if (hasPermission) {
+//       String customPath = '/${uuid.v1().substring(0, 16)}';
+//       Directory appDocDirectory;
+//       appDocDirectory = (await getExternalStorageDirectory())!;
+//
+//       // can add extension like ".mp4" ".wav" ".m4a" ".aac"
+//       customPath = appDocDirectory.path +
+//           customPath +
+//           DateTime.now().millisecondsSinceEpoch.toString();
+//
+//       // .wav <---> AudioFormat.WAV
+//       // .mp4 .m4a .aac <---> AudioFormat.AAC
+//       // AudioFormat is optional, if given value, will overwrite path extension when there is conflicts.
+//       androidRecorder =
+//           FlutterAudioRecorder2(customPath, audioFormat: AudioFormat.WAV);
+//
+//       await androidRecorder!.initialized;
+//       // after initialization
+//       var current = await androidRecorder!.current(channel: 0);
+//       // should be "Initialized", if all working fine
+//       //current = current;
+//       if(current!.status! != null){
+//         currentStatus = current.status!;
+//         print("recorder state: $currentStatus");
+//       }
+//
+//     } else {
+//       CustomSnackBar.showSnackBar(
+//           context: Get.context!,
+//           title: "Error",
+//           message: "You must accept permissions",
+//           backgroundColor: Colors.red);
+//     }
+//   } catch (e) {
+//     print(e);
+//   }
+// }
 
-  // initAndroidRecorder() async {
-  //   bool hasPermission = await FlutterAudioRecorder2.hasPermissions ?? false;
-  //   if (hasPermission) {
-  //     Directory directory;
-  //     directory = (await getExternalStorageDirectory())!;
-  //
-  //     String customPath =
-  //         directory.path + "/rezme_" + uuid.v1().substring(0, 16).toString();
-  //
-  //     androidRecorder = FlutterAudioRecorder2(customPath,
-  //         audioFormat: AudioFormat.WAV); // or AudioFormat.WAV
-  //     await androidRecorder?.initialized;
-  //   } else {
-  //     CustomSnackBar.showSnackBar(
-  //         context: Get.context!,
-  //         title: "Error",
-  //         message: "You must accept permissions",
-  //         backgroundColor: Colors.red);
-  //   }
-  // }
+// initAndroidRecorder() async {
+//   bool hasPermission = await FlutterAudioRecorder2.hasPermissions ?? false;
+//   if (hasPermission) {
+//     Directory directory;
+//     directory = (await getExternalStorageDirectory())!;
+//
+//     String customPath =
+//         directory.path + "/rezme_" + uuid.v1().substring(0, 16).toString();
+//
+//     androidRecorder = FlutterAudioRecorder2(customPath,
+//         audioFormat: AudioFormat.WAV); // or AudioFormat.WAV
+//     await androidRecorder?.initialized;
+//   } else {
+//     CustomSnackBar.showSnackBar(
+//         context: Get.context!,
+//         title: "Error",
+//         message: "You must accept permissions",
+//         backgroundColor: Colors.red);
+//   }
+// }
 
-  // start() async {
-  //   try {
-  //     await androidRecorder!.start();
-  //     isRecording.value = true;
-  //     audioPlayer.dispose();
-  //     audioPlayer = AudioPlayer();
-  //     startTimer();
-  //     // const tick = Duration(milliseconds: 500);
-  //     // Timer.periodic(tick, (timer) {
-  //     //   print('timer.tick =${timer.tick}');
-  //     //   time.value = formatDuration(timer.tick.milliseconds * 500);
-  //     //   if (recording!.status == RecordingStatus.Stopped) {
-  //     //     timer.cancel();
-  //     //   }
-  //     //   update();
-  //     // });
-  //   } catch (e) {
-  //     print("Error on recording is ${e.toString()}");
-  //   }
-  //   //update();
-  // }
+// start() async {
+//   try {
+//     await androidRecorder!.start();
+//     isRecording.value = true;
+//     audioPlayer.dispose();
+//     audioPlayer = AudioPlayer();
+//     startTimer();
+//     // const tick = Duration(milliseconds: 500);
+//     // Timer.periodic(tick, (timer) {
+//     //   print('timer.tick =${timer.tick}');
+//     //   time.value = formatDuration(timer.tick.milliseconds * 500);
+//     //   if (recording!.status == RecordingStatus.Stopped) {
+//     //     timer.cancel();
+//     //   }
+//     //   update();
+//     // });
+//   } catch (e) {
+//     print("Error on recording is ${e.toString()}");
+//   }
+//   //update();
+// }
 
-  // androidRecorderStop() async {
-  //   var result = await androidRecorder!.stop();
-  //   stopTimer();
-  //   time.value = '00:00';
-  //   isRecording.value = false;
-  //   localAudioPath = result!.path;
-  //   //File file = localFileSystem.file(result!.path);
-  //   update();
-  // }
+// androidRecorderStop() async {
+//   var result = await androidRecorder!.stop();
+//   stopTimer();
+//   time.value = '00:00';
+//   isRecording.value = false;
+//   localAudioPath = result!.path;
+//   //File file = localFileSystem.file(result!.path);
+//   update();
+// }
 }

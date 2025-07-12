@@ -27,5 +27,4 @@ void main() async {
   cameras = await availableCameras();
   await GetStorage.init();
   runApp(const App());
-
 }

@@ -25,11 +25,12 @@ import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 import 'package:tl_consultant/main.dart';
 
 class ChatController extends GetxController {
+  static ChatController instance = Get.find();
+
   final dashboardController = Get.put(DashboardController());
 
   ChatRepoImpl repo = ChatRepoImpl();
 
-  TextEditingController textController = TextEditingController();
   RxList<Message> messages = <Message>[].obs;
 
   File? audioFile;
@@ -57,54 +58,32 @@ class ChatController extends GetxController {
 
   var eventDataMsg = <String, dynamic>{}.obs;
 
+  //recent messages
   Future loadRecentMessages() async {
     if (chatId != null) {
       isFirstLoadRunning.value = true;
       var result = await repo.getRecentMessages(chatId: chatId!.value);
 
-      if (result.isRight()) {
-        result.map((r) {
-          messages.clear();
+      result.fold((l) {}, (r) {
+        messages.clear();
 
-          /**
-           *
-           * for (int i = 0; i < (r as List).length; i++) {
-              Message message = MessageModel.fromJson(r[i]);
-              if (!messages.any((existingMessage) =>
-              existingMessage.messageId == message.messageId)) {
-              messages.add(message);
-              }
-              }
-           */
+        var data = r['data'];
 
-          var data = r['data'];
-          for (int i = 0; i < (data as List).length; i++) {
-            Message message = MessageModel.fromJson(data[i]);
-            messages.add(message);
-          }
+        for (int i = 0; i < (data as List).length; i++) {
+          Message message = MessageModel.fromJson(data[i]);
+          messages.add(message);
+        }
 
-          if (messages.isNotEmpty) {
-            lastMessageId.value = messages[messages.length - 1].messageId!;
-          } else {
-            isFirstLoadRunning.value = false;
-          }
-        });
-
-        //update(); // Notify listeners that the messages list has changed
-        isFirstLoadRunning.value = false;
-      } else {
-        result.leftMap((l) => CustomSnackBar.showSnackBar(
-            context: Get.context!,
-            title: "Error",
-            message: l.message!,
-            backgroundColor: ColorPalette.red));
-      }
+        if (messages.isNotEmpty) {
+          lastMessageId.value = messages[messages.length - 1].messageId!;
+        } else {
+          isFirstLoadRunning.value = false;
+        }
+      });
 
       update();
       isFirstLoadRunning.value = false;
       // Additional logic related to chatId...
-    } else {
-      // Handle the case where chatId is null (optional).
     }
   }
 
@@ -114,32 +93,31 @@ class ChatController extends GetxController {
     List<Message> newMessages = <Message>[];
 
     var result = await repo.getOlderMessages(
-        chatId: chatId!.value, lastMessageId: lastMessageId.value);
+      chatId: chatId!.value,
+      lastMessageId: lastMessageId.value,
+    );
 
-    if (result.isRight()) {
-      result.map((r) {
-        for (int i = 0; i < (r['data'] as List).length; i++) {
-          newMessages.add(MessageModel.fromJson(r[i]));
-        }
+    result.fold((l) {}, (r) {
+      var data = r['data'];
+      for (int i = 0; i < (data as List).length; i++) {
+        Message message = MessageModel.fromJson(data[i]);
+        newMessages.add(message);
+      }
 
-        if (newMessages.isNotEmpty) {
-          lastMessageId.value = newMessages[newMessages.length - 1].messageId!;
+      if (newMessages.isNotEmpty) {
+        lastMessageId.value = newMessages[newMessages.length - 1].messageId!;
 
-          messages.addAll(newMessages);
-        } else {
-          isLoadMoreRunning.value = false;
-        }
-      });
-    }
+        messages.addAll(newMessages);
+      } else {
+        isLoadMoreRunning.value = false;
+      }
+    });
 
     update();
     isLoadMoreRunning.value = false;
   }
-
   //Get specific chat history
-  Future getChatInfo() async {
-
-
+  Future getChatInfo({ClientUser? client}) async {
     loadingChatRoom.value = true;
     Either either = await repo.getChatInfo(
       consultantId: userDataStore.user['id'],
@@ -216,32 +194,16 @@ class ChatController extends GetxController {
         },
         onEvent: (PusherEvent event) async {
           var eventData = Map<String, dynamic>.from(jsonDecode(event.data));
+          print("eventdata: $eventData");
 
-          // Message message = MessageModel.fromJson(eventData['message']);
-          //
-          // messages.add(message);
-
-          // print("SEE EVENT DATA: ${message.toJson()}");
-
-          if (eventData.isNotEmpty && eventData['message'] != null) {
-            print("MESSAGE: AFTER: ${eventData['message']}");
-
+          if (eventData.isNotEmpty || eventData['message'] != null) {
             Message message = MessageModel.fromJson(eventData['message']);
             if (!message.fromYou) {
-              // await Future.delayed(Duration(seconds: 1));
+              await Future.delayed(Duration(seconds: 1));
               addMessage(message);
-
-              print("MESSAGE: AFTER: TO JSON: ${message.toJson()}");
-
-
             }
             // proceed with using message
           }
-
-
-
-
-          eventDataMsg.value = eventData['message'];
         },
         onSubscriptionError: (String message, dynamic e) {
         },

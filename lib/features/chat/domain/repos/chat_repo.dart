@@ -5,11 +5,12 @@ import 'package:tl_consultant/core/utils/services/API/api_service.dart';
 
 abstract class ChatRepo<T, F extends QueryParams> extends ApiService {
   Future<Either<ApiError, T>> sendChat(
-      {required int chatId,
-      required String message,
-      required String messageType,
-      String? caption,
-      int? parentId});
+      { required int? chatId,
+        required String? message,
+        required String messageType,
+        String? caption,
+        int? parentId,
+        int? clientId});
   Future<Either<ApiError, T>> getRecentMessages({
     required int chatId,
   });

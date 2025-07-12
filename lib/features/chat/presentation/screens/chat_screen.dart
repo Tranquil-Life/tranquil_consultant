@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tl_consultant/core/global/app_bar_button.dart';
+import 'package:tl_consultant/core/global/custom_loader.dart';
 import 'package:tl_consultant/core/global/unfocus_bg.dart';
 import 'package:tl_consultant/core/global/user_avatar.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
@@ -23,6 +24,7 @@ import 'package:tl_consultant/features/chat/presentation/widgets/chat_boxes/chat
 import 'package:tl_consultant/features/chat/presentation/widgets/chat_boxes/shared/replied_chat_box.dart';
 import 'package:tl_consultant/features/chat/presentation/widgets/chat_more_options.dart';
 import 'package:tl_consultant/features/chat/presentation/widgets/dialogs/vn_dialog.dart';
+import 'package:tl_consultant/features/consultation/domain/entities/client.dart';
 import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
 import 'package:vibration/vibration.dart';
 
@@ -31,7 +33,7 @@ part '../widgets/chat_app_bar.dart';
 part '../widgets/input_bar.dart';
 
 class ChatScreen extends StatefulWidget {
-  const ChatScreen({Key? key}) : super(key: key);
+  const ChatScreen({super.key});
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -43,6 +45,7 @@ class _ChatScreenState extends State<ChatScreen> {
   final _recordingController = RecordingController()..onInit();
 
   bool micMode = true;
+
   bool get showMic => micMode && !_recordingController.isRecording.value;
 
   Future _startRecording() => _recordingController.record();
@@ -69,31 +72,37 @@ class _ChatScreenState extends State<ChatScreen> {
         quotedMessage: chatController.replyMessage.value);
   }
 
+  int? chatId;
+  ClientUser? client;
+  var arguments = <String, dynamic>{};
+
   @override
   void initState() {
-    chatController.onInit();
-    //chatController.listenChannel();
+    super.initState();
+
+    var args = Get.arguments;
+    arguments = args;
+    chatId = args['chat_id'];
+    client = args['client'];
+
+    // Assign chatId to controller BEFORE loading messages
+    chatController.chatId = RxInt(chatId!);
+
+    // Now it's safe to load messages
+    chatController.loadRecentMessages();
+
+    print("INIT_STATE: ${chatController.messages}");
+
+    print("CHAT_IDD: $chatId");
+    chatController.initializePusher();
 
     _recordingController.onInit();
-
-    //re-instantiate the controller here to allow reuse after disposal
-    chatController.textController = TextEditingController();
-
-    chatController.textController.addListener(() {
-      setState(() => micMode =
-          chatController.textController.text.removeAllWhitespace.isEmpty);
-    });
-
-    // chatController.initializePusher();
-
-    super.initState();
   }
 
   @override
   void dispose() {
     //chatController.leaveChatChannel();
     _recordingController.dispose();
-    chatController.textController.dispose();
     chatController.onClose();
 
     super.dispose();
@@ -133,14 +142,19 @@ class _ChatScreenState extends State<ChatScreen> {
                             : const UnFocusWidget(
                                 child: Messages(),
                               )),
+
                     SafeArea(
                       top: false,
-                      child: _InputBar(
-                          chatController: chatController,
-                          recordingController: _recordingController,
-                          startRecording: _startRecording,
-                          stopRecording: _stopRecording,
-                          showMic: showMic),
+                      child: InputBar(
+                        chatController: chatController,
+                        recordingController: _recordingController,
+                        startRecording: _startRecording,
+                        stopRecording: _stopRecording,
+                        showMic: showMic,
+                        chatId: chatId,
+                        uploadController: uploadController,
+                        client: client!, uploadVn: _uploadVn,
+                      ),
                     )
                   ],
                 ),

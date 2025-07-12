@@ -1,5 +1,7 @@
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:fluttermoji/fluttermoji.dart';
+import 'package:tl_consultant/features/profile/data/models/user_model.dart';
+import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 import 'package:uuid/uuid.dart';
 
 const insuficientFundsMessage =
@@ -27,7 +29,7 @@ final fluttermojiFunctions = FluttermojiFunctions();
 const consultant = "consultant";
 const client = "client";
 
-const thisUserType = consultant;
+int myId = UserModel.fromJson(userDataStore.user).id!;
 
 //firebase vars
 const chatsCollection = "chats";

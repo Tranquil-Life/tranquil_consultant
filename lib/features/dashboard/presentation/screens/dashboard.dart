@@ -5,10 +5,13 @@ import 'package:tl_consultant/app.dart';
 import 'package:tl_consultant/core/global/custom_app_bar.dart';
 import 'package:tl_consultant/core/global/custom_fab.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
+import 'package:tl_consultant/core/utils/extensions/date_time_extension.dart';
 import 'package:tl_consultant/core/utils/functions.dart';
 import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 import 'package:tl_consultant/core/utils/helpers/svg_elements.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/chat_controller.dart';
+import 'package:tl_consultant/features/consultation/domain/entities/client.dart';
+import 'package:tl_consultant/features/consultation/presentation/controllers/meetings_controller.dart';
 import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
 import 'package:tl_consultant/features/dashboard/presentation/widgets/nav_item.dart';
 import 'package:tl_consultant/features/home/presentation/screens/home_tab.dart';
@@ -35,6 +38,9 @@ class _DashboardState extends State<Dashboard> {
   final dashboardController = Get.put(DashboardController());
   final profileController = Get.put(ProfileController());
   final chatController = Get.put(ChatController());
+  final meetingsController = Get.put(MeetingsController());
+
+  ClientUser? client;
 
   @override
   void initState() {
@@ -51,7 +57,39 @@ class _DashboardState extends State<Dashboard> {
     super.didChangeDependencies();
   }
 
-  bool reload = false;
+
+  updateDashboardMeetingInfo() async{
+    for (var meeting in meetingsController.meetings) {
+      if(meeting.id ==1){
+        dashboardController.currentMeetingCount.value = 1;
+        dashboardController.currentMeetingId.value = meeting.id;
+
+        print("CLIENT_INFO: ${meeting.client.toJson()}");
+        client = meeting.client;
+
+        dashboardController.clientId.value = client!.id;
+        dashboardController.clientDp.value = client!.avatarUrl;
+        dashboardController.clientName.value = client!.displayName;
+        dashboardController.currentMeetingST.value = meeting.startAt.formatDate;
+        dashboardController.currentMeetingET.value = meeting.endAt.formatDate;
+      }
+
+      //TODO: Uncomment this
+      // if (meeting.endAt.isAfter(DateTimeExtension.now) &&
+      //     (meeting.startAt.isBefore(DateTimeExtension.now) ||
+      //         meeting.startAt == DateTimeExtension.now)) {
+      //   currentMeetingCount.value = 1;
+      //   currentMeetingId.value = meeting.id;
+      //   consultantId.value = meeting.consultant.id;
+      //   consultantDp.value = meeting.consultant.avatarUrl!;
+      //   consultantName.value = meeting.consultant.firstName;
+      //   currentMeetingST.value = meeting.startAt.formatDate;
+      //   currentMeetingET.value = meeting.endAt.formatDate;
+      // }
+    }
+
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +103,15 @@ class _DashboardState extends State<Dashboard> {
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.grey.shade100,
       floatingActionButton: isSmallScreen(context) ? CustomFAB(
-        onChatTap: () async => await chatController.getChatInfo(),
+        onChatTap: () async{
+          updateDashboardMeetingInfo();
+
+          if(client != null){
+            await chatController.getChatInfo(client: client!);
+          }
+
+
+        },
         dbController: dashboardController,
       ) : null,
       floatingActionButtonLocation: isSmallScreen(context) ? FloatingActionButtonLocation.centerDocked : null,
