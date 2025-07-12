@@ -16,7 +16,7 @@ import 'package:tl_consultant/main.dart';
 class UploadController extends GetxController {
   static UploadController instance = Get.find();
 
-  ChatController chatController = Get.put(ChatController());
+  final chatController = ChatController.instance;
 
   ChatRepoImpl chatRepo = ChatRepoImpl();
   MediaRepoImpl mediaRepo = MediaRepoImpl();
@@ -29,9 +29,6 @@ class UploadController extends GetxController {
     Message? quotedMessage,
     required int clientID}) async {
     if (message.isEmpty) return;
-
-    final chatController = ChatController.instance;
-
 
     chatController.messageType.value = MessageType.text.toString();
 
@@ -66,13 +63,16 @@ class UploadController extends GetxController {
         updatedAt: DateTime.parse(messageMap['updated_at']),
       );
 
-      ChatController.instance.messages.insert(0, messageObj);
+      chatController.messages.insert(0, messageObj);
 
       update();
     });
   }
 
-  Future handleVoiceNoteUpload({File? file, Message? quotedMessage}) async {
+  Future handleVoiceNoteUpload({  File? file,
+    Message? quotedMessage,
+    required int chatId,
+    required int clientID}) async {
     if (file == null) return;
 
     var uploaded = false;
@@ -109,69 +109,70 @@ class UploadController extends GetxController {
     // }
   }
 
-  Future sendVnAsMessage(
-      {required String message,
-      required String messageType,
-      required Message? quotedMessage}) async {
-    var data = {
-      "chat_id": chatController.chatId?.value,
-      "message": message,
-      "message_type": strMsgType(messageType),
-      "parent_id": quotedMessage!.messageId
-    };
-    var result = await chatRepo.sendChat(
-        chatId: chatController.chatId?.value,
-        message: message,
-        messageType: strMsgType(messageType),
-        parentId: quotedMessage.messageId,
-        caption: null);
+//   Future sendVnAsMessage(
+//       {required String message,
+//       required String messageType,
+//       required Message? quotedMessage}) async {
+//     var data = {
+//       "chat_id": chatController.chatId?.value,
+//       "message": message,
+//       "message_type": strMsgType(messageType),
+//       "parent_id": quotedMessage!.messageId
+//     };
+//     var result = await chatRepo.sendChat(
+//         chatId: chatController.chatId?.value,
+//         message: message,
+//         messageType: strMsgType(messageType),
+//         parentId: quotedMessage.messageId,
+//         caption: null);
+//
+//     debugPrint("sendVnAsMessage: VN to be sent as msg: $data");
+//
+//     if (result.isRight()) {
+//       Map messageMap = {};
+//       result.map((r) => messageMap = r['data']);
+//
+//       debugPrint("sendVnAsMessage: VN sent as msg: $messageMap");
+//
+//       var messageObj = Message(
+//         messageId: messageMap['id'],
+//         chatId: messageMap['chat_id'],
+//         senderId: messageMap['sender_id'],
+//         parentId: messageMap['parent_id'],
+//         senderType: messageMap['sender_type'],
+//         message: messageMap['message'],
+//         messageType: "audio",
+//         // messageType: messageMap['message_type'],
+//         caption: messageMap['caption'],
+//         quoteMessage: null,
+//         read: null,
+//         createdAt: DateTime.parse(messageMap['created_at']),
+//         updatedAt: DateTime.parse(messageMap['updated_at']),
+//       );
+//
+//       chatController.messages.insert(0, messageObj);
+//
+//       uploadToFirestore(messageObj);
+//     } else {
+//       result.leftMap((l) {
+//         CustomSnackBar.showSnackBar(
+//             context: Get.context!,
+//             title: "Error",
+//             message: l.message!,
+//             backgroundColor: ColorPalette.red);
+//       });
+//     }
+//   }
+//
+//   uploadToFirestore(Message message) async {
+//     // var room = firebaseFireStore
+//     //     .collection(chatsCollection)
+//     //     .doc(chatController.chatChannel.value);
+//     //
+//     // room
+//     //     .collection("chat_messages")
+//     //     .doc(message.messageId.toString())
+//     //     .set(message.toJson());
+//   }
 
-    debugPrint("sendVnAsMessage: VN to be sent as msg: $data");
-
-    if (result.isRight()) {
-      Map messageMap = {};
-      result.map((r) => messageMap = r['data']);
-
-      debugPrint("sendVnAsMessage: VN sent as msg: $messageMap");
-
-      var messageObj = Message(
-        messageId: messageMap['id'],
-        chatId: messageMap['chat_id'],
-        senderId: messageMap['sender_id'],
-        parentId: messageMap['parent_id'],
-        senderType: messageMap['sender_type'],
-        message: messageMap['message'],
-        messageType: "audio",
-        // messageType: messageMap['message_type'],
-        caption: messageMap['caption'],
-        quoteMessage: null,
-        read: null,
-        createdAt: DateTime.parse(messageMap['created_at']),
-        updatedAt: DateTime.parse(messageMap['updated_at']),
-      );
-
-      chatController.messages.insert(0, messageObj);
-
-      uploadToFirestore(messageObj);
-    } else {
-      result.leftMap((l) {
-        CustomSnackBar.showSnackBar(
-            context: Get.context!,
-            title: "Error",
-            message: l.message!,
-            backgroundColor: ColorPalette.red);
-      });
-    }
-  }
-
-  uploadToFirestore(Message message) async {
-    // var room = firebaseFireStore
-    //     .collection(chatsCollection)
-    //     .doc(chatController.chatChannel.value);
-    //
-    // room
-    //     .collection("chat_messages")
-    //     .doc(message.messageId.toString())
-    //     .set(message.toJson());
-  }
 }

@@ -8,6 +8,7 @@ import 'package:path/path.dart' as p;
 import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/constants/end_points.dart';
 import 'package:tl_consultant/core/errors/api_error.dart';
+import 'package:tl_consultant/core/global/custom_snackbar.dart';
 import 'package:tl_consultant/features/media/domain/media_repo.dart';
 import 'package:tl_consultant/features/profile/data/models/user_model.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
@@ -25,7 +26,7 @@ class MediaRepoImpl extends MediaRepo {
       );
 
       if (info == null || info.file == null) {
-        print("Video compression failed");
+        CustomSnackBar.errorSnackBar("Oops, video compression failed!");
         return null;
       }
 

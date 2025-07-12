@@ -5,6 +5,7 @@ import 'package:swipe_to/swipe_to.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/utils/extensions/chat_message_extension.dart';
 import 'package:tl_consultant/features/chat/domain/entities/message.dart';
+import 'package:tl_consultant/features/chat/presentation/controllers/audio_player_manager.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/chat_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/widgets/chat_boxes/receiver/text.dart';
 import 'package:tl_consultant/features/chat/presentation/widgets/chat_boxes/receiver/voice_note.dart';
@@ -24,6 +25,7 @@ class ChatItem extends StatefulWidget {
     this.isExpanded = false,
     this.isSender = false,
     this.onEmojiSelected,
+        required this.playerManager,
   });
 
   final Message message;
@@ -31,6 +33,7 @@ class ChatItem extends StatefulWidget {
   final Animation<double> highlightAnim;
   final VoidCallback? onReactionTap;
   final VoidCallback? onRelease;
+  final AudioPlayerManager playerManager;
 
   final bool isExpanded;
   final bool? isSender;
@@ -46,12 +49,6 @@ class ChatItemState extends State<ChatItem> {
   bool dialogShowing = false;
 
   final itemWidgetKey = GlobalKey();
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -95,7 +92,7 @@ class ChatItemState extends State<ChatItem> {
                   case MessageType.video:
                     return SenderChatVideo(widget.message);
                   case MessageType.audio:
-                    return SenderChatVoiceNote(widget.message);
+                    return SenderChatVoiceNote(widget.message, widget.playerManager);
                   default:
                     return SenderChatText(widget.message);
                 }
@@ -106,7 +103,7 @@ class ChatItemState extends State<ChatItem> {
                   // case MessageType.video:
                   // return ReceiverChatVideo(widget.message);
                   case MessageType.audio:
-                    return ReceiverChatVoiceNote(widget.message);
+                    return ReceiverChatVoiceNote(widget.message, widget.playerManager);
                   default:
                     return ReceiverChatText(widget.message);
                 }

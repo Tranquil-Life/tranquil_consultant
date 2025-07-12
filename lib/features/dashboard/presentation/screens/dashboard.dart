@@ -104,7 +104,7 @@ class _DashboardState extends State<Dashboard> {
       backgroundColor: Colors.grey.shade100,
       floatingActionButton: isSmallScreen(context) ? CustomFAB(
         onChatTap: () async{
-          updateDashboardMeetingInfo();
+          await updateDashboardMeetingInfo();
 
           if(client != null){
             await chatController.getChatInfo(client: client!);

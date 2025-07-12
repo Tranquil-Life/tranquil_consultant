@@ -15,6 +15,7 @@ import 'package:tl_consultant/core/utils/functions.dart';
 import 'package:tl_consultant/core/utils/services/formatters.dart';
 import 'package:tl_consultant/features/chat/domain/entities/message.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/agora_controller.dart';
+import 'package:tl_consultant/features/chat/presentation/controllers/audio_player_manager.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/chat_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/recording_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/upload_controller.dart';
@@ -40,21 +41,36 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  final chatController = Get.put(ChatController());
+  final chatController = ChatController.instance;
+
   final uploadController = Get.put(UploadController());
   final _recordingController = RecordingController()..onInit();
+  final AudioPlayerManager playerManager = AudioPlayerManager();
 
   bool micMode = true;
 
   bool get showMic => micMode && !_recordingController.isRecording.value;
+  final int _maxRecordingDuration = 60; // in seconds
+  Timer? _timer;
 
-  Future _startRecording() => _recordingController.record();
+  Future _startRecording() async {
+    await _recordingController.record();
+    setState(() {
+      micMode = false;
+    });
+
+    startTimer();
+  }
 
   Future _stopRecording() async {
     await _recordingController.stop();
+
+    setState(() {});
     if (_recordingController.localAudioPath != null) {
       chatController.setVoiceFile(File(_recordingController.localAudioPath!));
     }
+
+    debugPrint("Chat screen: stop recording: ${chatController.audioFile}");
 
     return chatController.audioFile!;
   }
@@ -62,14 +78,37 @@ class _ChatScreenState extends State<ChatScreen> {
   Future _uploadVn() async {
     var hasVibrator = await Vibration.hasVibrator();
     if (hasVibrator!) {
-      await Vibration.vibrate(duration: 4000, amplitude: 225);
+      await Vibration.vibrate(duration: 2000, amplitude: 225);
     }
 
     chatController.audioFile = await _stopRecording();
 
     await UploadController().handleVoiceNoteUpload(
-        file: chatController.audioFile,
-        quotedMessage: chatController.replyMessage.value);
+      file: chatController.audioFile,
+      quotedMessage: chatController.replyMessage.value,
+      chatId: chatId!,
+      clientID: client!.id,
+    );
+
+    _recordingController.recordingDuration = 0;
+  }
+
+
+  void startTimer() {
+    _timer?.cancel();
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        _recordingController.recordingDuration += 1;
+        print(_recordingController.recordingDuration);
+
+        if (_recordingController.recordingDuration >= _maxRecordingDuration) {
+          print("IT'S TIME: ${_recordingController.recordingDuration}");
+          _timer?.cancel();
+          _uploadVn();
+          _recordingController.recordingDuration = 0;
+        }
+      });
+    });
   }
 
   int? chatId;
@@ -139,8 +178,8 @@ class _ChatScreenState extends State<ChatScreen> {
                             ? const Center(
                                 child: CircularProgressIndicator(
                                     color: ColorPalette.green))
-                            : const UnFocusWidget(
-                                child: Messages(),
+                            : UnFocusWidget(
+                                child: Messages(playerManager: AudioPlayerManager()),
                               )),
 
                     SafeArea(

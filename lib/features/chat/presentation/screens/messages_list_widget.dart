@@ -3,11 +3,13 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
+import 'package:tl_consultant/features/chat/presentation/controllers/audio_player_manager.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/chat_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/widgets/chat_boxes/chat_item.dart';
 
 class Messages extends StatefulWidget {
-  const Messages({super.key});
+  const Messages({super.key, required this.playerManager});
+  final AudioPlayerManager playerManager;
 
   @override
   State<Messages> createState() => MessagesState();
@@ -91,7 +93,7 @@ class MessagesState extends State<Messages>
           return ChatItem(
             chatController.messages[index],
             highlightAnim: highlightAnim,
-            animate: index == -1,
+            animate: index == -1, playerManager: widget.playerManager,
           );
         },
       );

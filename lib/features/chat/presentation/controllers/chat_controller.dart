@@ -118,6 +118,7 @@ class ChatController extends GetxController {
   }
   //Get specific chat history
   Future getChatInfo({ClientUser? client}) async {
+    print("hello");
     loadingChatRoom.value = true;
     Either either = await repo.getChatInfo(
       consultantId: userDataStore.user['id'],
@@ -155,7 +156,6 @@ class ChatController extends GetxController {
     );
 
 
-    // await addChatToFirestore();
     await Future.delayed(const Duration(seconds: 1));
 
     loadRecentMessages();
