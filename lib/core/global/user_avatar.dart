@@ -28,7 +28,7 @@ class UserAvatar extends StatelessWidget {
   static const Widget _placeHolder = PulsingWidget(
     child: Padding(
       padding: EdgeInsets.all(12),
-      child: FittedBox(fit: BoxFit.contain, child: Icon(Icons.image_search)),
+      child: FittedBox(fit: BoxFit.contain, child: Icon(Icons.person)),
     ),
   );
 

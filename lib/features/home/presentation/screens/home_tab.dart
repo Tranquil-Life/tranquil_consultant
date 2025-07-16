@@ -4,6 +4,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:tl_consultant/core/global/buttons.dart';
 import 'package:tl_consultant/core/global/my_default_text_theme.dart';
 import 'package:tl_consultant/core/global/user_avatar.dart';
@@ -35,8 +36,6 @@ import 'package:tl_consultant/features/profile/domain/entities/user.dart';
 import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
 
 part 'package:tl_consultant/features/home/presentation/widgets/meeting_section.dart';
-
-part 'package:tl_consultant/features/home/presentation/widgets/meeting_card.dart';
 
 part 'package:tl_consultant/features/home/presentation/widgets/meeting_tile.dart';
 

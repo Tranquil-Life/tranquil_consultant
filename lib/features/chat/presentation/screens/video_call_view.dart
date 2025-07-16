@@ -7,16 +7,17 @@ import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/agora_controller.dart';
+import 'package:tl_consultant/features/chat/presentation/controllers/chat_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/widgets/call/call_buttons.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 
 class VideoCallView extends StatefulWidget {
   const VideoCallView({
-    Key? key,
+    super.key,
     this.onPlatformViewCreated,
     this.onDoubleTap,
     this.isLocal = true,
-  }) : super(key: key);
+  });
 
   final bool isLocal;
   final Function()? onDoubleTap;
@@ -28,18 +29,17 @@ class VideoCallView extends StatefulWidget {
 
 class _VideoCallViewState extends State<VideoCallView> {
   final agoraController = Get.put(AgoraController());
+  final chatController = ChatController.instance;
 
-  int? _remoteUid;
-  RtcEngine? _engine;
+  int? remoteUID;
+  RtcEngine? rtcEngine;
+
   bool onRemoteFace = false;
 
   bool _localUserJoined = false;
 
   @override
   void initState() {
-    print('Agora Token: ${agoraController.agoraToken.value}');
-    print('Agora Room ID: ${agoraController.callRoomId.value}');
- 
     initAgora();
     super.initState();
   }
@@ -47,8 +47,8 @@ class _VideoCallViewState extends State<VideoCallView> {
   Future<void> initAgora() async {
     await [Permission.microphone, Permission.camera].request();
     //create the engine
-    _engine = createAgoraRtcEngine();
-    await _engine?.initialize(const RtcEngineContext(
+    rtcEngine = createAgoraRtcEngine();
+    await rtcEngine?.initialize(const RtcEngineContext(
       appId: agoraAppId,
       channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
     ));
@@ -57,7 +57,7 @@ class _VideoCallViewState extends State<VideoCallView> {
 
     await Future.delayed(const Duration(seconds: 1));
 
-    _engine?.registerEventHandler(
+    rtcEngine?.registerEventHandler(
       RtcEngineEventHandler(
         onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
           debugPrint("local user ${connection.localUid} joined");
@@ -68,14 +68,14 @@ class _VideoCallViewState extends State<VideoCallView> {
         onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
           debugPrint("remote user $remoteUid joined");
           setState(() {
-            _remoteUid = remoteUid;
+            remoteUID = remoteUid;
           });
         },
         onUserOffline: (RtcConnection connection, int remoteUid,
             UserOfflineReasonType reason) {
           debugPrint("remote user $remoteUid left channel");
           setState(() {
-            _remoteUid = null;
+            remoteUID = null;
           });
         },
         onTokenPrivilegeWillExpire: (RtcConnection connection, String token) {
@@ -85,24 +85,24 @@ class _VideoCallViewState extends State<VideoCallView> {
       ),
     );
 
-    await _engine?.setClientRole(role: ClientRoleType.clientRoleBroadcaster);
-    await _engine?.enableVideo();
-    await _engine?.startPreview();
+    await rtcEngine?.setClientRole(role: ClientRoleType.clientRoleBroadcaster);
+    await rtcEngine?.enableVideo();
+    await rtcEngine?.startPreview();
 
-    await _engine?.joinChannel(
+    await rtcEngine?.joinChannel(
       token: agoraController.agoraToken.value,
-      channelId: agoraController.callRoomId.value,
+      channelId: chatController.myChannel.channelName,
       uid: userDataStore.user['id'],
       options: const ChannelMediaOptions(),
     );
   }
 
   Widget _viewBuilder() {
-    return _engine != null
+    return rtcEngine != null
         ? AgoraVideoView(
             controller: VideoViewController(
-              rtcEngine: _engine!,
-              canvas: const VideoCanvas(uid: 0),
+              rtcEngine: rtcEngine!,
+              canvas: VideoCanvas(uid: userDataStore.user['id']),
             ),
           )
         : const CircularProgressIndicator(color: ColorPalette.green);
@@ -116,8 +116,8 @@ class _VideoCallViewState extends State<VideoCallView> {
 
   Future<void> _dispose() async {
     onRemoteFace = false;
-    await _engine?.leaveChannel();
-    await _engine?.release();
+    await rtcEngine?.leaveChannel();
+    await rtcEngine?.release();
   }
 
   @override
@@ -169,7 +169,7 @@ class _VideoCallViewState extends State<VideoCallView> {
               height: 120,
               color:
                   Colors.black.withOpacity(0.8), // Adjust the opacity as needed
-              child: BottomBar(rtcEngine: _engine),
+              child: BottomBar(rtcEngine: rtcEngine),
             ),
           ),
         ],
@@ -179,13 +179,13 @@ class _VideoCallViewState extends State<VideoCallView> {
 
 // Display remote user's video
   Widget _remoteVideo() {
-    if (_remoteUid != null) {
+    if (remoteUID != null) {
       return AgoraVideoView(
         controller: VideoViewController.remote(
-          rtcEngine: _engine!,
-          canvas: VideoCanvas(uid: _remoteUid),
+          rtcEngine: rtcEngine!,
+          canvas: VideoCanvas(uid: remoteUID),
           connection:
-              RtcConnection(channelId: agoraController.callRoomId.value),
+              RtcConnection(channelId: chatController.myChannel.channelName),
         ),
       );
     } else {

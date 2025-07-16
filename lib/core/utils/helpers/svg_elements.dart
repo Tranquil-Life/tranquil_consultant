@@ -58,4 +58,6 @@ class SvgElements {
   ///Home page
   static get svgUpscale => "assets/images/upscale.svg";
   static get svgUpscaleExtended => "assets/images/upscale_extended.svg";
+  static get svgCalendar => "assets/images/icons/calendar.svg";
+  static get svgClock => "assets/images/icons/clock.svg";
 }

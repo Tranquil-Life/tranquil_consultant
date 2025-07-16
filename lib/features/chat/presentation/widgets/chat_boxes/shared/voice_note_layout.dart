@@ -187,12 +187,12 @@ class _VoiceNoteLayoutState extends State<VoiceNoteLayout>
                             : CrossFadeState.showFirst,
                         firstChild: Icon(
                           Icons.play_arrow,
-                          color: ColorPalette.green,
+                          color: (widget.message.senderId == myId && widget.message.senderType == consultant) ? ColorPalette.white : ColorPalette.green,
                           size: 28,
                         ),
                         secondChild: Icon(
                           Icons.pause,
-                          color: ColorPalette.green,
+                          color: (widget.message.senderId == myId && widget.message.senderType == consultant) ? ColorPalette.white : ColorPalette.green,
                           size: 28,
                         ),
                       ),

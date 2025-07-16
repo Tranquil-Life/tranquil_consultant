@@ -7,10 +7,12 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
 import 'package:tl_consultant/app.dart';
 import 'package:timezone/data/latest.dart' as tz;
 
 late List<CameraDescription> cameras;
+PusherChannelsFlutter pusher = PusherChannelsFlutter.getInstance();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

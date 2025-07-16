@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tl_consultant/core/utils/routes/app_pages.dart';
 import 'package:tl_consultant/features/onboarding/presentation/controllers/onboarding_controller.dart';
+import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 
 class SplashScreen extends StatefulWidget {
 

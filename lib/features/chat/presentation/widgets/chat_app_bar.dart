@@ -1,11 +1,17 @@
 part of '../screens/chat_screen.dart';
 
-class _TitleBar extends StatelessWidget {
-  _TitleBar({Key? key}) : super(key: key);
+class TitleBar extends StatefulWidget {
+  const TitleBar({super.key});
 
+  @override
+  State<TitleBar> createState() => _TitleBarState();
+}
+
+class _TitleBarState extends State<TitleBar> {
   final duration = const Duration(minutes: 30);
 
   AgoraController agoraController = Get.put(AgoraController());
+
   DashboardController dashboardController = Get.put(DashboardController());
 
   @override
@@ -58,7 +64,7 @@ class _TitleBar extends StatelessWidget {
                 color: ColorPalette.green,
               ),
               onPressed: () {
-                agoraController.joinAgoraCall(join: false);
+                agoraController.joinAgoraCall();
               }),
           const MoreOptions(),
         ],

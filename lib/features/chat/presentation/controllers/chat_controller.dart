@@ -118,7 +118,6 @@ class ChatController extends GetxController {
   }
   //Get specific chat history
   Future getChatInfo({ClientUser? client}) async {
-    print("hello");
     loadingChatRoom.value = true;
     Either either = await repo.getChatInfo(
       consultantId: userDataStore.user['id'],
@@ -152,6 +151,7 @@ class ChatController extends GetxController {
       arguments: <String, dynamic>{
         "chat_id": chatId?.value,
         "client": client,
+        "channel": chatChannel.value
       },
     );
 
@@ -177,9 +177,9 @@ class ChatController extends GetxController {
     // Optionally scroll to bottom if needed
   }
 
-  Future initializePusher() async {
+  Future initializePusher({required String channel}) async {
     try {
-      myChannel = PusherChannel(channelName: "my-channel");
+      myChannel = PusherChannel(channelName: channel);
       await pusher.init(
         apiKey: AppConfig.pusherKey,
         cluster: 'eu',
@@ -218,11 +218,21 @@ class ChatController extends GetxController {
         },
       );
 
-      myChannel = await pusher.subscribe(channelName: "my-channel");
+      //subscribe to the chat channel
+      enterChatRoom(channel);
+
       await pusher.connect();
     } catch (e) {
       // print("ERROR: $e");
     }
+  }
+
+  void enterChatRoom(channel) async{
+    myChannel = await pusher.subscribe(channelName: channel);
+  }
+
+  void leaveChatRoom() {
+    myChannel.unsubscribe();
   }
 
   @override
@@ -240,5 +250,4 @@ class ChatController extends GetxController {
   }
 }
 
-PusherChannelsFlutter pusher = PusherChannelsFlutter.getInstance();
 

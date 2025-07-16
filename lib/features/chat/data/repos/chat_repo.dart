@@ -65,7 +65,10 @@ class ChatRepoImpl extends ChatRepo {
 
   @override
   Future<Either<ApiError, dynamic>> sendChat(
-      { required int? chatId,
+      {
+        required String eventName,
+        required String channel,
+        required int? chatId,
         required String? message,
         required String messageType,
         String? caption,
@@ -78,8 +81,9 @@ class ChatRepoImpl extends ChatRepo {
       "caption": caption,
       "parent_id": parentId,
       "sender_id": clientId,
-      "ai_chat": false
-
+      "ai_chat": false,
+      'event_name': eventName,
+      'channel': channel
     };
 
     return await catchSocketException(
@@ -102,10 +106,11 @@ class ChatRepoImpl extends ChatRepo {
   }
 
   @override
-  Future<Either<ApiError, dynamic>> getAgoraToken(String channelId) async {
+  Future<Either<ApiError, dynamic>> getAgoraToken(String channelId, int meetingId) async {
     var input = {
-      "display_name": userDataStore.user['f_name'],
       "channel_name": channelId,
+      "meeting_id": meetingId,
+      "user_id": userDataStore.user['id']
     };
 
     return await catchSocketException(

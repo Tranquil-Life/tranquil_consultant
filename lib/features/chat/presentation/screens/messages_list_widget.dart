@@ -51,8 +51,6 @@ class MessagesState extends State<Messages>
 
     _addScrollListener();
 
-    chatController.initializePusher();//initialize the scroll listener
-
     super.initState();
   }
 

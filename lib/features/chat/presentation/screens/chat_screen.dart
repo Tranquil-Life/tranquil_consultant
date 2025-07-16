@@ -53,6 +53,11 @@ class _ChatScreenState extends State<ChatScreen> {
   final int _maxRecordingDuration = 60; // in seconds
   Timer? _timer;
 
+  int? chatId;
+  ClientUser? client;
+  String channel= "";
+  var arguments = <String, dynamic>{};
+
   Future _startRecording() async {
     await _recordingController.record();
     setState(() {
@@ -111,10 +116,6 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
-  int? chatId;
-  ClientUser? client;
-  var arguments = <String, dynamic>{};
-
   @override
   void initState() {
     super.initState();
@@ -123,6 +124,8 @@ class _ChatScreenState extends State<ChatScreen> {
     arguments = args;
     chatId = args['chat_id'];
     client = args['client'];
+    channel = args['channel'];
+
 
     // Assign chatId to controller BEFORE loading messages
     chatController.chatId = RxInt(chatId!);
@@ -130,13 +133,12 @@ class _ChatScreenState extends State<ChatScreen> {
     // Now it's safe to load messages
     chatController.loadRecentMessages();
 
-    print("INIT_STATE: ${chatController.messages}");
-
-    print("CHAT_IDD: $chatId");
-    chatController.initializePusher();
+    chatController.initializePusher(channel: channel);
 
     _recordingController.onInit();
   }
+
+
 
   @override
   void dispose() {
@@ -170,7 +172,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 padding: const EdgeInsets.all(4),
                 child: Column(
                   children: [
-                    _TitleBar(),
+                    TitleBar(),
 
                     // Chat messages list
                     Expanded(

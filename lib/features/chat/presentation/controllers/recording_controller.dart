@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:audio_session/audio_session.dart' as av;
+import 'package:audioplayers/audioplayers.dart';
 import 'package:file/local.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sound/flutter_sound.dart';
@@ -21,7 +22,7 @@ class RecordingController extends GetxController {
   File? audioFile;
   RxBool isPlaying = false.obs;
   RxBool isRecording = false.obs;
-  // var audioPlayer = AudioPlayer();
+  var audioPlayer = AudioPlayer();
   FlutterSoundRecorder? audioRecorder;
 
   //final _onAudioDuration = StreamController<String>();
@@ -46,14 +47,16 @@ class RecordingController extends GetxController {
   var time = "00:00".obs;
   var autoUpload = false.obs;
 
+
   static String formatDuration(Duration duration) {
     String twoDigits(int n) => n.toString().padLeft(2, '0');
     final twoDigitHours =
-        duration.inHours > 0 ? '${twoDigits(duration.inHours)}:' : '';
+    duration.inHours > 0 ? '${twoDigits(duration.inHours)}:' : '';
     final twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
     final twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
     return "$twoDigitHours$twoDigitMinutes:$twoDigitSeconds";
   }
+
 
   Future record() async {
     try {
@@ -74,6 +77,7 @@ class RecordingController extends GetxController {
     } catch (e) {
       print('Error during recording or uploading: $e');
     }
+
   }
 
   void setAutoUpload(bool value) {
@@ -92,12 +96,12 @@ class RecordingController extends GetxController {
   //Play recording
   Future<void> onPlayAudio() async {
     update();
-    // await audioPlayer.play(DeviceFileSource(localAudioPath!));
+    await audioPlayer.play(DeviceFileSource(localAudioPath!));
   }
 
   Future<void> onStopAudio() async {
     update();
-    //await audioPlayer.stop();
+    await audioPlayer.stop();
   }
 
   void initRecorder() async {
@@ -106,21 +110,21 @@ class RecordingController extends GetxController {
     await Permission.manageExternalStorage.request();
 
     if (status != PermissionStatus.granted) {
-      print('Microphone permission is not granted');
+      debugPrint('Microphone permission is not granted');
     }
 
     audioRecorder = FlutterSoundRecorder();
-    // audioPlayer = AudioPlayer();
+    audioPlayer = AudioPlayer();
     await audioRecorder!.openRecorder();
     final session = await av.AudioSession.instance;
     await session.configure(av.AudioSessionConfiguration(
       avAudioSessionCategory: av.AVAudioSessionCategory.playAndRecord,
       avAudioSessionCategoryOptions:
-          av.AVAudioSessionCategoryOptions.allowBluetooth |
-              av.AVAudioSessionCategoryOptions.defaultToSpeaker,
+      av.AVAudioSessionCategoryOptions.allowBluetooth |
+      av.AVAudioSessionCategoryOptions.defaultToSpeaker,
       avAudioSessionMode: av.AVAudioSessionMode.spokenAudio,
       avAudioSessionRouteSharingPolicy:
-          av.AVAudioSessionRouteSharingPolicy.defaultPolicy,
+      av.AVAudioSessionRouteSharingPolicy.defaultPolicy,
       avAudioSessionSetActiveOptions: av.AVAudioSessionSetActiveOptions.none,
       androidAudioAttributes: const av.AndroidAudioAttributes(
         contentType: av.AndroidAudioContentType.speech,
@@ -161,13 +165,15 @@ class RecordingController extends GetxController {
   @override
   void dispose() {
     audioRecorder?.closeRecorder();
-    // audioPlayer.dispose();
+    audioPlayer.dispose();
 
     recorderInitialize = false;
 
     super.dispose();
   }
 
+
+///-------/////
 // void initAndroidRecorder() async{
 //   currentStatus.reactive.value;
 //
@@ -255,6 +261,8 @@ class RecordingController extends GetxController {
 //   //update();
 // }
 
+
+
 // androidRecorderStop() async {
 //   var result = await androidRecorder!.stop();
 //   stopTimer();
@@ -264,4 +272,6 @@ class RecordingController extends GetxController {
 //   //File file = localFileSystem.file(result!.path);
 //   update();
 // }
+
+
 }

@@ -99,6 +99,8 @@ class _MeetingsState extends State<Meetings> {
                             return MeetingTile(
                               meeting: meetingsController.meetings[index]
                                 ..setIsExpired(_timeNotifier.value),
+                              lastItem:
+                              index == meetingsController.meetings.length - 1,
                             );
                           },
                         ),

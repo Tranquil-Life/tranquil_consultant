@@ -21,7 +21,11 @@ class UploadController extends GetxController {
   ChatRepoImpl chatRepo = ChatRepoImpl();
   MediaRepoImpl mediaRepo = MediaRepoImpl();
 
+  var storageUrl = "";
+  var uploaded = false;
+
   var uploading = false.obs;
+
 
   handleTextUpload({
     required int chatId,
@@ -39,6 +43,8 @@ class UploadController extends GetxController {
       parentId: quotedMessage!.messageId,
       caption: null,
       clientId: clientID,
+      eventName: 'new-message',
+      channel: chatController.myChannel.channelName,
     );
 
     either.fold((l) => CustomSnackBar.errorSnackBar(l.message.toString()), (r) {
@@ -69,110 +75,122 @@ class UploadController extends GetxController {
     });
   }
 
-  Future handleVoiceNoteUpload({  File? file,
+  Future handleVoiceNoteUpload({
+    File? file,
     Message? quotedMessage,
     required int chatId,
-    required int clientID}) async {
+    required int clientID,
+  }) async {
     if (file == null) return;
 
-    var uploaded = false;
-    var storageUrl = "";
+    uploading.value = true;
 
     chatController.messageType.value = MessageType.audio.toString();
 
     debugPrint("handleVoiceNoteUpload: upload recording: $file");
 
-    //TODO: Uncomment and modify to upload to Firebase storage
-    // var result = await mediaRepo.uploadFileWithHttp(file, voiceNote);
+    Either either = await mediaRepo.uploadFileWithHttp(file, "chat_audio");
+
+    either.fold(
+          (l) async {
+        CustomSnackBar.errorSnackBar(l.message.toString());
+        if (l.message.toString().toLowerCase() == "connection reset by peer") {
+          Either either2 = await mediaRepo.uploadFileWithHttp(
+            file,
+            "chat_audio",
+          );
+          either2.fold(
+                (l) => CustomSnackBar.errorSnackBar(l.message.toString()),
+                (r) {
+              uploaded = true;
+
+              print("RESPONSE: $r");
+              storageUrl = r['data']['secure_url'].toString();
+            },
+          );
+
+          if (uploaded) {
+            await sendVnAsMessage(
+              message: storageUrl,
+              messageType: chatController.messageType.value,
+              quotedMessage: quotedMessage,
+              chatId: chatId,
+              clientID: clientID,
+            );
+          }
+
+          uploading.value = false;
+        }
+      },
+          (r) {
+        uploaded = true;
+
+        print("RESPONSE: $r");
+        storageUrl = r['data']['secure_url'].toString();
+      },
+    );
+
     //
-    // if (result.isRight()) {
-    //   Map map = {};
-    //   result.map((r) => map = r);
-    //
-    //   uploaded = true;
-    //   storageUrl = map['data'].toString();
-    // } else {
-    //   result.leftMap((l) {
-    //     CustomSnackBar.showSnackBar(
-    //         context: Get.context!,
-    //         title: "Error",
-    //         message: l.message!,
-    //         backgroundColor: ColorPalette.red);
-    //   });
-    // }
-    //
-    // if (uploaded) {
-    //   await sendVnAsMessage(
-    //       message: storageUrl,
-    //       messageType: chatController.messageType.value,
-    //       quotedMessage: quotedMessage);
-    // }
+    if (uploaded) {
+      await sendVnAsMessage(
+        message: storageUrl,
+        messageType: chatController.messageType.value,
+        quotedMessage: quotedMessage,
+        chatId: chatId,
+        clientID: clientID,
+      );
+    }
+
+    uploading.value = false;
   }
 
-//   Future sendVnAsMessage(
-//       {required String message,
-//       required String messageType,
-//       required Message? quotedMessage}) async {
-//     var data = {
-//       "chat_id": chatController.chatId?.value,
-//       "message": message,
-//       "message_type": strMsgType(messageType),
-//       "parent_id": quotedMessage!.messageId
-//     };
-//     var result = await chatRepo.sendChat(
-//         chatId: chatController.chatId?.value,
-//         message: message,
-//         messageType: strMsgType(messageType),
-//         parentId: quotedMessage.messageId,
-//         caption: null);
-//
-//     debugPrint("sendVnAsMessage: VN to be sent as msg: $data");
-//
-//     if (result.isRight()) {
-//       Map messageMap = {};
-//       result.map((r) => messageMap = r['data']);
-//
-//       debugPrint("sendVnAsMessage: VN sent as msg: $messageMap");
-//
-//       var messageObj = Message(
-//         messageId: messageMap['id'],
-//         chatId: messageMap['chat_id'],
-//         senderId: messageMap['sender_id'],
-//         parentId: messageMap['parent_id'],
-//         senderType: messageMap['sender_type'],
-//         message: messageMap['message'],
-//         messageType: "audio",
-//         // messageType: messageMap['message_type'],
-//         caption: messageMap['caption'],
-//         quoteMessage: null,
-//         read: null,
-//         createdAt: DateTime.parse(messageMap['created_at']),
-//         updatedAt: DateTime.parse(messageMap['updated_at']),
-//       );
-//
-//       chatController.messages.insert(0, messageObj);
-//
-//       uploadToFirestore(messageObj);
-//     } else {
-//       result.leftMap((l) {
-//         CustomSnackBar.showSnackBar(
-//             context: Get.context!,
-//             title: "Error",
-//             message: l.message!,
-//             backgroundColor: ColorPalette.red);
-//       });
-//     }
-//   }
-//
-//   uploadToFirestore(Message message) async {
-//     // var room = firebaseFireStore
-//     //     .collection(chatsCollection)
-//     //     .doc(chatController.chatChannel.value);
-//     //
-//     // room
-//     //     .collection("chat_messages")
-//     //     .doc(message.messageId.toString())
-//     //     .set(message.toJson());
-//   }
+  Future sendVnAsMessage({
+    required int chatId,
+    required String message,
+    required String messageType,
+    required Message? quotedMessage,
+    required int clientID,
+  }) async {
+    if (message.isEmpty) return;
+
+    chatController.messageType.value = MessageType.audio.toString();
+
+    Either either = await chatRepo.sendChat(
+      chatId: chatId,
+      message: message,
+      messageType: strMsgType(chatController.messageType.value),
+      parentId: quotedMessage!.messageId,
+      caption: null,
+      clientId: clientID,
+      eventName: 'new-message',
+      channel: chatController.myChannel.channelName,
+    );
+
+    either.fold((l) => CustomSnackBar.errorSnackBar(l.message.toString()), (r) {
+      uploading.value = false;
+
+      // var messageMap = r['data'];
+      var messageMap = r;
+
+      var messageObj = Message(
+        messageId: messageMap['id'],
+        chatId: messageMap['chat_id'],
+        senderId: messageMap['sender_id'],
+        parentId: messageMap['parent_id'],
+        senderType: messageMap['sender_type'],
+        message: messageMap['message'],
+        messageType: messageMap['message_type'],
+        caption: messageMap['caption'],
+        quoteMessage: null,
+        read: null,
+        createdAt: DateTime.parse(messageMap['created_at']),
+        updatedAt: DateTime.parse(messageMap['updated_at']),
+      );
+
+      chatController.messages.insert(0, messageObj);
+
+      update();
+    });
+  }
 
 }
