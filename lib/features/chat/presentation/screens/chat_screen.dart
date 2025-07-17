@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/global/app_bar_button.dart';
 import 'package:tl_consultant/core/global/custom_loader.dart';
 import 'package:tl_consultant/core/global/unfocus_bg.dart';
@@ -81,11 +82,6 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Future _uploadVn() async {
-    var hasVibrator = await Vibration.hasVibrator();
-    if (hasVibrator!) {
-      await Vibration.vibrate(duration: 2000, amplitude: 225);
-    }
-
     chatController.audioFile = await _stopRecording();
 
     await UploadController().handleVoiceNoteUpload(

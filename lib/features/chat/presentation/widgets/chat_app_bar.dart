@@ -11,8 +11,8 @@ class _TitleBarState extends State<TitleBar> {
   final duration = const Duration(minutes: 30);
 
   AgoraController agoraController = Get.put(AgoraController());
-
   DashboardController dashboardController = Get.put(DashboardController());
+  final chatController = ChatController.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +28,7 @@ class _TitleBarState extends State<TitleBar> {
             child: UserAvatar(
               size: 44,
               imageUrl: dashboardController.clientDp.value,
+              source: AvatarSource.url,
             ),
           ),
           const SizedBox(width: 8),
@@ -63,7 +64,22 @@ class _TitleBarState extends State<TitleBar> {
                 CupertinoIcons.videocam_fill,
                 color: ColorPalette.green,
               ),
-              onPressed: () {
+              onPressed: () async{
+                final messageMap = <String, dynamic>{
+                  'id': chatController.recentMsgEvent.value.messageId!+1,
+                  'chat_id': agoraController.chatController.chatId!.value,
+                  'sender_id': myId,
+                  'parent_id': null,
+                  'sender_type': consultant,
+                  'message': 'incoming call...',
+                  'message_type': 'text',
+                  'caption': null,
+                  'created_at': DateTime.now().toUtc().toIso8601String(),
+                  'updated_at': DateTime.now().toUtc().toIso8601String(),
+                };
+
+                await agoraController.chatController.triggerPusherEvent('incoming-call', messageMap);
+
                 agoraController.joinAgoraCall();
               }),
           const MoreOptions(),

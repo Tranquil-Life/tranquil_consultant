@@ -12,6 +12,8 @@ import 'package:tl_consultant/features/dashboard/presentation/controllers/dashbo
 import 'package:tl_consultant/main.dart';
 
 class AgoraController extends GetxController {
+  static AgoraController instance = Get.find();
+
   ChatRepoImpl repo = ChatRepoImpl();
 
   final chatController = ChatController.instance;

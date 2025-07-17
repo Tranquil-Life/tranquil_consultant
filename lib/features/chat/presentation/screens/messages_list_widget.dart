@@ -71,6 +71,7 @@ class MessagesState extends State<Messages>
 
     return Obx((){
       chatController.messages.sort((a, b) => b.createdAt!.compareTo(a.createdAt!));
+      chatController.recentMsgEvent.value = chatController.messages.first;
 
       return ListView.builder(
         physics: const BouncingScrollPhysics(),

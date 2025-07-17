@@ -17,7 +17,12 @@ PusherChannelsFlutter pusher = PusherChannelsFlutter.getInstance();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Firebase.initializeApp();
+  try {
+    await Firebase.initializeApp();
+    print('Firebase initialized');
+  } catch (e) {
+    print('Firebase init failed: $e');
+  }
 
   // Listen for messages
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
@@ -28,7 +33,20 @@ void main() async {
     print('Notification clicked: ${message.notification?.title}');
   });
 
-  cameras = await availableCameras();
+  try {
+    cameras = await availableCameras()
+        .timeout(Duration(seconds: 5), onTimeout: () {
+      print('Camera detection timed out');
+      return [];
+    });
+    print('Cameras found: ${cameras.length}');
+  } catch (e) {
+    print('Camera init failed: $e');
+    cameras = [];
+  }
+
   await GetStorage.init();
+
   runApp(const App());
 }
+

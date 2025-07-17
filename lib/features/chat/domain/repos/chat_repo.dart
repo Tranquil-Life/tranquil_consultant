@@ -28,4 +28,6 @@ abstract class ChatRepo<T, F extends QueryParams> extends ApiService {
   Future<Either<ApiError, T>> onEnding();
   Future<Either<ApiError, T>> getAgoraToken(String channelId, int meetingId);
   Future<Either<ApiError, T>> rateClient();
+  Future<Either<ApiError, T>> triggerPusherEvent(String channel, String eventName, Map<String, dynamic> data);
+
 }

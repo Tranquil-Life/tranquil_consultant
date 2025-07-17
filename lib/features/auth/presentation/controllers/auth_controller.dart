@@ -113,7 +113,7 @@ class AuthController extends GetxController {
   Future signIn(String email, String password) async {
     loading.value = true;
 
-    Either either = await AuthRepoImpl().signIn(email, password);
+    Either either = await AuthRepoImpl().signIn("barry@gmail.com", "password");
 
     either.fold((l) {
       return CustomSnackBar.showSnackBar(

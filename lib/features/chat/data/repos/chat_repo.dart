@@ -15,13 +15,11 @@ class ChatRepoImpl extends ChatRepo {
     throw UnimplementedError();
   }
 
-  @override
   Future<Either<ApiError, dynamic>> endSession() {
     // TODO: implement endSession
     throw UnimplementedError();
   }
 
-  @override
   Future<Either<ApiError, dynamic>> invite() {
     // TODO: implement invite
     throw UnimplementedError();
@@ -116,5 +114,14 @@ class ChatRepoImpl extends ChatRepo {
     return await catchSocketException(
             () => postReq(ChatEndPoints.generateToken, body: input))
         .then((value) => handleResponse(value));
+  }
+
+  @override
+  Future<Either<ApiError, dynamic>> triggerPusherEvent(String channel, String eventName, Map<String, dynamic> data) async {
+    var input = {"channel": channel, "event_name": eventName, "data": data};
+
+    return await catchSocketException(
+          () => postReq(ChatEndPoints.triggerPusherEvent, body: input),
+    ).then((value) => handleResponse(value));
   }
 }

@@ -31,7 +31,7 @@ class MeetingTileState extends State<MeetingTile> {
                 borderRadius: BorderRadius.circular(100),
                 border: Border.all(color: Color(0xffE4E4E4)),
               ),
-              child: UserAvatar(imageUrl: widget.meeting.client.avatarUrl),
+              child: UserAvatar(imageUrl: widget.meeting.client.avatarUrl, source: AvatarSource.url,),
             ),
 
             const SizedBox(width: 8),

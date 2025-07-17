@@ -77,6 +77,7 @@ abstract class ChatEndPoints {
       'client/get-recent-messages/$chatId';
   static getOlderMessages({required int chatId, required int lastMessageId}) =>
       'client/get-older-messages/$chatId/$lastMessageId';
+  static const triggerPusherEvent = '$consultant/triggerPusherEvent';
 }
 
 abstract class ActivityEndpoints {

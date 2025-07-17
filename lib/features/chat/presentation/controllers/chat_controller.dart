@@ -18,11 +18,13 @@ import 'package:tl_consultant/core/utils/routes/app_pages.dart';
 import 'package:tl_consultant/features/chat/data/models/message_model.dart';
 import 'package:tl_consultant/features/chat/data/repos/chat_repo.dart';
 import 'package:tl_consultant/features/chat/domain/entities/message.dart';
+import 'package:tl_consultant/features/chat/presentation/screens/incoming_call_view.dart';
 import 'package:tl_consultant/features/consultation/domain/entities/client.dart';
 import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
 import 'package:tl_consultant/features/profile/data/models/user_model.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 import 'package:tl_consultant/main.dart';
+import 'package:vibration/vibration.dart';
 
 class ChatController extends GetxController {
   static ChatController instance = Get.find();
@@ -47,6 +49,7 @@ class ChatController extends GetxController {
   RxInt? chatId;
   var chatChannel = "".obs;
   Rx<Message> replyMessage = Message().obs;
+  Rx<Message> recentMsgEvent = Message().obs;
 
   // Used to display loading indicators when _firstLoad function is running
   var lastMessageId = 0.obs;
@@ -56,7 +59,6 @@ class ChatController extends GetxController {
   var isLoadMoreRunning = false.obs;
   RxBool allPagesLoaded = false.obs; // Flag to check if all pages are loaded
 
-  var eventDataMsg = <String, dynamic>{}.obs;
 
   //recent messages
   Future loadRecentMessages() async {
@@ -183,9 +185,7 @@ class ChatController extends GetxController {
       await pusher.init(
         apiKey: AppConfig.pusherKey,
         cluster: 'eu',
-        onConnectionStateChange: (dynamic currentState, dynamic previousState) {
-
-        },
+        onConnectionStateChange: (dynamic currentState, dynamic previousState) {},
         onError: (String message, int? code, dynamic e) {
           // print("onError: $message code: $code exception: $e");
         },
@@ -193,16 +193,36 @@ class ChatController extends GetxController {
 
         },
         onEvent: (PusherEvent event) async {
-          var eventData = Map<String, dynamic>.from(jsonDecode(event.data));
-          print("eventdata: $eventData");
+          print("Received event: ${event.eventName}, data: ${event.data}");
 
-          if (eventData.isNotEmpty || eventData['message'] != null) {
-            Message message = MessageModel.fromJson(eventData['message']);
-            if (!message.fromYou) {
-              await Future.delayed(Duration(seconds: 1));
-              addMessage(message);
+          var eventData = Map<String, dynamic>.from(jsonDecode(event.data));
+
+          if (eventData.containsKey('message')) {
+            final message = MessageModel.fromJson(eventData['message']);
+
+            if (event.eventName == 'incoming-call') {
+              if (!message.fromYou) {
+                // Trigger call UI or logic
+                handleIncomingCall(message);
+
+                var hasVibrator = await Vibration.hasVibrator();
+                if (hasVibrator) {
+                  await Vibration.vibrate(duration: 3000, amplitude: 225);
+                }
+              }
+            } else {
+              recentMsgEvent.value = message;
+
+              if (!message.fromYou) {
+                await Future.delayed(Duration(seconds: 1));
+                addMessage(message);
+              }
+
+              // print("Event '${event.eventName}' received with message ID: ${message.messageId}");
             }
-            // proceed with using message
+          }
+          else {
+            // print("Missing 'message' in event data.");
           }
         },
         onSubscriptionError: (String message, dynamic e) {
@@ -233,6 +253,27 @@ class ChatController extends GetxController {
 
   void leaveChatRoom() {
     myChannel.unsubscribe();
+  }
+
+  Future triggerPusherEvent(eventName, data) async {
+    Either either = await repo.triggerPusherEvent(
+      myChannel.channelName,
+      eventName,
+      data,
+    );
+    either.fold((l) => CustomSnackBar.errorSnackBar(l.message!), (r) {
+      //..
+    });
+  }
+
+  void handleIncomingCall(MessageModel message) {
+    Get.to(
+      IncomingCallView(
+        clientId: dashboardController.clientId.value,
+        clientName: dashboardController.clientName.value,
+        clientDp: dashboardController.clientDp.value,
+      ),
+    );
   }
 
   @override

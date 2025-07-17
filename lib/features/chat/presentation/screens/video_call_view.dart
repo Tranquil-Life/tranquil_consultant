@@ -102,7 +102,7 @@ class _VideoCallViewState extends State<VideoCallView> {
         ? AgoraVideoView(
             controller: VideoViewController(
               rtcEngine: rtcEngine!,
-              canvas: VideoCanvas(uid: userDataStore.user['id']),
+              canvas: VideoCanvas(uid: 0),
             ),
           )
         : const CircularProgressIndicator(color: ColorPalette.green);
