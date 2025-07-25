@@ -69,9 +69,14 @@ class MessagesState extends State<Messages>
   @override
   Widget build(BuildContext context) {
 
-    return Obx((){
+    return Obx(() {
+      // Sort messages descending by createdAt
       chatController.messages.sort((a, b) => b.createdAt!.compareTo(a.createdAt!));
-      chatController.recentMsgEvent.value = chatController.messages.first;
+
+      // Only set recentMsgEvent if messages is not empty
+      if (chatController.messages.isNotEmpty) {
+        chatController.recentMsgEvent.value = chatController.messages.first;
+      }
 
       return ListView.builder(
         physics: const BouncingScrollPhysics(),
@@ -79,11 +84,7 @@ class MessagesState extends State<Messages>
         controller: _scrollController,
         itemCount: chatController.messages.length + (chatController.isLoadMoreRunning.value ? 1 : 0),
         itemBuilder: (context, index) {
-          // Display messages in reverse order
-          //final reversedIndex = chatController.messages.length - index - 1;
-
           if (index == chatController.messages.length) {
-            // Display a loading indicator at the end of the list while loading more messages
             return const Center(
               child: CircularProgressIndicator(color: ColorPalette.green),
             );
@@ -92,10 +93,12 @@ class MessagesState extends State<Messages>
           return ChatItem(
             chatController.messages[index],
             highlightAnim: highlightAnim,
-            animate: index == -1, playerManager: widget.playerManager,
+            animate: index == -1,
+            playerManager: widget.playerManager,
           );
         },
       );
     });
+
   }
 }

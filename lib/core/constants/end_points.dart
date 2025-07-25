@@ -4,6 +4,7 @@ const staging = 'https://tranquil-api-staging-205081a15c84.herokuapp.com';
 const production = 'https://tranquil-api.herokuapp.com';
 const exchangeHost = "https://v6.exchangerate-api.com/v6";
 const baseUrl = '$staging/api/';
+const countriesNowBaseUrl = "https://countriesnow.space/api/v0.1/";
 
 abstract class AuthEndPoints {
   static const login = '$consultant/login';
@@ -84,4 +85,10 @@ abstract class ActivityEndpoints {
   static getNotifications({required int page, required int limit}) =>
       '$consultant/myActivity/$page/$limit';
   static const unreadNotifications = '$consultant/unreadNotifications';
+}
+
+abstract class CountriesNowEndpoints {
+  static get getCountries => 'countries';
+  static getStates({required String country}) => 'countries/states/q?country=$country';
+  static getCities({required String country, required String state}) => 'countries/state/cities/q?country=$country&state=$state';
 }

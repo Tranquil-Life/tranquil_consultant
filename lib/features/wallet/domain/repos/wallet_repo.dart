@@ -12,4 +12,9 @@ abstract class WalletRepo extends ApiService{
     required int page,
     required int limit
   });
+
+  Future<Either<ApiError, dynamic>> getCountries();
+  Future<Either<ApiError, dynamic>> getStates({required String country});
+  Future<Either<ApiError, dynamic>> getCities({required String country, required String state});
+
 }

@@ -27,7 +27,7 @@ import 'package:tl_consultant/features/wallet/presentation/controllers/transacti
 import 'package:tl_consultant/features/wallet/presentation/screens/wallet_tab.dart';
 
 class DashboardController extends GetxController {
-  static DashboardController instance = Get.find();
+  static DashboardController get instance => Get.find();
 
   RxInt currentIndex = 0.obs;
   final List<Widget> pages = [
@@ -46,7 +46,9 @@ class DashboardController extends GetxController {
   var currentMeetingId = 0.obs;
 
   var country = "".obs;
+  var state = "".obs;
   var city = "".obs;
+  var street = "".obs;
   var timezone = "".obs;
 
 
@@ -58,15 +60,18 @@ class DashboardController extends GetxController {
     var result = await getCurrLocation();
     List<Placemark> placemarks = result['placemarks'];
     String currCountry = placemarks.first.country!;
-    String state = placemarks.first.administrativeArea!;
+    String currState = placemarks.first.administrativeArea!;
+    String currCity = placemarks.first.subAdministrativeArea!;
+    String currStreet = placemarks.first.street!;
     int timezoneOffset = DateTime.now().timeZoneOffset.inMilliseconds;
     var hourInMilliSecs = 3600000;
     var formattedTimeZone = timezoneOffset / hourInMilliSecs;
 
     country.value = currCountry;
-    city.value = state;
+    street.value = currState;
+    city.value = currCity;
     timezone.value = "$formattedTimeZone";
-
+    street.value = currStreet;
   }
 
   getMeetings() async {

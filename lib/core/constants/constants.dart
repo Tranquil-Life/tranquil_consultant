@@ -86,6 +86,15 @@ final titleOptions = [
   'BCC'
 ];
 
+final recipientCountries = [
+  'United States',
+  'Nigeria',
+  'United Kingdom',
+  'Ghana',
+  'Canada',
+  'South Africa'
+];
+
 const solo = "solo";
 const agency = "agency";
 const video = "video";
@@ -104,3 +113,5 @@ const phoneNumber = "phone_number";
 const avatarUrl = "avatar_url";
 
 const verificationCodeMsg = "Check your email or spam for the verification code";
+const withdrawFundsTitle = "Withdraw funds";
+const withdrawFundsDesc = "Enter your details to receive payment to your local account";

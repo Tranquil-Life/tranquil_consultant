@@ -7,6 +7,7 @@ import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/theme/fonts.dart';
 import 'package:tl_consultant/core/utils/helpers/svg_elements.dart';
 import 'package:tl_consultant/features/wallet/presentation/controllers/earnings_controller.dart';
+import 'package:tl_consultant/features/wallet/presentation/screens/withdrawal_info.dart';
 import 'package:tl_consultant/features/wallet/presentation/widgets/transaction_item.dart';
 
 class WalletTab extends StatefulWidget {
@@ -110,7 +111,9 @@ class _WalletTabState extends State<WalletTab> {
           Padding(
             padding: const EdgeInsets.only(left: 48, right: 48),
             child: CustomButton(
-              onPressed: () {},
+              onPressed: () {
+                Get.to(WithdrawalInfoPage());
+              },
               child: const Center(
                 child:
                 Row(mainAxisAlignment: MainAxisAlignment.center, children: [
@@ -135,8 +138,8 @@ class _WalletTabState extends State<WalletTab> {
             children: [
               otherFigures(
                   'To be cleared', earningsController.pendingClearance.value),
-              otherFigures('All withdrawals',
-                  earningsController.availableForWithdrawal.value),
+              otherFigures('Available for \nwithdrawal',
+                  earningsController.availableForWithdrawal.value > 160000 ? earningsController.availableForWithdrawal.value : 0),
               otherFigures(
                   'Total earnings',
                   earningsController.balance.value +

@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
-import 'package:tl_consultant/features/profile/data/models/user_model.dart';
 import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:tl_consultant/features/profile/presentation/screens/edit_profile.dart';
-import 'package:tl_consultant/features/profile/presentation/widgets/custom_form_field.dart';
 
 class BioTabView extends StatelessWidget {
   BioTabView({super.key});

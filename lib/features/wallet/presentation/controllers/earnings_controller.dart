@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:dartz/dartz.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tl_consultant/core/global/custom_snackbar.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
@@ -9,7 +10,7 @@ import 'package:tl_consultant/features/wallet/data/repos/wallet_repo_impl.dart';
 import 'package:tl_consultant/features/wallet/domain/entities/earnings.dart';
 
 class EarningsController extends GetxController {
-  static EarningsController instance = Get.find();
+  static EarningsController get instance => Get.find();
 
   final repo = WalletRepositoryImpl();
 
@@ -18,11 +19,35 @@ class EarningsController extends GetxController {
   var availableForWithdrawal = 0.00.obs;
   var pendingClearance = 0.00.obs;
 
+  final amountTEC = TextEditingController();
+  final beneficiaryNameTEC = TextEditingController();
+  final beneficiaryAddressTEC = TextEditingController();
+
+  final bankNameTEC = TextEditingController();
+  final bankAddressTEC = TextEditingController();
+
+  final ibanTEC = TextEditingController();
+  final swiftCodeTEC = TextEditingController();
+
+  final recipientCountryTEC = TextEditingController();
+  final recipientStateTEC = TextEditingController();
+  final recipientCityTEC = TextEditingController();
+  final recipientStreetTEC = TextEditingController();
+  final recipientAptNoTEC = TextEditingController();
+
+  RxBool isCountryDropdownVisible = false.obs;
+  RxBool isStateDropdownVisible = false.obs;
+  RxBool isCityDropdownVisible = false.obs;
+  RxString selectedCountry = ''.obs;
+
+  RxList<Map<String, dynamic>> selectedCountryStates = <Map<String, dynamic>>[].obs;
+  RxList selectedStateCities = [].obs;
+
   Future getEarningsInfo() async {
     Either either = await repo.getWallet();
 
     either.fold((l) {
-      if(l.message! != 'Attempt to read property "id" on array'){
+      if (l.message! != 'Attempt to read property "id" on array') {
         return CustomSnackBar.showSnackBar(
             context: Get.context!,
             title: "Error",
@@ -37,6 +62,27 @@ class EarningsController extends GetxController {
           roundToFiveSignificantFigures(earnings.availableForWithdrawal);
       pendingClearance.value =
           roundToFiveSignificantFigures(earnings.pendingClearance);
+    });
+  }
+
+  Future getStates() async {
+    Either either = await repo.getStates(country: recipientCountryTEC.text);
+    either.fold((l)=>CustomSnackBar.errorSnackBar(l.message!), (r){
+      var data = r['data'];
+      var states = data['states'];
+      for (var e in states) {
+        selectedCountryStates.add(e);
+      }
+    });
+  }
+
+  Future getCities() async {
+    Either either = await repo.getCities(country: recipientCountryTEC.text, state: recipientStateTEC.text);
+    either.fold((l)=>CustomSnackBar.errorSnackBar(l.message!), (r){
+      var data = r['data'];
+      for (var e in data) {
+        selectedStateCities.add(e);
+      }
     });
   }
 
@@ -65,7 +111,7 @@ class EarningsController extends GetxController {
     return double.parse(significantFigures);
   }
 
-  clearData(){
+  clearData() {
     balance.value = 0.00;
     withdrawn.value = 0.00;
     availableForWithdrawal.value = 0.00;
