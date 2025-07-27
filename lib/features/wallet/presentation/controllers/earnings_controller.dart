@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tl_consultant/core/data/place_result_model.dart';
+import 'package:tl_consultant/core/data/places_search_response_model.dart';
 import 'package:tl_consultant/core/global/custom_snackbar.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/features/wallet/data/models/earnings_model.dart';
@@ -35,13 +37,22 @@ class EarningsController extends GetxController {
   final recipientStreetTEC = TextEditingController();
   final recipientAptNoTEC = TextEditingController();
 
+  final bankCountryTEC = TextEditingController();
+  final bankStateTEC = TextEditingController();
+  final bankBranch = TextEditingController();
+  RxList<String> availableBranches = <String>[].obs;
+
   RxBool isCountryDropdownVisible = false.obs;
   RxBool isStateDropdownVisible = false.obs;
   RxBool isCityDropdownVisible = false.obs;
   RxString selectedCountry = ''.obs;
 
-  RxList<Map<String, dynamic>> selectedCountryStates = <Map<String, dynamic>>[].obs;
+  RxList<Map<String, dynamic>> selectedCountryStates =
+      <Map<String, dynamic>>[].obs;
   RxList selectedStateCities = [].obs;
+
+  RxString nextPageToken = "".obs;
+  RxBool isLoading = false.obs;
 
   Future getEarningsInfo() async {
     Either either = await repo.getWallet();
@@ -65,9 +76,11 @@ class EarningsController extends GetxController {
     });
   }
 
-  Future getStates() async {
-    Either either = await repo.getStates(country: recipientCountryTEC.text);
-    either.fold((l)=>CustomSnackBar.errorSnackBar(l.message!), (r){
+  Future getStates({required String country}) async {
+    selectedCountryStates.clear();
+
+    Either either = await repo.getStates(country: country);
+    either.fold((l) => CustomSnackBar.errorSnackBar(l.message!), (r) {
       var data = r['data'];
       var states = data['states'];
       for (var e in states) {
@@ -76,13 +89,62 @@ class EarningsController extends GetxController {
     });
   }
 
-  Future getCities() async {
-    Either either = await repo.getCities(country: recipientCountryTEC.text, state: recipientStateTEC.text);
-    either.fold((l)=>CustomSnackBar.errorSnackBar(l.message!), (r){
+  Future getCities({required String country, required String state}) async {
+    selectedStateCities.clear();
+
+    Either either = await repo.getCities(
+        country: country, state: state);
+    either.fold((l) => CustomSnackBar.errorSnackBar(l.message!), (r) {
       var data = r['data'];
       for (var e in data) {
         selectedStateCities.add(e);
       }
+    });
+  }
+
+  Future getBankBranches() async {
+    nextPageToken.value = "";
+    isLoading.value = true;
+    availableBranches.clear();
+
+    Either either = await repo.getBankBranches(
+      bankName: bankNameTEC.text,
+      state: bankStateTEC.text,
+    );
+    either.fold((l) => CustomSnackBar.errorSnackBar(l.message!), (r) {
+      if(r['next_page_token'] != null){
+        nextPageToken.value = r['next_page_token'];
+      }
+      PlacesSearchResponseModel placesSearchResponseModel =
+          PlacesSearchResponseModel.fromJson(r);
+
+      for (var e in placesSearchResponseModel.results) {
+        PlaceResultModel placeResultModel = e;
+        availableBranches.add(placeResultModel.formattedAddress);
+      }
+
+      isLoading.value = false;
+    });
+
+    print(availableBranches);
+
+  }
+
+  Future<void> fetchNextPage() async {
+    isLoading.value = true;
+    await Future.delayed(Duration(seconds: 2)); // required delay
+    Either either =
+        await repo.getFromNextPage(nextPageToken: nextPageToken.value);
+    either.fold((l) => CustomSnackBar.errorSnackBar(l.message!), (r) {
+      nextPageToken.value = r['next_page_token'];
+      PlacesSearchResponseModel placesSearchResponseModel =
+          PlacesSearchResponseModel.fromJson(r);
+      for (var e in placesSearchResponseModel.results) {
+        PlaceResultModel placeResultModel = e;
+        availableBranches.add(placeResultModel.formattedAddress);
+      }
+
+      isLoading.value = false;
     });
   }
 

@@ -75,13 +75,15 @@ class _BeneficiaryInfoFieldsState extends State<BeneficiaryInfoFields> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(height: 20),
                     Text("Country"),
                     const SizedBox(height: 8),
-                    countryField(widget.earningsController, () {
-                      widget.earningsController.isCountryDropdownVisible
-                          .toggle();
-                    }),
+                    Obx(
+                      () =>
+                          recipientCountryField(widget.earningsController, () {
+                        widget.earningsController.isCountryDropdownVisible
+                            .toggle();
+                      }),
+                    ),
                     Obx(() => widget
                             .earningsController.isCountryDropdownVisible.value
                         ? ConstrainedBox(
@@ -112,15 +114,18 @@ class _BeneficiaryInfoFieldsState extends State<BeneficiaryInfoFields> {
                           color: ColorPalette.grey[600], fontSize: 14),
                     ),
                     const SizedBox(height: 8),
-                    stateField(widget.earningsController, () async {
-                      if (widget
-                          .earningsController.selectedCountryStates.isEmpty) {
-                        await widget.earningsController.getStates();
-                      }
+                    Obx(() => recipientStateField(widget.earningsController,
+                            () async {
+                          if (!widget.earningsController.isStateDropdownVisible
+                              .value) {
+                            await widget.earningsController.getStates(
+                                country: widget.earningsController
+                                    .recipientCountryTEC.text);
+                          }
 
-                      widget.earningsController.isStateDropdownVisible
-                          .toggle();
-                    }),
+                          widget.earningsController.isStateDropdownVisible
+                              .toggle();
+                        })),
                     Obx(() => widget
                             .earningsController.isStateDropdownVisible.value
                         ? ConstrainedBox(
@@ -128,18 +133,18 @@ class _BeneficiaryInfoFieldsState extends State<BeneficiaryInfoFields> {
                             child: ListView.builder(
                               padding: EdgeInsets.only(top: 8),
                               shrinkWrap: true,
-                              itemCount: widget
-                                  .earningsController.selectedCountryStates.length,
+                              itemCount: widget.earningsController
+                                  .selectedCountryStates.length,
                               itemBuilder: (context, index) {
-                                final state = widget
-                                    .earningsController.selectedCountryStates[index];
+                                final state = widget.earningsController
+                                    .selectedCountryStates[index];
                                 var name = "${state['name']}";
-                                var stateCode = "${state['state_code']}";
+                                // var stateCode = "${state['state_code']}";
                                 return ListTile(
                                   title: Text(name),
                                   onTap: () {
-                                    widget.earningsController
-                                        .recipientStateTEC.text = name;
+                                    widget.earningsController.recipientStateTEC
+                                        .text = name;
                                     widget.earningsController
                                         .isStateDropdownVisible.value = false;
                                   },
@@ -155,41 +160,43 @@ class _BeneficiaryInfoFieldsState extends State<BeneficiaryInfoFields> {
                           color: ColorPalette.grey[600], fontSize: 14),
                     ),
                     const SizedBox(height: 8),
-                    cityField(widget.earningsController, () async{
-                      if (widget
-                          .earningsController.selectedStateCities.isEmpty) {
-                        await widget.earningsController.getCities();
+                    cityField(widget.earningsController, () async {
+                      if (!widget
+                          .earningsController.isCityDropdownVisible.value) {
+                        await widget.earningsController.getCities(
+                            country: widget
+                                .earningsController.recipientCountryTEC.text,
+                            state: widget
+                                .earningsController.recipientStateTEC.text);
                       }
 
-                      widget.earningsController.isCityDropdownVisible
-                          .toggle();
+                      widget.earningsController.isCityDropdownVisible.toggle();
                     }),
                     Obx(() => widget
-                        .earningsController.isCityDropdownVisible.value
+                            .earningsController.isCityDropdownVisible.value
                         ? ConstrainedBox(
-                      constraints: const BoxConstraints(maxHeight: 200),
-                      child: ListView.builder(
-                        padding: EdgeInsets.only(top: 8),
-                        shrinkWrap: true,
-                        itemCount: widget
-                            .earningsController.selectedStateCities.length,
-                        itemBuilder: (context, index) {
-                          final city = widget
-                              .earningsController.selectedStateCities[index];
-                          return ListTile(
-                            title: Text(city),
-                            onTap: () {
-                              widget.earningsController
-                                  .recipientCityTEC.text = city;
-                              widget.earningsController
-                                  .isCityDropdownVisible.value = false;
-                            },
-                          );
-                        },
-                      ),
-                    )
+                            constraints: const BoxConstraints(maxHeight: 200),
+                            child: ListView.builder(
+                              padding: EdgeInsets.only(top: 8),
+                              shrinkWrap: true,
+                              itemCount: widget.earningsController
+                                  .selectedStateCities.length,
+                              itemBuilder: (context, index) {
+                                final city = widget.earningsController
+                                    .selectedStateCities[index];
+                                return ListTile(
+                                  title: Text(city),
+                                  onTap: () {
+                                    widget.earningsController.recipientCityTEC
+                                        .text = city;
+                                    widget.earningsController
+                                        .isCityDropdownVisible.value = false;
+                                  },
+                                );
+                              },
+                            ),
+                          )
                         : const SizedBox.shrink()),
-
                     SizedBox(height: 20),
                     Text(
                       "Street",

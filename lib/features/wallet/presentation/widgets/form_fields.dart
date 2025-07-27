@@ -47,6 +47,7 @@ CustomFormField beneficiaryAddressField(
 CustomFormField bankNameField(
     EarningsController earningsController, Function()? onTap) {
   return CustomFormField(
+    readOnly: true,
     textEditingController: earningsController.bankNameTEC,
     verContentPadding: 12,
     horContentPadding: 12,
@@ -96,9 +97,8 @@ CustomFormField swiftCodeField(
   );
 }
 
-CustomFormField countryField(
+CustomFormField recipientCountryField(
     EarningsController earningsController, Function()? onTap) {
-  final dashboardController = DashboardController.instance;
   return CustomFormField(
     readOnly: true,
     textEditingController: earningsController.recipientCountryTEC,
@@ -108,14 +108,13 @@ CustomFormField countryField(
     hintColor: ColorPalette.grey.shade800,
     suffix: GestureDetector(
       onTap: onTap,
-      child: const Icon(Icons.keyboard_arrow_down),
+      child: Icon(earningsController.isCountryDropdownVisible.value ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down),
     ),
   );
 }
 
-CustomFormField stateField(
+CustomFormField recipientStateField(
     EarningsController earningsController, Function()? onTap) {
-  final dashboardController = DashboardController.instance;
   return CustomFormField(
     readOnly: true,
     textEditingController: earningsController.recipientStateTEC,
@@ -125,14 +124,45 @@ CustomFormField stateField(
     hintColor: ColorPalette.grey.shade800,
     suffix: GestureDetector(
       onTap: onTap,
-      child: const Icon(Icons.keyboard_arrow_down),
+      child: Icon(earningsController.isStateDropdownVisible.value ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down),
+    ),
+  );
+}
+
+CustomFormField bankCountryField(
+    EarningsController earningsController, Function()? onTap) {
+  return CustomFormField(
+    readOnly: true,
+    textEditingController: earningsController.bankCountryTEC,
+    verContentPadding: 12,
+    horContentPadding: 12,
+    hint: "enter bank country",
+    hintColor: ColorPalette.grey.shade800,
+    suffix: GestureDetector(
+      onTap: onTap,
+      child: Icon(earningsController.isCountryDropdownVisible.value ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down),
+    ),
+  );
+}
+
+CustomFormField bankStateField(
+    EarningsController earningsController, Function()? onTap) {
+  return CustomFormField(
+    readOnly: true,
+    textEditingController: earningsController.bankStateTEC,
+    verContentPadding: 12,
+    horContentPadding: 12,
+    hint: "enter bank state",
+    hintColor: ColorPalette.grey.shade800,
+    suffix: GestureDetector(
+      onTap: onTap,
+      child: Icon(earningsController.isStateDropdownVisible.value ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down),
     ),
   );
 }
 
 CustomFormField cityField(
     EarningsController earningsController, Function()? onTap) {
-  final dashboardController = DashboardController.instance;
   return CustomFormField(
     readOnly: true,
     textEditingController: earningsController.recipientCityTEC,
@@ -161,7 +191,6 @@ CustomFormField streetField(
 
 CustomFormField aptNumberField(
     EarningsController earningsController) {
-  final dashboardController = DashboardController.instance;
   return CustomFormField(
     textEditingController: earningsController.recipientAptNoTEC,
     verContentPadding: 12,

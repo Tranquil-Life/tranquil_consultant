@@ -9,6 +9,7 @@ const insuficientFundsMessage =
 const cardSaveLimitExceededMessage = 'Your card slot is full';
 const agoraId = 'a2782460e26a405cb9ffda0ae62e8038';
 const paystackPublicKey = 'pk_test_2442c1c75c79a8cbd1fdd8cba558a68ea1dd8524';
+const mapApiKey = "AIzaSyDVIeUnWdJiSLrWnI4_PaBAxYIFWd9rb7M";
 const agoraAppId = 'a2782460e26a405cb9ffda0ae62e8038';
 const fileMaxSize = "File must be less than 2 MB";
 const emptyCvField = "Your resumé is required";

@@ -5,6 +5,7 @@ const production = 'https://tranquil-api.herokuapp.com';
 const exchangeHost = "https://v6.exchangerate-api.com/v6";
 const baseUrl = '$staging/api/';
 const countriesNowBaseUrl = "https://countriesnow.space/api/v0.1/";
+const mapPlacesBaseUrl = "https://maps.googleapis.com/maps/api/place/textsearch/json";
 
 abstract class AuthEndPoints {
   static const login = '$consultant/login';
@@ -38,6 +39,7 @@ abstract class ConsultationEndPoints {
   static const getSlots = '$consultant/getSlots';
   static const saveSlots = '$consultant/saveSlots';
   static const deleteSlot = '$consultant/deleteSlot';
+
   static getMeetings({required int page}) =>
       '$consultant/myMeetings?page=$page';
 }
@@ -45,6 +47,7 @@ abstract class ConsultationEndPoints {
 abstract class WalletEndpoints {
   static const getWallet = '$consultant/getEarnings';
   static const pay = '$consultant/pay';
+
   static getTransactions({required int page, required int limit}) =>
       '$consultant/listTransactions/$page/$limit';
 }
@@ -62,8 +65,9 @@ abstract class JournalEndPoints {
 
   static sharedNotes({required int page, required int limit}) =>
       '$consultant/listSharedNotes/$page/$limit';
+
   static personalNotes({required int page, required int limit}) =>
-    '$consultant/listMyNotes/$page/$limit';    
+      '$consultant/listMyNotes/$page/$limit';
 }
 
 abstract class MediaEndpoints {
@@ -74,8 +78,10 @@ abstract class ChatEndPoints {
   static const sendChat = '$consultant/send-message';
   static const generateToken = '$consultant/generateToken';
   static const getChatInfo = '$consultant/create-chat';
+
   static getRecentMessages({required int chatId}) =>
       'client/get-recent-messages/$chatId';
+
   static getOlderMessages({required int chatId, required int lastMessageId}) =>
       'client/get-older-messages/$chatId/$lastMessageId';
   static const triggerPusherEvent = '$consultant/triggerPusherEvent';
@@ -89,6 +95,18 @@ abstract class ActivityEndpoints {
 
 abstract class CountriesNowEndpoints {
   static get getCountries => 'countries';
-  static getStates({required String country}) => 'countries/states/q?country=$country';
-  static getCities({required String country, required String state}) => 'countries/state/cities/q?country=$country&state=$state';
+
+  static getStates({required String country}) =>
+      'countries/states/q?country=$country';
+
+  static getCities({required String country, required String state}) =>
+      'countries/state/cities/q?country=$country&state=$state';
+}
+
+abstract class GoogleMapsEndpoints {
+  static getBankBranches({required String bankName, required String state}) =>
+      "$mapPlacesBaseUrl?query=$bankName+branches+in+$state&type=bank&key=$mapApiKey";
+
+  static getFromNextPage({required String nextPageToken}) =>
+      "$mapPlacesBaseUrl?pagetoken=$nextPageToken&key=$mapApiKey";
 }

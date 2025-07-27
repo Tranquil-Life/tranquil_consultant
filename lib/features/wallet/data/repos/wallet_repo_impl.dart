@@ -91,4 +91,50 @@ class WalletRepositoryImpl extends WalletRepo {
     // TODO: implement getCountries
     throw UnimplementedError();
   }
+
+  @override
+  Future<Either<ApiError, dynamic>> getBankBranches({required String bankName, required String state}) async{
+    String url = GoogleMapsEndpoints.getBankBranches(bankName: bankName, state: state);
+
+    var response = await ApiService().dio.get(
+      url,
+      options: Options(
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+      ),
+    );
+
+    if (response.statusCode == 200 ||
+        response.statusCode == 201 ||
+        response.statusCode == 204) {
+      return Right(response.data);
+    } else {
+      return Left(ApiError(message: response.data));
+    }
+  }
+
+  @override
+  Future<Either<ApiError, dynamic>> getFromNextPage({required String nextPageToken}) async{
+    String url = GoogleMapsEndpoints.getFromNextPage(nextPageToken: nextPageToken);
+
+    var response = await ApiService().dio.get(
+      url,
+      options: Options(
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+      ),
+    );
+
+    if (response.statusCode == 200 ||
+        response.statusCode == 201 ||
+        response.statusCode == 204) {
+      return Right(response.data);
+    } else {
+      return Left(ApiError(message: response.data));
+    }
+  }
 }

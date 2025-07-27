@@ -17,4 +17,7 @@ abstract class WalletRepo extends ApiService{
   Future<Either<ApiError, dynamic>> getStates({required String country});
   Future<Either<ApiError, dynamic>> getCities({required String country, required String state});
 
+  Future<Either<ApiError, dynamic>> getBankBranches({required String bankName, required String state});
+  Future<Either<ApiError, dynamic>> getFromNextPage({required String nextPageToken});
+
 }
