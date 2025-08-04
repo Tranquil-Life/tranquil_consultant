@@ -22,20 +22,57 @@ class _AccountInfoFieldsState extends State<AccountInfoFields> {
         Text("ACCOUNT INFO",
             style: TextStyle(fontSize: AppFonts.baseSize)),
         SizedBox(height: 12),
+
         Text(
-          "IBAN",
+          "Account number",
           style: TextStyle(color: ColorPalette.grey[600]),
         ),
         const SizedBox(height: 8),
-        ibanField(widget.earningsController),
+        accountNumberField(widget.earningsController),
 
         SizedBox(height: 12),
+
         Text(
-          "Swift code",
+          "Routing number",
           style: TextStyle(color: ColorPalette.grey[600]),
         ),
         const SizedBox(height: 8),
-        swiftCodeField(widget.earningsController),
+        routingNumberField(widget.earningsController),
+
+        SizedBox(height: 12),
+
+        Text(
+          "Account holder name",
+          style: TextStyle(color: ColorPalette.grey[600]),
+        ),
+        const SizedBox(height: 8),
+        holderNameField(widget.earningsController),
+
+        SizedBox(height: 12),
+
+        Text(
+          "Social security number",
+          style: TextStyle(color: ColorPalette.grey[600]),
+        ),
+        const SizedBox(height: 8),
+        ssnField(widget.earningsController),
+
+        SizedBox(height: 12),
+
+        // Text(
+        //   "IBAN",
+        //   style: TextStyle(color: ColorPalette.grey[600]),
+        // ),
+        // const SizedBox(height: 8),
+        // ibanField(widget.earningsController),
+        //
+        // SizedBox(height: 12),
+        // Text(
+        //   "Swift code",
+        //   style: TextStyle(color: ColorPalette.grey[600]),
+        // ),
+        // const SizedBox(height: 8),
+        // swiftCodeField(widget.earningsController),
       ],
     );
   }

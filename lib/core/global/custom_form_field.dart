@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
 
 // ignore: must_be_immutable
@@ -21,6 +22,7 @@ class CustomFormField extends StatelessWidget {
   void Function(String)? onChanged;
   final TextInputAction? textInputAction;
   final TextCapitalization textCapitalization;
+  final List<TextInputFormatter>? inputFormatter;
 
   CustomFormField(
       {super.key,
@@ -42,7 +44,10 @@ class CustomFormField extends StatelessWidget {
       this.verContentPadding,
       this.horContentPadding,
       this.textCapitalization = TextCapitalization.none,
-      this.onChanged, this.hintColor, this.onFieldSubmitted});
+      this.onChanged,
+      this.hintColor,
+      this.onFieldSubmitted,
+      this.inputFormatter});
 
   @override
   Widget build(BuildContext context) {
@@ -58,6 +63,7 @@ class CustomFormField extends StatelessWidget {
       textCapitalization: textCapitalization,
       onChanged: onChanged,
       onTap: onTap,
+      inputFormatters: inputFormatter,
       onFieldSubmitted: onFieldSubmitted,
       decoration: InputDecoration(
           errorText: errorText,

@@ -80,7 +80,8 @@ class AuthController extends GetxController {
     params.videoIntro = introVideo.value;
     params.pictureUrl = profilePic.value;
     params.therapistKind = selectedType.value;
-    params.emailVerifiedAt = VerificationController.instance.emailVerifiedAt.value;
+    params.emailVerifiedAt =
+        VerificationController.instance.emailVerifiedAt.value;
 
     print(params.toJson());
 
@@ -89,7 +90,8 @@ class AuthController extends GetxController {
         (l) => CustomSnackBar.showSnackBar(
             context: Get.context!,
             message: l.message.toString(),
-            backgroundColor: ColorPalette.red), (r) async {
+            backgroundColor: ColorPalette.red),
+        (r) async {
       Map<String, dynamic> data = r;
       userDataStore.user = data['data']['user'];
       userDataStore.qualifications =
@@ -125,8 +127,6 @@ class AuthController extends GetxController {
       Map<String, dynamic> data = r;
 
       if (data['error'] == false && data['data'] != null) {
-
-
         userDataStore.user = data['data']['user'];
         userDataStore.qualifications =
             List<Map<String, dynamic>>.from(data['data']['qualifications']);
@@ -260,7 +260,7 @@ class AuthController extends GetxController {
             title: "Error",
             message: l.message.toString(),
             backgroundColor: ColorPalette.red), (r) async {
-          updated = true;
+      updated = true;
 
       CustomSnackBar.showSnackBar(
           context: Get.context!,

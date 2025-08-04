@@ -19,7 +19,7 @@ class ApiService {
 
   static const certVerifyFailed = "CERTIFICATE_VERIFY_FAILED";
 
-  Map<String, String> _getHeaders() {
+  Map<String, String> getHeaders() {
     User user = UserModel.fromJson(userDataStore.user);
 
     return {
@@ -65,7 +65,7 @@ class ApiService {
   Future<Either<ApiError, dynamic>> postReq(String subPath,
       {dynamic body}) async {
     String url = baseUrl + subPath;
-    final headers = _getHeaders();
+    final headers = getHeaders();
     Response<dynamic> response;
 
     bool hasMultipartFile = containsMultipartFile(body);
@@ -107,7 +107,7 @@ class ApiService {
 
   Future<Either<ApiError, dynamic>> getReq(String subPath,
       [bool exchange = false]) async {
-    final headers = _getHeaders();
+    final headers = getHeaders();
     String url = (exchange ? "" : baseUrl) + subPath;
 
     var response = await dio.get(
@@ -129,7 +129,7 @@ class ApiService {
 
   Future<Either<ApiError, bool>> deleteReq(String subPath,
       {dynamic body}) async {
-    final headers = _getHeaders();
+    final headers = getHeaders();
     String url = baseUrl + subPath;
 
     var response =

@@ -40,7 +40,7 @@ class MediaRepoImpl extends MediaRepo {
   @override
   Future<Either<ApiError, dynamic>> uploadFileWithHttp(
       File file, String uploadType,
-      [String? previousImgUrl]) async{
+      [String? previousImgUrl]) async {
     User therapist = UserModel.fromJson(userDataStore.user);
 
     String mediaType = "";
@@ -69,31 +69,34 @@ class MediaRepoImpl extends MediaRepo {
       };
       request.files.add(
         http.MultipartFile(
-            'file',
-            file.openRead(), // Use openRead() to stream the file
-            await file.length(), // Use await to get the file length
-        filename: p.basename(file.path),
-        contentType: MediaType(mediaType, mediaSubType),
-      ),
-    );
-    request.headers.addAll(headers);
-    request.fields.addAll({
-    "upload_type": uploadType,
-    });
+          'file',
+          file.openRead(), // Use openRead() to stream the file
+          await file.length(), // Use await to get the file length
+          filename: p.basename(file.path),
+          contentType: MediaType(mediaType, mediaSubType),
+        ),
+      );
+      request.headers.addAll(headers);
+      request.fields.addAll({
+        "upload_type": uploadType,
+      });
 
-    // Setting a timeout duration
-    var res = await request.send().timeout(Duration(minutes: 5)); // Increase timeout duration
+      // Setting a timeout duration
+      var res = await request
+          .send()
+          .timeout(Duration(minutes: 5)); // Increase timeout duration
 
-    var newRes = await http.Response.fromStream(res);
-    var data = jsonDecode(newRes.body);
+      var newRes = await http.Response.fromStream(res);
+      var data = jsonDecode(newRes.body);
 
-    if (newRes.statusCode == 200) {
-    return Right(data);
-    } else {
-    return Left(ApiError(message: data['message'] ?? 'Unknown error occurred'));
-    }
+      if (newRes.statusCode == 200) {
+        return Right(data);
+      } else {
+        return Left(
+            ApiError(message: data['message'] ?? 'Unknown error occurred'));
+      }
     } catch (e) {
-    return Left(ApiError(message: e.toString()));
+      return Left(ApiError(message: e.toString()));
     }
   }
 }

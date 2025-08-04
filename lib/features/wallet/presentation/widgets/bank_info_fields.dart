@@ -143,130 +143,161 @@ class _BankInfoFieldsState extends State<BankInfoFields> {
                 Divider(),
               ],
             ),
-            content: SizedBox(
-              width: double.maxFinite,
-              height: displayHeight(context),
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("Select the address for your local bank branch"),
-                    SizedBox(height: 40),
-                    Text("Country"),
-                    const SizedBox(height: 8),
-                    Obx(
-                      () => bankCountryField(widget.earningsController, () {
-                        widget.earningsController.isCountryDropdownVisible
-                            .toggle();
-                      }),
-                    ),
-                    Obx(() => widget
-                            .earningsController.isCountryDropdownVisible.value
-                        ? ConstrainedBox(
-                            constraints: const BoxConstraints(maxHeight: 200),
-                            child: ListView.builder(
-                              padding: EdgeInsets.only(top: 8),
-                              shrinkWrap: true,
-                              itemCount: recipientCountries.length,
-                              itemBuilder: (context, index) {
-                                final country = recipientCountries[index];
-                                return ListTile(
-                                  title: Text(country),
-                                  onTap: () {
-                                    widget.earningsController.bankCountryTEC
-                                        .text = country;
-                                    widget.earningsController
-                                        .isCountryDropdownVisible.value = false;
-                                  },
-                                );
-                              },
-                            ),
-                          )
-                        : const SizedBox.shrink()),
-                    SizedBox(height: 20),
-                    Text(
-                      "State",
-                      style: TextStyle(
-                          color: ColorPalette.grey[600], fontSize: 14),
-                    ),
-                    const SizedBox(height: 8),
-                    Obx(() =>
-                        bankStateField(widget.earningsController, () async {
-                          if(!widget.earningsController.isStateDropdownVisible.value){
-                            await widget.earningsController.getStates(
-                                country: widget
-                                    .earningsController.bankCountryTEC.text);
-                          }
-
-                          widget.earningsController.isStateDropdownVisible
-                              .toggle();
-                        })),
-                    Obx(() => widget
-                            .earningsController.isStateDropdownVisible.value
-                        ? ConstrainedBox(
-                            constraints: const BoxConstraints(maxHeight: 200),
-                            child: ListView.builder(
-                              padding: EdgeInsets.only(top: 8),
-                              shrinkWrap: true,
-                              itemCount: widget.earningsController
-                                  .selectedCountryStates.length,
-                              itemBuilder: (context, index) {
-                                final state = widget.earningsController
-                                    .selectedCountryStates[index];
-                                var name = "${state['name']}";
-                                var stateCode = "${state['state_code']}";
-                                return ListTile(
-                                  title: Text(name),
-                                  onTap: () async{
-                                    widget.earningsController.bankStateTEC
-                                        .text = name;
-                                    widget.earningsController
-                                        .isStateDropdownVisible.value = false;
-
-                                    await widget.earningsController.getBankBranches();
-                                  },
-                                );
-                              },
-                            ),
-                          )
-                        : const SizedBox.shrink()),
-
-                Obx(() => widget.earningsController.availableBranches.isNotEmpty
-                    ? ConstrainedBox(
-                  constraints: const BoxConstraints(maxHeight: 400), // Give enough space
+            content: StatefulBuilder(builder: (context, setState) {
+              return SizedBox(
+                width: double.maxFinite,
+                height: displayHeight(context),
+                child: SingleChildScrollView(
                   child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("AVAILABLE BRANCHES"),
+                      Text("Select the address for your local bank branch"),
+                      SizedBox(height: 40),
+                      Text("Country"),
                       const SizedBox(height: 8),
-                      Expanded( // 👈 This allows ListView to scroll within available space
-                        child: ListView.builder(
-                          padding: const EdgeInsets.only(top: 8),
-                          itemCount:
-                          widget.earningsController.availableBranches.length,
-                          itemBuilder: (context, index) {
-                            final branch =
-                            widget.earningsController.availableBranches[index];
-
-                            return ListTile(
-                              title: Text(branch),
-                              onTap: () {
-                                // Handle branch selection
-                              },
-                            );
-                          },
-                        ),
+                      Obx(
+                        () => bankCountryField(widget.earningsController, () {
+                          widget.earningsController.isCountryDropdownVisible
+                              .toggle();
+                        }),
                       ),
+                      Obx(() => widget
+                              .earningsController.isCountryDropdownVisible.value
+                          ? ConstrainedBox(
+                              constraints: const BoxConstraints(maxHeight: 200),
+                              child: ListView.builder(
+                                padding: EdgeInsets.only(top: 8),
+                                shrinkWrap: true,
+                                itemCount: recipientCountries.length,
+                                itemBuilder: (context, index) {
+                                  final country = recipientCountries[index];
+                                  return ListTile(
+                                    title: Text(country),
+                                    onTap: () {
+                                      widget.earningsController.bankCountryTEC
+                                          .text = country;
+                                      widget
+                                          .earningsController
+                                          .isCountryDropdownVisible
+                                          .value = false;
+                                    },
+                                  );
+                                },
+                              ),
+                            )
+                          : const SizedBox.shrink()),
+                      SizedBox(height: 20),
+                      Text(
+                        "State",
+                        style: TextStyle(
+                            color: ColorPalette.grey[600], fontSize: 14),
+                      ),
+                      const SizedBox(height: 8),
+                      Obx(() =>
+                          bankStateField(widget.earningsController, () async {
+                            if (!widget.earningsController
+                                .isStateDropdownVisible.value) {
+                              await widget.earningsController.getStates(
+                                  country: widget
+                                      .earningsController.bankCountryTEC.text);
+                            }
+
+                            widget.earningsController.isStateDropdownVisible
+                                .toggle();
+                          })),
+                      Obx(() => widget
+                              .earningsController.isStateDropdownVisible.value
+                          ? ConstrainedBox(
+                              constraints: const BoxConstraints(maxHeight: 200),
+                              child: ListView.builder(
+                                padding: EdgeInsets.only(top: 8),
+                                shrinkWrap: true,
+                                itemCount: widget.earningsController
+                                    .selectedCountryStates.length,
+                                itemBuilder: (context, index) {
+                                  final state = widget.earningsController
+                                      .selectedCountryStates[index];
+                                  var name = "${state['name']}";
+                                  var stateCode = "${state['state_code']}";
+                                  return ListTile(
+                                    title: Text(name),
+                                    onTap: () async {
+                                      widget.earningsController.bankStateTEC
+                                          .text = name;
+                                      widget.earningsController
+                                          .isStateDropdownVisible.value = false;
+
+                                      await widget.earningsController
+                                          .getBankBranches();
+                                    },
+                                  );
+                                },
+                              ),
+                            )
+                          : const SizedBox.shrink()),
+                      Obx(() => widget.earningsController.availableBranches.isNotEmpty
+                          ? ConstrainedBox(
+                        constraints: const BoxConstraints(maxHeight: 400),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(height: 40),
+                            Text(
+                              "AVAILABLE BRANCHES",
+                              style: TextStyle(
+                                fontSize: AppFonts.baseSize,
+                                fontFamily: AppFonts.mulishSemiBold,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            SizedBox(
+                              height: 300,
+                              child: ListView.builder(
+                                itemCount: widget.earningsController.availableBranches.length,
+                                itemBuilder: (context, index) {
+                                  final branch = widget.earningsController.availableBranches[index];
+
+                                  return Padding(
+                                    padding: EdgeInsets.only(bottom: 12),
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          widget.earningsController.bankAddressTEC.text = branch;
+                                        });
+                                      },
+                                      child: Row(
+                                        children: [
+                                          Radio(
+                                            activeColor: ColorPalette.green,
+                                            visualDensity: VisualDensity(horizontal: -4, vertical: -4),
+                                            value: branch,
+                                            groupValue: widget.earningsController.bankAddressTEC.text,
+                                            onChanged: (value) {
+                                              setState(() {
+                                                widget.earningsController.bankAddressTEC.text = value.toString();
+                                              });
+                                            },
+                                          ),
+                                          SizedBox(width: 8),
+                                          Expanded(child: Text(branch, style: TextStyle(fontSize: 12),)),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                          : const SizedBox.shrink()),
+
                     ],
                   ),
-                )
-                    : const SizedBox.shrink())
-
-                ],
                 ),
-              ),
-            ),
+              );
+            }),
           ));
         }),
       ],

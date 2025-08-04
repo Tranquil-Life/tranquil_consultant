@@ -5,7 +5,8 @@ const production = 'https://tranquil-api.herokuapp.com';
 const exchangeHost = "https://v6.exchangerate-api.com/v6";
 const baseUrl = '$staging/api/';
 const countriesNowBaseUrl = "https://countriesnow.space/api/v0.1/";
-const mapPlacesBaseUrl = "https://maps.googleapis.com/maps/api/place/textsearch/json";
+const mapPlacesBaseUrl =
+    "https://maps.googleapis.com/maps/api/place/textsearch/json";
 
 abstract class AuthEndPoints {
   static const login = '$consultant/login';
@@ -47,6 +48,7 @@ abstract class ConsultationEndPoints {
 abstract class WalletEndpoints {
   static const getWallet = '$consultant/getEarnings';
   static const pay = '$consultant/pay';
+  static const createConnectAccount = '$consultant/createConnectAccount';
 
   static getTransactions({required int page, required int limit}) =>
       '$consultant/listTransactions/$page/$limit';
