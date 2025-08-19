@@ -6,6 +6,7 @@ import 'package:tl_consultant/core/global/buttons.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/theme/fonts.dart';
 import 'package:tl_consultant/core/utils/helpers/svg_elements.dart';
+import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
 import 'package:tl_consultant/features/wallet/presentation/controllers/earnings_controller.dart';
 import 'package:tl_consultant/features/wallet/presentation/screens/withdrawal_info.dart';
 import 'package:tl_consultant/features/wallet/presentation/widgets/transaction_item.dart';
@@ -21,15 +22,21 @@ class _WalletTabState extends State<WalletTab> {
   final earningsController = Get.put(EarningsController());
   NumberFormat? formatCurrency;
 
-  getEarnings() async {
-    earningsController.getEarningsInfo();
-  }
+  double balance = 0;
+  double pendingClearance = 0;
+  double lifetimeTotalReceived = 0;
 
   @override
   void initState() {
-    formatCurrency = NumberFormat.currency(locale: "en_NG", symbol: '₦');
-
-    getEarnings();
+    formatCurrency = NumberFormat.currency(
+        locale: DashboardController.instance.country.value.toLowerCase() ==
+                "nigeria"
+            ? "en_NG"
+            : "en_US",
+        symbol: DashboardController.instance.country.value.toLowerCase() ==
+                "nigeria"
+            ? '₦'
+            : "\$");
 
     super.initState();
   }
@@ -68,17 +75,46 @@ class _WalletTabState extends State<WalletTab> {
                                 GestureDetector(
                                     child: Icon(Icons.refresh_outlined,
                                         color:
-                                        ColorPalette.black.withOpacity(.6)),
-                                    onTap: () async => await getEarnings()),
-                                Text(
-                                    formatCurrency!.format(
-                                        earningsController.balance.value),
-                                    style: TextStyle(
-                                      color: ColorPalette.green[800],
-                                      fontSize: 40,
-                                      fontWeight: FontWeight.bold,
-                                        fontFamily: AppFonts.josefinSansRegular
-                                    )),
+                                            ColorPalette.black.withOpacity(.6)),
+                                    onTap: () async {} // await getEarnings()
+                                    ),
+                                FutureBuilder(
+                                    future: earningsController.getBalance(),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState ==
+                                          ConnectionState.waiting) {
+                                        return
+                                          Text(
+                                              formatCurrency!.format(0),
+                                              style: TextStyle(
+                                                  color: ColorPalette.green[800],
+                                                  fontSize: 40,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontFamily:
+                                                  AppFonts.josefinSansRegular));
+                                      }
+
+                                      if (snapshot.hasError) {
+                                        return Center(
+                                          child: Text(
+                                            'Error: ${snapshot.error}',
+                                            style: const TextStyle(
+                                                color: Colors.red),
+                                          ),
+                                        );
+                                      }
+
+                                      balance = snapshot.data!;
+
+                                      return Text(
+                                          formatCurrency!.format(balance),
+                                          style: TextStyle(
+                                              color: ColorPalette.green[800],
+                                              fontSize: 40,
+                                              fontWeight: FontWeight.bold,
+                                              fontFamily:
+                                                  AppFonts.josefinSansRegular));
+                                    }),
                                 Icon(Icons.visibility_outlined,
                                     color: ColorPalette.black.withOpacity(.6))
                               ]),
@@ -89,14 +125,11 @@ class _WalletTabState extends State<WalletTab> {
                                 style: TextStyle(
                                     fontSize: 12,
                                     color: ColorPalette.black,
-                                    fontFamily: AppFonts.josefinSansRegular
-                                ),
+                                    fontFamily: AppFonts.josefinSansRegular),
                                 children: [
                                   TextSpan(
-                                    text: formatCurrency!.format(
-                                        earningsController.balance.value +
-                                            earningsController
-                                                .pendingClearance.value),
+                                    text: formatCurrency!
+                                        .format(balance + pendingClearance),
                                     style: TextStyle(
                                         color: ColorPalette.green[800],
                                         fontSize: AppFonts.defaultSize),
@@ -116,7 +149,7 @@ class _WalletTabState extends State<WalletTab> {
               },
               child: const Center(
                 child:
-                Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                    Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                   Text(
                     'Withdraw to account',
                     style: TextStyle(
@@ -136,20 +169,54 @@ class _WalletTabState extends State<WalletTab> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              FutureBuilder(
+                  future: earningsController.getPendingClearance(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return otherFigures('To be cleared', 0);
+                    }
+
+                    if (snapshot.hasError) {
+                      return Center(
+                        child: Text(
+                          'Error: ${snapshot.error}',
+                          style: const TextStyle(color: Colors.red),
+                        ),
+                      );
+                    }
+
+                    pendingClearance = snapshot.data!;
+
+                    return otherFigures('To be cleared', pendingClearance);
+                  }),
               otherFigures(
-                  'To be cleared', earningsController.pendingClearance.value),
-              otherFigures('Available for \nwithdrawal',
-                  earningsController.availableForWithdrawal.value > 160000 ? earningsController.availableForWithdrawal.value : 0),
-              otherFigures(
-                  'Total earnings',
-                  earningsController.balance.value +
-                      earningsController.withdrawn.value),
+                  'Available for \nwithdrawal', balance > 100 ? balance : 0),
+              FutureBuilder(
+                  future: earningsController.getLifeTimeTotal(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return otherFigures(
+                          'Total earnings', 0);
+                    }
+
+                    if (snapshot.hasError) {
+                      return Center(
+                        child: Text(
+                          'Error: ${snapshot.error}',
+                          style: const TextStyle(color: Colors.red),
+                        ),
+                      );
+                    }
+
+                    lifetimeTotalReceived = snapshot.data!;
+                    return otherFigures(
+                        'Total earnings', lifetimeTotalReceived);
+                  })
             ],
           ),
           const SizedBox(height: 40),
           const TransactionsSection(),
           SizedBox(height: 40)
-
         ]));
   }
 

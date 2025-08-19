@@ -1,6 +1,6 @@
-part of 'stripe_account.dart';
+part of 'create_stripe_account.dart';
 
-Map<String, dynamic> _$StripeAccountToJson(StripeAccount instance) =>
+Map<String, dynamic> _$StripeAccountToJson(CreateStripeAccount instance) =>
     <String, dynamic>{
       'email': instance.email,
       'phone': instance.phone,

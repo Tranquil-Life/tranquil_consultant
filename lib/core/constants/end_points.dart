@@ -1,4 +1,5 @@
 import 'package:tl_consultant/core/constants/constants.dart';
+import 'package:tl_consultant/features/wallet/presentation/controllers/earnings_controller.dart';
 
 const staging = 'https://tranquil-api-staging-205081a15c84.herokuapp.com';
 const production = 'https://tranquil-api.herokuapp.com';
@@ -49,14 +50,22 @@ abstract class WalletEndpoints {
   static const getWallet = '$consultant/getEarnings';
   static const pay = '$consultant/pay';
   static const createConnectAccount = '$consultant/createConnectAccount';
+  static String getStripeAccountInfo =
+      '$consultant/getAccountInfo';
+  static String getAccountBalance =
+      '$consultant/getAccountBalance';
+  static String getLifeTimeConnectedTotalVolumeReceived =
+      '$consultant/getLifeTimeConnectedTotalVolumeReceived';
+  static String getPendingClearance =
+      '$consultant/getPendingPaymentsTotal/$myId';
+
+  static String transferToConnectedAccount({required int amount}) =>
+      '$consultant/transferToConnectedAccount/${EarningsController.instance.stripeAccountId.value}/${amount * 100}';
+  static const withdrawFromConnectedAccount =
+      '$consultant/withdrawFromConnectedAccount';
 
   static getTransactions({required int page, required int limit}) =>
       '$consultant/listTransactions/$page/$limit';
-}
-
-abstract class EarningsEndpoints {
-  static const getInfo = '$consultant/getEarnings';
-  static const getTransactions = '$consultant/getEarnings';
 }
 
 abstract class JournalEndPoints {

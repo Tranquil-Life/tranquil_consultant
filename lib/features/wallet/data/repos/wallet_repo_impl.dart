@@ -1,17 +1,10 @@
 import 'dart:io';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
 import 'package:tl_consultant/core/constants/end_points.dart';
-import 'package:tl_consultant/core/domain/query_params.dart';
 import 'package:tl_consultant/core/errors/api_error.dart';
 import 'package:tl_consultant/core/utils/functions.dart';
-import 'package:tl_consultant/core/utils/services/API/api_service.dart';
-import 'package:tl_consultant/features/profile/data/models/user_model.dart';
-import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
-import 'package:tl_consultant/features/wallet/data/models/earnings_model.dart';
-import 'package:tl_consultant/features/wallet/domain/entities/earnings.dart';
-import 'package:tl_consultant/features/wallet/domain/entities/stripe_account.dart';
+import 'package:tl_consultant/features/wallet/domain/entities/create_stripe_account.dart';
 import 'package:tl_consultant/features/wallet/domain/repos/wallet_repo.dart';
 
 class WalletRepositoryImpl extends WalletRepo {
@@ -148,7 +141,7 @@ class WalletRepositoryImpl extends WalletRepo {
 
   @override
   Future<Either<ApiError, dynamic>> createStripeAccount(
-      {required StripeAccount params}) async {
+      {required CreateStripeAccount params}) async {
     // Convert the params to Map
     final Map<String, dynamic> rawData = params.toJson();
 
@@ -156,8 +149,49 @@ class WalletRepositoryImpl extends WalletRepo {
     final Map<String, dynamic> convertedData =
         await convertFilesToMultipart(rawData);
 
-    return await catchSocketException(() => postReq(
-        WalletEndpoints.createConnectAccount,
-        body: convertedData)).then((value) => handleResponse(value));
+    return await catchSocketException(() =>
+            postReq(WalletEndpoints.createConnectAccount, body: convertedData))
+        .then((value) => handleResponse(value));
+  }
+
+  @override
+  Future<Either<ApiError, dynamic>> getStripeAccountInfo() async {
+    return await catchSocketException(
+            () => getReq(WalletEndpoints.getStripeAccountInfo))
+        .then((value) => handleResponse(value));
+  }
+
+  @override
+  Future<Either<ApiError, dynamic>> getBalance() async {
+    return await catchSocketException(
+            () => getReq(WalletEndpoints.getAccountBalance))
+        .then((value) => handleResponse(value));
+  }
+
+  @override
+  Future<Either<ApiError, dynamic>> getLifeTimeTotalReceived() async {
+    return await catchSocketException(() =>
+            getReq(WalletEndpoints.getLifeTimeConnectedTotalVolumeReceived))
+        .then((value) => handleResponse(value));
+  }
+
+  @override
+  Future<Either<ApiError, dynamic>> getTotalPendingClearance() async {
+    return await catchSocketException(
+            () => getReq(WalletEndpoints.getPendingClearance))
+        .then((value) => handleResponse(value));
+  }
+
+  @override
+  Future<Either<ApiError, dynamic>> transferToConnectedAcc(
+      {required int amount}) async {
+    return await catchSocketException(() =>
+        getReq(WalletEndpoints.transferToConnectedAccount(amount: amount)));
+  }
+
+  @override
+  Future<Either<ApiError, dynamic>> withdrawToBankAcc(Map<String, dynamic> req) async {
+    return await catchSocketException(() =>
+        postReq(WalletEndpoints.withdrawFromConnectedAccount, body: req));
   }
 }

@@ -330,3 +330,12 @@ String getGreeting() {
     return "Good evening,";
   }
 }
+
+String countryCodeToEmoji(String countryCode) {
+  // Convert country code (e.g. "US") to flag emoji
+  return countryCode.toUpperCase().replaceAllMapped(
+    RegExp(r'[A-Z]'),
+        (match) =>
+        String.fromCharCode(match.group(0)!.codeUnitAt(0) + 127397),
+  );
+}

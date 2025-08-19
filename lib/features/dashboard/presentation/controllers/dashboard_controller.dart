@@ -67,6 +67,8 @@ class DashboardController extends GetxController {
     var hourInMilliSecs = 3600000;
     var formattedTimeZone = timezoneOffset / hourInMilliSecs;
 
+    print(country.value);
+
     country.value = currCountry;
     street.value = currState;
     city.value = currCity;

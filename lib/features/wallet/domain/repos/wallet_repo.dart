@@ -2,8 +2,8 @@ import 'package:dartz/dartz.dart';
 import 'package:tl_consultant/core/domain/query_params.dart';
 import 'package:tl_consultant/core/errors/api_error.dart';
 import 'package:tl_consultant/core/utils/services/API/api_service.dart';
+import 'package:tl_consultant/features/wallet/domain/entities/create_stripe_account.dart';
 import 'package:tl_consultant/features/wallet/domain/entities/earnings.dart';
-import 'package:tl_consultant/features/wallet/domain/entities/stripe_account.dart';
 
 abstract class WalletRepo<T, F extends QueryParams> extends ApiService {
   WalletRepo();
@@ -27,5 +27,12 @@ abstract class WalletRepo<T, F extends QueryParams> extends ApiService {
       {required String nextPageToken});
 
   Future<Either<ApiError, dynamic>> createStripeAccount({
-    required StripeAccount params});
+    required CreateStripeAccount params});
+  Future<Either<ApiError, dynamic>> getStripeAccountInfo();
+  Future<Either<ApiError, dynamic>> getBalance();
+  Future<Either<ApiError, dynamic>> getTotalPendingClearance();
+  Future<Either<ApiError, dynamic>> getLifeTimeTotalReceived();
+  Future<Either<ApiError, dynamic>> transferToConnectedAcc({required int amount});
+  Future<Either<ApiError, dynamic>> withdrawToBankAcc(Map<String, dynamic> req);
+
 }

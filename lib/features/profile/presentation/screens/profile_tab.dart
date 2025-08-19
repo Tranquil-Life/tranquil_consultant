@@ -164,12 +164,15 @@ class _ProfileHeadState extends State<ProfileHead> {
         const SizedBox(
           width: 8,
         ),
-        Column(
+        Expanded(flex: 4, child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Obx(()=>Text(
-              truncateWithEllipsis((displayWidth(context) / 20).toInt(),
-                  "${widget.profileController.firstNameTEC.text} ${containsTitle(widget.profileController.titles.join(', '))}"),
+              truncateWithEllipsis(
+                  (displayWidth(context) / 14).toInt(),
+                  "${widget.profileController.firstNameTEC.text} ${containsTitle(widget.profileController.titles.join(', '))}"
+              )
+              ,
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
@@ -195,7 +198,7 @@ class _ProfileHeadState extends State<ProfileHead> {
                   color: ColorPalette.blue.shade600,
                 ),
                 Text(
-                  "${widget.profileController.countryTEC.text}/${widget.profileController.cityTEC.text}",
+                  truncateWithEllipsis(8, "${widget.profileController.countryTEC.text}/${widget.profileController.cityTEC.text}"),
                   style: TextStyle(
                     color: ColorPalette.blue.shade600,
                     fontSize: AppFonts.defaultSize,
@@ -205,7 +208,7 @@ class _ProfileHeadState extends State<ProfileHead> {
               ],
             ),
           ],
-        ),
+        )),
         Expanded(
           child: Align(
             alignment: Alignment.topRight,

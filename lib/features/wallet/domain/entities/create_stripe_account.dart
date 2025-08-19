@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:tl_consultant/core/domain/query_params.dart';
 
-part 'stripe_account.g.dart';
+part 'create_stripe_account.g.dart';
 
-class StripeAccount extends QueryParams{
+class CreateStripeAccount extends QueryParams{
   final int? id;
   final String? email;
   final String? phone;
@@ -26,7 +26,7 @@ class StripeAccount extends QueryParams{
   final File? backOfID;
   final bool? acceptedTOS;
 
-  StripeAccount(
+  CreateStripeAccount(
       { this.id,
       required this.email,
       required this.phone,

@@ -10,19 +10,21 @@ import 'package:tl_consultant/core/data/places_search_response_model.dart';
 import 'package:tl_consultant/core/global/custom_snackbar.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/features/wallet/data/models/earnings_model.dart';
+import 'package:tl_consultant/features/wallet/data/models/stripe_account_model.dart';
 import 'package:tl_consultant/features/wallet/data/repos/wallet_repo_impl.dart';
+import 'package:tl_consultant/features/wallet/domain/entities/create_stripe_account.dart';
 import 'package:tl_consultant/features/wallet/domain/entities/earnings.dart';
-import 'package:tl_consultant/features/wallet/domain/entities/stripe_account.dart';
 
 class EarningsController extends GetxController {
   static EarningsController get instance => Get.find();
 
   final repo = WalletRepositoryImpl();
 
-  var balance = 0.00.obs;
-  var withdrawn = 0.00.obs;
-  var availableForWithdrawal = 0.00.obs;
-  var pendingClearance = 0.00.obs;
+  // var balance = 0.00.obs;
+  // var withdrawn = 0.00.obs;
+  // var availableForWithdrawal = 0.00.obs;
+  // var pendingClearance = 0.00.obs;
+  var stripeAccountId = "".obs;
 
   final amountTEC = TextEditingController();
 
@@ -61,6 +63,7 @@ class EarningsController extends GetxController {
   RxString backIdPath = "".obs;
 
   RxBool acceptedTOS = false.obs;
+  RxBool isSaved = false.obs;
 
   RxList<String> availableBranches = <String>[].obs;
 
@@ -76,6 +79,8 @@ class EarningsController extends GetxController {
   RxString nextPageToken = "".obs;
   RxBool isLoading = false.obs;
 
+  // Rx<ExternalAccounts> externalAccounts = ExternalAccounts(data: []).obs;
+  Rx<StripeAccountModel> stripeAccountModel = StripeAccountModel().obs;
 
   Future getEarningsInfo() async {
     Either either = await repo.getWallet();
@@ -89,13 +94,15 @@ class EarningsController extends GetxController {
             backgroundColor: ColorPalette.red);
       }
     }, (r) {
+      print(r);
       Earnings earnings = EarningsModel.fromJson(r['data']);
-      balance.value = roundToFiveSignificantFigures(earnings.balance);
-      withdrawn.value = roundToFiveSignificantFigures(earnings.withdrawn);
-      availableForWithdrawal.value =
-          roundToFiveSignificantFigures(earnings.availableForWithdrawal);
-      pendingClearance.value =
-          roundToFiveSignificantFigures(earnings.pendingClearance);
+      // balance.value = roundToFiveSignificantFigures(earnings.balance);
+      // withdrawn.value = roundToFiveSignificantFigures(earnings.withdrawn);
+      // availableForWithdrawal.value =
+      //     roundToFiveSignificantFigures(earnings.availableForWithdrawal);
+      // pendingClearance.value =
+      //     roundToFiveSignificantFigures(earnings.pendingClearance);
+      stripeAccountId.value = earnings.stripeAccountId ?? "";
     });
   }
 
@@ -138,7 +145,7 @@ class EarningsController extends GetxController {
         nextPageToken.value = r['next_page_token'];
       }
       PlacesSearchResponseModel placesSearchResponseModel =
-      PlacesSearchResponseModel.fromJson(r);
+          PlacesSearchResponseModel.fromJson(r);
 
       for (var e in placesSearchResponseModel.results) {
         PlaceResultModel placeResultModel = e;
@@ -147,19 +154,17 @@ class EarningsController extends GetxController {
 
       isLoading.value = false;
     });
-
-    print(availableBranches);
   }
 
   Future<void> fetchNextPage() async {
     isLoading.value = true;
     await Future.delayed(Duration(seconds: 2)); // required delay
     Either either =
-    await repo.getFromNextPage(nextPageToken: nextPageToken.value);
+        await repo.getFromNextPage(nextPageToken: nextPageToken.value);
     either.fold((l) => CustomSnackBar.errorSnackBar(l.message!), (r) {
       nextPageToken.value = r['next_page_token'];
       PlacesSearchResponseModel placesSearchResponseModel =
-      PlacesSearchResponseModel.fromJson(r);
+          PlacesSearchResponseModel.fromJson(r);
       for (var e in placesSearchResponseModel.results) {
         PlaceResultModel placeResultModel = e;
         availableBranches.add(placeResultModel.formattedAddress);
@@ -195,28 +200,35 @@ class EarningsController extends GetxController {
   }
 
   clearData() {
-    balance.value = 0.00;
-    withdrawn.value = 0.00;
-    availableForWithdrawal.value = 0.00;
-    pendingClearance.value = 0.00;
+    // balance.value = 0.00;
+    // withdrawn.value = 0.00;
+    // availableForWithdrawal.value = 0.00;
+    // pendingClearance.value = 0.00;
   }
 
-  toggleTosAcceptance(){
+  toggleTosAcceptance() {
     acceptedTOS.value = !acceptedTOS.value;
   }
 
-  bool payoutExists(){
+  toggleSave() {
+    isSaved.value = !isSaved.value;
+  }
+
+  bool payoutExists() {
+    if (stripeAccountId.value.isNotEmpty) {
+      return true;
+    }
     return false;
   }
 
-  void createStripePayout() async{
+  void createStripePayout() async {
     DateFormat inputFormat = DateFormat('MM-dd-yyyy'); //for US based
     DateTime? parsedDate;
-    if(dobTEC.text.isNotEmpty){
+    if (dobTEC.text.isNotEmpty) {
       parsedDate = inputFormat.parse(dobTEC.text);
     }
 
-    StripeAccount stripeAccount = StripeAccount(
+    CreateStripeAccount createStripeAccount = CreateStripeAccount(
         email: beneficiaryEmailTEC.text,
         phone: beneficiaryPhoneTEC.text,
         firstName: beneficiaryFirstNameTEC.text,
@@ -227,7 +239,8 @@ class EarningsController extends GetxController {
         homeAddress: beneficiaryAddressTEC.text,
         city: recipientCityTEC.text,
         state: recipientStateTEC.text,
-        businessWebsite: businessWebsiteTEC.text.isEmpty ? null : businessWebsiteTEC.text,
+        businessWebsite:
+            businessWebsiteTEC.text.isEmpty ? null : businessWebsiteTEC.text,
         postalCode: postalCodeTEC.text,
         accountNumber: accountNumberTEC.text,
         routingNumber: routingNumberTEC.text,
@@ -237,12 +250,102 @@ class EarningsController extends GetxController {
         backOfID: backIdPath.value.isEmpty ? null : File(backIdPath.value),
         acceptedTOS: acceptedTOS.value);
 
-    Either either = await repo.createStripeAccount(params: stripeAccount);
-    either.fold((l){
-      print(l.message!);
+    Either either = await repo.createStripeAccount(params: createStripeAccount);
+    either.fold((l) {
+      isSaved.value = false;
       return CustomSnackBar.errorSnackBar(l.message!);
-    }, (r){
+    }, (r) {
+      isSaved.value = true;
       print("success: $r");
     });
   }
+
+  Future<double> getBalance() async {
+    double balance = 0;
+    Either either = await repo.getBalance();
+    either.fold((l) => CustomSnackBar.errorSnackBar(l.message!), (r) {
+      var data = r['data'];
+      if (data != null) {
+        balance = double.parse(balance.toString());
+      }
+    });
+
+    return balance;
+  }
+
+  Future<double> getLifeTimeTotal() async {
+    double totalVolReceived = 0;
+    Either either = await repo.getLifeTimeTotalReceived();
+    either.fold((l) {
+      return CustomSnackBar.errorSnackBar(l.message!);
+    }, (r) {
+      var data = r['data'];
+      if (data != null) {
+        totalVolReceived = double.parse(data['total_volume_received'].toString());
+      }
+    });
+
+    return totalVolReceived;
+  }
+
+  Future<double> getPendingClearance() async {
+    double pendingClearance = 0;
+    Either either = await repo.getTotalPendingClearance();
+    either.fold((l){
+      return CustomSnackBar.errorSnackBar(l.message!);
+    }, (r) {
+      pendingClearance = double.parse(r.toString());
+    });
+
+    return pendingClearance;
+  }
+
+  void getStripeAccountInfo() async {
+    if (stripeAccountId.value.isNotEmpty) {
+      Either either = await repo.getStripeAccountInfo();
+
+      either.fold((l) => CustomSnackBar.errorSnackBar(l.message!), (r) {
+        var data = r['data'];
+
+        if (data != null) {
+          stripeAccountModel.value = StripeAccountModel.fromJson(data);
+          //Name
+          // beneficiaryFirstNameTEC.text =
+          //     stripeAccountModel.individual.firstName;
+          // beneficiaryLastNameTEC.text = stripeAccountModel.individual.lastName;
+          // beneficiaryNameTEC.text =
+          //     "${beneficiaryFirstNameTEC.text} ${beneficiaryLastNameTEC.text}";
+          //
+          // //Email
+          // beneficiaryEmailTEC.text = stripeAccountModel.individual.email;
+          //
+          // //date of birth
+          // var month = stripeAccountModel.individual.dateOfBirth.month;
+          // var day = stripeAccountModel.individual.dateOfBirth.day;
+          // var year = stripeAccountModel.individual.dateOfBirth.year;
+          // dobTEC.text = "$month-$day-$year";
+          //
+          // //Address
+          // recipientCountryTEC.text =
+          //     stripeAccountModel.individual.address.country;
+          // recipientStateTEC.text = stripeAccountModel.individual.address.state;
+          // recipientCityTEC.text = stripeAccountModel.individual.address.city;
+          // recipientStreetTEC.text = stripeAccountModel.individual.address.line1;
+          // recipientAptNoTEC.text =
+          //     stripeAccountModel.individual.address.line2!.toString();
+          // postalCodeTEC.text = stripeAccountModel.individual.address.postalCode;
+          // beneficiaryAddressTEC.text =
+          //     "${postalCodeTEC.text.isEmpty ? "" : "${postalCodeTEC.text},"} "
+          //     "${recipientAptNoTEC.text.isEmpty ? "" : "${recipientAptNoTEC.text},"} "
+          //     "${recipientStreetTEC.text.isEmpty ? "" : "${recipientStreetTEC.text},"} "
+          //     "${recipientStateTEC.text.isEmpty ? "" : "${recipientStateTEC.text},"} "
+          //     "${recipientCountryTEC.text}";
+          //
+          // accountNumberTEC.text =
+        }
+      });
+    }
+  }
+
+  void updateStripePayout() {}
 }

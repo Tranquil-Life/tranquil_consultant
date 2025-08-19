@@ -31,21 +31,8 @@ class _BeneficiaryInfoFieldsState extends State<BeneficiaryInfoFields> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text("BENEFICIARY INFO",
-                style: TextStyle(fontSize: AppFonts.baseSize)),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-              decoration: BoxDecoration(
-                color: ColorPalette.red.shade100,
-                borderRadius: BorderRadius.circular(100)
-              ),
-              child: Text("Create a payout account", style: TextStyle(color: ColorPalette.red)),
-            ),
-          ],
-        ),
+        Text("BENEFICIARY INFO",
+            style: TextStyle(fontSize: AppFonts.baseSize)),
         SizedBox(height: 12),
         Text(
           "Beneficiary name",

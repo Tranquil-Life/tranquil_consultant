@@ -6,13 +6,16 @@ import 'package:tl_consultant/core/global/buttons.dart';
 import 'package:tl_consultant/core/global/custom_app_bar.dart';
 import 'package:tl_consultant/core/global/unfocus_bg.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
+import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
 import 'package:tl_consultant/features/wallet/presentation/controllers/earnings_controller.dart';
 import 'package:tl_consultant/features/wallet/presentation/widgets/account_info_fields.dart';
 import 'package:tl_consultant/features/wallet/presentation/widgets/bank_info_fields.dart';
 import 'package:tl_consultant/features/wallet/presentation/widgets/beneficiary_info_fields.dart';
 import 'package:tl_consultant/features/wallet/presentation/widgets/business_info_fields.dart';
+import 'package:tl_consultant/features/wallet/presentation/widgets/create_payout_account_section.dart';
 import 'package:tl_consultant/features/wallet/presentation/widgets/form_fields.dart';
 import 'package:tl_consultant/features/wallet/presentation/widgets/identity_verification_fields.dart';
+import 'package:tl_consultant/features/wallet/presentation/widgets/show_current_payout_account.dart';
 
 class WithdrawalInfoPage extends StatefulWidget {
   const WithdrawalInfoPage({super.key});
@@ -25,21 +28,20 @@ class _WithdrawalInfoPageState extends State<WithdrawalInfoPage> {
   final earningsController = EarningsController.instance;
   NumberFormat? formatCurrency;
 
-  bool isSelected = false;
-
-  void toggleSelection(){
-    setState(() {
-      isSelected = !isSelected;
-    });
-  }
+  // bool isSelected = false;
+  //
+  // void toggleSelection(){
+  //   setState(() {
+  //     isSelected = !isSelected;
+  //   });
+  // }
 
   @override
   void initState() {
-    formatCurrency = NumberFormat.currency(locale: "en_NG", symbol: '₦');
+    formatCurrency = NumberFormat.currency(locale: DashboardController.instance.country.value.toLowerCase() == "nigeria" ? "en_NG" : "en_US", symbol: DashboardController.instance.country.value.toLowerCase() == "nigeria" ? '₦' : "\$");
 
-    if(earningsController.payoutExists()){
-      isSelected = true;
-    }
+    earningsController.getStripeAccountInfo();
+    earningsController.payoutExists();
 
     super.initState();
   }
@@ -76,72 +78,25 @@ class _WithdrawalInfoPageState extends State<WithdrawalInfoPage> {
                   children: [
                     //type amount field
                     amountField(earningsController),
-                    Text(
-                      "Available balance: ${formatCurrency!.format(
-                          earningsController.balance.value)}",
-                      style: TextStyle(color: ColorPalette.green[500]),
-                    ),
+                    //TODO: Remember to uncomment
+                    // Text(
+                    //   "Available balance: ${formatCurrency!.format(
+                    //       balance)}",
+                    //   style: TextStyle(color: ColorPalette.green[500]),
+                    // ),
                   ],
                 ),
 
                 SizedBox(height: 40),
 
-                //Beneficiary info fields
-                BeneficiaryInfoFields(earningsController: earningsController),
+               Obx((){
+                 if(earningsController.stripeAccountId.value.isEmpty) {
+                   return CreatePayoutAccountSection(earningsController: earningsController);
+                 } else {
+                   return ShowCurrentPayoutAccount();
+                 }
 
-                SizedBox(height: 40),
-
-                //bank info fields
-                //TODO: Uncomment for Nigerian based therapist: requirements:
-                // BankInfoFields(earningsController: earningsController),
-                //
-                // SizedBox(height: 40),
-
-                //Account info fields
-                AccountInfoFields(earningsController: earningsController),
-
-                SizedBox(height: 40),
-
-                BusinessInfoFields(earningsController: earningsController),
-
-                SizedBox(height: 40),
-
-                IdentityVerificationFields(earningsController: earningsController),
-
-                SizedBox(height: 20),
-
-                Row(
-                  children: [
-                   Obx(()=> Checkbox(
-                     activeColor: ColorPalette.green,
-                     value: earningsController.acceptedTOS.value,
-                     onChanged: (value) {
-                       earningsController.toggleTosAcceptance();
-                     },
-                   ),),
-
-                    Text("Accept terms of service")
-                  ],
-                ),
-
-                Row(
-                  children: [
-                    Checkbox(
-                      activeColor: ColorPalette.green,
-                      value: isSelected,
-                      onChanged: (value) {
-                        if(!isSelected){
-                          earningsController.createStripePayout();
-                        }
-                        toggleSelection();
-                      },
-                    ),
-
-                    Text("Save details for later ")
-                  ],
-                ),
-
-                SizedBox(height: 40),
+               }),
 
                 CustomButton(onPressed: (){
                   earningsController.createStripePayout();
