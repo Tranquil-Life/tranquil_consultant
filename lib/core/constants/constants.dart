@@ -31,6 +31,8 @@ const consultant = "consultant";
 const client = "client";
 
 int myId = UserModel.fromJson(userDataStore.user).id!;
+String authToken = UserModel.fromJson(userDataStore.user).authToken!;
+String stripeAccountId = UserModel.fromJson(userDataStore.user).stripeAccountId!;
 
 //firebase vars
 const chatsCollection = "chats";

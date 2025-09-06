@@ -7,6 +7,7 @@ import 'package:tl_consultant/core/global/custom_app_bar.dart';
 import 'package:tl_consultant/core/global/unfocus_bg.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
+import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 import 'package:tl_consultant/features/wallet/presentation/controllers/earnings_controller.dart';
 import 'package:tl_consultant/features/wallet/presentation/widgets/account_info_fields.dart';
 import 'package:tl_consultant/features/wallet/presentation/widgets/bank_info_fields.dart';
@@ -38,9 +39,17 @@ class _WithdrawalInfoPageState extends State<WithdrawalInfoPage> {
 
   @override
   void initState() {
-    formatCurrency = NumberFormat.currency(locale: DashboardController.instance.country.value.toLowerCase() == "nigeria" ? "en_NG" : "en_US", symbol: DashboardController.instance.country.value.toLowerCase() == "nigeria" ? '₦' : "\$");
+    formatCurrency = NumberFormat.currency(
+        locale: DashboardController.instance.country.value.toLowerCase() ==
+                "nigeria"
+            ? "en_NG"
+            : "en_US",
+        symbol: DashboardController.instance.country.value.toLowerCase() ==
+                "nigeria"
+            ? '₦'
+            : "\$");
 
-    earningsController.getStripeAccountInfo();
+    // earningsController.getStripeAccountInfo();
     earningsController.payoutExists();
 
     super.initState();
@@ -86,22 +95,25 @@ class _WithdrawalInfoPageState extends State<WithdrawalInfoPage> {
                     // ),
                   ],
                 ),
-
                 SizedBox(height: 40),
+                if (stripeAccountId.isEmpty)
+                  CreatePayoutAccountSection(
+                      earningsController: earningsController)
+                else
+                  ShowCurrentPayoutAccount(),
 
-               Obx((){
-                 if(earningsController.stripeAccountId.value.isEmpty) {
-                   return CreatePayoutAccountSection(earningsController: earningsController);
-                 } else {
-                   return ShowCurrentPayoutAccount();
-                 }
-
-               }),
-
-                CustomButton(onPressed: (){
-                  earningsController.createStripePayout();
-                }, text: "Continue with withdrawal"),
-
+                if (stripeAccountId.isEmpty)
+                CustomButton(
+                    onPressed: () {
+                      earningsController.createStripePayout();
+                    },
+                    text: "Create payout account")
+                else
+                  CustomButton(
+                      onPressed: () {
+                        earningsController.withdrawEarnings();
+                      },
+                      text: "Continue with withdrawal"),
                 SizedBox(height: 30)
               ],
             ),

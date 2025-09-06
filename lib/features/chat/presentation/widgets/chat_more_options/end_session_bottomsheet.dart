@@ -45,10 +45,10 @@ class _EndSessionBottomSheetState extends State<EndSessionBottomSheet> {
                       onPressed: () {
                         Get.back();
 
-                        showDialog(
-                          context: context,
-                          builder: (_) => const RateConsultationDialog(),
-                        );
+                        // showDialog(
+                        //   context: context,
+                        //   builder: (_) => const RateConsultationDialog(),
+                        // );
                       }, child: const Text('End Session')))
             ],
           )

@@ -14,6 +14,8 @@ class MeetingModel extends Meeting {
     required super.rescheduled,
     required super.status,
     required super.participants,
+    required super.ratedByClient,
+    required super.ratedByTherapist,
     // super.reason,
     // super.createdAt,
     //super.updatedAt,

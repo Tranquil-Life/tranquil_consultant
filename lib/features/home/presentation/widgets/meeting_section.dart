@@ -3,8 +3,6 @@ part of 'package:tl_consultant/features/home/presentation/screens/home_tab.dart'
 class Meetings extends StatefulWidget {
   const Meetings({super.key});
 
-
-
   @override
   State<Meetings> createState() => _MeetingsState();
 }
@@ -16,11 +14,15 @@ class _MeetingsState extends State<Meetings> {
   final ValueNotifier<DateTime> _timeNotifier = ValueNotifier(DateTime.now());
   ClientUser? clientUser;
 
-  updateDashboardMeetingInfo() async{
+  // DateTime
+  final now = DateTime.now();
+
+
+  updateDashboardMeetingInfo() async {
     await Future.delayed(Duration(seconds: 2));
 
     for (var meeting in meetingsController.meetings) {
-      if(meeting.id ==1){
+      if (meeting.id == 1) {
         dashboardController.currentMeetingCount.value = 1;
         dashboardController.currentMeetingId.value = meeting.id;
         clientUser = meeting.client;
@@ -31,6 +33,19 @@ class _MeetingsState extends State<Meetings> {
         dashboardController.currentMeetingST.value = meeting.startAt.formatDate;
         dashboardController.currentMeetingET.value = meeting.endAt.formatDate;
       }
+
+      final meetingEnd = meeting.endAt;
+      // Difference (will be negative if meetingEnd is in the future)
+      final difference = now.difference(meetingEnd);
+
+      if (meeting.ratedByClient) {
+        //TODO: if the meeting payment status != paid, call transfer endpoint
+        print("make payment");
+      } else if (!meeting.ratedByClient && meeting.ratedByTherapist &&
+          (!difference.isNegative && difference.inHours >= 48)){
+
+      }
+
 
       // if (meeting.endAt.isAfter(DateTimeExtension.now) &&
       //     (meeting.startAt.isBefore(DateTimeExtension.now) ||
@@ -43,13 +58,13 @@ class _MeetingsState extends State<Meetings> {
       //   dashboardController.currentMeetingST.value = meeting.startAt.formatDate;
       //   dashboardController.currentMeetingET.value = meeting.endAt.formatDate;
       // }
-
     }
-
   }
 
   @override
   void initState() {
+    meetingsController.scrollController = ScrollController();
+
     meetingsController.loadFirstMeetings().then((_) {
       updateDashboardMeetingInfo();
     });
@@ -85,32 +100,55 @@ class _MeetingsState extends State<Meetings> {
                 } else if (meetingsController.meetings.isEmpty) {
                   return const NoMeetingsWidget();
                 } else {
-                  return Scrollbar(
-                    child: RefreshIndicator(
-                      color: ColorPalette.green,
-                      onRefresh: () async => await handleRefresh(),
-                      child: Padding(
-                        padding: const EdgeInsets.only(right: 10),
-                        child: ListView.builder(
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          itemCount: meetingsController.meetings.length,
-                          padding: EdgeInsets.zero,
-                          itemBuilder: (_, index) {
-                            return MeetingTile(
-                              meeting: meetingsController.meetings[index]
-                                ..setIsExpired(_timeNotifier.value),
-                              lastItem:
-                              index == meetingsController.meetings.length - 1,
-                            );
-                          },
-                        ),
+                  return RefreshIndicator(
+                    color: ColorPalette.green,
+                    onRefresh: () async => await handleRefresh(),
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 10),
+                      child: ListView.builder(
+                        controller: meetingsController.scrollController,
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        itemCount: meetingsController.meetings.length,
+                        padding: EdgeInsets.zero,
+                        itemBuilder: (_, index) {
+                          return MeetingTile(
+                            meeting: meetingsController.meetings[index]
+                              ..setIsExpired(_timeNotifier.value),
+                            lastItem: index ==
+                                meetingsController.meetings.length - 1,
+                          );
+                        },
                       ),
                     ),
                   );
+                  // return Scrollbar(
+                  //   controller: meetingsController.scrollController,
+                  //   child: RefreshIndicator(
+                  //     color: ColorPalette.green,
+                  //     onRefresh: () async => await handleRefresh(),
+                  //     child: Padding(
+                  //       padding: const EdgeInsets.only(right: 10),
+                  //       child: ListView.builder(
+                  //         controller: meetingsController.scrollController,
+                  //         physics: const AlwaysScrollableScrollPhysics(),
+                  //         itemCount: meetingsController.meetings.length,
+                  //         padding: EdgeInsets.zero,
+                  //         itemBuilder: (_, index) {
+                  //           return MeetingTile(
+                  //             meeting: meetingsController.meetings[index]
+                  //               ..setIsExpired(_timeNotifier.value),
+                  //             lastItem: index ==
+                  //                 meetingsController.meetings.length - 1,
+                  //           );
+                  //         },
+                  //       ),
+                  //     ),
+                  //   ),
+                  // );
+
                 }
               }),
             ),
-
           ],
         ));
   }

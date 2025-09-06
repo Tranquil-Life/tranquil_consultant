@@ -5,10 +5,13 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:tl_consultant/core/constants/constants.dart';
+import 'package:tl_consultant/core/constants/end_points.dart';
 import 'package:tl_consultant/core/data/place_result_model.dart';
 import 'package:tl_consultant/core/data/places_search_response_model.dart';
 import 'package:tl_consultant/core/global/custom_snackbar.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
+import 'package:tl_consultant/core/utils/services/API/api_service.dart';
 import 'package:tl_consultant/features/wallet/data/models/earnings_model.dart';
 import 'package:tl_consultant/features/wallet/data/models/stripe_account_model.dart';
 import 'package:tl_consultant/features/wallet/data/repos/wallet_repo_impl.dart';
@@ -24,7 +27,7 @@ class EarningsController extends GetxController {
   // var withdrawn = 0.00.obs;
   // var availableForWithdrawal = 0.00.obs;
   // var pendingClearance = 0.00.obs;
-  var stripeAccountId = "".obs;
+  // var stripeAccountId = "".obs;
 
   final amountTEC = TextEditingController();
 
@@ -82,29 +85,29 @@ class EarningsController extends GetxController {
   // Rx<ExternalAccounts> externalAccounts = ExternalAccounts(data: []).obs;
   Rx<StripeAccountModel> stripeAccountModel = StripeAccountModel().obs;
 
-  Future getEarningsInfo() async {
-    Either either = await repo.getWallet();
-
-    either.fold((l) {
-      if (l.message! != 'Attempt to read property "id" on array') {
-        return CustomSnackBar.showSnackBar(
-            context: Get.context!,
-            title: "Error",
-            message: l.message!,
-            backgroundColor: ColorPalette.red);
-      }
-    }, (r) {
-      print(r);
-      Earnings earnings = EarningsModel.fromJson(r['data']);
-      // balance.value = roundToFiveSignificantFigures(earnings.balance);
-      // withdrawn.value = roundToFiveSignificantFigures(earnings.withdrawn);
-      // availableForWithdrawal.value =
-      //     roundToFiveSignificantFigures(earnings.availableForWithdrawal);
-      // pendingClearance.value =
-      //     roundToFiveSignificantFigures(earnings.pendingClearance);
-      stripeAccountId.value = earnings.stripeAccountId ?? "";
-    });
-  }
+  // Future getEarningsInfo() async {
+  //   Either either = await repo.getWallet();
+  //
+  //   either.fold((l) {
+  //     if (l.message! != 'Attempt to read property "id" on array') {
+  //       return CustomSnackBar.showSnackBar(
+  //           context: Get.context!,
+  //           title: "Error",
+  //           message: l.message!,
+  //           backgroundColor: ColorPalette.red);
+  //     }
+  //   }, (r) {
+  //     print(r);
+  //     Earnings earnings = EarningsModel.fromJson(r['data']);
+  //     // balance.value = roundToFiveSignificantFigures(earnings.balance);
+  //     // withdrawn.value = roundToFiveSignificantFigures(earnings.withdrawn);
+  //     // availableForWithdrawal.value =
+  //     //     roundToFiveSignificantFigures(earnings.availableForWithdrawal);
+  //     // pendingClearance.value =
+  //     //     roundToFiveSignificantFigures(earnings.pendingClearance);
+  //     stripeAccountId.value = earnings.stripeAccountId ?? "";
+  //   });
+  // }
 
   Future getStates({required String country}) async {
     selectedCountryStates.clear();
@@ -215,7 +218,7 @@ class EarningsController extends GetxController {
   }
 
   bool payoutExists() {
-    if (stripeAccountId.value.isNotEmpty) {
+    if (stripeAccountId.isNotEmpty) {
       return true;
     }
     return false;
@@ -294,14 +297,25 @@ class EarningsController extends GetxController {
     either.fold((l){
       return CustomSnackBar.errorSnackBar(l.message!);
     }, (r) {
-      pendingClearance = double.parse(r.toString());
+      pendingClearance = (r['pending_amount'] as num).toDouble();
     });
 
     return pendingClearance;
   }
 
+  void withdrawEarnings() async{
+    var req = {
+      "account_id": stripeAccountId,
+      "amount": amountTEC.text,
+    };
+    Either either = await repo.withdrawToBankAcc(req);
+    either.fold((l)=>CustomSnackBar.errorSnackBar(l.message!), (r){
+      print(r);
+    });
+  }
+
   void getStripeAccountInfo() async {
-    if (stripeAccountId.value.isNotEmpty) {
+    if (stripeAccountId.isNotEmpty) {
       Either either = await repo.getStripeAccountInfo();
 
       either.fold((l) => CustomSnackBar.errorSnackBar(l.message!), (r) {
@@ -348,4 +362,6 @@ class EarningsController extends GetxController {
   }
 
   void updateStripePayout() {}
+
+
 }

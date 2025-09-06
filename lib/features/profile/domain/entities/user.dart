@@ -40,6 +40,8 @@ class User {
   final String? birthDate, gender, staffId, companyName;
   final int totalMeetings;
   final int totalClients;
+  final String? stripeAccountId;
+
 
   User({
     this.id,
@@ -62,6 +64,7 @@ class User {
     this.timezone,
     this.totalMeetings = 0,
     this.totalClients = 0,
+    this.stripeAccountId
   });
 
 

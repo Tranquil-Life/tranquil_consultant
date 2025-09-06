@@ -38,20 +38,26 @@ class CustomSnackBar {
   }
 
   static void errorSnackBar(String errorMsg) {
-    if (errorMsg.contains(ApiService.certVerifyFailed)) {
-      return showSnackBar(
-          context: Get.context!,
-          title: "Internet Error",
-          message: "Please change your network provider",
-          backgroundColor: ColorPalette.red);
-    } else if(errorMsg.toLowerCase().contains('unauthenticated')){
-      SettingsController().signOut();
+    final msg = errorMsg.toLowerCase();
+
+    if (msg.contains('unauthenticated')) {
+      // do nothing
+      return;
+    } else if (errorMsg.contains(ApiService.certVerifyFailed)) {
+      return CustomSnackBar.showSnackBar(
+        context: Get.context!,
+        title: "Internet Error",
+        message: "Please change your network provider",
+        backgroundColor: ColorPalette.red,
+      );
     } else {
       return CustomSnackBar.showSnackBar(
-          context: Get.context!,
-          title: "Error",
-          message: errorMsg,
-          backgroundColor: ColorPalette.red);
+        context: Get.context!,
+        title: "Error",
+        message: errorMsg,
+        backgroundColor: ColorPalette.red,
+      );
     }
   }
+
 }

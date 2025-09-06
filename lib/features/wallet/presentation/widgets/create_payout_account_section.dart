@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/features/wallet/presentation/controllers/earnings_controller.dart';
 import 'package:tl_consultant/features/wallet/presentation/widgets/account_info_fields.dart';
@@ -61,9 +62,9 @@ class CreatePayoutAccountSection extends StatelessWidget {
               activeColor: ColorPalette.green,
               value: earningsController.isSaved.value,
               onChanged: (value) {
-                if(!earningsController.isSaved.value && earningsController.stripeAccountId.isEmpty){
+                if(!earningsController.isSaved.value && stripeAccountId.isEmpty){
                   earningsController.createStripePayout();
-                }else if(!earningsController.isSaved.value && earningsController.stripeAccountId.isNotEmpty){
+                }else if(!earningsController.isSaved.value && stripeAccountId.isNotEmpty){
                   earningsController.updateStripePayout();
                 }
                 earningsController.toggleSave();

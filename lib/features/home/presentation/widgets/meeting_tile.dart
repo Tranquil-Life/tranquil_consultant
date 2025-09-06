@@ -11,10 +11,14 @@ class MeetingTile extends StatefulWidget {
 }
 
 class MeetingTileState extends State<MeetingTile> {
+  final meetingsController = MeetingsController.instance;
+
+
   @override
   Widget build(BuildContext context) {
     final dateFormat = DateFormat('yyyy-MM-dd HH:mm'); // Customize the format
-    final formattedDate = DateFormat('EEE, dd/MM/yyyy').format(widget.meeting.startAt);
+    final formattedDate =
+        DateFormat('EEE, dd/MM/yyyy').format(widget.meeting.startAt);
     final startTime = DateFormat('HH:mm').format(widget.meeting.startAt);
     final endTime = DateFormat('HH.mm').format(widget.meeting.endAt);
     final timeRange = "$startTime - $endTime";
@@ -31,11 +35,14 @@ class MeetingTileState extends State<MeetingTile> {
                 borderRadius: BorderRadius.circular(100),
                 border: Border.all(color: Color(0xffE4E4E4)),
               ),
-              child: UserAvatar(imageUrl: widget.meeting.client.avatarUrl, source: AvatarSource.url,),
+              child: UserAvatar(
+                imageUrl: widget.meeting.client.avatarUrl,
+                source: AvatarSource.url,
+              ),
             ),
-
             const SizedBox(width: 8),
-            Expanded(child: Column(
+            Expanded(
+                child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(
@@ -60,10 +67,7 @@ class MeetingTileState extends State<MeetingTile> {
                     ],
                   ),
                 ),
-
-
                 const SizedBox(height: 5),
-
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -84,31 +88,74 @@ class MeetingTileState extends State<MeetingTile> {
                         ),
                       ],
                     ),
-                    const SizedBox(width: 24),
-                    Row(
-                      children: [
-                        SvgPicture.asset(
-                          SvgElements.svgClock,
-                          height: 14,
-                          width: 14,
-                        ),
-                        SizedBox(width: 4),
-                        Text(
-                          timeRange,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w400,
+                    const SizedBox(width: 12),
+                    if (widget.meeting.ratedByClient &&
+                        !widget.meeting.ratedByTherapist)
+                      Row(
+                        children: [
+                          Icon(Icons.check_circle, color: ColorPalette.green),
+                          CustomText(text: "Rated by client")
+                        ],
+                      ),
+                    if (!widget.meeting.ratedByClient &&
+                        widget.meeting.ratedByTherapist)
+                      Row(
+                        children: [
+                          Icon(Icons.check_circle, color: ColorPalette.yellow),
+                          CustomText(text: "Rated by you")
+                        ],
+                      ),
+                    if (widget.meeting.ratedByClient &&
+                        widget.meeting.ratedByTherapist)
+                      Row(
+                        children: [
+                          Icon(Icons.check_circle, color: ColorPalette.green),
+                          SizedBox(width: 4),
+                          CustomText(text: "Rated by both sides", size: 12,)
+                        ],
+                      ),
+                    if (!widget.meeting.ratedByClient &&
+                        !widget.meeting.ratedByTherapist &&
+                        widget.meeting.isExpired)
+                      Row(
+                        children: List.generate(
+                          5,
+                          (index) => GestureDetector(
+                            onTap: (){
+                              showDialog(
+                                context: context,
+                                builder: (_) => RateConsultationDialog(selectedRating: index+1, meetingsController: meetingsController, meeting: widget.meeting),
+                              );
+                            },
+                            child: Icon(Icons.star_border_rounded,
+                                color: Colors.grey),
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    if (!widget.meeting.isExpired)
+                      Row(
+                        children: [
+                          SvgPicture.asset(
+                            SvgElements.svgClock,
+                            height: 14,
+                            width: 14,
+                          ),
+                          SizedBox(width: 4),
+                          Text(
+                            timeRange,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ],
+                      ),
                   ],
                 ),
               ],
             ))
           ],
         ),
-
         if (!widget.lastItem)
           Container(
             height: 0.2,
@@ -119,5 +166,4 @@ class MeetingTileState extends State<MeetingTile> {
       ],
     );
   }
-
 }

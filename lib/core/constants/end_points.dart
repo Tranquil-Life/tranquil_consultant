@@ -41,6 +41,7 @@ abstract class ConsultationEndPoints {
   static const getSlots = '$consultant/getSlots';
   static const saveSlots = '$consultant/saveSlots';
   static const deleteSlot = '$consultant/deleteSlot';
+  static const rateMember = '$consultant/rateMember';
 
   static getMeetings({required int page}) =>
       '$consultant/myMeetings?page=$page';
@@ -50,17 +51,15 @@ abstract class WalletEndpoints {
   static const getWallet = '$consultant/getEarnings';
   static const pay = '$consultant/pay';
   static const createConnectAccount = '$consultant/createConnectAccount';
-  static String getStripeAccountInfo =
-      '$consultant/getAccountInfo';
-  static String getAccountBalance =
-      '$consultant/getAccountBalance';
+  static String getStripeAccountInfo = '$consultant/getAccountInfo';
+  static String getAccountBalance = '$consultant/getAccountBalance';
   static String getLifeTimeConnectedTotalVolumeReceived =
       '$consultant/getLifeTimeConnectedTotalVolumeReceived';
   static String getPendingClearance =
       '$consultant/getPendingPaymentsTotal/$myId';
 
   static String transferToConnectedAccount({required int amount}) =>
-      '$consultant/transferToConnectedAccount/${EarningsController.instance.stripeAccountId.value}/${amount * 100}';
+      '$consultant/transferToConnectedAccount/$stripeAccountId/${amount * 100}';
   static const withdrawFromConnectedAccount =
       '$consultant/withdrawFromConnectedAccount';
 

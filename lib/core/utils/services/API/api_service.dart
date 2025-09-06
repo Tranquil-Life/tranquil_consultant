@@ -6,6 +6,7 @@ import 'package:tl_consultant/core/errors/api_error.dart';
 import 'package:tl_consultant/features/profile/data/models/user_model.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 import 'package:tl_consultant/features/profile/domain/entities/user.dart';
+import 'package:tl_consultant/features/settings/presentation/controllers/settings_controller.dart';
 
 class ApiData {
   final int? statusCode;
@@ -48,6 +49,9 @@ class ApiService {
         if(e.response!.toString().isEmpty){
           return Left(ApiError(message: "Unexpected error occurred: $e"));
         }else{
+          if(e.response!.data['message'].toLowerCase().contains('unauthenticated')){
+            SettingsController().signOut();
+          }
           return Left(ApiError(
               message: displayErrorMessages(e.response!.data)));
         }
@@ -97,7 +101,6 @@ class ApiService {
         response.statusCode == 204) {
       return Right(response.data);
     } else {
-      print("response: $response");
       return Left(
           ApiError(message: response.data['message'] ?? "Unknown error"));
     }

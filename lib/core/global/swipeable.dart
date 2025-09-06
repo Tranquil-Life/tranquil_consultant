@@ -134,8 +134,7 @@ class _SwipeableWidgetState extends State<SwipeableWidget>
                 showDialog(context: context,
                     builder: (context)=> AlertDialog(
                       content: Text(
-                         "You already deleted this meeting on ${widget.meeting!.updatedAt!.formatDate} "
-                             "at ${widget.meeting!.updatedAt!.toLocal().formattedTime} "
+                         "You already cancelled this meeting"
                       ),
                     )
                 );
@@ -144,7 +143,7 @@ class _SwipeableWidgetState extends State<SwipeableWidget>
                 showDialog(context: context,
                     builder: (context)=> AlertDialog(
                       content: Text(
-                          "You can only delete a meeting 8 hours or more before the scheduled meeting time"
+                          "You can only cancel a meeting 8 hours or more before the scheduled meeting time"
                       ),
                     )
                 );

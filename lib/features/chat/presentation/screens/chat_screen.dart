@@ -12,7 +12,6 @@ import 'package:tl_consultant/core/global/unfocus_bg.dart';
 import 'package:tl_consultant/core/global/user_avatar.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/theme/tranquil_icons.dart';
-import 'package:tl_consultant/core/utils/functions.dart';
 import 'package:tl_consultant/core/utils/services/formatters.dart';
 import 'package:tl_consultant/features/chat/domain/entities/message.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/agora_controller.dart';
@@ -22,13 +21,11 @@ import 'package:tl_consultant/features/chat/presentation/controllers/recording_c
 import 'package:tl_consultant/features/chat/presentation/controllers/upload_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/screens/messages_list_widget.dart';
 import 'package:tl_consultant/features/chat/presentation/widgets/attachment_sheet.dart';
-import 'package:tl_consultant/features/chat/presentation/widgets/chat_boxes/chat_item.dart';
 import 'package:tl_consultant/features/chat/presentation/widgets/chat_boxes/shared/replied_chat_box.dart';
 import 'package:tl_consultant/features/chat/presentation/widgets/chat_more_options.dart';
 import 'package:tl_consultant/features/chat/presentation/widgets/dialogs/vn_dialog.dart';
 import 'package:tl_consultant/features/consultation/domain/entities/client.dart';
 import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
-import 'package:vibration/vibration.dart';
 
 part '../widgets/chat_app_bar.dart';
 
