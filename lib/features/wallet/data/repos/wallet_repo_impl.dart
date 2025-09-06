@@ -194,4 +194,9 @@ class WalletRepositoryImpl extends WalletRepo {
     return await catchSocketException(() =>
         postReq(WalletEndpoints.withdrawFromConnectedAccount, body: req));
   }
+
+  @override
+  Future<Either<ApiError, dynamic>> getAmountInTransitToBank() async {
+    return await catchSocketException(()=>getReq(WalletEndpoints.getAmountInTransitToBank));
+  }
 }

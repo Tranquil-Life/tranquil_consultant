@@ -23,7 +23,9 @@ class EarningsController extends GetxController {
 
   final repo = WalletRepositoryImpl();
 
-  // var balance = 0.00.obs;
+  var totalBalance = 0.00.obs;
+  var futurePayout = 0.00.obs;
+  var inTransit = 0.00.obs;
   // var withdrawn = 0.00.obs;
   // var availableForWithdrawal = 0.00.obs;
   // var pendingClearance = 0.00.obs;
@@ -84,30 +86,6 @@ class EarningsController extends GetxController {
 
   // Rx<ExternalAccounts> externalAccounts = ExternalAccounts(data: []).obs;
   Rx<StripeAccountModel> stripeAccountModel = StripeAccountModel().obs;
-
-  // Future getEarningsInfo() async {
-  //   Either either = await repo.getWallet();
-  //
-  //   either.fold((l) {
-  //     if (l.message! != 'Attempt to read property "id" on array') {
-  //       return CustomSnackBar.showSnackBar(
-  //           context: Get.context!,
-  //           title: "Error",
-  //           message: l.message!,
-  //           backgroundColor: ColorPalette.red);
-  //     }
-  //   }, (r) {
-  //     print(r);
-  //     Earnings earnings = EarningsModel.fromJson(r['data']);
-  //     // balance.value = roundToFiveSignificantFigures(earnings.balance);
-  //     // withdrawn.value = roundToFiveSignificantFigures(earnings.withdrawn);
-  //     // availableForWithdrawal.value =
-  //     //     roundToFiveSignificantFigures(earnings.availableForWithdrawal);
-  //     // pendingClearance.value =
-  //     //     roundToFiveSignificantFigures(earnings.pendingClearance);
-  //     stripeAccountId.value = earnings.stripeAccountId ?? "";
-  //   });
-  // }
 
   Future getStates({required String country}) async {
     selectedCountryStates.clear();
@@ -259,7 +237,7 @@ class EarningsController extends GetxController {
       return CustomSnackBar.errorSnackBar(l.message!);
     }, (r) {
       isSaved.value = true;
-      print("success: $r");
+      // print("success: $r");
     });
   }
 
@@ -269,7 +247,9 @@ class EarningsController extends GetxController {
     either.fold((l) => CustomSnackBar.errorSnackBar(l.message!), (r) {
       var data = r['data'];
       if (data != null) {
-        balance = double.parse(balance.toString());
+        balance = ((data['available'][0]['amount']/100) as num).toDouble();
+
+        futurePayout.value = balance;
       }
     });
 
@@ -284,7 +264,7 @@ class EarningsController extends GetxController {
     }, (r) {
       var data = r['data'];
       if (data != null) {
-        totalVolReceived = double.parse(data['total_volume_received'].toString());
+        totalVolReceived = (data['total_volume_received'] as num).toDouble();
       }
     });
 
@@ -310,9 +290,27 @@ class EarningsController extends GetxController {
     };
     Either either = await repo.withdrawToBankAcc(req);
     either.fold((l)=>CustomSnackBar.errorSnackBar(l.message!), (r){
-      print(r);
+      CustomSnackBar.successSnackBar(body: "\$${amountTEC.text} withdrawn successfully");
     });
   }
+
+  Future<double> getAmountInTransitToBank() async {
+    double amountInTransit = 0;
+    Either either = await repo.getAmountInTransitToBank();
+    either.fold((l) {
+      return CustomSnackBar.errorSnackBar(l.message!);
+    }, (r) {
+      var data = r['data'];
+      if (data != null) {
+        amountInTransit = (data['amount_in_transit'] as num).toDouble();
+        inTransit.value = amountInTransit;
+      }
+    });
+
+    return amountInTransit;
+  }
+
+
 
   void getStripeAccountInfo() async {
     if (stripeAccountId.isNotEmpty) {

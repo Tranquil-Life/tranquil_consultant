@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/global/buttons.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/theme/fonts.dart';
@@ -84,15 +83,13 @@ class _WalletTabState extends State<WalletTab> {
                                     builder: (context, snapshot) {
                                       if (snapshot.connectionState ==
                                           ConnectionState.waiting) {
-                                        return
-                                          Text(
-                                              formatCurrency!.format(0),
-                                              style: TextStyle(
-                                                  color: ColorPalette.green[800],
-                                                  fontSize: 40,
-                                                  fontWeight: FontWeight.bold,
-                                                  fontFamily:
-                                                  AppFonts.josefinSansRegular));
+                                        return Text(formatCurrency!.format(0),
+                                            style: TextStyle(
+                                                color: ColorPalette.green[800],
+                                                fontSize: 40,
+                                                fontWeight: FontWeight.bold,
+                                                fontFamily: AppFonts
+                                                    .josefinSansRegular));
                                       }
 
                                       if (snapshot.hasError) {
@@ -120,23 +117,27 @@ class _WalletTabState extends State<WalletTab> {
                                     color: ColorPalette.black.withOpacity(.6))
                               ]),
                           SizedBox(height: 12.5),
-                          RichText(
-                            text: TextSpan(
-                                text: "Total Balance: ",
-                                style: TextStyle(
-                                    fontSize: 12,
-                                    color: ColorPalette.black,
-                                    fontFamily: AppFonts.josefinSansRegular),
-                                children: [
-                                  TextSpan(
-                                    text: formatCurrency!
-                                        .format(balance + pendingClearance),
+                          Obx(() => RichText(
+                                text: TextSpan(
+                                    text: "Total Balance: ",
                                     style: TextStyle(
-                                        color: ColorPalette.green[800],
-                                        fontSize: AppFonts.defaultSize),
-                                  ),
-                                ]),
-                          ),
+                                        fontSize: 12,
+                                        color: ColorPalette.black,
+                                        fontFamily:
+                                            AppFonts.josefinSansRegular),
+                                    children: [
+                                      TextSpan(
+                                        text: formatCurrency!.format(
+                                            earningsController
+                                                    .futurePayout.value +
+                                                earningsController
+                                                    .inTransit.value),
+                                        style: TextStyle(
+                                            color: ColorPalette.green[800],
+                                            fontSize: AppFonts.defaultSize),
+                                      ),
+                                    ]),
+                              ))
                         ]))
                   ],
                 )),
@@ -170,49 +171,103 @@ class _WalletTabState extends State<WalletTab> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              FutureBuilder(
-                  future: earningsController.getPendingClearance(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return otherFigures('To be cleared', 0);
-                    }
+              Expanded(
+                  child: FutureBuilder(
+                      future: earningsController.getBalance(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return otherFigures('Future payouts', 0);
+                        }
 
-                    if (snapshot.hasError) {
-                      return Center(
-                        child: Text(
-                          'Error: ${snapshot.error}',
-                          style: const TextStyle(color: Colors.red),
-                        ),
-                      );
-                    }
+                        if (snapshot.hasError) {
+                          return Center(
+                            child: Text(
+                              'Error: ${snapshot.error}',
+                              style: const TextStyle(color: Colors.red),
+                            ),
+                          );
+                        }
 
-                    pendingClearance = snapshot.data!;
+                        balance = snapshot.data!;
 
-                    return otherFigures('To be cleared', pendingClearance);
-                  }),
-              otherFigures(
-                  'Available for \nwithdrawal', balance > 100 ? balance : 0),
-              FutureBuilder(
-                  future: earningsController.getLifeTimeTotal(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return otherFigures(
-                          'Total earnings', 0);
-                    }
+                        return otherFigures('Future payouts', balance);
+                      })),
 
-                    if (snapshot.hasError) {
-                      return Center(
-                        child: Text(
-                          'Error: ${snapshot.error}',
-                          style: const TextStyle(color: Colors.red),
-                        ),
-                      );
-                    }
+              Expanded(
+                  child: FutureBuilder(
+                      future: earningsController.getAmountInTransitToBank(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return otherFigures('In transit to bank', 0);
+                        }
 
-                    lifetimeTotalReceived = snapshot.data!;
-                    return otherFigures(
-                        'Total earnings', lifetimeTotalReceived);
-                  })
+                        if (snapshot.hasError) {
+                          return Center(
+                            child: Text(
+                              'Error: ${snapshot.error}',
+                              style: const TextStyle(color: Colors.red),
+                            ),
+                          );
+                        }
+
+                        balance = snapshot.data!;
+
+                        return otherFigures('In transit to bank', balance);
+                      })),
+
+              // otherFigures(
+              //     'Available for \nwithdrawal', balance > 100 ? balance : 0),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: FutureBuilder(
+                    future: earningsController.getPendingClearance(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return otherFigures('To be cleared', 0);
+                      }
+
+                      if (snapshot.hasError) {
+                        return Center(
+                          child: Text(
+                            'Error: ${snapshot.error}',
+                            style: const TextStyle(color: Colors.red),
+                          ),
+                        );
+                      }
+
+                      pendingClearance = snapshot.data!;
+
+                      return otherFigures('To be cleared', pendingClearance);
+                    }),
+              ),
+              Expanded(
+                  child: FutureBuilder(
+                      future: earningsController.getLifeTimeTotal(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return otherFigures('Lifetime volume received', 0);
+                        }
+
+                        if (snapshot.hasError) {
+                          return Center(
+                            child: Text(
+                              'Error: ${snapshot.error}',
+                              style: const TextStyle(color: Colors.red),
+                            ),
+                          );
+                        }
+
+                        lifetimeTotalReceived = snapshot.data!;
+                        return otherFigures(
+                            'Lifetime volume received', lifetimeTotalReceived);
+                      }))
             ],
           ),
           const SizedBox(height: 40),
@@ -246,8 +301,9 @@ class _WalletTabState extends State<WalletTab> {
                       textAlign: TextAlign.center,
                     )),
                     Text(formatCurrency!.format(amount),
-                        style:
-                            TextStyle(fontFamily: AppFonts.josefinSansSemiBold))
+                        style: TextStyle(
+                            fontFamily: AppFonts.josefinSansSemiBold,
+                            fontSize: 18))
                   ],
                 ),
               )),

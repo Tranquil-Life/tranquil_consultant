@@ -34,5 +34,6 @@ abstract class WalletRepo<T, F extends QueryParams> extends ApiService {
   Future<Either<ApiError, dynamic>> getLifeTimeTotalReceived();
   Future<Either<ApiError, dynamic>> transferToConnectedAcc({required int amount});
   Future<Either<ApiError, dynamic>> withdrawToBankAcc(Map<String, dynamic> req);
+  Future<Either<ApiError, dynamic>> getAmountInTransitToBank();
 
 }

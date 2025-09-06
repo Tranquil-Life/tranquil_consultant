@@ -62,6 +62,8 @@ abstract class WalletEndpoints {
       '$consultant/transferToConnectedAccount/$stripeAccountId/${amount * 100}';
   static const withdrawFromConnectedAccount =
       '$consultant/withdrawFromConnectedAccount';
+  static String getAmountInTransitToBank = '$consultant/amountInTransitToBank';
+
 
   static getTransactions({required int page, required int limit}) =>
       '$consultant/listTransactions/$page/$limit';
