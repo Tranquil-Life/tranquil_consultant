@@ -1,5 +1,7 @@
+import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
 import 'package:timezone/timezone.dart' as tz;
@@ -11,6 +13,7 @@ import 'package:tl_consultant/core/utils/functions.dart';
 import 'package:tl_consultant/features/activity/presentation/controllers/activity_controller.dart';
 import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:tl_consultant/features/consultation/presentation/controllers/meetings_controller.dart';
+import 'package:tl_consultant/features/dashboard/data/repos/location_repo.dart';
 import 'package:tl_consultant/features/growth_kit/presentation/screens/growth_kit_page.dart';
 import 'package:tl_consultant/features/home/presentation/controllers/home_controller.dart';
 import 'package:tl_consultant/features/home/presentation/screens/home_tab.dart';
@@ -28,6 +31,8 @@ import 'package:tl_consultant/features/wallet/presentation/screens/wallet_tab.da
 
 class DashboardController extends GetxController {
   static DashboardController get instance => Get.find();
+
+  final LocationRepoImpl locationRepo = LocationRepoImpl();
 
   RxInt currentIndex = 0.obs;
   final List<Widget> pages = [
@@ -49,31 +54,66 @@ class DashboardController extends GetxController {
   var state = "".obs;
   var city = "".obs;
   var street = "".obs;
+  var neighborhood = "".obs;
+  var county = "".obs;
   var timezone = "".obs;
-
 
   Future<void> onTap(int index) async {
     currentIndex.value = index;
   }
 
-  getMyLocationInfo() async {
+  Future updateLocation(
+      {required double latitude,
+      required double longitude,
+      required double timeZone,
+      required String location,
+      required String timeZoneIdentifier}) async {
+    Either either = await locationRepo.updateLocation(
+        latitude: latitude,
+        longitude: longitude,
+        timeZone: timeZone,
+        location: location,
+        timeZoneIdentifier: timeZoneIdentifier);
+
+    either.fold((l) {
+      print("update location: error: ${l.message!}");
+    }, (r) {
+      // print("update location:  $r");
+    });
+  }
+
+  Future getMyLocationInfo() async {
     var result = await getCurrLocation();
     List<Placemark> placemarks = result['placemarks'];
-    String currCountry = placemarks.first.country!;
-    String currState = placemarks.first.administrativeArea!;
-    String currCity = placemarks.first.subAdministrativeArea!;
-    String currStreet = placemarks.first.street!;
+    country.value = placemarks.first.country!;
+    city.value = placemarks.first.locality!;
+    neighborhood.value = placemarks.first.subLocality!;
+    state.value = placemarks.first.administrativeArea!;
+    county.value = placemarks.first.subAdministrativeArea!;
+    street.value = "${placemarks.first.street}, ${placemarks.first.name}";
     int timezoneOffset = DateTime.now().timeZoneOffset.inMilliseconds;
     var hourInMilliSecs = 3600000;
     var formattedTimeZone = timezoneOffset / hourInMilliSecs;
 
-    print(country.value);
-
-    country.value = currCountry;
-    street.value = currState;
-    city.value = currCity;
+    //timezone
     timezone.value = "$formattedTimeZone";
-    street.value = currStreet;
+
+    //timezone identifier e.g., "America/Chicago"
+    final String timeZoneIdentifier =
+        await FlutterNativeTimezone.getLocalTimezone();
+
+    await updateLocation(
+        latitude: result['latitude'],
+        longitude: result['longitude'],
+        timeZone: double.parse(timezone.value),
+        location:
+            "${street.value}, "
+                "${neighborhood.value}, "
+                "${city.value}, "
+                "${county.value}, "
+                "${state.value}, "
+                "${country.value}",
+        timeZoneIdentifier: timeZoneIdentifier);
   }
 
   getMeetings() async {
@@ -96,14 +136,12 @@ class DashboardController extends GetxController {
 
   @override
   void onInit() {
-
     // ProfileController.instance.restoreUser();
 
     getMyLocationInfo();
 
     super.onInit();
   }
-
 
   clearData() {
     currentIndex.value = 0;
@@ -139,7 +177,7 @@ class DashboardController extends GetxController {
     currentIndex.value = index;
   }
 
-  bool isSelected(int index){
+  bool isSelected(int index) {
     return currentIndex.value == index;
   }
 }

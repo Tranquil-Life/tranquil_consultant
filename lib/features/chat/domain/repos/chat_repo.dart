@@ -22,7 +22,7 @@ abstract class ChatRepo<T, F extends QueryParams> extends ApiService {
     required int lastMessageId,
   });
   Future<Either<ApiError, T>> getChatInfo(
-      {required int consultantId, required int clientId});
+      {required int consultantId, required int clientId, required int meetingId});
   Future<Either<ApiError, T>> react();
   Future<Either<ApiError, T>> deleteChat();
   Future<Either<ApiError, T>> onEnding();

@@ -13,18 +13,17 @@ class MeetingTile extends StatefulWidget {
 class MeetingTileState extends State<MeetingTile> {
   final meetingsController = MeetingsController.instance;
 
-
   @override
   Widget build(BuildContext context) {
     final dateFormat = DateFormat('yyyy-MM-dd HH:mm'); // Customize the format
     final formattedDate =
         DateFormat('EEE, dd/MM/yyyy').format(widget.meeting.startAt);
     final startTime = DateFormat('HH:mm').format(widget.meeting.startAt);
-    final endTime = DateFormat('HH.mm').format(widget.meeting.endAt);
+    final endTime = DateFormat('HH:mm').format(widget.meeting.endAt);
+    final duration = widget.meeting.endAt.difference(widget.meeting.startAt);
+    final hours = duration.inHours;
+    final minutes = duration.inMinutes;
     final timeRange = "$startTime - $endTime";
-
-    final startText = dateFormat.format(widget.meeting.startAt);
-    final endText = dateFormat.format(widget.meeting.endAt);
 
     return Column(
       children: [
@@ -60,9 +59,13 @@ class MeetingTileState extends State<MeetingTile> {
                         ),
                       ),
                       if (widget.meeting.isExpired)
-                        const Text(
-                          "Expired",
+                        Text(
+                          "Expired ($timeRange)",
                           style: TextStyle(color: ColorPalette.red),
+                        )
+                      else
+                         Text(
+                          "$minutes mins",
                         ),
                     ],
                   ),
@@ -111,7 +114,10 @@ class MeetingTileState extends State<MeetingTile> {
                         children: [
                           Icon(Icons.check_circle, color: ColorPalette.green),
                           SizedBox(width: 4),
-                          CustomText(text: "Rated by both sides", size: 12,)
+                          SizedBox(width: 100, child: CustomText(
+                            text: "Rated by both sides",
+                            size: 12,
+                          ))
                         ],
                       ),
                     if (!widget.meeting.ratedByClient &&
@@ -121,10 +127,13 @@ class MeetingTileState extends State<MeetingTile> {
                         children: List.generate(
                           5,
                           (index) => GestureDetector(
-                            onTap: (){
+                            onTap: () {
                               showDialog(
                                 context: context,
-                                builder: (_) => RateConsultationDialog(selectedRating: index+1, meetingsController: meetingsController, meeting: widget.meeting),
+                                builder: (_) => RateConsultationDialog(
+                                    selectedRating: index + 1,
+                                    meetingsController: meetingsController,
+                                    meeting: widget.meeting),
                               );
                             },
                             child: Icon(Icons.star_border_rounded,

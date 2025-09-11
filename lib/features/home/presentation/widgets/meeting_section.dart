@@ -22,7 +22,7 @@ class _MeetingsState extends State<Meetings> {
     await Future.delayed(Duration(seconds: 2));
 
     for (var meeting in meetingsController.meetings) {
-      if (meeting.id == 1) {
+      if (meeting.id == 2) {
         dashboardController.currentMeetingCount.value = 1;
         dashboardController.currentMeetingId.value = meeting.id;
         clientUser = meeting.client;

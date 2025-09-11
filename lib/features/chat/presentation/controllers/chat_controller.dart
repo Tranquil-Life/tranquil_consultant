@@ -124,6 +124,7 @@ class ChatController extends GetxController {
     Either either = await repo.getChatInfo(
       consultantId: userDataStore.user['id'],
       clientId: dashboardController.clientId.value,
+      meetingId: dashboardController.currentMeetingId.value
     );
 
     Map chatInfo = {};

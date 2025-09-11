@@ -91,12 +91,12 @@ class ChatRepoImpl extends ChatRepo {
 
   @override
   Future<Either<ApiError, dynamic>> getChatInfo(
-      {required int consultantId, required int clientId}) async {
+      {required int consultantId, required int clientId, required int meetingId}) async {
     var data = {
       "consultant_id": consultantId,
       "client_id": clientId,
+      "meeting_id": meetingId
     };
-    print(data);
 
     return await catchSocketException(
             () => postReq(ChatEndPoints.getChatInfo, body: data))
