@@ -49,8 +49,6 @@ class MeetingsController extends GetxController {
       var either = await ConsultationRepoImpl().getMeetings(page: page.value);
 
       either.fold((l) {
-        print("MEETINGS: Error message: ${l.message}");
-
         return CustomSnackBar.showSnackBar(
           context: Get.context!,
           title: "Error",
@@ -59,8 +57,6 @@ class MeetingsController extends GetxController {
         );
       }, (r) async {
         var data = r;
-
-        print("meetings: $data");
 
         if (data['error'] == false && data['data'] != null) {
           meetings.clear(); // Clear existing meetings

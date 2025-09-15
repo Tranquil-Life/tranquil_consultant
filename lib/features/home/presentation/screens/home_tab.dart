@@ -1,40 +1,29 @@
 import 'dart:async';
 
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:tl_consultant/core/global/buttons.dart';
 import 'package:tl_consultant/core/global/custom_text.dart';
-import 'package:tl_consultant/core/global/my_default_text_theme.dart';
 import 'package:tl_consultant/core/global/user_avatar.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/theme/fonts.dart';
-import 'package:tl_consultant/core/theme/tranquil_icons.dart';
 import 'package:tl_consultant/core/utils/extensions/date_time_extension.dart';
-import 'package:tl_consultant/core/utils/functions.dart';
 import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 import 'package:tl_consultant/core/utils/helpers/svg_elements.dart';
 import 'package:tl_consultant/core/utils/routes/app_pages.dart';
 import 'package:tl_consultant/features/activity/presentation/controllers/activity_controller.dart';
-import 'package:tl_consultant/features/activity/presentation/screens/notifications.dart';
 import 'package:tl_consultant/features/chat/presentation/widgets/dialogs/rate_consultation_dialog.dart';
 import 'package:tl_consultant/features/consultation/domain/entities/client.dart';
 import 'package:tl_consultant/features/consultation/domain/entities/meeting.dart';
 import 'package:tl_consultant/features/consultation/presentation/controllers/meetings_controller.dart';
 import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
-import 'package:tl_consultant/features/home/presentation/widgets/count_indicator.dart';
-
-import 'package:tl_consultant/core/global/custom_icon_button.dart';
 import 'package:tl_consultant/features/home/presentation/widgets/events_section.dart';
 import 'package:tl_consultant/features/home/presentation/widgets/explore_perks_widget.dart';
 import 'package:tl_consultant/features/home/presentation/widgets/large_screen_header.dart';
 import 'package:tl_consultant/features/home/presentation/widgets/no_meetings.dart';
 import 'package:tl_consultant/features/home/presentation/widgets/small_screen_header.dart';
-import 'package:tl_consultant/features/profile/data/models/user_model.dart';
-import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
-import 'package:tl_consultant/features/profile/domain/entities/user.dart';
 import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
 
 part 'package:tl_consultant/features/home/presentation/widgets/meeting_section.dart';

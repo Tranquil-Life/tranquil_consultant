@@ -64,6 +64,7 @@ class ChatController extends GetxController {
   Future loadRecentMessages() async {
     if (chatId != null) {
       isFirstLoadRunning.value = true;
+
       var result = await repo.getRecentMessages(chatId: chatId!.value);
 
       result.fold((l) {}, (r) {
