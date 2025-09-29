@@ -279,7 +279,9 @@ List<String> getTitlesAfterComma(String input) {
   return titlesPart.split(',').map((title) => title.trim()).toList();
 }
 
-checkForEmptyProfileInfo(ProfileController profileController) async {
+Future<bool> checkForEmptyProfileInfo() async {
+  final profileController = ProfileController.instance;
+
   await Future.delayed(Duration(seconds: 2));
   profileController.getQualifications();
   User user = UserModel.fromJson(userDataStore.user);
@@ -288,7 +290,9 @@ checkForEmptyProfileInfo(ProfileController profileController) async {
       user.specialties!.isEmpty ||
       user.videoIntroUrl!.isEmpty ||
       profileController.qualifications.isEmpty) {
-    Get.to(() => EditProfileScreen());
+    return true;
+  }else{
+    return false;
   }
 }
 
@@ -334,8 +338,7 @@ String getGreeting() {
 String countryCodeToEmoji(String countryCode) {
   // Convert country code (e.g. "US") to flag emoji
   return countryCode.toUpperCase().replaceAllMapped(
-    RegExp(r'[A-Z]'),
-        (match) =>
-        String.fromCharCode(match.group(0)!.codeUnitAt(0) + 127397),
-  );
+        RegExp(r'[A-Z]'),
+        (match) => String.fromCharCode(match.group(0)!.codeUnitAt(0) + 127397),
+      );
 }

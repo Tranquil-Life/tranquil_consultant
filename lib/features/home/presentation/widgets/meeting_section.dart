@@ -17,7 +17,6 @@ class _MeetingsState extends State<Meetings> {
   // DateTime
   final now = DateTime.now();
 
-
   updateDashboardMeetingInfo() async {
     await Future.delayed(Duration(seconds: 2));
 
@@ -41,11 +40,9 @@ class _MeetingsState extends State<Meetings> {
       if (meeting.ratedByClient) {
         //TODO: if the meeting payment status != paid, call transfer endpoint
         print("make payment");
-      } else if (!meeting.ratedByClient && meeting.ratedByTherapist &&
-          (!difference.isNegative && difference.inHours >= 48)){
-
-      }
-
+      } else if (!meeting.ratedByClient &&
+          meeting.ratedByTherapist &&
+          (!difference.isNegative && difference.inHours >= 48)) {}
 
       // if (meeting.endAt.isAfter(DateTimeExtension.now) &&
       //     (meeting.startAt.isBefore(DateTimeExtension.now) ||
@@ -111,12 +108,19 @@ class _MeetingsState extends State<Meetings> {
                         itemCount: meetingsController.meetings.length,
                         padding: EdgeInsets.zero,
                         itemBuilder: (_, index) {
-                          return MeetingTile(
-                            meeting: meetingsController.meetings[index]
-                              ..setIsExpired(_timeNotifier.value),
-                            lastItem: index ==
-                                meetingsController.meetings.length - 1,
-                          );
+                          return isSmallScreen(context)
+                              ? MeetingTileSmall(
+                                  meeting: meetingsController.meetings[index]
+                                    ..setIsExpired(_timeNotifier.value),
+                                  lastItem: index ==
+                                      meetingsController.meetings.length - 1,
+                                )
+                              : MeetingTileRegular(
+                                  meeting: meetingsController.meetings[index]
+                                    ..setIsExpired(_timeNotifier.value),
+                                  lastItem: index ==
+                                      meetingsController.meetings.length - 1,
+                                );
                         },
                       ),
                     ),
@@ -145,7 +149,6 @@ class _MeetingsState extends State<Meetings> {
                   //     ),
                   //   ),
                   // );
-
                 }
               }),
             ),

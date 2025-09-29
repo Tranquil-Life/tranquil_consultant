@@ -9,7 +9,7 @@ import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 import 'package:tl_consultant/features/profile/domain/entities/user.dart';
 
 class OnboardingController extends GetxController {
-  static OnboardingController instance = Get.find();
+  static OnboardingController get instance => Get.find();
 
   final storage = GetStorage();
   AuthRepoImpl authRepo = AuthRepoImpl();
@@ -31,6 +31,7 @@ class OnboardingController extends GetxController {
   Future checkAuthStatus() async {
     Either either = await authRepo.isAuthenticated();
     either.fold((l) async {
+      print("${l.message!}");
       Get.offAllNamed(Routes.SIGN_IN);
     }, (r) async {
       userDataStore.user['email_verified_at'] = r['data']['email_verified_at'];

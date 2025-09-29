@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:tl_consultant/core/data/store.dart';
 import 'package:tl_consultant/core/global/custom_snackbar.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
@@ -11,10 +12,10 @@ import 'package:tl_consultant/features/media/data/media_repo.dart';
 import 'package:tl_consultant/features/profile/data/models/user_model.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 import 'package:tl_consultant/features/profile/domain/entities/user.dart';
+import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:video_player/video_player.dart';
 
-class VideoRecordingController extends GetxController{
-
+class VideoRecordingController extends GetxController {
   MediaRepoImpl mediaRepo = MediaRepoImpl();
 
   RxDouble uploadProgress = 0.0.obs;
@@ -24,22 +25,23 @@ class VideoRecordingController extends GetxController{
 
   late VideoPlayerController videoPlayerController;
 
-
   initializeVideoPlayer(dynamic profileController) async {
-    videoPlayerController =
-        VideoPlayerController.networkUrl(Uri.parse(profileController.introVideo.value!));
+    videoPlayerController = VideoPlayerController.networkUrl(
+        Uri.parse(profileController.introVideo.value!));
     // Wait for the controller to initialize
     await videoPlayerController.initialize();
 
-    profileController.introVideoDuration.value = videoPlayerController.value.duration.inSeconds;
+    profileController.introVideoDuration.value =
+        videoPlayerController.value.duration.inSeconds;
   }
 
-  Future<String?> uploadFile(File uploadFile, String uploadType, dynamic controller) async {
+  Future<String?> uploadFile(
+      File uploadFile, String uploadType, dynamic controller) async {
     User user = UserModel.fromJson(userDataStore.user);
 
-    if(uploadType == videoIntro){
+    if (uploadType == videoIntro) {
       previousUrl.value = user.videoIntroUrl!;
-    }else if(uploadType == profileImage){
+    } else if (uploadType == profileImage) {
       previousUrl.value = user.avatarUrl;
     }
 
@@ -99,13 +101,14 @@ class VideoRecordingController extends GetxController{
 
       // Create a new file from the temp directory with a unique name
       final file =
-      File('${systemTempDir.path}/$fileName${getExtension(uploadType)}');
+          File('${systemTempDir.path}/$fileName${getExtension(uploadType)}');
 
       // Write the byte data into the file
       await file.writeAsBytes(byteData.buffer
           .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
 
-      Reference reference = FirebaseStorage.instance.ref('$path/${user.id}_$fileName');
+      Reference reference =
+          FirebaseStorage.instance.ref('$path/${user.id}_$fileName');
       // Start the file upload and listen to the progress
       UploadTask uploadTask = reference.putFile(file);
 
@@ -133,10 +136,10 @@ class VideoRecordingController extends GetxController{
 
         Get.back();
 
+        //locate and delete previous recording from storage before uploading new one
         deleteFileFromUrl(previousUrl.value);
 
         await initializeVideoPlayer(controller);
-
       } else if (uploadType == profileImage) {
         controller.profilePic.value = downloadUrl;
         userDataStore.user[avatarUrl] = downloadUrl;
@@ -181,6 +184,7 @@ class VideoRecordingController extends GetxController{
   }
 
   Future<void> deleteFileFromUrl(String fileUrl) async {
+    var profileController = ProfileController.instance;
     try {
       // Extract the path from the URL
       String decodedUrl = Uri.decodeFull(fileUrl.split('?')[0]);
@@ -195,14 +199,13 @@ class VideoRecordingController extends GetxController{
     }
   }
 
-
-  resetUploadVars(){
+  resetUploadVars() {
     uploadProgress.value = 0.0;
     uploading.value = false;
     compressing.value = false;
   }
 
-  clearData(){
+  clearData() {
     uploadProgress.value = 0.0;
     uploading.value = false;
     compressing.value = false;

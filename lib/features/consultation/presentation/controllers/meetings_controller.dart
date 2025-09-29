@@ -49,12 +49,17 @@ class MeetingsController extends GetxController {
       var either = await ConsultationRepoImpl().getMeetings(page: page.value);
 
       either.fold((l) {
-        return CustomSnackBar.showSnackBar(
-          context: Get.context!,
-          title: "Error",
-          message: l.message.toString(),
-          backgroundColor: ColorPalette.red,
-        );
+        if(!l.message!.contains('unauthenticated')){
+          print("Load first meetings: error: ${l.message}");
+
+          return CustomSnackBar.showSnackBar(
+            context: Get.context!,
+            title: "Error",
+            message: l.message.toString(),
+            backgroundColor: ColorPalette.red,
+          );
+        }
+
       }, (r) async {
         var data = r;
 
@@ -90,12 +95,18 @@ class MeetingsController extends GetxController {
       var either = await ConsultationRepoImpl().getMeetings(page: page.value);
 
       either.fold(
-          (l) => CustomSnackBar.showSnackBar(
+          (l) {
+            if(!l.message!.contains('unauthenticated')){
+              print("Load more meetings: error: ${l.message}");
+
+              return CustomSnackBar.showSnackBar(
                 context: Get.context!,
                 title: "Error",
                 message: l.message.toString(),
                 backgroundColor: ColorPalette.red,
-              ), (r) async {
+              );
+            }
+          }, (r) async {
         var data = r;
 
         List<Meeting> fetchedMeetings = [];

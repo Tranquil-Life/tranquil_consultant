@@ -14,7 +14,7 @@ import 'package:tl_consultant/features/media/data/media_repo.dart';
 import 'package:tl_consultant/main.dart';
 
 class UploadController extends GetxController {
-  static UploadController instance = Get.find();
+  static UploadController get instance => Get.find();
 
   final chatController = ChatController.instance;
 

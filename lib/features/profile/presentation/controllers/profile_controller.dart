@@ -16,7 +16,8 @@ import 'package:tl_consultant/features/profile/domain/entities/user.dart';
 import 'package:video_player/video_player.dart';
 
 class ProfileController extends GetxController {
-  static ProfileController instance = Get.find();
+  static ProfileController get instance => Get.find();
+
   late VideoPlayerController videoPlayerController;
 
   Rx<EditUser> editUser = EditUser().obs;
@@ -120,6 +121,8 @@ class ProfileController extends GetxController {
     request.addAll(qualificationReq);
 
     final result = await profileRepo.updateProfile(request);
+
+    print("REQUEST: $request");
 
     result.fold(
       (l) => CustomSnackBar.showSnackBar(

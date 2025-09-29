@@ -53,7 +53,7 @@ class BuildNavItem extends StatelessWidget {
               Text(
                 label,
                 style: TextStyle(
-                  fontSize: AppFonts.defaultSize,
+                  fontSize: isSmallScreen(context) ? AppFonts.smallSize : AppFonts.defaultSize,
                   color: isSelected
                       ?  ColorPalette.grey[400]
                       : ColorPalette.grey[700],

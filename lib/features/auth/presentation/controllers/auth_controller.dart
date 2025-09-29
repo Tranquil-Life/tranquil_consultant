@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
+import 'package:tl_consultant/core/data/store.dart';
 import 'package:tl_consultant/core/global/custom_snackbar.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
@@ -106,6 +107,9 @@ class AuthController extends GetxController {
         print(user.toJson());
       }
 
+      registrationDataStore.fields.clear();
+      await getStore.set('fields', registrationDataStore.fields);
+
       await Get.offAllNamed(Routes.DASHBOARD);
       emailTEC.clear();
       confirmPasswordTEC.clear();
@@ -115,7 +119,7 @@ class AuthController extends GetxController {
   Future signIn(String email, String password) async {
     loading.value = true;
 
-    Either either = await AuthRepoImpl().signIn("barry@gmail.com", "password");
+    Either either = await AuthRepoImpl().signIn(email, password);
 
     either.fold((l) {
       return CustomSnackBar.showSnackBar(

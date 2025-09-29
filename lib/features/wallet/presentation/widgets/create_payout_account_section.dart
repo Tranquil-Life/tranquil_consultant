@@ -56,15 +56,15 @@ class CreatePayoutAccountSection extends StatelessWidget {
           ],
         ),
 
-        Row(
+        Obx(()=>Row(
           children: [
             Checkbox(
               activeColor: ColorPalette.green,
               value: earningsController.isSaved.value,
               onChanged: (value) {
-                if(!earningsController.isSaved.value && stripeAccountId.isEmpty){
+                if(!earningsController.isSaved.value && stripeAccountId != null){
                   earningsController.createStripePayout();
-                }else if(!earningsController.isSaved.value && stripeAccountId.isNotEmpty){
+                }else if(!earningsController.isSaved.value && stripeAccountId != null){
                   earningsController.updateStripePayout();
                 }
                 earningsController.toggleSave();
@@ -73,8 +73,7 @@ class CreatePayoutAccountSection extends StatelessWidget {
 
             Text("Save details for later ")
           ],
-        ),
-
+        ),),
         SizedBox(height: 40),
       ],
     );

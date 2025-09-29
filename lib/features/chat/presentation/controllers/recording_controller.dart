@@ -14,7 +14,8 @@ import 'package:uuid/uuid.dart';
 import 'package:path/path.dart' as path;
 
 class RecordingController extends GetxController {
-  static RecordingController instance = Get.find();
+  static RecordingController get instance => Get.find();
+
   final chatController = Get.put(ChatController());
   int recordingDuration = 0;
 

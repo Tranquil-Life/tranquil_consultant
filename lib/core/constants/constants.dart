@@ -32,7 +32,7 @@ const client = "client";
 
 int myId = UserModel.fromJson(userDataStore.user).id!;
 String authToken = UserModel.fromJson(userDataStore.user).authToken!;
-String stripeAccountId = UserModel.fromJson(userDataStore.user).stripeAccountId!;
+String? stripeAccountId = UserModel.fromJson(userDataStore.user).stripeAccountId;
 
 //firebase vars
 const chatsCollection = "chats";
@@ -118,3 +118,4 @@ const avatarUrl = "avatar_url";
 const verificationCodeMsg = "Check your email or spam for the verification code";
 const withdrawFundsTitle = "Withdraw funds";
 const withdrawFundsDesc = "Enter your details to receive payment to your local account";
+const notConnectedAccountMsg = "No connected account found for this user.";

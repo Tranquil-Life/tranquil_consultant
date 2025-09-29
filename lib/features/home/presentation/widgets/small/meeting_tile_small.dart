@@ -1,26 +1,21 @@
 part of 'package:tl_consultant/features/home/presentation/screens/home_tab.dart';
 
-class MeetingTile extends StatefulWidget {
+class MeetingTileSmall extends StatelessWidget {
+  MeetingTileSmall({super.key, required this.meeting, required this.lastItem});
+
   final Meeting meeting;
   final bool lastItem;
 
-  const MeetingTile({super.key, required this.meeting, required this.lastItem});
-
-  @override
-  State<MeetingTile> createState() => MeetingTileState();
-}
-
-class MeetingTileState extends State<MeetingTile> {
   final meetingsController = MeetingsController.instance;
 
   @override
   Widget build(BuildContext context) {
     final dateFormat = DateFormat('yyyy-MM-dd HH:mm'); // Customize the format
     final formattedDate =
-        DateFormat('EEE, dd/MM/yyyy').format(widget.meeting.startAt);
-    final startTime = DateFormat('HH:mm').format(widget.meeting.startAt);
-    final endTime = DateFormat('HH:mm').format(widget.meeting.endAt);
-    final duration = widget.meeting.endAt.difference(widget.meeting.startAt);
+        DateFormat('EEE, \ndd/MM/yyyy').format(meeting.startAt);
+    final startTime = DateFormat('HH:mm').format(meeting.startAt);
+    final endTime = DateFormat('HH:mm').format(meeting.endAt);
+    final duration = meeting.endAt.difference(meeting.startAt);
     final hours = duration.inHours;
     final minutes = duration.inMinutes;
     final timeRange = "$startTime - $endTime";
@@ -35,7 +30,7 @@ class MeetingTileState extends State<MeetingTile> {
                 border: Border.all(color: Color(0xffE4E4E4)),
               ),
               child: UserAvatar(
-                imageUrl: widget.meeting.client.avatarUrl,
+                imageUrl: meeting.client.avatarUrl,
                 source: AvatarSource.url,
               ),
             ),
@@ -50,7 +45,7 @@ class MeetingTileState extends State<MeetingTile> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        widget.meeting.client.displayName,
+                        meeting.client.displayName,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -58,13 +53,13 @@ class MeetingTileState extends State<MeetingTile> {
                           fontFamily: AppFonts.mulishSemiBold,
                         ),
                       ),
-                      if (widget.meeting.isExpired)
+                      if (meeting.isExpired)
                         Text(
                           "Expired ($timeRange)",
                           style: TextStyle(color: ColorPalette.red),
                         )
                       else
-                         Text(
+                        Text(
                           "$minutes mins",
                         ),
                     ],
@@ -72,68 +67,72 @@ class MeetingTileState extends State<MeetingTile> {
                 ),
                 const SizedBox(height: 5),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      children: [
-                        SvgPicture.asset(
-                          SvgElements.svgCalendar,
-                          height: 14,
-                          width: 14,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          formattedDate,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      ],
+                    SvgPicture.asset(
+                      SvgElements.svgCalendar,
+                      height: 14,
+                      width: 14,
                     ),
-                    const SizedBox(width: 12),
-                    if (widget.meeting.ratedByClient &&
-                        !widget.meeting.ratedByTherapist)
+                    const SizedBox(width: 4),
+                    Text(
+                      formattedDate,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+
+                    Spacer(),
+
+                    if (meeting.ratedByClient &&
+                        !meeting.ratedByTherapist)
                       Row(
                         children: [
                           Icon(Icons.check_circle, color: ColorPalette.green),
                           CustomText(text: "Rated by client")
                         ],
                       ),
-                    if (!widget.meeting.ratedByClient &&
-                        widget.meeting.ratedByTherapist)
+
+                    if (!meeting.ratedByClient && meeting.ratedByTherapist)
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          Icon(Icons.check_circle, color: ColorPalette.yellow),
-                          CustomText(text: "Rated by you")
-                        ],
-                      ),
-                    if (widget.meeting.ratedByClient &&
-                        widget.meeting.ratedByTherapist)
-                      Row(
-                        children: [
-                          Icon(Icons.check_circle, color: ColorPalette.green),
+                          CustomText(
+                              text: "Rated by you", size: AppFonts.smallSize),
                           SizedBox(width: 4),
-                          SizedBox(width: 100, child: CustomText(
-                            text: "Rated by both sides",
-                            size: 12,
-                          ))
+                          Icon(Icons.check_circle,
+                              color: ColorPalette.yellow, size: 16),
                         ],
                       ),
-                    if (!widget.meeting.ratedByClient &&
-                        !widget.meeting.ratedByTherapist &&
-                        widget.meeting.isExpired)
+                    if (meeting.ratedByClient && meeting.ratedByTherapist)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          CustomText(
+                            text: "Rated by \nboth sides",
+                            size: 12,
+                            textAlign: TextAlign.start,
+                          ),
+                          SizedBox(width: 4),
+                          Icon(Icons.check_circle,
+                              color: ColorPalette.green, size: 16),
+                        ],
+                      ),
+
+                    if (!meeting.ratedByClient &&
+                        !meeting.ratedByTherapist &&
+                        meeting.isExpired)
                       Row(
                         children: List.generate(
                           5,
-                          (index) => GestureDetector(
+                              (index) => GestureDetector(
                             onTap: () {
                               showDialog(
                                 context: context,
                                 builder: (_) => RateConsultationDialog(
                                     selectedRating: index + 1,
                                     meetingsController: meetingsController,
-                                    meeting: widget.meeting),
+                                    meeting: meeting),
                               );
                             },
                             child: Icon(Icons.star_border_rounded,
@@ -141,7 +140,8 @@ class MeetingTileState extends State<MeetingTile> {
                           ),
                         ),
                       ),
-                    if (!widget.meeting.isExpired)
+
+                    if (!meeting.isExpired)
                       Row(
                         children: [
                           SvgPicture.asset(
@@ -160,12 +160,13 @@ class MeetingTileState extends State<MeetingTile> {
                         ],
                       ),
                   ],
-                ),
+                )
               ],
             ))
           ],
         ),
-        if (!widget.lastItem)
+
+        if (!lastItem)
           Container(
             height: 0.2,
             margin: EdgeInsets.only(top: 12, bottom: 12),

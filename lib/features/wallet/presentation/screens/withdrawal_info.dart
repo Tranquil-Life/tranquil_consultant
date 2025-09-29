@@ -7,6 +7,7 @@ import 'package:tl_consultant/core/global/custom_app_bar.dart';
 import 'package:tl_consultant/core/global/unfocus_bg.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
+import 'package:tl_consultant/features/profile/data/models/user_model.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 import 'package:tl_consultant/features/wallet/presentation/controllers/earnings_controller.dart';
 import 'package:tl_consultant/features/wallet/presentation/widgets/account_info_fields.dart';
@@ -96,13 +97,13 @@ class _WithdrawalInfoPageState extends State<WithdrawalInfoPage> {
                   ],
                 ),
                 SizedBox(height: 40),
-                if (stripeAccountId.isEmpty)
+                if (stripeAccountId == null)
                   CreatePayoutAccountSection(
                       earningsController: earningsController)
                 else
                   ShowCurrentPayoutAccount(),
 
-                if (stripeAccountId.isEmpty)
+                if (stripeAccountId == null)
                 CustomButton(
                     onPressed: () {
                       earningsController.createStripePayout();

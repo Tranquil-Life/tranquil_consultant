@@ -10,6 +10,7 @@ import 'package:tl_consultant/core/global/user_avatar.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/theme/fonts.dart';
 import 'package:tl_consultant/core/utils/extensions/date_time_extension.dart';
+import 'package:tl_consultant/core/utils/functions.dart';
 import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 import 'package:tl_consultant/core/utils/helpers/svg_elements.dart';
 import 'package:tl_consultant/core/utils/routes/app_pages.dart';
@@ -25,10 +26,12 @@ import 'package:tl_consultant/features/home/presentation/widgets/large_screen_he
 import 'package:tl_consultant/features/home/presentation/widgets/no_meetings.dart';
 import 'package:tl_consultant/features/home/presentation/widgets/small_screen_header.dart';
 import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
+import 'package:tl_consultant/features/profile/presentation/screens/edit_profile.dart';
 
 part 'package:tl_consultant/features/home/presentation/widgets/meeting_section.dart';
 
-part 'package:tl_consultant/features/home/presentation/widgets/meeting_tile.dart';
+part 'package:tl_consultant/features/home/presentation/widgets/small/meeting_tile_small.dart';
+part 'package:tl_consultant/features/home/presentation/widgets/regular/meeting_tile_regular.dart';
 
 class HomeTab extends StatefulWidget {
   const HomeTab({super.key});
@@ -38,8 +41,8 @@ class HomeTab extends StatefulWidget {
 }
 
 class _HomeTabState extends State<HomeTab> {
-  final dashboardController = Get.put(DashboardController());
-  final profileController = Get.put(ProfileController());
+  final dashboardController = DashboardController.instance;
+  final profileController = ProfileController.instance;
   final activityController = ActivityController();
   final meetingsController = Get.put(MeetingsController());
 
@@ -105,8 +108,13 @@ class _HomeTabState extends State<HomeTab> {
                                   ),
                                   const SizedBox(height: 12),
                                   CustomButton(
-                                    onPressed: () {
-                                      Get.toNamed(Routes.EDIT_SLOTS);
+                                    onPressed: () async{
+                                      var isEmpty = await checkForEmptyProfileInfo();
+                                      if(isEmpty){
+                                        Get.to(() => EditProfileScreen());
+                                      }else{
+                                        Get.toNamed(Routes.EDIT_SLOTS);
+                                      }
                                     },
                                     showBorder: true,
                                     bgColor: ColorPalette.white,

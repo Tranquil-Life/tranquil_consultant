@@ -362,6 +362,7 @@ class _EditProfileFieldsState extends State<EditProfileFields> {
         ),
         const SizedBox(height: 20),
 
+        //VIDEO AND AUDIO RECORDINGS
         IntroMediaSection(
             profileController: widget.profileController,
             videoRecordingController: widget.videoRecordingController),
@@ -376,7 +377,9 @@ class _EditProfileFieldsState extends State<EditProfileFields> {
         (item['certification']?.isEmpty ?? true));
 
     if (hasMissingOrEmptyCertification) {
-      print("Please fill in the current on before adding another");
+      if (kDebugMode) {
+        print("Please fill in the current on before adding another");
+      }
     } else {
       userDataStore.qualifications.add(<String, dynamic>{});
       List<Map<String, dynamic>> updatedQualifications =

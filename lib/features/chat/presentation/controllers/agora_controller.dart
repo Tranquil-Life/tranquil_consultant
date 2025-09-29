@@ -1,18 +1,14 @@
 import 'package:dartz/dartz.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tl_consultant/core/global/custom_snackbar.dart';
-import 'package:tl_consultant/core/constants/constants.dart';
-import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/utils/extensions/date_time_extension.dart';
 import 'package:tl_consultant/features/chat/data/repos/chat_repo.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/chat_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/screens/video_call_view.dart';
 import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
-import 'package:tl_consultant/main.dart';
 
 class AgoraController extends GetxController {
-  static AgoraController instance = Get.find();
+  static AgoraController get instance => Get.find();
 
   ChatRepoImpl repo = ChatRepoImpl();
 

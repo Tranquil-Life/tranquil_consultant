@@ -69,10 +69,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   const SizedBox(
                     height: 50,
                   ),
+
+                  //Edit profile fields
                   EditProfileFields(
                     profileController: profileController,
                     videoRecordingController: videoRecordingController,
                   ),
+
                   SizedBox(
                     height: 30,
                   ),

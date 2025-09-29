@@ -107,7 +107,6 @@ class _ProfileScreenState extends State<ProfileScreen>
                       children: [
                         BioTabView(),
                         SingleChildScrollView(
-                          physics: NeverScrollableScrollPhysics(),
                           child: QualificationsTabView(
                               profileController: profileController),
                         ),
@@ -192,21 +191,23 @@ class _ProfileHeadState extends State<ProfileHead> {
               height: 10,
             ),
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Icon(
                   Icons.location_on_outlined,
                   color: ColorPalette.blue.shade600,
                 ),
-                Text(
-                  truncateWithEllipsis(8, "${widget.profileController.countryTEC.text}/${widget.profileController.cityTEC.text}"),
+                Expanded(child: Text(
+                  truncateWithEllipsis(28, "${widget.profileController.countryTEC.text}/${widget.profileController.cityTEC.text}"),
                   style: TextStyle(
                     color: ColorPalette.blue.shade600,
                     fontSize: AppFonts.defaultSize,
                     fontWeight: FontWeight.w400,
                   ),
-                ),
+                ),)
               ],
-            ),
+            )
+
           ],
         )),
         Expanded(

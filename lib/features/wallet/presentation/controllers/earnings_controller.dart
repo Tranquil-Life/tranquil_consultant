@@ -26,6 +26,7 @@ class EarningsController extends GetxController {
   var totalBalance = 0.00.obs;
   var futurePayout = 0.00.obs;
   var inTransit = 0.00.obs;
+
   // var withdrawn = 0.00.obs;
   // var availableForWithdrawal = 0.00.obs;
   // var pendingClearance = 0.00.obs;
@@ -137,23 +138,23 @@ class EarningsController extends GetxController {
     });
   }
 
-  Future<void> fetchNextPage() async {
-    isLoading.value = true;
-    await Future.delayed(Duration(seconds: 2)); // required delay
-    Either either =
-        await repo.getFromNextPage(nextPageToken: nextPageToken.value);
-    either.fold((l) => CustomSnackBar.errorSnackBar(l.message!), (r) {
-      nextPageToken.value = r['next_page_token'];
-      PlacesSearchResponseModel placesSearchResponseModel =
-          PlacesSearchResponseModel.fromJson(r);
-      for (var e in placesSearchResponseModel.results) {
-        PlaceResultModel placeResultModel = e;
-        availableBranches.add(placeResultModel.formattedAddress);
-      }
-
-      isLoading.value = false;
-    });
-  }
+  // Future<void> fetchNextPage() async {
+  //   isLoading.value = true;
+  //   await Future.delayed(Duration(seconds: 2)); // required delay
+  //   Either either =
+  //       await repo.getFromNextPage(nextPageToken: nextPageToken.value);
+  //   either.fold((l) => CustomSnackBar.errorSnackBar(l.message!), (r) {
+  //     nextPageToken.value = r['next_page_token'];
+  //     PlacesSearchResponseModel placesSearchResponseModel =
+  //         PlacesSearchResponseModel.fromJson(r);
+  //     for (var e in placesSearchResponseModel.results) {
+  //       PlaceResultModel placeResultModel = e;
+  //       availableBranches.add(placeResultModel.formattedAddress);
+  //     }
+  //
+  //     isLoading.value = false;
+  //   });
+  // }
 
   double roundToFiveSignificantFigures(double number) {
     // Convert the number to a string
@@ -196,7 +197,7 @@ class EarningsController extends GetxController {
   }
 
   bool payoutExists() {
-    if (stripeAccountId.isNotEmpty) {
+    if (stripeAccountId != null) {
       return true;
     }
     return false;
@@ -244,10 +245,18 @@ class EarningsController extends GetxController {
   Future<double> getBalance() async {
     double balance = 0;
     Either either = await repo.getBalance();
-    either.fold((l) => CustomSnackBar.errorSnackBar(l.message!), (r) {
+    either.fold((l) {
+      switch (l.message!) {
+        case notConnectedAccountMsg:
+          print("balance: error: ${l.message!}");
+          break;
+        default:
+          CustomSnackBar.errorSnackBar("balance: error: ${l.message!}");
+      }
+    }, (r) {
       var data = r['data'];
       if (data != null) {
-        balance = ((data['available'][0]['amount']/100) as num).toDouble();
+        balance = ((data['available'][0]['amount'] / 100) as num).toDouble();
 
         futurePayout.value = balance;
       }
@@ -260,7 +269,14 @@ class EarningsController extends GetxController {
     double totalVolReceived = 0;
     Either either = await repo.getLifeTimeTotalReceived();
     either.fold((l) {
-      return CustomSnackBar.errorSnackBar(l.message!);
+      switch (l.message!) {
+        case notConnectedAccountMsg:
+          print("lifetime volume received: error: ${l.message!}");
+          break;
+        default:
+          CustomSnackBar.errorSnackBar(
+              "lifetime volume received: error: ${l.message!}");
+      }
     }, (r) {
       var data = r['data'];
       if (data != null) {
@@ -274,8 +290,15 @@ class EarningsController extends GetxController {
   Future<double> getPendingClearance() async {
     double pendingClearance = 0;
     Either either = await repo.getTotalPendingClearance();
-    either.fold((l){
-      return CustomSnackBar.errorSnackBar(l.message!);
+    either.fold((l) {
+      switch (l.message!) {
+        case notConnectedAccountMsg:
+          print("pending clearance: error: ${l.message!}");
+          break;
+        default:
+          CustomSnackBar.errorSnackBar(
+              "pending clearance: error: ${l.message!}");
+      }
     }, (r) {
       pendingClearance = (r['pending_amount'] as num).toDouble();
     });
@@ -283,14 +306,18 @@ class EarningsController extends GetxController {
     return pendingClearance;
   }
 
-  void withdrawEarnings() async{
+  void withdrawEarnings() async {
     var req = {
       "account_id": stripeAccountId,
       "amount": amountTEC.text,
     };
     Either either = await repo.withdrawToBankAcc(req);
-    either.fold((l)=>CustomSnackBar.errorSnackBar(l.message!), (r){
-      CustomSnackBar.successSnackBar(body: "\$${amountTEC.text} withdrawn successfully");
+    either.fold((l) {
+      print("withdraw earnings: error: ${l.message!}");
+      CustomSnackBar.errorSnackBar(l.message!);
+    }, (r) {
+      CustomSnackBar.successSnackBar(
+          body: "\$${amountTEC.text} withdrawn successfully");
     });
   }
 
@@ -298,7 +325,14 @@ class EarningsController extends GetxController {
     double amountInTransit = 0;
     Either either = await repo.getAmountInTransitToBank();
     either.fold((l) {
-      return CustomSnackBar.errorSnackBar(l.message!);
+      switch (l.message!) {
+        case notConnectedAccountMsg:
+          print("amount in transit: error: ${l.message!}");
+          break;
+        default:
+          CustomSnackBar.errorSnackBar(
+              "amount in transit: error: ${l.message!}");
+      }
     }, (r) {
       var data = r['data'];
       if (data != null) {
@@ -310,13 +344,21 @@ class EarningsController extends GetxController {
     return amountInTransit;
   }
 
-
-
   void getStripeAccountInfo() async {
-    if (stripeAccountId.isNotEmpty) {
+    if (stripeAccountId != null) {
       Either either = await repo.getStripeAccountInfo();
 
-      either.fold((l) => CustomSnackBar.errorSnackBar(l.message!), (r) {
+      either.fold((l) {
+        switch (l.message!) {
+          case notConnectedAccountMsg:
+            print("stripe account info: error: ${l.message!}");
+            break;
+          default:
+            CustomSnackBar.errorSnackBar(
+                "stripe account info: error: ${l.message!}");
+        }
+        print("stripe account info: error: ${l.message!}");
+      }, (r) {
         var data = r['data'];
 
         if (data != null) {
@@ -360,6 +402,4 @@ class EarningsController extends GetxController {
   }
 
   void updateStripePayout() {}
-
-
 }
