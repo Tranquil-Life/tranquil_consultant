@@ -8,9 +8,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:get/get.dart';
 import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
 import 'package:tl_consultant/app.dart';
 import 'package:timezone/data/latest.dart' as tz;
+import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
 
 late List<CameraDescription> cameras;
 PusherChannelsFlutter pusher = PusherChannelsFlutter.getInstance();
@@ -18,7 +20,9 @@ PusherChannelsFlutter pusher = PusherChannelsFlutter.getInstance();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   tz.initializeTimeZones();
-  String timeZone = await FlutterNativeTimezone.getLocalTimezone();
+
+  // Register before running the app
+  Get.put(ProfileController());
 
 
   try {

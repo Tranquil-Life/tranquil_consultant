@@ -3,6 +3,7 @@ import 'package:dio/dio.dart' as dio;
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tl_consultant/core/data/store.dart';
 import 'package:tl_consultant/core/global/custom_snackbar.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
@@ -16,7 +17,7 @@ import 'package:tl_consultant/features/profile/domain/entities/user.dart';
 import 'package:video_player/video_player.dart';
 
 class ProfileController extends GetxController {
-  static ProfileController get instance => Get.find();
+  static ProfileController get instance => Get.find<ProfileController>();
 
   late VideoPlayerController videoPlayerController;
 
@@ -28,24 +29,20 @@ class ProfileController extends GetxController {
 
   var introVideoDuration = 0.obs;
 
-  var profilePic = UserModel.fromJson(userDataStore.user).avatarUrl.obs;
-  var introVideo = UserModel.fromJson(userDataStore.user).videoIntroUrl.obs;
+  var profilePic = "".obs;
+  var introVideo = "".obs;
 
-  var meetingsCount = UserModel.fromJson(userDataStore.user).totalMeetings.obs;
-  var clientsCount = UserModel.fromJson(userDataStore.user).totalClients.obs;
+  var meetingsCount = 0.obs;
+  var clientsCount = 0.obs;
   var deletingId =
       Rxn<int?>(); // Use null to indicate no qualification is being deleted
 
-  final TextEditingController firstNameTEC = TextEditingController(
-      text: UserModel.fromJson(userDataStore.user).firstName);
-  final TextEditingController lastNameTEC = TextEditingController(
-      text: UserModel.fromJson(userDataStore.user).lastName);
-  final TextEditingController phoneTEC = TextEditingController(
-      text: UserModel.fromJson(userDataStore.user).phoneNumber);
+  final TextEditingController firstNameTEC = TextEditingController();
+  final TextEditingController lastNameTEC = TextEditingController();
+  final TextEditingController phoneTEC = TextEditingController();
   final TextEditingController countryTEC = TextEditingController();
   final TextEditingController cityTEC = TextEditingController();
-  final TextEditingController bioTEC =
-      TextEditingController(text: UserModel.fromJson(userDataStore.user).bio);
+  final TextEditingController bioTEC = TextEditingController();
   final TextEditingController timeZoneTEC = TextEditingController();
   final TextEditingController certificationTEC = TextEditingController();
   final TextEditingController institutionTEC = TextEditingController();
@@ -55,7 +52,7 @@ class ProfileController extends GetxController {
   var updatingProfile = false.obs;
 
   var qualifications = <Qualification>[].obs;
-  RxList modalities = UserModel.fromJson(userDataStore.user).specialties!.obs;
+  RxList modalities = [].obs;
   RxList titles = [].obs;
   var topics = [].obs;
 
@@ -171,8 +168,37 @@ class ProfileController extends GetxController {
     }
   }
 
+  ///restore user info
   restoreUser() {
-    editUser.value = EditUser(baseUser: UserModel.fromJson(userDataStore.user));
+    profilePic.value = UserModel.fromJson(userDataStore.user).avatarUrl;
+    introVideo.value = UserModel.fromJson(userDataStore.user).videoIntroUrl!;
+    firstNameTEC.text = UserModel.fromJson(userDataStore.user).firstName;
+    lastNameTEC.text = UserModel.fromJson(userDataStore.user).lastName;
+    phoneTEC.text = UserModel.fromJson(userDataStore.user).phoneNumber;
+    bioTEC.text = UserModel.fromJson(userDataStore.user).bio;
+    modalities.value = UserModel.fromJson(userDataStore.user).specialties!;
+    meetingsCount.value = UserModel.fromJson(userDataStore.user).totalMeetings;
+    clientsCount.value = UserModel.fromJson(userDataStore.user).totalClients;
+
+    if (userDataStore.qualifications.isNotEmpty) {
+      var newList = List<Map<String, dynamic>>.from(userDataStore.qualifications);
+      for (var e in newList) {
+        qualifications.add(Qualification.fromJson(e));
+      }
+    }
+
+    final matches = titleOptions
+        .where(
+          (title) =>
+              lastNameTEC.text.toLowerCase().contains(title.toLowerCase()),
+        )
+        .toList();
+
+    if (matches.isNotEmpty) {
+      titles.value = matches;
+    }
+
+    // editUser.value = EditUser(baseUser: UserModel.fromJson(userDataStore.user));
   }
 
   void deleteQualification(int? id, int index) async {
@@ -229,6 +255,9 @@ class ProfileController extends GetxController {
     modalities.clear();
     titles.clear();
     topics.clear();
+
+    userDataStore.user.clear();
+    getStore.set(Keys.user, userDataStore.user);
   }
 
   @override

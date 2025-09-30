@@ -169,7 +169,7 @@ class _ProfileHeadState extends State<ProfileHead> {
             Obx(()=>Text(
               truncateWithEllipsis(
                   (displayWidth(context) / 14).toInt(),
-                  "${widget.profileController.firstNameTEC.text} ${containsTitle(widget.profileController.titles.join(', '))}"
+                  "${widget.profileController.firstNameTEC.text} ${widget.profileController.lastNameTEC.text} ${containsTitle(widget.profileController.titles.join(', '))}"
               )
               ,
               style: TextStyle(

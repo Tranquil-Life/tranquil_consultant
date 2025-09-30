@@ -136,7 +136,8 @@ class DashboardController extends GetxController {
 
   @override
   void onInit() {
-    // ProfileController.instance.restoreUser();
+    print(userDataStore.user);
+    ProfileController.instance.restoreUser();
 
     getMyLocationInfo();
 

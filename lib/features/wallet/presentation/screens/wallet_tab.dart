@@ -22,7 +22,7 @@ class WalletTab extends StatefulWidget {
 }
 
 class _WalletTabState extends State<WalletTab> {
-  final earningsController = EarningsController.instance;
+  final earningsController = Get.put(EarningsController());
   NumberFormat? formatCurrency;
 
   double balance = 0;
