@@ -119,3 +119,5 @@ const verificationCodeMsg = "Check your email or spam for the verification code"
 const withdrawFundsTitle = "Withdraw funds";
 const withdrawFundsDesc = "Enter your details to receive payment to your local account";
 const notConnectedAccountMsg = "No connected account found for this user.";
+
+const String sentryDSN = "https://ffcc9ccf78c403bfe74b17a7ed1b4d1c@o4508213507588096.ingest.us.sentry.io/4510109029498880";

@@ -52,14 +52,12 @@ class NotesController extends GetxController with GetTickerProviderStateMixin {
       case 0:
         journalTabIndex.value = tabController.index;
         if (sharedNotesList.isEmpty) {
-          print("shared notes");
-          //await loadfirstSharedNotes();
+          //await loadFirstSharedNotes();
         }
         break;
       case 1:
         journalTabIndex.value = tabController.index;
         if (personalNotesList.isEmpty) {
-          print("personal notes");
           await loadFirstPersonalNotes();
         }
         break;
@@ -76,8 +74,6 @@ class NotesController extends GetxController with GetTickerProviderStateMixin {
         page: page.value, limit: limit.value);
     either.fold((l) {
       if (!l.message!.contains('unauthenticated')) {
-        print("Load first personal notes: error: ${l.message}");
-
         return CustomSnackBar.showSnackBar(
           context: Get.context!,
           title: "Error",
