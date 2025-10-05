@@ -60,4 +60,12 @@ class SvgElements {
   static get svgUpscaleExtended => "assets/images/upscale_extended.svg";
   static get svgCalendar => "assets/images/icons/calendar.svg";
   static get svgClock => "assets/images/icons/clock.svg";
+
+  ///Settings
+  static get svgArrowRight => "assets/images/icons/arrow_right.svg";
+  static get svgAboutUs => "assets/images/icons/about_us.svg";
+  static get svgTermsOfUse => "assets/images/icons/terms_of_use.svg";
+  static get svgPrivacyPolicy => "assets/images/icons/privacy_policy.svg";
+  static get svgWebsite => "assets/images/icons/website.svg";
+
 }

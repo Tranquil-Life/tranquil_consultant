@@ -11,6 +11,7 @@ import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/theme/fonts.dart';
 import 'package:tl_consultant/core/utils/functions.dart';
 import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
+import 'package:tl_consultant/core/utils/routes/app_pages.dart';
 import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
 import 'package:tl_consultant/features/journal/presentation/widgets/tab_bar.dart';
 import 'package:tl_consultant/features/profile/data/models/user_model.dart';
@@ -268,9 +269,10 @@ class _ProfileHeadState extends State<ProfileHead> {
           value: 'sign out',
           child: Text('Sign out'),
         ),
-        const PopupMenuItem(
+         PopupMenuItem(
+          onTap: ()=>Get.toNamed(Routes.SETTINGS),
           value: 'delete',
-          child: Text('Delete account', style: TextStyle(color: Colors.red)),
+          child: Text('Settings'),
         ),
       ],
     );

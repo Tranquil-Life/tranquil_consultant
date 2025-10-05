@@ -1,5 +1,6 @@
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:fluttermoji/fluttermoji.dart';
+import 'package:tl_consultant/core/utils/helpers/svg_elements.dart';
 import 'package:tl_consultant/features/profile/data/models/user_model.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 import 'package:uuid/uuid.dart';
@@ -121,3 +122,38 @@ const withdrawFundsDesc = "Enter your details to receive payment to your local a
 const notConnectedAccountMsg = "No connected account found for this user.";
 
 const String sentryDSN = "https://ffcc9ccf78c403bfe74b17a7ed1b4d1c@o4508213507588096.ingest.us.sentry.io/4510109029498880";
+
+//Settings
+
+var settings = <String, List<Map<String, dynamic>>>{
+  "general": [
+    {
+      "prefix": SvgElements.svgShareIcon,
+      "label": "Invite friends",
+      "suffix": SvgElements.svgArrowRight,
+      "onTap": (){}
+    },
+    {
+      "prefix": SvgElements.svgAboutUs,
+      "label": "About Us",
+      "suffix": SvgElements.svgArrowRight
+    },
+    {
+      "prefix": SvgElements.svgTermsOfUse,
+      "label": "Terms of Use",
+      "suffix": SvgElements.svgArrowRight
+    },
+    {
+      "prefix": SvgElements.svgPrivacyPolicy,
+      "label": "Privacy Policy",
+      "suffix": SvgElements.svgArrowRight
+    },
+    {
+      "prefix": SvgElements.svgWebsite,
+      "label": "www.tranquillife.app",
+      "suffix": SvgElements.svgArrowRight
+    },
+  ],
+  "security": [],
+  "support": []
+};

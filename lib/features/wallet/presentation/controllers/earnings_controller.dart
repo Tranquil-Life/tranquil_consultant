@@ -269,14 +269,17 @@ class EarningsController extends GetxController {
     double totalVolReceived = 0;
     Either either = await repo.getLifeTimeTotalReceived();
     either.fold((l) {
-      switch (l.message!) {
-        case notConnectedAccountMsg:
-          print("lifetime volume received: error: ${l.message!}");
-          break;
-        default:
-          CustomSnackBar.errorSnackBar(
-              "lifetime volume received: error: ${l.message!}");
+      if (!l.message!.contains('unauthenticated')) {
+        switch (l.message!) {
+          case notConnectedAccountMsg:
+            print("lifetime volume received: error: ${l.message!}");
+            break;
+          default:
+            CustomSnackBar.errorSnackBar(
+                "lifetime volume received: error: ${l.message!}");
+        }
       }
+
     }, (r) {
       var data = r['data'];
       if (data != null) {
@@ -363,6 +366,7 @@ class EarningsController extends GetxController {
 
         if (data != null) {
           stripeAccountModel.value = StripeAccountModel.fromJson(data);
+          print(stripeAccountModel.toJson());
           //Name
           // beneficiaryFirstNameTEC.text =
           //     stripeAccountModel.individual.firstName;
