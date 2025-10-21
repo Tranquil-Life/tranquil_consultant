@@ -64,9 +64,17 @@ abstract class WalletEndpoints {
       '$consultant/withdrawFromConnectedAccount';
   static String getAmountInTransitToBank = '$consultant/amountInTransitToBank';
 
+  // static getTransactions({required int page, required int limit}) =>
+  //     '$consultant/listTransactions/$page/$limit';
 
-  static getTransactions({required int page, required int limit}) =>
-      '$consultant/listTransactions/$page/$limit';
+  static String getStripeTransactions({
+    String? startingAfter,
+    required String accountId,
+  }) {
+    final cursorParam =
+        startingAfter != null ? 'starting_after=$startingAfter&' : '';
+    return '$consultant/listTherapistTransactions?${cursorParam}account_id=$accountId';
+  }
 }
 
 abstract class JournalEndPoints {

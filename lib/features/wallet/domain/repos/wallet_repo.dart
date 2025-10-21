@@ -10,8 +10,12 @@ abstract class WalletRepo<T, F extends QueryParams> extends ApiService {
 
   Future<Either<ApiError, dynamic>> getWallet();
 
-  Future<Either<ApiError, dynamic>> getTransactions(
-      {required int page, required int limit});
+  // Future<Either<ApiError, dynamic>> getTransactions(
+  //     {required int page, required int limit});
+
+
+  Future<Either<ApiError, dynamic>> getStripeTransactions(
+      {String? startingAfter, required String accountId});
 
   Future<Either<ApiError, dynamic>> getCountries();
 

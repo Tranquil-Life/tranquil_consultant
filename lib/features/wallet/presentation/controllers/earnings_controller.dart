@@ -243,70 +243,175 @@ class EarningsController extends GetxController {
   }
 
   Future<double> getBalance() async {
-    double balance = 0;
-    Either either = await repo.getBalance();
+    double balance = 0.0;
+
+    final either = await repo.getBalance();
     either.fold((l) {
-      switch (l.message!) {
-        case notConnectedAccountMsg:
-          print("balance: error: ${l.message!}");
-          break;
-        default:
-          CustomSnackBar.errorSnackBar("balance: error: ${l.message!}");
+      final msg = l.message;
+      if (msg == null) return;
+
+      if (!msg.contains('unauthenticated')) {
+        switch (msg) {
+          case notConnectedAccountMsg:
+            print("balance: error: $msg");
+            break;
+          default:
+            CustomSnackBar.errorSnackBar("balance: error: $msg");
+        }
       }
     }, (r) {
-      var data = r['data'];
-      if (data != null) {
-        balance = ((data['available'][0]['amount'] / 100) as num).toDouble();
+      if (r is Map) {
+        final data = r['data'];
+        if (data is Map) {
+          // Guard: available must be a non-empty List and contain a Map with 'amount'
+          final available = data['available'];
+          if (available is List && available.isNotEmpty) {
+            final first = available.first;
+            final num? cents = (first is Map) ? first['amount'] as num? : null;
 
-        futurePayout.value = balance;
+            // Convert cents to dollars (or your base unit) safely
+            balance = cents != null ? (cents / 100.0) : 0.0;
+
+            try {
+              futurePayout.value = balance;
+            } catch (_) {
+              // swallow if futurePayout isn’t ready; optional: log
+            }
+          } else {
+            balance = 0.0;
+          }
+        }
       }
     });
 
     return balance;
   }
 
+
   Future<double> getLifeTimeTotal() async {
-    double totalVolReceived = 0;
-    Either either = await repo.getLifeTimeTotalReceived();
+    double totalVolReceived = 0.0;
+
+    final either = await repo.getLifeTimeTotalReceived();
     either.fold((l) {
-      if (!l.message!.contains('unauthenticated')) {
-        switch (l.message!) {
-          case notConnectedAccountMsg:
-            print("lifetime volume received: error: ${l.message!}");
-            break;
-          default:
-            CustomSnackBar.errorSnackBar(
-                "lifetime volume received: error: ${l.message!}");
-        }
+      final msg = l.message; // might be null!
+      if (msg == null) {
+        // log silently, or show a generic error if you want
+        return;
       }
 
+      if (!msg.contains('unauthenticated')) {
+        switch (msg) {
+          case notConnectedAccountMsg:
+          // keep print if you prefer
+            print("lifetime volume received: error: $msg");
+            break;
+          default:
+            CustomSnackBar.errorSnackBar("lifetime volume received: error: $msg");
+        }
+      }
     }, (r) {
-      var data = r['data'];
-      if (data != null) {
-        totalVolReceived = (data['total_volume_received'] as num).toDouble();
+      // r could be Map or something else—guard it
+      if (r is Map && r['data'] != null) {
+        final data = r['data'];
+        // handle nulls safely
+        final num? raw = (data is Map) ? data['total_volume_received'] as num? : null;
+        totalVolReceived = raw?.toDouble() ?? 0.0;
       }
     });
 
-    return totalVolReceived;
+    return totalVolReceived; // always a double, never null
   }
 
   Future<double> getPendingClearance() async {
-    double pendingClearance = 0;
-    Either either = await repo.getTotalPendingClearance();
+    double pendingClearance = 0.0;
+
+    final either = await repo.getTotalPendingClearance();
+
     either.fold((l) {
-      switch (l.message!) {
-        case notConnectedAccountMsg:
-          print("pending clearance: error: ${l.message!}");
-          break;
-        default:
-          CustomSnackBar.errorSnackBar(
-              "pending clearance: error: ${l.message!}");
+      final msg = l.message; // might be null
+      if (msg == null) {
+        // optionally log silently or show a generic error
+        return;
+      }
+
+      if (!msg.contains('unauthenticated')) {
+        switch (msg) {
+          case notConnectedAccountMsg:
+            print("pending clearance: error: $msg");
+            break;
+          default:
+            CustomSnackBar.errorSnackBar("pending clearance: error: $msg");
+        }
       }
     }, (r) {
-      pendingClearance = (r['pending_amount'] as num).toDouble();
+      // Defensive: check that r is a Map and contains numeric value
+      if (r is Map) {
+        final num? raw = r['pending_amount'] as num?;
+        pendingClearance = raw?.toDouble() ?? 0.0;
+      }
     });
 
     return pendingClearance;
+  }
+
+
+  Future<double> getAmountInTransitToBank() async {
+    double amountInTransit = 0.0;
+
+    final either = await repo.getAmountInTransitToBank();
+    either.fold((l) {
+      final msg = l.message;
+      if (msg == null) return;
+
+      if (!msg.contains('unauthenticated')) {
+        switch (msg) {
+          case notConnectedAccountMsg:
+            print("amount in transit: error: $msg");
+            break;
+          default:
+            CustomSnackBar.errorSnackBar("amount in transit: error: $msg");
+        }
+      }
+    }, (r) {
+      if (r is Map) {
+        final data = r['data'];
+        if (data is Map) {
+          final num? raw = data['amount_in_transit'] as num?;
+          amountInTransit = raw?.toDouble() ?? 0.0;
+
+          // Update observable only when we have a valid number
+          try {
+            inTransit.value = amountInTransit;
+          } catch (_) {
+            // swallow if inTransit isn’t ready; optional: log
+          }
+        }
+      }
+    });
+
+    return amountInTransit;
+  }
+
+  Future getStripeAccountInfo() async {
+    if (stripeAccountId != null) {
+      Either either = await repo.getStripeAccountInfo();
+
+      either.fold((l) {
+        switch (l.message!) {
+          case notConnectedAccountMsg:
+            break;
+          default:
+            CustomSnackBar.errorSnackBar(
+                "stripe account info: error: ${l.message!}");
+        }
+      }, (r) {
+        var data = r['data'];
+
+        if (data != null) {
+          stripeAccountModel.value = StripeAccountModel.fromJson(data);
+        }
+      });
+    }
   }
 
   void withdrawEarnings() async {
@@ -324,86 +429,9 @@ class EarningsController extends GetxController {
     });
   }
 
-  Future<double> getAmountInTransitToBank() async {
-    double amountInTransit = 0;
-    Either either = await repo.getAmountInTransitToBank();
-    either.fold((l) {
-      switch (l.message!) {
-        case notConnectedAccountMsg:
-          print("amount in transit: error: ${l.message!}");
-          break;
-        default:
-          CustomSnackBar.errorSnackBar(
-              "amount in transit: error: ${l.message!}");
-      }
-    }, (r) {
-      var data = r['data'];
-      if (data != null) {
-        amountInTransit = (data['amount_in_transit'] as num).toDouble();
-        inTransit.value = amountInTransit;
-      }
-    });
-
-    return amountInTransit;
-  }
-
-  void getStripeAccountInfo() async {
-    if (stripeAccountId != null) {
-      Either either = await repo.getStripeAccountInfo();
-
-      either.fold((l) {
-        switch (l.message!) {
-          case notConnectedAccountMsg:
-            print("stripe account info: error: ${l.message!}");
-            break;
-          default:
-            CustomSnackBar.errorSnackBar(
-                "stripe account info: error: ${l.message!}");
-        }
-        print("stripe account info: error: ${l.message!}");
-      }, (r) {
-        var data = r['data'];
-
-        if (data != null) {
-          stripeAccountModel.value = StripeAccountModel.fromJson(data);
-          print(stripeAccountModel.toJson());
-          //Name
-          // beneficiaryFirstNameTEC.text =
-          //     stripeAccountModel.individual.firstName;
-          // beneficiaryLastNameTEC.text = stripeAccountModel.individual.lastName;
-          // beneficiaryNameTEC.text =
-          //     "${beneficiaryFirstNameTEC.text} ${beneficiaryLastNameTEC.text}";
-          //
-          // //Email
-          // beneficiaryEmailTEC.text = stripeAccountModel.individual.email;
-          //
-          // //date of birth
-          // var month = stripeAccountModel.individual.dateOfBirth.month;
-          // var day = stripeAccountModel.individual.dateOfBirth.day;
-          // var year = stripeAccountModel.individual.dateOfBirth.year;
-          // dobTEC.text = "$month-$day-$year";
-          //
-          // //Address
-          // recipientCountryTEC.text =
-          //     stripeAccountModel.individual.address.country;
-          // recipientStateTEC.text = stripeAccountModel.individual.address.state;
-          // recipientCityTEC.text = stripeAccountModel.individual.address.city;
-          // recipientStreetTEC.text = stripeAccountModel.individual.address.line1;
-          // recipientAptNoTEC.text =
-          //     stripeAccountModel.individual.address.line2!.toString();
-          // postalCodeTEC.text = stripeAccountModel.individual.address.postalCode;
-          // beneficiaryAddressTEC.text =
-          //     "${postalCodeTEC.text.isEmpty ? "" : "${postalCodeTEC.text},"} "
-          //     "${recipientAptNoTEC.text.isEmpty ? "" : "${recipientAptNoTEC.text},"} "
-          //     "${recipientStreetTEC.text.isEmpty ? "" : "${recipientStreetTEC.text},"} "
-          //     "${recipientStateTEC.text.isEmpty ? "" : "${recipientStateTEC.text},"} "
-          //     "${recipientCountryTEC.text}";
-          //
-          // accountNumberTEC.text =
-        }
-      });
-    }
-  }
-
   void updateStripePayout() {}
+  
+  void getStripeTransactions(){
+
+  }
 }

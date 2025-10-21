@@ -14,13 +14,13 @@ class WalletRepositoryImpl extends WalletRepo {
         .then((value) => handleResponse(value));
   }
 
-  @override
-  Future<Either<ApiError, dynamic>> getTransactions(
-      {required int page, required int limit}) async {
-    return await catchSocketException(() =>
-            getReq(WalletEndpoints.getTransactions(page: page, limit: limit)))
-        .then((value) => handleResponse(value));
-  }
+  // @override
+  // Future<Either<ApiError, dynamic>> getTransactions(
+  //     {required int page, required int limit}) async {
+  //   return await catchSocketException(() =>
+  //           getReq(WalletEndpoints.getTransactions(page: page, limit: limit)))
+  //       .then((value) => handleResponse(value));
+  // }
 
   String getReference() {
     String platform;
@@ -190,13 +190,23 @@ class WalletRepositoryImpl extends WalletRepo {
   }
 
   @override
-  Future<Either<ApiError, dynamic>> withdrawToBankAcc(Map<String, dynamic> req) async {
-    return await catchSocketException(() =>
-        postReq(WalletEndpoints.withdrawFromConnectedAccount, body: req));
+  Future<Either<ApiError, dynamic>> withdrawToBankAcc(
+      Map<String, dynamic> req) async {
+    return await catchSocketException(
+        () => postReq(WalletEndpoints.withdrawFromConnectedAccount, body: req));
   }
 
   @override
   Future<Either<ApiError, dynamic>> getAmountInTransitToBank() async {
-    return await catchSocketException(()=>getReq(WalletEndpoints.getAmountInTransitToBank));
+    return await catchSocketException(
+        () => getReq(WalletEndpoints.getAmountInTransitToBank));
+  }
+
+  @override
+  Future<Either<ApiError, dynamic>> getStripeTransactions(
+      {String? startingAfter, required String accountId}) async {
+    return await catchSocketException(() => getReq(
+        WalletEndpoints.getStripeTransactions(
+            startingAfter: startingAfter, accountId: accountId)));
   }
 }

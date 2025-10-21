@@ -412,7 +412,7 @@ SPEC CHECKSUMS:
   FirebaseInstallations: 317270fec08a5d418fdbc8429282238cab3ac843
   FirebaseMessaging: 3b26e2cee503815e01c3701236b020aa9b576f09
   FirebaseStorage: 50fc9ee147392943e492467db6b52759b0447037
-  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
+  Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
   flutter_native_timezone: 5f05b2de06c9776b4cc70e1839f03de178394d22
   flutter_sound: 7c797c81917a962510b0d187a3323ae78efbf5eb
   flutter_sound_core: d530b4031479967b66d37cab067547739f1e1910

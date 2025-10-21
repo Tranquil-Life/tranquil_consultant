@@ -20,7 +20,11 @@ class SectionWidget extends StatelessWidget {
         const SizedBox(height: 12),
         // Flatten items directly into the parent Column:
         Container(
-          color: ColorPalette.white,
+          padding: EdgeInsets.all(12),
+          decoration: BoxDecoration(
+              color: ColorPalette.white,
+              borderRadius: BorderRadius.circular(8.0)
+          ),
           child: Column(
             children: [
               ...components.map<Widget>((e) {

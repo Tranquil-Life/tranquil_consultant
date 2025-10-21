@@ -32,11 +32,10 @@ class SettingsButton extends StatelessWidget {
           containedInkWell: true,
           highlightShape: BoxShape.rectangle,
           child: Padding(
-            padding: const EdgeInsets.only(left: 24, right: 20),
+            padding: const EdgeInsets.only(left: 8, right: 14),
             child: Row(
               children: [
-                const SizedBox(width: 4),
-                SvgPicture.asset(prefix),
+                SvgPicture.asset(prefix, color: ColorPalette.grey[300]),
                 const SizedBox(width: 16),
                 Padding(
                   padding: const EdgeInsets.only(top: 2),

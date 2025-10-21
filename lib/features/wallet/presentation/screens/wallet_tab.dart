@@ -8,9 +8,12 @@ import 'package:tl_consultant/core/theme/fonts.dart';
 import 'package:tl_consultant/core/utils/functions.dart';
 import 'package:tl_consultant/core/utils/helpers/svg_elements.dart';
 import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
+import 'package:tl_consultant/features/profile/data/models/user_model.dart';
+import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:tl_consultant/features/profile/presentation/screens/edit_profile.dart';
 import 'package:tl_consultant/features/wallet/presentation/controllers/earnings_controller.dart';
+import 'package:tl_consultant/features/wallet/presentation/controllers/transactions_controller.dart';
 import 'package:tl_consultant/features/wallet/presentation/screens/withdrawal_info.dart';
 import 'package:tl_consultant/features/wallet/presentation/widgets/transaction_item.dart';
 
@@ -23,6 +26,7 @@ class WalletTab extends StatefulWidget {
 
 class _WalletTabState extends State<WalletTab> {
   final earningsController = Get.put(EarningsController());
+  final trnxController = Get.put(TransactionsController()); // put ONCE here
   NumberFormat? formatCurrency;
 
   double balance = 0;
@@ -31,25 +35,56 @@ class _WalletTabState extends State<WalletTab> {
 
   @override
   void initState() {
-    formatCurrency = NumberFormat.currency(
-        locale: DashboardController.instance.country.value.toLowerCase() ==
-                "nigeria"
-            ? "en_NG"
-            : "en_US",
-        symbol: DashboardController.instance.country.value.toLowerCase() ==
-                "nigeria"
-            ? '₦'
-            : "\$");
-
     super.initState();
+
+    formatCurrency = NumberFormat.currency(
+      locale:
+          DashboardController.instance.country.value.toLowerCase() == "nigeria"
+              ? "en_NG"
+              : "en_US",
+      symbol:
+          DashboardController.instance.country.value.toLowerCase() == "nigeria"
+              ? '₦'
+              : "\$",
+    );
+
+    trnxController.scrollController = ScrollController()
+      ..addListener(() {
+        // load more near bottom
+        const threshold = 200.0;
+        final pos = trnxController.scrollController.position;
+        if (pos.pixels >= pos.maxScrollExtent - threshold) {
+          trnxController.loadMoreStripeTranx();
+        }
+      });
+
+    trnxController.loadInitialStripeTranx();
+
+    // Sort after data loads (better to do this inside controller when setting stripeTrnx)
+    // trnxController.sortIfNeeded();
   }
+
+  @override
+  void dispose() {
+    trnxController.scrollController.dispose();
+    super.dispose();
+  }
+
+  //    trnxController.stripeTrnx.sort((a, b) {
+  //       final dateA = a.created;
+  //       final dateB = b.created;
+  //       return dateB.compareTo(dateA);
+  //     });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-        padding: EdgeInsets.only(left: 16, top: 16, right: 16),
-        child: SingleChildScrollView(
-          child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+      padding: const EdgeInsets.only(left: 16, top: 16, right: 16),
+      child: SingleChildScrollView(
+        controller: trnxController.scrollController, // outer scroller
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
             Container(
               decoration: BoxDecoration(
                 color: ColorPalette.green[200], // Dark tint overlay
@@ -78,10 +113,11 @@ class _WalletTabState extends State<WalletTab> {
                                 children: [
                                   GestureDetector(
                                       child: Icon(Icons.refresh_outlined,
-                                          color:
-                                          ColorPalette.black.withOpacity(.6)),
-                                      onTap: () async {} // await getEarnings()
-                                  ),
+                                          color: ColorPalette.black
+                                              .withOpacity(.6)),
+                                      onTap: () async {}
+                                      // await getEarnings()
+                                      ),
                                   FutureBuilder(
                                       future: earningsController.getBalance(),
                                       builder: (context, snapshot) {
@@ -89,7 +125,8 @@ class _WalletTabState extends State<WalletTab> {
                                             ConnectionState.waiting) {
                                           return Text(formatCurrency!.format(0),
                                               style: TextStyle(
-                                                  color: ColorPalette.green[800],
+                                                  color:
+                                                      ColorPalette.green[800],
                                                   fontSize: 40,
                                                   fontWeight: FontWeight.bold,
                                                   fontFamily: AppFonts
@@ -107,41 +144,40 @@ class _WalletTabState extends State<WalletTab> {
                                         }
 
                                         balance = snapshot.data!;
-
                                         return Text(
                                             formatCurrency!.format(balance),
                                             style: TextStyle(
                                                 color: ColorPalette.green[800],
                                                 fontSize: 40,
                                                 fontWeight: FontWeight.bold,
-                                                fontFamily:
-                                                AppFonts.josefinSansRegular));
+                                                fontFamily: AppFonts
+                                                    .josefinSansRegular));
                                       }),
                                   Icon(Icons.visibility_outlined,
                                       color: ColorPalette.black.withOpacity(.6))
                                 ]),
                             SizedBox(height: 12.5),
                             Obx(() => RichText(
-                              text: TextSpan(
-                                  text: "Total Balance: ",
-                                  style: TextStyle(
-                                      fontSize: 12,
-                                      color: ColorPalette.black,
-                                      fontFamily:
-                                      AppFonts.josefinSansRegular),
-                                  children: [
-                                    TextSpan(
-                                      text: formatCurrency!.format(
-                                          earningsController
-                                              .futurePayout.value +
-                                              earningsController
-                                                  .inTransit.value),
+                                  text: TextSpan(
+                                      text: "Total Balance: ",
                                       style: TextStyle(
-                                          color: ColorPalette.green[800],
-                                          fontSize: AppFonts.defaultSize),
-                                    ),
-                                  ]),
-                            ))
+                                          fontSize: 12,
+                                          color: ColorPalette.black,
+                                          fontFamily:
+                                              AppFonts.josefinSansRegular),
+                                      children: [
+                                        TextSpan(
+                                          text: formatCurrency!.format(
+                                              earningsController
+                                                      .futurePayout.value +
+                                                  earningsController
+                                                      .inTransit.value),
+                                          style: TextStyle(
+                                              color: ColorPalette.green[800],
+                                              fontSize: AppFonts.defaultSize),
+                                        ),
+                                      ]),
+                                ))
                           ]))
                     ],
                   )),
@@ -150,29 +186,30 @@ class _WalletTabState extends State<WalletTab> {
             Padding(
               padding: const EdgeInsets.only(left: 48, right: 48),
               child: CustomButton(
-                onPressed: () async{
+                onPressed: () async {
                   var isEmpty = await checkForEmptyProfileInfo();
-                  if(isEmpty){
+                  if (isEmpty) {
                     Get.to(() => EditProfileScreen());
-                  }else{
+                  } else {
                     Get.to(WithdrawalInfoPage());
                   }
                 },
                 child: const Center(
-                  child:
-                  Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                    Text(
-                      'Withdraw to account',
-                      style: TextStyle(
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Withdraw to account',
+                          style: TextStyle(
+                              color: ColorPalette.white,
+                              fontSize: AppFonts.defaultSize),
+                        ),
+                        SizedBox(width: 12),
+                        Icon(
+                          Icons.arrow_downward,
                           color: ColorPalette.white,
-                          fontSize: AppFonts.defaultSize),
-                    ),
-                    SizedBox(width: 12),
-                    Icon(
-                      Icons.arrow_downward,
-                      color: ColorPalette.white,
-                    )
-                  ]),
+                        )
+                      ]),
                 ),
               ),
             ),
@@ -181,28 +218,25 @@ class _WalletTabState extends State<WalletTab> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
-                    child: FutureBuilder(
-                        future: earningsController.getBalance(),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return otherFigures('Future payouts', 0);
-                          }
-
-                          if (snapshot.hasError) {
-                            return Center(
-                              child: Text(
-                                'Error: ${snapshot.error}',
-                                style: const TextStyle(color: Colors.red),
-                              ),
-                            );
-                          }
-
-                          balance = snapshot.data!;
-
-                          return otherFigures('Future payouts', balance);
-                        })),
-
+                  child: FutureBuilder(
+                      future: earningsController.getBalance(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return otherFigures('Future payouts', 0);
+                        }
+                        if (snapshot.hasError) {
+                          return Center(
+                            child: Text(
+                              'Error: ${snapshot.error}',
+                              style: const TextStyle(color: Colors.red),
+                            ),
+                          );
+                        }
+                        balance = snapshot.data!;
+                        return otherFigures('Future payouts', balance);
+                      }),
+                ),
                 Expanded(
                     child: FutureBuilder(
                         future: earningsController.getAmountInTransitToBank(),
@@ -211,7 +245,6 @@ class _WalletTabState extends State<WalletTab> {
                               ConnectionState.waiting) {
                             return otherFigures('In transit to bank', 0);
                           }
-
                           if (snapshot.hasError) {
                             return Center(
                               child: Text(
@@ -220,14 +253,9 @@ class _WalletTabState extends State<WalletTab> {
                               ),
                             );
                           }
-
                           balance = snapshot.data!;
-
                           return otherFigures('In transit to bank', balance);
                         })),
-
-                // otherFigures(
-                //     'Available for \nwithdrawal', balance > 100 ? balance : 0),
               ],
             ),
             Row(
@@ -237,10 +265,10 @@ class _WalletTabState extends State<WalletTab> {
                   child: FutureBuilder(
                       future: earningsController.getPendingClearance(),
                       builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
                           return otherFigures('To be cleared', 0);
                         }
-
                         if (snapshot.hasError) {
                           return Center(
                             child: Text(
@@ -249,9 +277,7 @@ class _WalletTabState extends State<WalletTab> {
                             ),
                           );
                         }
-
                         pendingClearance = snapshot.data!;
-
                         return otherFigures('To be cleared', pendingClearance);
                       }),
                 ),
@@ -263,7 +289,6 @@ class _WalletTabState extends State<WalletTab> {
                               ConnectionState.waiting) {
                             return otherFigures('Lifetime volume received', 0);
                           }
-
                           if (snapshot.hasError) {
                             return Center(
                               child: Text(
@@ -272,18 +297,19 @@ class _WalletTabState extends State<WalletTab> {
                               ),
                             );
                           }
-
                           lifetimeTotalReceived = snapshot.data!;
-                          return otherFigures(
-                              'Lifetime volume received', lifetimeTotalReceived);
+                          return otherFigures('Lifetime volume received',
+                              lifetimeTotalReceived);
                         }))
               ],
             ),
             const SizedBox(height: 40),
             const TransactionsSection(),
-            SizedBox(height: 40)
-          ]),
-        ));
+            const SizedBox(height: 40),
+          ],
+        ),
+      ),
+    );
   }
 
   Container otherFigures(String title, double amount) {

@@ -35,6 +35,9 @@ int myId = UserModel.fromJson(userDataStore.user).id!;
 String authToken = UserModel.fromJson(userDataStore.user).authToken!;
 String? stripeAccountId = UserModel.fromJson(userDataStore.user).stripeAccountId;
 
+const String payout = "payout";
+const String transfer = "transfer";
+
 //firebase vars
 const chatsCollection = "chats";
 const messagesCollection = "chat_messages";

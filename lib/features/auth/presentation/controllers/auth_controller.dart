@@ -84,8 +84,6 @@ class AuthController extends GetxController {
     params.emailVerifiedAt =
         VerificationController.instance.emailVerifiedAt.value;
 
-    print(params.toJson());
-
     Either either = await authRepo.register(params);
     either.fold(
         (l) => CustomSnackBar.showSnackBar(
