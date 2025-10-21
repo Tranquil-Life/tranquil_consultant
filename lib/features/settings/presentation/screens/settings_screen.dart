@@ -16,23 +16,29 @@ class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.grey.shade100,
+        backgroundColor: ColorPalette.scaffoldColor,
         appBar: CustomAppBar(
-          backgroundColor: Colors.grey.shade100,
+          backgroundColor: ColorPalette.scaffoldColor,
           title: "Settings",
           centerTitle: false,
         ),
         body: SingleChildScrollView(
           child: SafeArea(
-            child: Padding(padding: EdgeInsets.all(24),
-            child: Column(
-              children: settings.entries.map((entry) {
-                return SectionWidget(
-                  sectionTitle: entry.key, // e.g., "general"
-                  components: entry.value, // your list of maps
-                );
-              }).toList(),
-            )),
+            child: Padding(
+                padding: EdgeInsets.all(24),
+                child: Column(
+                  children: settings.entries.map((entry) {
+                    return Padding(
+                      padding: settings.entries.first.key != entry.key
+                          ? EdgeInsets.only(top: 32)
+                          : EdgeInsets.zero,
+                      child: SectionWidget(
+                        sectionTitle: entry.key, // e.g., "general"
+                        components: entry.value, // your list of maps
+                      ),
+                    );
+                  }).toList(),
+                )),
           ),
         ));
   }

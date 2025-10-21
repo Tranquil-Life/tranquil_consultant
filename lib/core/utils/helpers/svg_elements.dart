@@ -67,5 +67,7 @@ class SvgElements {
   static get svgTermsOfUse => "assets/images/icons/terms_of_use.svg";
   static get svgPrivacyPolicy => "assets/images/icons/privacy_policy.svg";
   static get svgWebsite => "assets/images/icons/website.svg";
+  static get svgManagePwd => "assets/images/icons/manage_pwd.svg";
+  static get svgPinReset => "assets/images/icons/pin_reset.svg";
 
 }

@@ -41,7 +41,7 @@ class SettingsButton extends StatelessWidget {
                   padding: const EdgeInsets.only(top: 2),
                   child: Text(
                     label,
-                    style: const TextStyle(fontSize: 18), // merges with above
+                    style: TextStyle(fontSize: AppFonts.defaultSize), // merges with above
                   ),
                 ),
                 const Spacer(),

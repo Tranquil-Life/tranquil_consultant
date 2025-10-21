@@ -157,6 +157,17 @@ var settings = <String, List<Map<String, dynamic>>>{
       "suffix": SvgElements.svgArrowRight
     },
   ],
-  "security": [],
+  "security": [
+    {
+      "prefix": SvgElements.svgManagePwd,
+      "label": "Manage password",
+      "suffix": SvgElements.svgArrowRight
+    },
+    {
+      "prefix": SvgElements.svgPinReset,
+      "label": "Pin reset",
+      "suffix": SvgElements.svgArrowRight
+    }
+  ],
   "support": []
 };

@@ -4,7 +4,8 @@ import 'package:tl_consultant/core/theme/fonts.dart';
 import 'package:tl_consultant/features/settings/presentation/widgets/settings_button.dart';
 
 class SectionWidget extends StatelessWidget {
-  const SectionWidget({super.key, required this.sectionTitle, required this.components});
+  const SectionWidget(
+      {super.key, required this.sectionTitle, required this.components});
 
   final String sectionTitle;
   final List<Map<String, dynamic>> components;
@@ -23,16 +24,21 @@ class SectionWidget extends StatelessWidget {
           padding: EdgeInsets.all(12),
           decoration: BoxDecoration(
               color: ColorPalette.white,
-              borderRadius: BorderRadius.circular(8.0)
-          ),
+              borderRadius: BorderRadius.circular(8.0)),
           child: Column(
             children: [
               ...components.map<Widget>((e) {
-                return SettingsButton(
-                  prefix: e['prefix'],
-                  label: e['label'] as String,
-                  suffix: e['suffix'],
-                  onPressed: (e['onTap'] as VoidCallback?) ?? () {},
+                return Column(
+                  children: [
+                    SettingsButton(
+                      prefix: e['prefix'],
+                      label: e['label'] as String,
+                      suffix: e['suffix'],
+                      onPressed: (e['onTap'] as VoidCallback?) ?? () {},
+                    ),
+                    SizedBox(height: 12),
+                    if (components.last != e) Padding(padding: EdgeInsets.only(bottom: 12), child: Divider(),),
+                  ],
                 );
               }),
             ],
@@ -53,8 +59,7 @@ class SectionTitle extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 4),
       child: Text(title[0].toUpperCase() + title.substring(1),
-          style: TextStyle(fontSize: AppFonts.defaultSize)),
-
+          style: TextStyle(fontSize: AppFonts.baseSize, fontFamily: AppFonts.mulishSemiBold)),
     );
   }
 }
