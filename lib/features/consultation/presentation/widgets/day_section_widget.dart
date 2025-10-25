@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
+import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 
 class DaySectionWidget extends StatefulWidget {
   const DaySectionWidget({
@@ -25,7 +26,7 @@ class DaySectionWidgetState extends State<DaySectionWidget> {
     var onBgColor = widget.isSelected ? Colors.white : Colors.black;
 
     return SizedBox(
-      height: 80,
+      height: isSmallScreen(context) ? 80 : 160,
       child: InkResponse(
         containedInkWell: true,
         highlightShape: BoxShape.rectangle,
@@ -33,7 +34,7 @@ class DaySectionWidgetState extends State<DaySectionWidget> {
         child: Container(
           decoration: BoxDecoration(
             color: widget.isSelected ? ColorPalette.green : ColorPalette.white,
-            borderRadius: BorderRadius.circular(16.0),
+            borderRadius: BorderRadius.circular(isSmallScreen(context) ? 16.0 : 32),
             border: widget.isSelected ? Border.all(width: 2, color: ColorPalette.white) : null,
 
             boxShadow: widget.isSelected ? [
@@ -60,7 +61,7 @@ class DaySectionWidgetState extends State<DaySectionWidget> {
                       fit: BoxFit.contain,
                       child: Text(
                         widget.title,
-                        style: TextStyle(color: onBgColor, fontSize: 20),
+                        style: TextStyle(color: onBgColor, fontSize: isSmallScreen(context) ? 20 : 24),
                       ),
                     ),
                   ),

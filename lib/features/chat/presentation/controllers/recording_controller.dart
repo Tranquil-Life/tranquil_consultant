@@ -17,14 +17,17 @@ class RecordingController extends GetxController {
   static RecordingController get instance => Get.find();
 
   final chatController = Get.put(ChatController());
-  int recordingDuration = 0;
+
+  FlutterSoundRecorder? audioRecorder;
+  final RxBool isRecording = false.obs;
+  final RxInt recordingDuration = 0.obs; // seconds
+  final RxString time = '00:00'.obs;
+
 
   String? localAudioPath;
   File? audioFile;
   RxBool isPlaying = false.obs;
-  RxBool isRecording = false.obs;
   var audioPlayer = AudioPlayer();
-  FlutterSoundRecorder? audioRecorder;
 
   //final _onAudioDuration = StreamController<String>();
   bool recorderInitialize = false;
@@ -45,7 +48,6 @@ class RecordingController extends GetxController {
 
   String get _mPath => '${uuid.v1().substring(0, 16)}.wav';
 
-  var time = "00:00".obs;
   var autoUpload = false.obs;
 
 
@@ -59,30 +61,41 @@ class RecordingController extends GetxController {
   }
 
 
-  Future record() async {
-    try {
-      if (!recorderInitialize) return;
-
-      audioRecorder!.startRecorder(toFile: _mPath, codec: _codec);
-      isRecording.value = true;
-      audioRecorder!.setSubscriptionDuration(const Duration(milliseconds: 500));
-
-      audioRecorder!.onProgress!.listen((event) async {
-        time.value = formatDuration(event.duration);
-        // if (formatDuration(event.duration) == "01:01") {
-        //   setAutoUpload(autoUpload.value);
-        // }
-      });
-
-      update();
-    } catch (e) {
-      print('Error during recording or uploading: $e');
-    }
-
-  }
+  // Future record() async {
+  //   try {
+  //     if (!recorderInitialize) return;
+  //
+  //     audioRecorder!.startRecorder(toFile: _mPath, codec: _codec);
+  //     isRecording.value = true;
+  //     audioRecorder!.setSubscriptionDuration(const Duration(milliseconds: 500));
+  //
+  //     audioRecorder!.onProgress!.listen((event) async {
+  //       time.value = formatDuration(event.duration);
+  //       // if (formatDuration(event.duration) == "01:01") {
+  //       //   setAutoUpload(autoUpload.value);
+  //       // }
+  //     });
+  //
+  //     update();
+  //   } catch (e) {
+  //     print('Error during recording or uploading: $e');
+  //   }
+  //
+  // }
 
   void setAutoUpload(bool value) {
     autoUpload.value = !value;
+  }
+
+  Future<void> record() async {
+    if (!recorderInitialize) await initRecorder();
+    await audioRecorder?.startRecorder(
+      // path: use app temp/docs; no storage permission needed
+      toFile: 'vn_${DateTime.now().millisecondsSinceEpoch}.aac',
+      codec: Codec.aacADTS,
+    );
+    isRecording.value = true;
+    recordingDuration.value = 0; // reset counter
   }
 
   //Stop recording
@@ -105,38 +118,38 @@ class RecordingController extends GetxController {
     await audioPlayer.stop();
   }
 
-  void initRecorder() async {
-    if (recorderInitialize) return;
-    final status = await Permission.microphone.request();
-    await Permission.manageExternalStorage.request();
-
-    if (status != PermissionStatus.granted) {
-      debugPrint('Microphone permission is not granted');
-    }
-
-    audioRecorder = FlutterSoundRecorder();
-    audioPlayer = AudioPlayer();
-    await audioRecorder!.openRecorder();
-    final session = await av.AudioSession.instance;
-    await session.configure(av.AudioSessionConfiguration(
-      avAudioSessionCategory: av.AVAudioSessionCategory.playAndRecord,
-      avAudioSessionCategoryOptions:
-      av.AVAudioSessionCategoryOptions.allowBluetooth |
-      av.AVAudioSessionCategoryOptions.defaultToSpeaker,
-      avAudioSessionMode: av.AVAudioSessionMode.spokenAudio,
-      avAudioSessionRouteSharingPolicy:
-      av.AVAudioSessionRouteSharingPolicy.defaultPolicy,
-      avAudioSessionSetActiveOptions: av.AVAudioSessionSetActiveOptions.none,
-      androidAudioAttributes: const av.AndroidAudioAttributes(
-        contentType: av.AndroidAudioContentType.speech,
-        flags: av.AndroidAudioFlags.none,
-        usage: av.AndroidAudioUsage.voiceCommunication,
-      ),
-      androidAudioFocusGainType: av.AndroidAudioFocusGainType.gain,
-      androidWillPauseWhenDucked: true,
-    ));
-    recorderInitialize = true;
-  }
+  // void initRecorder() async {
+  //   if (recorderInitialize) return;
+  //   final status = await Permission.microphone.request();
+  //   await Permission.manageExternalStorage.request();
+  //
+  //   if (status != PermissionStatus.granted) {
+  //     debugPrint('Microphone permission is not granted');
+  //   }
+  //
+  //   audioRecorder = FlutterSoundRecorder();
+  //   audioPlayer = AudioPlayer();
+  //   await audioRecorder!.openRecorder();
+  //   final session = await av.AudioSession.instance;
+  //   await session.configure(av.AudioSessionConfiguration(
+  //     avAudioSessionCategory: av.AVAudioSessionCategory.playAndRecord,
+  //     avAudioSessionCategoryOptions:
+  //     av.AVAudioSessionCategoryOptions.allowBluetooth |
+  //     av.AVAudioSessionCategoryOptions.defaultToSpeaker,
+  //     avAudioSessionMode: av.AVAudioSessionMode.spokenAudio,
+  //     avAudioSessionRouteSharingPolicy:
+  //     av.AVAudioSessionRouteSharingPolicy.defaultPolicy,
+  //     avAudioSessionSetActiveOptions: av.AVAudioSessionSetActiveOptions.none,
+  //     androidAudioAttributes: const av.AndroidAudioAttributes(
+  //       contentType: av.AndroidAudioContentType.speech,
+  //       flags: av.AndroidAudioFlags.none,
+  //       usage: av.AndroidAudioUsage.voiceCommunication,
+  //     ),
+  //     androidAudioFocusGainType: av.AndroidAudioFocusGainType.gain,
+  //     androidWillPauseWhenDucked: true,
+  //   ));
+  //   recorderInitialize = true;
+  // }
 
   startTimer() {
     time.value = '00:00';
@@ -151,15 +164,84 @@ class RecordingController extends GetxController {
     _timer!.cancel();
   }
 
+  // @override
+  // void onInit() {
+  //   if (Platform.isIOS) {
+  //     initRecorder();
+  //   } else {
+  //     // initAndroidRecorder();
+  //   }
+  //
+  //   super.onInit();
+  // }
+
   @override
   void onInit() {
-    if (Platform.isIOS) {
-      initRecorder();
-    } else {
-      // initAndroidRecorder();
+    super.onInit();
+
+    // keep time string in sync
+    ever<int>(recordingDuration, (sec) {
+      final m = (sec ~/ 60).toString().padLeft(2, '0');
+      final s = (sec % 60).toString().padLeft(2, '0');
+      time.value = '$m:$s';
+    });
+
+    // kick off async init
+    _init();
+  }
+
+  Future<void> _init() async {
+    try {
+      await initRecorder();
+    } catch (e) {
+      debugPrint('Recorder init error: $e');
+    }
+  }
+
+  Future<void> initRecorder() async {
+    if (recorderInitialize) return;
+
+    // 1) Mic permission only
+    final mic = await Permission.microphone.request();
+    if (mic != PermissionStatus.granted) {
+      debugPrint('Microphone permission not granted');
+      return;
     }
 
-    super.onInit();
+    // 2) Create / open once
+    audioRecorder ??= FlutterSoundRecorder();
+    audioPlayer ??= AudioPlayer();
+
+    await audioRecorder!.openRecorder();
+
+    // 3) Configure audio session
+    final session = await av.AudioSession.instance;
+    if (Platform.isIOS) {
+      await session.configure(av.AudioSessionConfiguration(
+        avAudioSessionCategory: av.AVAudioSessionCategory.playAndRecord,
+        avAudioSessionCategoryOptions:
+        av.AVAudioSessionCategoryOptions.allowBluetooth |
+        av.AVAudioSessionCategoryOptions.defaultToSpeaker,
+        avAudioSessionMode: av.AVAudioSessionMode.spokenAudio,
+        avAudioSessionRouteSharingPolicy:
+        av.AVAudioSessionRouteSharingPolicy.defaultPolicy,
+        avAudioSessionSetActiveOptions:
+        av.AVAudioSessionSetActiveOptions.none,
+      ));
+    } else {
+      // Android: simpler voice comms config
+      await session.configure(const av.AudioSessionConfiguration(
+        androidAudioAttributes: av.AndroidAudioAttributes(
+          contentType: av.AndroidAudioContentType.speech,
+          usage: av.AndroidAudioUsage.voiceCommunication,
+          flags: av.AndroidAudioFlags.none,
+        ),
+        androidAudioFocusGainType: av.AndroidAudioFocusGainType.gain,
+        androidWillPauseWhenDucked: true,
+      ));
+    }
+
+    recorderInitialize = true;
   }
 
   //dispose audio player and recorder
@@ -172,7 +254,6 @@ class RecordingController extends GetxController {
 
     super.dispose();
   }
-
 
 ///-------/////
 // void initAndroidRecorder() async{

@@ -63,28 +63,30 @@ class _VerifyResetAccountPageState extends State<VerifyResetAccountPage> {
         appBarTitle: 'Verify account',
         content: Padding(
             padding: EdgeInsets.only(left: 24, right: 24, bottom: 24),
-            child:
-                Obx(()=>Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            child: Obx(() =>
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   const SizedBox(
                     height: 24,
                   ),
                   Text(
                     "Enter the security code sent to ${authController.emailTEC.text} to verify your account. Check your inbox or spam",
                     style: TextStyle(
-                        fontSize: AppFonts.defaultSize,
+                        fontSize: isSmallScreen(context)
+                            ? AppFonts.defaultSize
+                            : AppFonts.baseSize,
                         fontWeight: FontWeight.w400,
                         color: ColorPalette.grey.shade500),
                   ),
                   const SizedBox(
                     height: 25,
                   ),
-                  const Text(
-                    "Email",
-                    style: TextStyle(
-                        fontSize: AppFonts.defaultSize,
-                        fontWeight: FontWeight.w400,
-                        color: ColorPalette.black),
-                  ),
+                  // const Text(
+                  //   "Email",
+                  //   style: TextStyle(
+                  //       fontSize: AppFonts.defaultSize,
+                  //       fontWeight: FontWeight.w400,
+                  //       color: ColorPalette.black),
+                  // ),
                   const SizedBox(
                     height: 8,
                   ),
@@ -92,13 +94,16 @@ class _VerifyResetAccountPageState extends State<VerifyResetAccountPage> {
                     length: 6,
                     obscureText: false,
                     animationType: AnimationType.fade,
-                    textStyle: TextStyle(color: ColorPalette.black),
+                    textStyle: TextStyle(
+                        color: ColorPalette.black,
+                        fontSize:
+                            isSmallScreen(context) ? AppFonts.defaultSize : 24),
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     pinTheme: PinTheme(
                         shape: PinCodeFieldShape.box,
                         borderRadius: BorderRadius.circular(5),
-                        fieldHeight: 44,
-                        fieldWidth: 45,
+                        fieldHeight: isSmallScreen(context) ? 44 : 84,
+                        fieldWidth: isSmallScreen(context) ? 45 : 85,
                         activeColor: verificationState() == false
                             ? ColorPalette.red
                             : ColorPalette.green,
@@ -113,7 +118,8 @@ class _VerifyResetAccountPageState extends State<VerifyResetAccountPage> {
                     // errorAnimationController: errorController,
                     controller: pinController,
                     onCompleted: (v) {
-                      verificationController.verifyResetToken(pinController.text);
+                      verificationController
+                          .verifyResetToken(pinController.text);
                       setState(() {});
                     },
                     onChanged: (value) {
@@ -133,12 +139,22 @@ class _VerifyResetAccountPageState extends State<VerifyResetAccountPage> {
                   if (verificationState() == false)
                     Text(
                       verifyFailedMsg,
-                      style: TextStyle(color: ColorPalette.red, fontSize: 12),
+                      style: TextStyle(
+                        color: ColorPalette.red,
+                        fontSize: isSmallScreen(context)
+                            ? AppFonts.defaultSize
+                            : AppFonts.baseSize,
+                      ),
                     ),
                   if (verificationState() == true)
                     Text(
                       verifySuccessMsg,
-                      style: TextStyle(color: ColorPalette.green, fontSize: 12),
+                      style: TextStyle(
+                        color: ColorPalette.green,
+                        fontSize: isSmallScreen(context)
+                            ? AppFonts.defaultSize
+                            : AppFonts.baseSize,
+                      ),
                     ),
                   if (verificationState() == false)
                     Align(
@@ -146,12 +162,14 @@ class _VerifyResetAccountPageState extends State<VerifyResetAccountPage> {
                         child: Padding(
                             padding: EdgeInsets.only(top: 60),
                             child: GestureDetector(
-                                onTap: () async{
+                                onTap: () async {
                                   if (timer == null || !timer!.isActive) {
                                     startTimer();
-                                    var sent = await verificationController.requestPwdResetToken(
-                                        email: authController.emailTEC.text);
-                                    if(sent){
+                                    var sent = await verificationController
+                                        .requestPwdResetToken(
+                                            email:
+                                                authController.emailTEC.text);
+                                    if (sent) {
                                       Get.toNamed(Routes.VERIFY_RESET_ACCOUNT);
                                     }
                                   }
@@ -165,7 +183,8 @@ class _VerifyResetAccountPageState extends State<VerifyResetAccountPage> {
                                           ? 'Resend in'
                                           : 'Resend code',
                                       style: TextStyle(
-                                          color: ColorPalette.green, fontSize: 16),
+                                          color: ColorPalette.green,
+                                          fontSize: 16),
                                     ),
                                     if (timer != null && timer!.isActive)
                                       Text(
@@ -178,11 +197,16 @@ class _VerifyResetAccountPageState extends State<VerifyResetAccountPage> {
                                 )))),
                   Spacer(),
                   if (verificationState() == true)
-                    CustomButton(
-                        onPressed: () {
-                          Get.toNamed(Routes.UPDATE_PASSWORD);
-                        },
-                        text: "Proceed"),
+                    Align(
+                      alignment: Alignment.center,
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(maxWidth: isSmallScreen(context) ? displayWidth(context) : displayWidth(context) /1.4),
+                        child: CustomButton(
+                          onPressed: () => Get.toNamed(Routes.UPDATE_PASSWORD),
+                          text: "Proceed",
+                        ),
+                      ),
+                    ),
                   SizedBox(height: 40),
                   GestureDetector(
                     onTap: () {
@@ -193,17 +217,23 @@ class _VerifyResetAccountPageState extends State<VerifyResetAccountPage> {
                       child: RichText(
                         text: TextSpan(
                           text: 'I have an account. ',
-                          children: const [
+                          children: [
                             TextSpan(
                               text: 'Sign me in...',
                               style: TextStyle(
                                   color: ColorPalette.green,
-                                  fontFamily: AppFonts.josefinSansRegular),
+                                  fontFamily: AppFonts.mulishBold,
+                                fontSize: isSmallScreen(context) ? AppFonts.defaultSize : AppFonts.baseSize,
+
+                              ),
                             ),
                           ],
                           style: TextStyle(
                               color: ColorPalette.grey.shade300,
-                              fontFamily: AppFonts.josefinSansRegular),
+                              fontFamily: AppFonts.mulishRegular,
+                            fontSize: isSmallScreen(context) ? AppFonts.defaultSize : AppFonts.baseSize,
+
+                          ),
                         ),
                         textAlign: TextAlign.center,
                       ),

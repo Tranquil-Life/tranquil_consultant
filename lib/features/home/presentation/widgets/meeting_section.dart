@@ -26,7 +26,7 @@ class _MeetingsState extends State<Meetings> {
         dashboardController.currentMeetingId.value = meeting.id;
         clientUser = meeting.client;
 
-        dashboardController.clientId.value = clientUser!.id;
+        dashboardController.clientId.value = clientUser!.id!;
         dashboardController.clientDp.value = clientUser!.avatarUrl;
         dashboardController.clientName.value = clientUser!.displayName;
         dashboardController.currentMeetingST.value = meeting.startAt.formatDate;
@@ -39,7 +39,6 @@ class _MeetingsState extends State<Meetings> {
 
       if (meeting.ratedByClient) {
         //TODO: if the meeting payment status != paid, call transfer endpoint
-        print("make payment");
       } else if (!meeting.ratedByClient &&
           meeting.ratedByTherapist &&
           (!difference.isNegative && difference.inHours >= 48)) {}

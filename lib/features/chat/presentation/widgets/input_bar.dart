@@ -3,97 +3,105 @@ part of '../screens/chat_screen.dart';
 class InputBar extends StatefulWidget {
   final ChatController chatController;
   final RecordingController recordingController;
-  final UploadController uploadController;
   final Future Function() startRecording;
   final Future Function() stopRecording;
+  final bool showMic; // local UI state hint from parent
   final Future Function() uploadVn;
-  final bool showMic;
+  final UploadController uploadController;
   final Timer? timer;
-  final ClientUser client;
+  final ClientUser? client;
   final int? chatId;
 
-  const InputBar({super.key, required this.chatController,
+  const InputBar({
+    super.key,
+    required this.chatController,
     required this.recordingController,
     required this.startRecording,
     required this.stopRecording,
-    required this.showMic, required this.uploadVn,
-    this.timer, required this.uploadController, required this.client, this.chatId});
+    required this.showMic,
+    required this.uploadVn,
+    required this.uploadController,
+    this.timer,
+    required this.client,
+    this.chatId,
+  });
 
   @override
   State<InputBar> createState() => _InputBarState();
 }
 
 class _InputBarState extends State<InputBar> {
-  TextEditingController textController = TextEditingController();
-  UploadController uploadController = Get.put(UploadController());
-
-  bool isMicVisible = false;
-
-  _handleUpload() async {
-    widget.uploadController.uploading.value = true;
-    if (widget.recordingController.isRecording.value) {
-      widget.uploadVn();
-      widget.timer?.cancel();
-      setState(() {});
-      widget.recordingController.recordingDuration = 0;
-      widget.uploadController.uploading.value = false;
-
-
-      // widget.chatController.audioFile = await widget.stopRecording();
-      //
-      // debugPrint(
-      //     "INPUT BAR: upload recording: ${widget.chatController.audioFile}");
-      //
-      // await UploadController().handleVoiceNoteUpload(
-      //     file: widget.chatController.audioFile,
-      //     quotedMessage: widget.chatController.replyMessage.value);
-    } else {
-
-      ///Send text message
-      await UploadController().handleTextUpload(
-          chatId: widget.chatId!,
-          message:
-          textController.text,
-          quotedMessage: widget.chatController.replyMessage.value,
-          clientID
-              : widget.client.id);
-
-      widget.uploadController.uploading.value = false;
-
-      textController.clear();
-    }
-
-    // if (!AppData.hasShownChatDisableDialog) {
-    //   upload = await showDialog(
-    //     context: context,
-    //     builder: (_) => const DisableAccountDialog(),
-    //   ) ??
-    //       false;
-    // }
-  }
+  late final TextEditingController textController;
+  bool isMicVisible = false; // local: toggles mic vs send based on text input
 
   @override
   void initState() {
+    super.initState();
     isMicVisible = widget.showMic;
-
-    //re-instantiate the controller here to allow reuse after disposal
     textController = TextEditingController();
 
     textController.addListener(() {
-      setState(
-              () {
-            if (textController.text.removeAllWhitespace.isEmpty) {
-              isMicVisible = true;
-            } else {
-              isMicVisible = false;
-            }
-          });
+      final empty = textController.text.trim().isEmpty;
+      // mic visible only when input is empty
+      if (isMicVisible != empty) {
+        setState(() => isMicVisible = empty);
+      }
     });
-    super.initState();
+  }
+
+  @override
+  void dispose() {
+    textController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _handleUpload() async {
+    // ensure bottom sheet / dialog states are correct before starting
+    try {
+      widget.uploadController.uploading.value = true;
+
+      // If currently recording, upload the voice note
+      if (widget.recordingController.isRecording.value) {
+        // stop timer first to avoid double triggers
+        widget.timer?.cancel();
+
+        await widget.uploadVn();
+
+        // reset timer counter (RxInt)
+        widget.recordingController.recordingDuration.value = 0;
+        // after VN upload, show mic again
+        if (mounted) setState(() => isMicVisible = true);
+      } else {
+        // Send text message
+        final id = widget.chatId;
+        final cl = widget.client;
+        if (id == null || cl?.id == null) {
+          debugPrint('InputBar: chatId or client.id is null; aborting text upload.');
+          return;
+        }
+
+        await widget.uploadController.handleTextUpload(
+          chatId: id,
+          message: textController.text,
+          quotedMessage: widget.chatController.replyMessage.value,
+          clientID: cl!.id!,
+        );
+
+        textController.clear(); // listener will flip mic visibility
+      }
+    } catch (e, st) {
+      debugPrint('InputBar upload failed: $e\n$st');
+    } finally {
+      widget.uploadController.uploading.value = false;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    // derive current recording flag once per build for local logic;
+    // reactive parts below are wrapped with Obx individually
+    final rec = widget.recordingController.isRecording.value;
+
     return ConstrainedBox(
       constraints: const BoxConstraints(minHeight: 56),
       child: Container(
@@ -105,153 +113,144 @@ class _InputBarState extends State<InputBar> {
         ),
         child: Column(
           children: [
-            Obx(
-                  () =>
-                  Visibility(
-                    visible: widget.chatController.isExpanded.value,
-                    child: QuoteInputBarExt(),
-                  ),
-            ),
-            SizedBox(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    //display using an animation delete icon while recording
-                    Visibility(
-                      visible: widget.recordingController.isRecording.value,
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 7),
-                        child: AnimatedCrossFade(
-                          duration: kTabScrollDuration,
-                          crossFadeState:
-                          widget.recordingController.isRecording.value
-                              ? CrossFadeState.showSecond
-                              : CrossFadeState.showFirst,
-                          firstChild: IconButton(
-                            onPressed: () =>
-                                showModalBottomSheet(
-                                  context: context,
-                                  backgroundColor: Colors.transparent,
-                                  builder: (_) => const AttachmentSheet(),
-                                ),
-                            icon: const Icon(
-                              Icons.attach_file,
-                              color: ColorPalette.green,
-                              size: 28,
-                            ),
-                          ),
-                          secondChild: IconButton(
-                            onPressed: () {
-                              widget.stopRecording();
-                              widget.timer?.cancel();
-                              setState(() {});
-                              widget.recordingController.recordingDuration = 0;
-                              isMicVisible = true;
-                            },
-                            icon: const Icon(
-                              TranquilIcons.trash,
-                              color: ColorPalette.green,
-                              size: 27,
-                            ),
-                          ),
+            // quote bar expands/collapses reactively
+            Obx(() => Visibility(
+              visible: widget.chatController.isExpanded.value,
+              child: const QuoteInputBarExt(),
+            )),
+
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                // Left icon: attach or trash (depends on recording)
+                Obx(() {
+                  final isRec = widget.recordingController.isRecording.value;
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 7),
+                    child: AnimatedCrossFade(
+                      duration: kTabScrollDuration,
+                      crossFadeState: isRec
+                          ? CrossFadeState.showSecond
+                          : CrossFadeState.showFirst,
+                      firstChild: IconButton(
+                        onPressed: () => showModalBottomSheet(
+                          context: context,
+                          backgroundColor: Colors.transparent,
+                          builder: (_) => const AttachmentSheet(),
+                        ),
+                        icon: const Icon(
+                          Icons.attach_file,
+                          color: ColorPalette.green,
+                          size: 28,
+                        ),
+                      ),
+                      secondChild: IconButton(
+                        onPressed: () async {
+                          await widget.stopRecording();
+                          widget.timer?.cancel();
+                          widget.recordingController.recordingDuration.value = 0;
+                          if (mounted) setState(() => isMicVisible = true);
+                        },
+                        icon: const Icon(
+                          TranquilIcons.trash,
+                          color: ColorPalette.green,
+                          size: 27,
                         ),
                       ),
                     ),
+                  );
+                }),
 
-                    //Typing text
-                    Expanded(
-                      child: Builder(builder: (context) {
-                        if (widget.recordingController.isRecording.value) {
-                          return Padding(
-                              padding: const EdgeInsets.only(
-                                  left: 4, bottom: 13),
-                              child: Obx(() =>
-                                  Text(
-                                    widget.recordingController.time.value,
-                                    style: const TextStyle(
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  )));
-                        }
-                        return TextField(
-                          minLines: 1,
-                          maxLines: 5,
-                          controller: textController,
-                          textInputAction: TextInputAction.newline,
-                          textCapitalization: TextCapitalization.sentences,
-                          decoration: const InputDecoration(
-                            filled: false,
-                            hintText: 'Type something...',
-                            border: InputBorder.none,
-                            enabledBorder: InputBorder.none,
-                            hintStyle: TextStyle(fontWeight: FontWeight.w600),
-                            contentPadding: EdgeInsets.symmetric(
-                              vertical: 16,
-                              horizontal: 4,
-                            ),
+                // Middle: either recording time or text field (reacts to isRecording)
+                Expanded(
+                  child: Obx(() {
+                    final isRec = widget.recordingController.isRecording.value;
+                    if (isRec) {
+                      return Padding(
+                        padding: const EdgeInsets.only(left: 4, bottom: 13),
+                        child: Obx(() => Text(
+                          widget.recordingController.time.value,
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.w600,
                           ),
-                        );
-                      }),
-                    ),
-
-                    AnimatedContainer(
-                      duration: kThemeChangeDuration,
-                      padding: const EdgeInsets.all(6),
-                      margin: EdgeInsets.only(
-                          right:
-                          widget.recordingController.isRecording.value ? 6 : 8,
-                          bottom: 5),
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: ColorPalette.green,
+                        )),
+                      );
+                    }
+                    return TextField(
+                      minLines: 1,
+                      maxLines: 5,
+                      controller: textController,
+                      textInputAction: TextInputAction.newline,
+                      textCapitalization: TextCapitalization.sentences,
+                      decoration: const InputDecoration(
+                        filled: false,
+                        hintText: 'Type something...',
+                        border: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        hintStyle: TextStyle(fontWeight: FontWeight.w600),
+                        contentPadding: EdgeInsets.symmetric(
+                          vertical: 16,
+                          horizontal: 4,
+                        ),
                       ),
-                      child: Obx(() =>
-                          GestureDetector(
-                            onTap: () {
-                              if (isMicVisible &&
-                                  !widget.recordingController.isRecording
-                                      .value) {
-                                showDialog(
-                                    context: context,
-                                    builder: (_) =>
-                                        VoiceNoteDialog(onPressed: () {
-                                          widget.startRecording();
-                                          setState(() {});
-                                        }));
-                              } else {
-                                _handleUpload();
-                              }
-                            },
-                            child: AnimatedCrossFade(
-                              duration: kThemeChangeDuration,
-                              crossFadeState: isMicVisible &&
-                                  !widget.recordingController.isRecording.value
-                                  ? CrossFadeState.showSecond
-                                  : CrossFadeState.showFirst,
-                              firstChild: Padding(
-                                padding: widget.recordingController.isRecording
-                                    .value
-                                    ? const EdgeInsets.fromLTRB(3, 1, 2, 1)
-                                    : const EdgeInsets.fromLTRB(4, 3, 2, 3),
-                                child: widget.uploadController.uploading.value
-                                    ? CustomLoader.widget(ColorPalette.white)
-                                    : Icon(
-                                  Icons.send,
-                                  color: Colors.white,
-                                  size: 22,
-                                ),
-                              ),
-                              secondChild: const Icon(
-                                Icons.mic,
-                                color: Colors.white,
-                                size: 28,
-                              ),
-                            ),
-                          )),
+                    );
+                  }),
+                ),
+
+                // Right: mic / send button + loader
+                Obx(() {
+                  final isRec = widget.recordingController.isRecording.value;
+                  final uploading = widget.uploadController.uploading.value;
+
+                  return AnimatedContainer(
+                    duration: kThemeChangeDuration,
+                    padding: const EdgeInsets.all(6),
+                    margin: EdgeInsets.only(
+                      right: isRec ? 6 : 8,
+                      bottom: 5,
                     ),
-                  ],
-                ))
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: ColorPalette.green,
+                    ),
+                    child: GestureDetector(
+                      onTap: () {
+                        // show mic only if no text and not recording
+                        if (isMicVisible && !isRec) {
+                          showDialog(
+                            context: context,
+                            builder: (_) => VoiceNoteDialog(
+                              onPressed: () async {
+                                await widget.startRecording();
+                                if (mounted) setState(() {}); // minimal local refresh
+                              },
+                            ),
+                          );
+                        } else {
+                          _handleUpload();
+                        }
+                      },
+                      child: AnimatedCrossFade(
+                        duration: kThemeChangeDuration,
+                        crossFadeState: (isMicVisible && !isRec)
+                            ? CrossFadeState.showSecond
+                            : CrossFadeState.showFirst,
+                        firstChild: Padding(
+                          padding: isRec
+                              ? const EdgeInsets.fromLTRB(3, 1, 2, 1)
+                              : const EdgeInsets.fromLTRB(4, 3, 2, 3),
+                          child: uploading
+                              ? CustomLoader.widget(ColorPalette.white)
+                              : const Icon(Icons.send, color: Colors.white, size: 22),
+                        ),
+                        secondChild: const Icon(Icons.mic, color: Colors.white, size: 28),
+                      ),
+                    ),
+                  );
+                }),
+              ],
+            ),
           ],
         ),
       ),
@@ -260,38 +259,30 @@ class _InputBarState extends State<InputBar> {
 }
 
 class QuoteInputBarExt extends StatelessWidget {
-  ChatController controller = Get.put(ChatController());
-
-  QuoteInputBarExt({super.key});
+  const QuoteInputBarExt({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final controller = ChatController.instance;
+
     return Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Stack(
-          children: [
-            RepliedChatBox(
-              backgroundColor: const Color(0xffE1DFDF),
-              // backgroundColor: Color.lerp(
-              //   Colors.black,
-              //   ColorPalette.green,
-              //   0.82,
-              // )!,
+      padding: const EdgeInsets.all(8.0),
+      child: Stack(
+        children: [
+          const RepliedChatBox(backgroundColor: Color(0xffE1DFDF)),
+          Positioned(
+            right: 5,
+            top: 5,
+            child: GestureDetector(
+              onTap: () {
+                controller.isExpanded.value = false;
+                controller.replyMessage.value = Message();
+              },
+              child: const Icon(Icons.close_rounded, size: 20),
             ),
-            Positioned(
-                right: 5,
-                top: 5,
-                child: GestureDetector(
-                  child: const Icon(
-                    Icons.close_rounded,
-                    size: 20,
-                  ),
-                  onTap: () {
-                    controller.isExpanded.value = false;
-                    controller.replyMessage.value = Message();
-                  },
-                ))
-          ],
-        ));
+          ),
+        ],
+      ),
+    );
   }
 }

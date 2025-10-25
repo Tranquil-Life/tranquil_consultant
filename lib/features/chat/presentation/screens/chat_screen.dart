@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
@@ -11,7 +10,9 @@ import 'package:tl_consultant/core/global/custom_loader.dart';
 import 'package:tl_consultant/core/global/unfocus_bg.dart';
 import 'package:tl_consultant/core/global/user_avatar.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
+import 'package:tl_consultant/core/theme/fonts.dart';
 import 'package:tl_consultant/core/theme/tranquil_icons.dart';
+import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 import 'package:tl_consultant/core/utils/services/formatters.dart';
 import 'package:tl_consultant/features/chat/domain/entities/message.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/agora_controller.dart';
@@ -53,8 +54,9 @@ class _ChatScreenState extends State<ChatScreen> {
 
   int? chatId;
   ClientUser? client;
-  String channel= "";
+  String channel = "";
   var arguments = <String, dynamic>{};
+  bool _isSmall = false;
 
   Future _startRecording() async {
     await _recordingController.record();
@@ -67,45 +69,70 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Future _stopRecording() async {
     await _recordingController.stop();
-
-    setState(() {});
+    // no need to setState here unless some non-Rx UI depends on it
     if (_recordingController.localAudioPath != null) {
       chatController.setVoiceFile(File(_recordingController.localAudioPath!));
     }
-
-    debugPrint("Chat screen: stop recording: ${chatController.audioFile}");
-
     return chatController.audioFile!;
   }
 
-  Future _uploadVn() async {
-    chatController.audioFile = await _stopRecording();
+  bool _isUploadingVn = false; // guard against double calls
 
-    await UploadController().handleVoiceNoteUpload(
-      file: chatController.audioFile,
-      quotedMessage: chatController.replyMessage.value,
-      chatId: chatId!,
-      clientID: client!.id,
-    );
+  Future<void> _uploadVn() async {
+    if (_isUploadingVn) return; // prevent duplicate uploads
+    _isUploadingVn = true;
 
-    _recordingController.recordingDuration = 0;
+    try {
+      // Stop and fetch the file
+      final file = await _stopRecording(); // returns File? per your code
+      if (file == null) {
+        debugPrint('Voice note file is null; aborting upload.');
+        return;
+      }
+      chatController.audioFile = file;
+
+      // Validate IDs
+      final id = chatId;
+      final cl = client;
+      if (id == null || cl?.id == null) {
+        debugPrint('chatId/client.id is null; aborting upload.');
+        return;
+      }
+
+      // Use the injected controller to avoid extra instances
+      await uploadController.handleVoiceNoteUpload(
+        file: chatController.audioFile,
+        quotedMessage: chatController.replyMessage.value,
+        chatId: id,
+        clientID: cl!.id!,
+      );
+
+      // Reset the timer counter (RxInt -> use .value)
+      _recordingController.recordingDuration.value = 0;
+
+      // (Optional) restore mic UI state if you hide it during recording
+      if (!mounted) return;
+      setState(() {
+        micMode = true;
+      });
+    } catch (e, st) {
+      debugPrint('VN upload failed: $e\n$st');
+    } finally {
+      _isUploadingVn = false;
+    }
   }
 
 
   void startTimer() {
     _timer?.cancel();
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      setState(() {
-        _recordingController.recordingDuration += 1;
-        print(_recordingController.recordingDuration);
-
-        if (_recordingController.recordingDuration >= _maxRecordingDuration) {
-          print("IT'S TIME: ${_recordingController.recordingDuration}");
-          _timer?.cancel();
-          _uploadVn();
-          _recordingController.recordingDuration = 0;
-        }
-      });
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      // 👇 No setState — only bump the Rx value
+      _recordingController.recordingDuration.value++;
+      if (_recordingController.recordingDuration.value >= _maxRecordingDuration) {
+        _timer?.cancel();
+        _uploadVn();
+        _recordingController.recordingDuration.value = 0;
+      }
     });
   }
 
@@ -113,25 +140,41 @@ class _ChatScreenState extends State<ChatScreen> {
   void initState() {
     super.initState();
 
-    var args = Get.arguments;
-    arguments = args;
-    chatId = args['chat_id'];
-    client = args['client'];
-    channel = args['channel'];
-
-
-    // Assign chatId to controller BEFORE loading messages
-    chatController.chatId = RxInt(chatId!);
-
     // Now it's safe to load messages
     chatController.loadRecentMessages();
-
+    print("chnanel name before pusher initialisation: $channel");
     chatController.initializePusher(channel: channel);
-
     _recordingController.onInit();
+
+
+    // // Trigger upload without rebuilding the whole screen
+    // ever<String>(_recordingController.time, (t) {
+    //   if (t == "01:00") {
+    //     _uploadVn();
+    //     _recordingController.recordingDuration.value = 0;
+    //   }
+    // });
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
 
+    _isSmall = isSmallScreen(context);
+
+    // If you need Get.arguments only on small screens, do it here
+    final args = Get.arguments as Map<String, dynamic>?;
+    if (_isSmall && args != null) {
+      arguments = args;
+      chatId = args['chat_id'] as int?;
+      client = args['client'] as ClientUser?;
+      channel = args['channel'] as String? ?? "";
+    } else {
+      client = chatController.rxClient.value;
+      channel = chatController.chatChannel.value;
+      chatController.initializePusher(channel: channel);
+    }
+  }
 
   @override
   void dispose() {
@@ -154,47 +197,53 @@ class _ChatScreenState extends State<ChatScreen> {
             color: Colors.black26,
             colorBlendMode: BlendMode.darken,
           ),
-          Obx(() {
-            if (_recordingController.time.value == "01:00") {
-              _uploadVn();
-            }
 
-            return SafeArea(
-              bottom: false,
-              child: Padding(
-                padding: const EdgeInsets.all(4),
-                child: Column(
-                  children: [
-                    TitleBar(),
+          // ⛔️ Don’t Obx-wrap the whole screen.
+          SafeArea(
+            bottom: false,
+            child: Padding(
+              padding: const EdgeInsets.all(4),
+              child: Column(
+                children: [
+                  // Make this const if you can (see TitleBar below)
+                  const TitleBar(),
 
-                    // Chat messages list
-                    Expanded(
-                        child: chatController.isFirstLoadRunning.value
-                            ? const Center(
-                                child: CircularProgressIndicator(
-                                    color: ColorPalette.green))
-                            : UnFocusWidget(
-                                child: Messages(playerManager: AudioPlayerManager()),
-                              )),
+                  // Chat messages list (only this part listens to chat Rx)
+                  Expanded(
+                    child: Obx(() {
+                      return chatController.isFirstLoadRunning.value
+                          ? const Center(
+                        child: CircularProgressIndicator(
+                          color: ColorPalette.green,
+                        ),
+                      )
+                          : UnFocusWidget(
+                        child: Messages(
+                          playerManager: AudioPlayerManager(),
+                        ),
+                      );
+                    }),
+                  ),
 
-                    SafeArea(
-                      top: false,
-                      child: InputBar(
-                        chatController: chatController,
-                        recordingController: _recordingController,
-                        startRecording: _startRecording,
-                        stopRecording: _stopRecording,
-                        showMic: showMic,
-                        chatId: chatId,
-                        uploadController: uploadController,
-                        client: client!, uploadVn: _uploadVn,
-                      ),
-                    )
-                  ],
-                ),
+                  // Input bar listens only to recording Rx where needed
+                  SafeArea(
+                    top: false,
+                    child: InputBar(
+                      chatController: chatController,
+                      recordingController: _recordingController,
+                      startRecording: _startRecording,
+                      stopRecording: _stopRecording,
+                      showMic: showMic,
+                      uploadVn: _uploadVn,
+                      uploadController: uploadController,
+                      chatId: chatController.chatId?.value,
+                      client: client,
+                    ),
+                  ),
+                ],
               ),
-            );
-          })
+            ),
+          ),
         ],
       ),
     );

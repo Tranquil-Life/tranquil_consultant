@@ -21,12 +21,12 @@ class _TitleBarState extends State<TitleBar> {
       child: Row(
         children: [
           const SizedBox(width: 8),
-          const BackButtonWhite(),
-          const SizedBox(width: 8),
+          isSmallScreen(context) ? const BackButtonWhite() : SizedBox.shrink(),
+          isSmallScreen(context) ? const SizedBox(width: 8) : SizedBox.shrink(),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 2),
             child: UserAvatar(
-              size: 44,
+              size: isSmallScreen(context) ? 44 : 70,
               imageUrl: dashboardController.clientDp.value,
               source: AvatarSource.url,
             ),
@@ -38,10 +38,10 @@ class _TitleBarState extends State<TitleBar> {
               children: [
                 Text(
                   dashboardController.clientName.value,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w600,
-                    fontSize: 17,
+                    fontSize: isSmallScreen(context) ? AppFonts.largeSize : 22,
                   ),
                 ),
                 Text(
@@ -51,7 +51,7 @@ class _TitleBarState extends State<TitleBar> {
                         ? ColorPalette.yellow
                         : ColorPalette.red[300],
                     fontWeight: FontWeight.w600,
-                    fontSize: 16,
+                    fontSize: isSmallScreen(context) ? AppFonts.baseSize : AppFonts.largeSize,
                   ),
                 ),
               ],
@@ -63,10 +63,11 @@ class _TitleBarState extends State<TitleBar> {
               icon: Icon(
                 CupertinoIcons.videocam_fill,
                 color: ColorPalette.green,
+                size: isSmallScreen(context) ? 24 : 32,
               ),
-              onPressed: () async{
+              onPressed: () async {
                 final messageMap = <String, dynamic>{
-                  'id': chatController.recentMsgEvent.value.messageId!+1,
+                  'id': chatController.recentMsgEvent.value.messageId! + 1,
                   'chat_id': agoraController.chatController.chatId!.value,
                   'sender_id': myId,
                   'parent_id': null,
@@ -78,7 +79,8 @@ class _TitleBarState extends State<TitleBar> {
                   'updated_at': DateTime.now().toUtc().toIso8601String(),
                 };
 
-                await agoraController.chatController.triggerPusherEvent('incoming-call', messageMap);
+                await agoraController.chatController
+                    .triggerPusherEvent('incoming-call', messageMap);
 
                 agoraController.joinAgoraCall();
               }),

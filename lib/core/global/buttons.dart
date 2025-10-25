@@ -7,6 +7,7 @@ class CustomButton extends StatelessWidget {
   final String? text;
   final Widget? child;
   final Color? bgColor;
+  final Color? borderColor;
   final Color? textColor;
   final bool? showBorder;
   final Function()? onPressed;
@@ -17,6 +18,7 @@ class CustomButton extends StatelessWidget {
       required this.onPressed,
       this.child,
       this.bgColor,
+      this.borderColor,
       this.showBorder = false,
       this.textColor});
 
@@ -29,7 +31,7 @@ class CustomButton extends StatelessWidget {
         shadowColor: ColorPalette.black,
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8.0),
-            side: BorderSide(width: showBorder! ? 1 : 0, color: ColorPalette.green)),
+            side: BorderSide(width: showBorder! ? 1 : 0, color: borderColor ?? ColorPalette.green)),
       ),
       onPressed: onPressed,
       child: child ??

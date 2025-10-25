@@ -58,9 +58,6 @@ class TransactionsController extends GetxController {
     });
 
     update();
-
-    print("Transactions: $stripeTrnx");
-
     isFirstLoadRunning.value = false;
   }
 

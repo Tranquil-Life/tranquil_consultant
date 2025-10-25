@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:tl_consultant/core/global/custom_icon_button.dart';
+import 'package:tl_consultant/core/global/custom_text.dart';
 import 'package:tl_consultant/core/global/user_avatar.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/theme/fonts.dart';
@@ -40,21 +41,17 @@ class SmallScreenHeader extends StatelessWidget {
               crossAxisAlignment:
               CrossAxisAlignment.start,
               children: [
-                Text(
-                  getGreeting(),
-                  style: TextStyle(
-                      fontSize: 18,
-                      color: ColorPalette.black2,
-                      fontFamily:
-                      AppFonts.josefinSansRegular),
+                CustomText(
+                  text: getGreeting(),
+                  size: 18,
+                  color: ColorPalette.black2,
+                  fontFamily: AppFonts.mulishRegular,
                 ),
-                Text(
-                  profileController.firstNameTEC.text,
-                  style: TextStyle(
-                      fontSize: 20,
-                      color: ColorPalette.black2,
-                      fontFamily:
-                      AppFonts.josefinSansRegular),
+                CustomText(
+                  text: profileController.firstNameTEC.text,
+                  size: 20,
+                  color: ColorPalette.black2,
+                  fontFamily: AppFonts.mulishRegular,
                 )
               ],
             )

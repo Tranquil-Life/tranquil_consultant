@@ -263,12 +263,12 @@ class _ProfileHeadState extends State<ProfileHead> {
           value: 'edit',
           child: Text('Edit profile'),
         ),
-        PopupMenuItem(
-          onTap: () => showDialog(
-              context: context, builder: (context) => SignOutDialog()),
-          value: 'sign out',
-          child: Text('Sign out'),
-        ),
+        // PopupMenuItem(
+        //   onTap: () => showDialog(
+        //       context: context, builder: (context) => SignOutDialog()),
+        //   value: 'sign out',
+        //   child: Text('Sign out'),
+        // ),
          PopupMenuItem(
           onTap: ()=>Get.toNamed(Routes.SETTINGS),
           value: 'delete',

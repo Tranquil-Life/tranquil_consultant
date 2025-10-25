@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
+import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 
 class CustomIconButton extends StatelessWidget {
   const CustomIconButton({super.key, required this.icon, this.onPressed, this.showBorder});
@@ -12,12 +13,12 @@ class CustomIconButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       clipBehavior: Clip.hardEdge,
-      height: 50,
-      width: 50,
+      height: isSmallScreen(context) ? 50 : 60,
+      width: isSmallScreen(context) ? 50 : 60,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(100),
-        border: showBorder == true ? Border.all(color: ColorPalette.grey) : null
+        border: showBorder == true ? Border.all(color: ColorPalette.grey, width: isSmallScreen(context) ? 2 : 4) : null
       ),
       child: Material(
         type: MaterialType.transparency,

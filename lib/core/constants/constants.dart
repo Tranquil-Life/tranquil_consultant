@@ -1,6 +1,8 @@
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:fluttermoji/fluttermoji.dart';
+import 'package:get/get.dart';
 import 'package:tl_consultant/core/utils/helpers/svg_elements.dart';
+import 'package:tl_consultant/core/utils/routes/app_pages.dart';
 import 'package:tl_consultant/features/profile/data/models/user_model.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 import 'package:uuid/uuid.dart';
@@ -161,7 +163,10 @@ var settings = <String, List<Map<String, dynamic>>>{
     {
       "prefix": SvgElements.svgManagePwd,
       "label": "Manage password",
-      "suffix": SvgElements.svgArrowRight
+      "suffix": SvgElements.svgArrowRight,
+      "onTap": (){
+        Get.toNamed(Routes.FORGOT_PASSWORD);
+      }
     },
     {
       "prefix": SvgElements.svgPinReset,
@@ -169,5 +174,23 @@ var settings = <String, List<Map<String, dynamic>>>{
       "suffix": SvgElements.svgArrowRight
     }
   ],
-  "support": []
+  "support": [
+    {
+      "prefix": SvgElements.svgContactUs,
+      "label": "Contact us",
+      "suffix": SvgElements.svgArrowRight,
+      "onTap": (){
+      }
+    },
+    {
+      "prefix": SvgElements.svgFeedback,
+      "label": "Support & Feedback",
+      "suffix": SvgElements.svgArrowRight
+    },
+    {
+      "prefix": SvgElements.svgFaqs,
+      "label": "Frequently asked questions (FAQs)",
+      "suffix": SvgElements.svgArrowRight
+    }
+  ]
 };

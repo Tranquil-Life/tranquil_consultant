@@ -69,5 +69,10 @@ class SvgElements {
   static get svgWebsite => "assets/images/icons/website.svg";
   static get svgManagePwd => "assets/images/icons/manage_pwd.svg";
   static get svgPinReset => "assets/images/icons/pin_reset.svg";
+  static get svgContactUs => "assets/images/icons/contact_us.svg";
+  static get svgFeedback => "assets/images/icons/feedback.svg";
+  static get svgFaqs => "assets/images/icons/faqs.svg";
+  static get svgLogOut => "assets/images/icons/log_out.svg";
+  static get svgDelete => "assets/images/icons/delete.svg";
 
 }

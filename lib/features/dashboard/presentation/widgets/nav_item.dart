@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:tl_consultant/core/global/custom_text.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/theme/fonts.dart';
 import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
@@ -43,22 +44,20 @@ class BuildNavItem extends StatelessWidget {
             children: [
               SvgPicture.asset(
                 icon,
-                height: 24,
-                width: 24,
+                height: 32,
+                width: 32,
                 color: isSelected
                     ? const Color(0xFF388D4D)
                     : ColorPalette.grey[700],
               ),
               SizedBox(height: size.height * 0.006),
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: isSmallScreen(context) ? AppFonts.smallSize : AppFonts.defaultSize,
-                  color: isSelected
-                      ?  ColorPalette.grey[400]
-                      : ColorPalette.grey[700],
-                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.normal,
-                ),
+              CustomText(
+                text: label,
+                size: isSmallScreen(context) ? AppFonts.smallSize : AppFonts.largeSize,
+                color: isSelected
+                    ?  ColorPalette.grey[400]
+                    : ColorPalette.grey[700],
+                weight: isSelected ? FontWeight.w700 : FontWeight.normal,
               ),
             ],
           ),

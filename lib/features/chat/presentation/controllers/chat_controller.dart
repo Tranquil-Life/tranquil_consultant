@@ -14,6 +14,7 @@ import 'package:tl_consultant/core/utils/app_config.dart';
 import 'package:tl_consultant/core/utils/extensions/chat_message_extension.dart';
 import 'package:tl_consultant/core/utils/extensions/date_time_extension.dart';
 import 'package:tl_consultant/core/utils/functions.dart';
+import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 import 'package:tl_consultant/core/utils/routes/app_pages.dart';
 import 'package:tl_consultant/features/chat/data/models/message_model.dart';
 import 'package:tl_consultant/features/chat/data/repos/chat_repo.dart';
@@ -51,6 +52,7 @@ class ChatController extends GetxController {
   var chatChannel = "".obs;
   Rx<Message> replyMessage = Message().obs;
   Rx<Message> recentMsgEvent = Message().obs;
+  Rx<ClientUser> rxClient = ClientUser().obs;
 
   // Used to display loading indicators when _firstLoad function is running
   var lastMessageId = 0.obs;
@@ -121,7 +123,10 @@ class ChatController extends GetxController {
     isLoadMoreRunning.value = false;
   }
   //Get specific chat history
-  Future getChatInfo({ClientUser? client}) async {
+  Future<Map<String, dynamic>> getChatInfo({ClientUser? client}) async {
+    print(client?.toJson());
+    rxClient.value = client!;
+
     loadingChatRoom.value = true;
     Either either = await repo.getChatInfo(
       consultantId: userDataStore.user['id'],
@@ -129,7 +134,7 @@ class ChatController extends GetxController {
       meetingId: dashboardController.currentMeetingId.value
     );
 
-    Map chatInfo = {};
+    var chatInfo = <String, dynamic>{};
 
     either.fold((l) {
       loadingChatRoom.value = false;
@@ -141,7 +146,7 @@ class ChatController extends GetxController {
           backgroundColor: ColorPalette.red);
     }, (r) {
       chatInfo = r['data'];
-
+      // chatInfo.addAll(r['data']);
 
       chatId ??= RxInt(0);
       chatId!.value = chatInfo['id'];
@@ -151,15 +156,16 @@ class ChatController extends GetxController {
       dashboardController.clientDp.value = chatInfo['client']['avatar_url'];
     });
 
-    Get.toNamed(
-      Routes.CHAT_SCREEN,
-      arguments: <String, dynamic>{
-        "chat_id": chatId?.value,
-        "client": client,
-        "channel": chatChannel.value
-      },
-    );
-
+    if(isSmallScreen(Get.context!)){
+      Get.toNamed(
+        Routes.CHAT_SCREEN,
+        arguments: <String, dynamic>{
+          "chat_id": chatId?.value,
+          "client": client,
+          "channel": chatChannel.value
+        },
+      );
+    }
 
     await Future.delayed(const Duration(seconds: 1));
 

@@ -79,6 +79,7 @@ class MessagesState extends State<Messages>
       }
 
       return ListView.builder(
+        padding: EdgeInsets.only(top: 8),
         physics: const BouncingScrollPhysics(),
         reverse: true,
         controller: _scrollController,

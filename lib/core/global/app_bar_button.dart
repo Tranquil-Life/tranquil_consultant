@@ -1,49 +1,45 @@
 import 'package:flutter/material.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
+import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 
 class AppBarButton extends StatelessWidget {
   const AppBarButton({
     super.key,
     required this.icon,
-    required this.onPressed,
+    this.onPressed,
     this.backgroundColor,
+    this.size = 50,
+    this.padding = const EdgeInsets.all(5),
   });
 
   final Widget icon;
   final Color? backgroundColor;
-  final Function()? onPressed;
+  final VoidCallback? onPressed;
+  final double size;
+  final EdgeInsetsGeometry padding;
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      clipBehavior: Clip.hardEdge,
-      borderRadius: BorderRadius.circular(9),
-      child: Stack(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(5),
-            decoration: BoxDecoration(
-              color: backgroundColor ?? Theme.of(context).primaryColor,
-            ),
-            child: Theme(
-              data: Theme.of(context).copyWith(
-                iconTheme: const IconThemeData(color: Colors.white, size: 22),
-              ),
-              child: icon,
+    final bg = backgroundColor ?? Theme.of(context).primaryColor;
+    final isSmall = isSmallScreen(context);
+
+    return SizedBox(
+      height: isSmall ? kToolbarHeight : size,
+      width: isSmall ? kToolbarHeight : size,
+      child: Material(
+        color: bg,
+        borderRadius: BorderRadius.circular(isSmallScreen(context) ? 9 : 16),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(9),
+          onTap: onPressed,
+          child: Padding(
+            padding: padding,
+            child: IconTheme(
+              data: const IconThemeData(color: Colors.white, size: 22),
+              child: Center(child: icon),
             ),
           ),
-          if (onPressed != null)
-            Positioned.fill(
-              child: Material(
-                type: MaterialType.transparency,
-                child: InkResponse(
-                  onTap: onPressed,
-                  containedInkWell: true,
-                  highlightShape: BoxShape.rectangle,
-                ),
-              ),
-            )
-        ],
+        ),
       ),
     );
   }

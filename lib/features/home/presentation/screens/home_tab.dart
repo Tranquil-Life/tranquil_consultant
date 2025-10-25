@@ -30,8 +30,9 @@ import 'package:tl_consultant/features/profile/presentation/screens/edit_profile
 
 part 'package:tl_consultant/features/home/presentation/widgets/meeting_section.dart';
 
-part 'package:tl_consultant/features/home/presentation/widgets/small/meeting_tile_small.dart';
-part 'package:tl_consultant/features/home/presentation/widgets/regular/meeting_tile_regular.dart';
+part 'package:tl_consultant/features/home/presentation/widgets/meeting_tile_small.dart';
+
+part 'package:tl_consultant/features/home/presentation/widgets/meeting_tile_regular.dart';
 
 class HomeTab extends StatefulWidget {
   const HomeTab({super.key});
@@ -73,98 +74,131 @@ class _HomeTabState extends State<HomeTab> {
                                     profileController: profileController,
                                     activityController: activityController),
                             const SizedBox(height: 45),
-                            Padding(padding: EdgeInsets.only(right: isSmallScreen(context) ? 0 : 24),
-                              child: Column(
-                                children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        "Scheduled sessions",
-                                        style: TextStyle(
-                                            color: ColorPalette.grey[600],
-                                            fontSize: isSmallScreen(context) ? 16 : 20,
-                                            fontWeight: isSmallScreen(context)
-                                                ? FontWeight.w600
-                                                : FontWeight.w700),
-                                      ),
-                                      Text(
-                                        "See all",
-                                        style: TextStyle(
-                                            color: ColorPalette.green,
-                                            fontSize: isSmallScreen(context) ? 14 : 16,
-                                            fontFamily: AppFonts.mulishRegular,
-                                            fontWeight: FontWeight.w600),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(height: 12),
-                                  SizedBox(
-                                    height: MediaQuery.of(context).size.height *
-                                        (meetingsController.meetings.isEmpty
-                                            ? 0.28
-                                            : 0.38),
-                                    child: Meetings(),
-                                  ),
-                                  const SizedBox(height: 12),
-                                  CustomButton(
-                                    onPressed: () async{
-                                      var isEmpty = await checkForEmptyProfileInfo();
-                                      if(isEmpty){
-                                        Get.to(() => EditProfileScreen());
-                                      }else{
-                                        Get.toNamed(Routes.EDIT_SLOTS);
-                                      }
-                                    },
-                                    showBorder: true,
-                                    bgColor: ColorPalette.white,
-                                    child: Center(
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          Text("Set your hours",
-                                              style: TextStyle(
-                                                  color: ColorPalette.green,
-                                                  fontFamily: AppFonts.mulishRegular,
-                                                  fontSize: isSmallScreen(context) ? AppFonts.defaultSize : AppFonts.baseSize,
-                                                  fontWeight: FontWeight.w600)),
-                                          Icon(Icons.keyboard_arrow_right_outlined,
-                                              color: ColorPalette.green),
-                                        ],
-                                      ),
+                            Padding(
+                                padding: EdgeInsets.only(
+                                    right: isSmallScreen(context) ? 0 : 24),
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          "Scheduled sessions",
+                                          style: TextStyle(
+                                              color: ColorPalette.grey[600],
+                                              fontSize: isSmallScreen(context)
+                                                  ? 16
+                                                  : 22,
+                                              fontWeight: isSmallScreen(context)
+                                                  ? FontWeight.w600
+                                                  : FontWeight.w700),
+                                        ),
+                                        Text(
+                                          "See all",
+                                          style: TextStyle(
+                                              color: ColorPalette.green,
+                                              fontSize: isSmallScreen(context)
+                                                  ? 14
+                                                  : 18,
+                                              fontFamily:
+                                                  AppFonts.mulishRegular,
+                                              fontWeight: FontWeight.w600),
+                                        ),
+                                      ],
                                     ),
-                                  ),
-                                  const SizedBox(height: 28),
-                                  ExplorePerksWidget(),
-                                  const SizedBox(height: 32),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        "Events near you",
-                                        style: TextStyle(
-                                            color: ColorPalette.grey[600],
-                                            fontFamily: AppFonts.mulishRegular,
-                                            fontSize: isSmallScreen(context) ? 16 : 20,
-                                            fontWeight: isSmallScreen(context)
-                                                ? FontWeight.w600
-                                                : FontWeight.w700),
-                                      ),
-                                      Text(
-                                        "See all",
-                                        style: TextStyle(
-                                            color: ColorPalette.green,
-                                            fontSize: isSmallScreen(context) ? 14 : 16,
-                                            fontFamily: AppFonts.mulishRegular,
-                                            fontWeight: FontWeight.w600),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(height: 12),
-                                  EventsSection(),
-                                  SizedBox(height: 40),
-                                ],
-                              ))
+                                    SizedBox(height: 12),
+                                    SizedBox(
+                                      height: MediaQuery.of(context)
+                                              .size
+                                              .height *
+                                          (meetingsController.meetings.isEmpty
+                                              ? 0.28
+                                              : 0.38),
+                                      child: Meetings(),
+                                    ),
+                                    const SizedBox(height: 12),
+                                    ConstrainedBox(
+                                        constraints: BoxConstraints(
+                                            maxWidth: isSmallScreen(context)
+                                                ? displayWidth(context)
+                                                : displayWidth(context) / 1.4),
+                                        child: CustomButton(
+                                          onPressed: () async {
+                                            var isEmpty =
+                                                await checkForEmptyProfileInfo();
+                                            if (isEmpty) {
+                                              Get.to(() => EditProfileScreen());
+                                            } else {
+                                              Get.toNamed(Routes.EDIT_SLOTS);
+                                            }
+                                          },
+                                          showBorder: true,
+                                          bgColor: ColorPalette.white,
+                                          child: Center(
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Text("Set your hours",
+                                                    style: TextStyle(
+                                                        color:
+                                                            ColorPalette.green,
+                                                        fontFamily: AppFonts
+                                                            .mulishRegular,
+                                                        fontSize: isSmallScreen(
+                                                                context)
+                                                            ? AppFonts
+                                                                .defaultSize
+                                                            : 18,
+                                                        fontWeight:
+                                                            FontWeight.w600)),
+                                                Icon(
+                                                    Icons
+                                                        .keyboard_arrow_right_outlined,
+                                                    color: ColorPalette.green),
+                                              ],
+                                            ),
+                                          ),
+                                        )),
+                                    const SizedBox(height: 28),
+                                    ExplorePerksWidget(),
+                                    const SizedBox(height: 32),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          "Events near you",
+                                          style: TextStyle(
+                                              color: ColorPalette.grey[600],
+                                              fontFamily:
+                                                  AppFonts.mulishRegular,
+                                              fontSize: isSmallScreen(context)
+                                                  ? 16
+                                                  : 22,
+                                              fontWeight: isSmallScreen(context)
+                                                  ? FontWeight.w600
+                                                  : FontWeight.w700),
+                                        ),
+                                        Text(
+                                          "See all",
+                                          style: TextStyle(
+                                              color: ColorPalette.green,
+                                              fontSize: isSmallScreen(context)
+                                                  ? 14
+                                                  : 18,
+                                              fontFamily:
+                                                  AppFonts.mulishRegular,
+                                              fontWeight: FontWeight.w600),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(height: 12),
+                                    EventsSection(),
+                                    SizedBox(height: 40),
+                                  ],
+                                ))
                           ],
                         ))
                   ],
