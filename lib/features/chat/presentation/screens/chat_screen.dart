@@ -7,6 +7,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:audio_session/audio_session.dart' as av;
 import 'package:audioplayers/audioplayers.dart' as ap;
 import 'package:flutter_sound/flutter_sound.dart' as fs;
+import 'package:tl_consultant/core/global/unfocus_bg.dart';
+import 'package:tl_consultant/features/chat/presentation/widgets/chat_app_bar.dart';
 
 /// ====== AUDIO PLAYER MANAGER (audioplayers) ======
 
@@ -90,7 +92,7 @@ class ChatItem {
 /// ====== PAGE ======
 
 class ChatScreen extends StatefulWidget {
-  const ChatScreen({Key? key}) : super(key: key);
+  const ChatScreen({super.key});
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -120,7 +122,7 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     super.initState();
-    // _text.addListener(() => setState(() {}));
+    _text.addListener(() => setState(() {}));
 
     _initRecorder();
   }
@@ -185,14 +187,6 @@ class _ChatScreenState extends State<ChatScreen> {
   /// ----- Start recording -----
   Future<void> _startRecording() async {
     if (_isRecording) return;
-
-    // final ok = await _ensureMic();
-    // if (!ok) {
-    //   debugPrint('Microphone permission not granted');
-    //   return;
-    // }
-
-    // await _initRecorder();
 
     final dir = await getTemporaryDirectory();
     final filePath =
@@ -294,76 +288,128 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Chat (Text + Voice Note)')),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              controller: _scroll,
-              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-              itemCount: _items.length,
-              itemBuilder: (context, i) {
-                final it = _items[i];
-                final align =
-                it.fromMe ? CrossAxisAlignment.end : CrossAxisAlignment.start;
-                final bubbleColor =
-                it.fromMe ? Colors.green.shade600 : Colors.grey.shade200;
-                final textColor = it.fromMe ? Colors.white : Colors.black87;
+    final bottomInset = MediaQuery.of(context).viewInsets.bottom; // keyboard height
 
-                return Align(
-                  alignment:
-                  it.fromMe ? Alignment.centerRight : Alignment.centerLeft,
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(vertical: 6),
-                    padding: const EdgeInsets.all(10),
-                    constraints: BoxConstraints(
-                      maxWidth: MediaQuery.of(context).size.width * 0.78,
-                    ),
-                    decoration: BoxDecoration(
-                      color: bubbleColor,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: it.isVoice
-                        ? VoiceBubble(
-                      path: it.vnPath!,
-                      fromMe: it.fromMe,
-                      pm: _pm,
-                    )
-                        : Column(
-                      crossAxisAlignment: align,
-                      children: [
-                        Text(it.text ?? '',
-                            style: TextStyle(
-                              color: textColor,
-                              fontSize: 16,
-                            )),
-                      ],
+    return UnFocusWidget(
+      child: Scaffold(
+        resizeToAvoidBottomInset: true,
+        body: Stack(
+          children: [
+            // Background
+            Positioned.fill(
+              child: const Image(
+                image: AssetImage('assets/images/chat_bg.png'),
+                fit: BoxFit.cover,
+                color: Colors.black26,
+                colorBlendMode: BlendMode.darken,
+              ),
+            ),
+
+            // Foreground content
+            SafeArea(
+              bottom: false, // we'll handle bottom insets for the input bar
+              child: Column(
+                children: [
+                  const TitleBar(),
+
+                  // Messages
+                  Expanded(
+                    child: ListView.builder(
+                      controller: _scroll,
+                      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12)
+                      // add a bit of bottom space so last item isn't under the input
+                          .add(const EdgeInsets.only(bottom: 72)),
+                      itemCount: _items.length,
+                      itemBuilder: (context, i) {
+                        final it = _items[i];
+                        final align = it.fromMe
+                            ? CrossAxisAlignment.end
+                            : CrossAxisAlignment.start;
+                        final bubbleColor =
+                        it.fromMe ? Colors.green.shade600 : Colors.grey.shade200;
+                        final textColor = it.fromMe ? Colors.white : Colors.black87;
+
+                        return Align(
+                          alignment: it.fromMe
+                              ? Alignment.centerRight
+                              : Alignment.centerLeft,
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(vertical: 6),
+                            padding: const EdgeInsets.all(10),
+                            constraints: BoxConstraints(
+                              maxWidth: MediaQuery.of(context).size.width * 0.78,
+                            ),
+                            decoration: BoxDecoration(
+                              color: bubbleColor,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: it.isVoice
+                                ? VoiceBubble(
+                              path: it.vnPath!,
+                              fromMe: it.fromMe,
+                              pm: _pm,
+                            )
+                                : Column(
+                              crossAxisAlignment: align,
+                              children: [
+                                Text(
+                                  it.text ?? '',
+                                  style: TextStyle(
+                                    color: textColor,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ),
-                );
-              },
-            ),
-          ),
 
-          // Input bar (text or draft VN control)
-          _InputBar(
-            text: _text,
-            isRecording: _isRecording,
-            sec: _sec,
-            showMic: _showMic,
-            draftPath: _draftPath,
-            pm: _pm,
-            onStartRecording: _startRecording,
-            onStopRecording: () => _stopRecording(autoplay: true),
-            onDiscardDraft: _discardDraft,
-            onSendText: _sendText,
-            onSendDraft: _sendDraft,
-          ),
-        ],
+                  // Input bar
+
+                  SafeArea(
+                    top: false,
+                    child: _InputBar(
+                      text: _text,
+                      isRecording: _isRecording,
+                      sec: _sec,
+                      showMic: _showMic,
+                      draftPath: _draftPath,
+                      pm: _pm,
+                      onStartRecording: _startRecording,
+                      onStopRecording: () => _stopRecording(autoplay: true),
+                      onDiscardDraft: _discardDraft,
+                      onSendText: _sendText,
+                      onSendDraft: _sendDraft,
+                    ),
+                  )
+                  // Padding(
+                  //   padding: EdgeInsets.only(bottom: bottomInset), // lift above keyboard
+                  //   child: _InputBar(
+                  //     text: _text,
+                  //     isRecording: _isRecording,
+                  //     sec: _sec,
+                  //     showMic: _showMic,
+                  //     draftPath: _draftPath,
+                  //     pm: _pm,
+                  //     onStartRecording: _startRecording,
+                  //     onStopRecording: () => _stopRecording(autoplay: true),
+                  //     onDiscardDraft: _discardDraft,
+                  //     onSendText: _sendText,
+                  //     onSendDraft: _sendDraft,
+                  //   ),
+                  // ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
+
 }
 
 /// ====== INPUT BAR (handles recording, draft VN, text) ======
@@ -410,7 +456,6 @@ class _InputBar extends StatelessWidget {
       top: false,
       child: Container(
         padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
-        color: Colors.white,
         child: Row(
           children: [
             Expanded(

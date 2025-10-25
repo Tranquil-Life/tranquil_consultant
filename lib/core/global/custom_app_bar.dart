@@ -19,7 +19,6 @@ class AppBarAction {
   });
 }
 
-
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String? title;
   final bool hideBackButton;
@@ -47,26 +46,31 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    final canGoBack = (Navigator.of(context).canPop() || onBackPressed != null) && !hideBackButton;
-
     return AppBar(
       elevation: 0,
       backgroundColor: backgroundColor ?? Colors.transparent,
       centerTitle: centerTitle,
-      // Give leading area enough width so the button isn't compressed
-      leadingWidth: isSmallScreen(context) ? kToolbarHeight : 82,
-      // Optional extra spacing from the very left edge (not inside the button)
-      leading: centerTitle == true
-          ? null
-          : canGoBack
-          ? Padding(
-        padding: EdgeInsets.only(left: isSmallScreen(context) ? 16 : 24), // small, not 40
-        child: Hero(
-          tag: 'back_button',
+      toolbarTextStyle: TextStyle(
+        fontSize: 17,
+        color: ColorPalette.green[800],
+        fontFamily: fontFamily,
+      ),
+      leading: centerTitle == true ? null : (Navigator.of(context).canPop() || onBackPressed != null) &&
+          !hideBackButton
+          ? Hero(
+        tag: 'back_button',
+        child: Center(
           child: AppBarButton(
             backgroundColor: ColorPalette.green,
             onPressed: onBackPressed ?? Navigator.of(context).pop,
-            icon: const Icon(Icons.arrow_back_ios_new, size: 19),
+            icon: const Padding(
+              padding: EdgeInsets.all(1),
+              child: Icon(
+                Icons.arrow_back_ios_new,
+                color: Colors.white,
+                size: 19,
+              ),
+            ),
           ),
         ),
       )
@@ -77,10 +81,10 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         child: Text(
           title!,
           style: TextStyle(
-            fontSize: isSmallScreen(context) ? 24 : 26,
-            fontWeight: FontWeight.w500,
-            color: titleColor ?? ColorPalette.black,
-            fontFamily: AppFonts.mulishSemiBold,
+              fontSize: 24,
+              fontWeight: FontWeight.w500,
+              color: titleColor ?? ColorPalette.black,
+              fontFamily: AppFonts.josefinSansRegular
           ),
         ),
       )
@@ -91,10 +95,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           child: Center(
             child: e.isCustomButton
                 ? AppBarButton(
-              icon: e.child,
-              onPressed: e.onPressed,
-              backgroundColor: actionBgColor ?? ColorPalette.green,
-            )
+                icon: e.child,
+                onPressed: e.onPressed,
+                backgroundColor: actionBgColor ?? ColorPalette.green)
                 : _NormalButton(e),
           ),
         );
@@ -106,6 +109,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
+
 
 class _NormalButton extends StatelessWidget {
   const _NormalButton(this.data, {super.key});

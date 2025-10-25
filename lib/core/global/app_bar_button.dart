@@ -24,8 +24,8 @@ class AppBarButton extends StatelessWidget {
     final isSmall = isSmallScreen(context);
 
     return SizedBox(
-      height: isSmall ? kToolbarHeight : size,
-      width: isSmall ? kToolbarHeight : size,
+      height: isSmall ? 32 : size,
+      width: isSmall ? 32 : size,
       child: Material(
         color: bg,
         borderRadius: BorderRadius.circular(isSmallScreen(context) ? 9 : 16),

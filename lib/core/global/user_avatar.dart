@@ -184,7 +184,7 @@ class MyAvatarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final profileController = Get.put(ProfileController());
+    final profileController = ProfileController.instance;
 
     return Obx(() {
       final value = profileController.profilePic.value.trim();

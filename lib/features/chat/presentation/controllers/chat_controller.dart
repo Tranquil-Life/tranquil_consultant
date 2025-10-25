@@ -28,8 +28,7 @@ import 'package:tl_consultant/main.dart';
 import 'package:vibration/vibration.dart';
 
 class ChatController extends GetxController {
-  static ChatController get instance => Get.find();
-
+  static ChatController get instance => Get.find<ChatController>();
 
   final dashboardController = Get.put(DashboardController());
 

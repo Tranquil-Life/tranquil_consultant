@@ -25,8 +25,9 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
-  final dashboardController = Get.put(DashboardController());
-  final chatController = Get.put(ChatController());
+  final dashboardController = DashboardController.instance;
+  final profileController = ProfileController.instance;
+  final chatController = ChatController.instance;
   final meetingsController = Get.put(MeetingsController());
 
   ClientUser? client;
@@ -41,6 +42,8 @@ class _DashboardState extends State<Dashboard> {
   @override
   void initState() {
     dashboardController.getMyLocationInfo();
+    profileController.restoreUser();
+
     profileCompletionCheck();
 
     setStatusBarBrightness(true);

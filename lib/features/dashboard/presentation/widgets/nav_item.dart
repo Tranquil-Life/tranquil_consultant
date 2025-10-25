@@ -7,6 +7,15 @@ import 'package:tl_consultant/core/theme/fonts.dart';
 import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
 
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:get/get.dart';
+import 'package:tl_consultant/core/global/custom_text.dart';
+import 'package:tl_consultant/core/theme/colors.dart';
+import 'package:tl_consultant/core/theme/fonts.dart';
+import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
+import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
+
 class BuildNavItem extends StatelessWidget {
   const BuildNavItem(
       {super.key,
@@ -44,8 +53,8 @@ class BuildNavItem extends StatelessWidget {
             children: [
               SvgPicture.asset(
                 icon,
-                height: 32,
-                width: 32,
+                height: isSmallScreen(context) ? 24 : 32,
+                width: isSmallScreen(context) ? 24 : 32,
                 color: isSelected
                     ? const Color(0xFF388D4D)
                     : ColorPalette.grey[700],
@@ -53,7 +62,7 @@ class BuildNavItem extends StatelessWidget {
               SizedBox(height: size.height * 0.006),
               CustomText(
                 text: label,
-                size: isSmallScreen(context) ? AppFonts.smallSize : AppFonts.largeSize,
+                size: isSmallScreen(context) ? (isSelected ? AppFonts.defaultSize : AppFonts.smallSize) : AppFonts.largeSize,
                 color: isSelected
                     ?  ColorPalette.grey[400]
                     : ColorPalette.grey[700],

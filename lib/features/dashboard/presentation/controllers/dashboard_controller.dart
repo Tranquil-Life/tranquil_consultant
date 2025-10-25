@@ -31,7 +31,7 @@ import 'package:tl_consultant/features/wallet/presentation/controllers/transacti
 import 'package:tl_consultant/features/wallet/presentation/screens/wallet_tab.dart';
 
 class DashboardController extends GetxController {
-  static DashboardController get instance => Get.find();
+  static DashboardController get instance => Get.find<DashboardController>();
 
   final LocationRepoImpl locationRepo = LocationRepoImpl();
 
