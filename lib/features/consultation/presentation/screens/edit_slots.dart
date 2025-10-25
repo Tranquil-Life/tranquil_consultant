@@ -163,7 +163,6 @@ class _EditSlotsState extends State<EditSlots> {
                           },
                         ),
                       ),
-
                       //save button
                       Padding(
                         padding: const EdgeInsets.only(top: 48, bottom: 32),
