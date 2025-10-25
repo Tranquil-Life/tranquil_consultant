@@ -102,7 +102,7 @@ class _EditSlotsState extends State<EditSlots> {
                     if (width >= 1000) {
                       crossAxisCount = 4;
                     } else if (width <= 520) {
-                      crossAxisCount = 2;
+                      crossAxisCount = 3;
                     }
 
                     return GridView.builder(
@@ -147,19 +147,6 @@ class _EditSlotsState extends State<EditSlots> {
                 )),
 
                 const SizedBox(height: 16),
-
-                // Days selector + Save button
-                Padding(
-                  padding: EdgeInsets.only(bottom: 12, top: 4),
-                  child: Text(
-                    'Select available days',
-                    style: TextStyle(
-                      fontSize:
-                          isSmallScreen(context) ? AppFonts.defaultSize : 24,
-                      fontFamily: AppFonts.mulishSemiBold,
-                    ),
-                  ),
-                ),
 
                 // SizedBox(
                 //   height: isSmallScreen(context) ? 80 : 120,
