@@ -2,12 +2,16 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:audio_session/audio_session.dart' as av;
 import 'package:audioplayers/audioplayers.dart' as ap;
 import 'package:flutter_sound/flutter_sound.dart' as fs;
+import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/global/unfocus_bg.dart';
+import 'package:tl_consultant/core/theme/colors.dart';
+import 'package:tl_consultant/features/chat/presentation/controllers/chat_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/widgets/chat_app_bar.dart';
 
 /// ====== AUDIO PLAYER MANAGER (audioplayers) ======
@@ -99,6 +103,8 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+  final chatController = ChatController.instance;
+
   // Playback (shared by draft + bubbles)
   final AudioPlayerManager _pm = AudioPlayerManager();
 
@@ -118,35 +124,6 @@ class _ChatScreenState extends State<ChatScreen> {
 
   // UI helpers
   bool get _showMic => _text.text.trim().isEmpty && !_isRecording;
-
-  @override
-  void initState() {
-    super.initState();
-    _text.addListener(() => setState(() {}));
-
-    _initRecorder();
-  }
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    _text.dispose();
-    _pm.dispose();
-    _recorder.closeRecorder();
-    super.dispose();
-  }
-
-  /// ----- Permissions -----
-  Future<bool> _ensureMic() async {
-    var s = await Permission.microphone.status;
-    if (s.isGranted) return true;
-    if (s.isPermanentlyDenied || s.isRestricted) {
-      await openAppSettings();
-      return false;
-    }
-    s = await Permission.microphone.request();
-    return s.isGranted;
-  }
 
   /// ----- Recorder init (idempotent) -----
   Future<void> _initRecorder() async {
@@ -284,12 +261,47 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
+  @override
+  void initState() {
+    super.initState();
+
+    _text.addListener(() => setState(() {}));
+    _initRecorder();
+
+    // initial data
+    chatController.loadRecentMessages();
+    chatController.initializePusher(channel: chatController.chatChannel.value);
+
+    // 👇 load older when user scrolls to top (with reverse: true)
+    // Trigger load-older when user scrolls near the top (because reverse: true)
+    _scroll.addListener(() {
+      if (!_scroll.hasClients) return;
+      final pos = _scroll.position;
+      const threshold = 200.0; // how close to the top to trigger
+
+      // With reverse:true, pixels grow as you scroll "up" toward older messages.
+      final nearTop = pos.pixels >= (pos.maxScrollExtent - threshold);
+
+      if (nearTop && !chatController.isLoadMoreRunning.value) {
+        chatController.loadOlderMessages();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _scroll.dispose();
+    _timer?.cancel();
+    _text.dispose();
+    _pm.dispose();
+    _recorder.closeRecorder();
+    super.dispose();
+  }
+
   /// ----- UI -----
 
   @override
   Widget build(BuildContext context) {
-    final bottomInset = MediaQuery.of(context).viewInsets.bottom; // keyboard height
-
     return UnFocusWidget(
       child: Scaffold(
         resizeToAvoidBottomInset: true,
@@ -313,59 +325,95 @@ class _ChatScreenState extends State<ChatScreen> {
                   const TitleBar(),
 
                   // Messages
+                  // Messages
                   Expanded(
-                    child: ListView.builder(
-                      controller: _scroll,
-                      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12)
-                      // add a bit of bottom space so last item isn't under the input
-                          .add(const EdgeInsets.only(bottom: 72)),
-                      itemCount: _items.length,
-                      itemBuilder: (context, i) {
-                        final it = _items[i];
-                        final align = it.fromMe
-                            ? CrossAxisAlignment.end
-                            : CrossAxisAlignment.start;
-                        final bubbleColor =
-                        it.fromMe ? Colors.green.shade600 : Colors.grey.shade200;
-                        final textColor = it.fromMe ? Colors.white : Colors.black87;
+                    child: Obx(() {
+                      // Make a safe copy and sort descending (newest first)
+                      final messages = [...chatController.messages];
+                      messages.sort((a, b) => b.createdAt!.compareTo(a.createdAt!));
 
-                        return Align(
-                          alignment: it.fromMe
-                              ? Alignment.centerRight
-                              : Alignment.centerLeft,
-                          child: Container(
-                            margin: const EdgeInsets.symmetric(vertical: 6),
-                            padding: const EdgeInsets.all(10),
-                            constraints: BoxConstraints(
-                              maxWidth: MediaQuery.of(context).size.width * 0.78,
-                            ),
-                            decoration: BoxDecoration(
-                              color: bubbleColor,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: it.isVoice
-                                ? VoiceBubble(
-                              path: it.vnPath!,
-                              fromMe: it.fromMe,
-                              pm: _pm,
-                            )
-                                : Column(
-                              crossAxisAlignment: align,
-                              children: [
-                                Text(
-                                  it.text ?? '',
-                                  style: TextStyle(
-                                    color: textColor,
-                                    fontSize: 16,
+                      // Update the recent message event
+                      if (messages.isNotEmpty) {
+                        chatController.recentMsgEvent.value = messages.first;
+                      }
+
+                      final showLoader = chatController.isLoadMoreRunning.value;
+                      final totalCount = messages.length + (showLoader ? 1 : 0);
+
+                      return ListView.builder(
+                        controller: _scroll,
+                        physics: const BouncingScrollPhysics(),
+                        reverse: true, // so new messages appear at the bottom
+                        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12)
+                            .add(const EdgeInsets.only(bottom: 72)),
+                        itemCount: totalCount,
+                        itemBuilder: (context, index) {
+                          // Loader at top (because reverse:true)
+                          if (showLoader && index == messages.length) {
+                            return const Padding(
+                              padding: EdgeInsets.symmetric(vertical: 12),
+                              child: Center(
+                                child: SizedBox(
+                                  width: 22,
+                                  height: 22,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: ColorPalette.green,
                                   ),
                                 ),
-                              ],
+                              ),
+                            );
+                          }
+
+                          final msg = messages[index];
+                          final fromMe = (msg.senderId == myId && msg.senderType == consultant);
+                          final align =
+                          fromMe ? CrossAxisAlignment.end : CrossAxisAlignment.start;
+                          final bubbleColor =
+                          fromMe ? Colors.green.shade600 : Colors.grey.shade200;
+                          final textColor = fromMe ? Colors.white : Colors.black87;
+
+                          // Determine if it’s a voice message
+                          final isVoice =
+                              msg.messageType == 'voice' || msg.messageType == 'audio';
+
+                          return Align(
+                            alignment: fromMe ? Alignment.centerRight : Alignment.centerLeft,
+                            child: Container(
+                              margin: const EdgeInsets.symmetric(vertical: 6),
+                              padding: const EdgeInsets.all(10),
+                              constraints: BoxConstraints(
+                                maxWidth: MediaQuery.of(context).size.width * 0.78,
+                              ),
+                              decoration: BoxDecoration(
+                                color: bubbleColor,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: isVoice
+                                  ? VoiceBubble(
+                                path: msg.message ?? '',
+                                fromMe: fromMe,
+                                pm: _pm, // your AudioPlayerManager instance
+                              )
+                                  : Column(
+                                crossAxisAlignment: align,
+                                children: [
+                                  Text(
+                                    msg.message ?? '',
+                                    style: TextStyle(
+                                      color: textColor,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        );
-                      },
-                    ),
+                          );
+                        },
+                      );
+                    }),
                   ),
+
 
                   // Input bar
 
@@ -385,22 +433,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       onSendDraft: _sendDraft,
                     ),
                   )
-                  // Padding(
-                  //   padding: EdgeInsets.only(bottom: bottomInset), // lift above keyboard
-                  //   child: _InputBar(
-                  //     text: _text,
-                  //     isRecording: _isRecording,
-                  //     sec: _sec,
-                  //     showMic: _showMic,
-                  //     draftPath: _draftPath,
-                  //     pm: _pm,
-                  //     onStartRecording: _startRecording,
-                  //     onStopRecording: () => _stopRecording(autoplay: true),
-                  //     onDiscardDraft: _discardDraft,
-                  //     onSendText: _sendText,
-                  //     onSendDraft: _sendDraft,
-                  //   ),
-                  // ),
+
                 ],
               ),
             ),
