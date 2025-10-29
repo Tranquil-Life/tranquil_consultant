@@ -27,7 +27,7 @@ class LargeScreenHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 115,
+      height: 90,
       padding: EdgeInsets.only(left: 20, right: 60),
       decoration: BoxDecoration(
           color: ColorPalette.white,
@@ -54,8 +54,10 @@ class LargeScreenHeader extends StatelessWidget {
                   onTap: () => Get.toNamed(Routes.PROFILE),
                   child: CircleAvatar(
                     backgroundColor: ColorPalette.grey[100],
-                    radius: 38,
+                    radius: 28,
                     child: MyAvatarWidget(size: 52 * 2),
+                    // radius: 38,
+                    // child: MyAvatarWidget(size: 52 * 2),
                   ),
                 ),
               ),
@@ -66,13 +68,15 @@ class LargeScreenHeader extends StatelessWidget {
                 children: [
                   CustomText(
                     text: getGreeting(),
-                    size: 22,
+                    size: AppFonts.largeSize,
+                    // size: 22,
                     color: ColorPalette.black2,
                     fontFamily: AppFonts.mulishRegular,
                   ),
                   CustomText(
                     text: profileController.firstNameTEC.text,
-                    size: 24,
+                    size: AppFonts.largeSize+2,
+                    // size: 24,
                     color: ColorPalette.black2,
                     fontFamily: AppFonts.mulishSemiBold,
                   )
@@ -90,7 +94,10 @@ class LargeScreenHeader extends StatelessWidget {
                     clipBehavior: Clip.none,
                     children: [
                       SvgPicture.asset(SvgElements.svgBellIcon,
-                          height: 32, width: 32),
+                          height: 22,
+                          width: 22,
+                          // height: 32, width: 32
+                      ),
                       if (activityController.count() > 0)
                         Positioned(
                           right: 0,

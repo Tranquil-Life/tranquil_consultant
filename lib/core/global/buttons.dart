@@ -37,7 +37,8 @@ class CustomButton extends StatelessWidget {
       child: child ??
           Text(text!,
               style: TextStyle(
-                  fontSize: isSmallScreen(context) ? AppFonts.defaultSize : AppFonts.baseSize,
+                  // fontSize: isSmallScreen(context) ? AppFonts.defaultSize : AppFonts.baseSize,
+                  fontSize: AppFonts.defaultSize,
                   color: textColor ?? ColorPalette.white)),
     );
   }

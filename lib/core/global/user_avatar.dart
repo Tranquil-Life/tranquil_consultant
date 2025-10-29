@@ -54,9 +54,9 @@ class UserAvatar extends StatelessWidget {
 
   // Fallback UI on errors
   Widget _errorBuilder(BuildContext _, Object __, StackTrace? ___) =>
-      const Padding(
+      Padding(
         padding: EdgeInsets.all(8),
-        child: FittedBox(fit: BoxFit.contain, child: Icon(Icons.person_outline)),
+        child: FittedBox(fit: BoxFit.contain, child: Icon(Icons.person_outline, color: ColorPalette.grey,)),
       );
 
   // ---- Helpers --------------------------------------------------------------

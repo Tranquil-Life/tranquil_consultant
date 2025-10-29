@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:tl_consultant/core/global/buttons.dart';
 import 'package:tl_consultant/core/global/custom_app_bar.dart';
+import 'package:tl_consultant/core/global/custom_text.dart';
 import 'package:tl_consultant/core/global/my_default_text_theme.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/theme/fonts.dart';
@@ -75,6 +76,7 @@ class _EditSlotsState extends State<EditSlots> {
       appBar: CustomAppBar(
         backgroundColor: Colors.grey[200],
         title: 'Edit Availability',
+        fontFamily: AppFonts.mulishSemiBold,
       ),
       backgroundColor: Colors.grey[200],
       body: Padding(
@@ -92,122 +94,175 @@ class _EditSlotsState extends State<EditSlots> {
                 if (slotController.loading.value)
                   Center(
                     child: CircularProgressIndicator(color: ColorPalette.green),
-                  ),
+                  )
+                else
+                  Expanded(
+                      child: GridView.builder(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                      maxCrossAxisExtent: 140, // auto-responsiveness
+                      mainAxisExtent: 44, // compact, consistent height
+                      mainAxisSpacing: 12,
+                      crossAxisSpacing: 12,
+                    ),
+                    itemCount: timeSlots.length,
+                    itemBuilder: (context, index) {
+                      final slot = timeSlots[index];
+                      final isSelected =
+                          slotController.timeSlots.contains(slot);
 
-                Expanded(child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    // Make the grid a bit responsive
-                    final width = constraints.maxWidth;
-                    int crossAxisCount = 3;
-                    if (width >= 1000) {
-                      crossAxisCount = 4;
-                    } else if (width <= 520) {
-                      crossAxisCount = 3;
-                    }
-
-                    return GridView.builder(
-                      padding: const EdgeInsets.only(bottom: 8),
-                      physics: NeverScrollableScrollPhysics(),
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: crossAxisCount,
-                        mainAxisSpacing: 16,
-                        crossAxisSpacing: 16,
-                        childAspectRatio: 3,
-                        // childAspectRatio: 2.3,
-                      ),
-                      itemCount: timeSlots.length,
-                      itemBuilder: (context, index) {
-                        final slot = timeSlots[index];
-                        final isSelected =
-                            slotController.timeSlots.contains(slot);
-                        return Material(
+                      return AnimatedContainer(
+                        duration: const Duration(milliseconds: 140),
+                        curve: Curves.easeOut,
+                        decoration: BoxDecoration(
                           color: isSelected ? ColorPalette.green : Colors.white,
-                          borderRadius: BorderRadius.circular(
-                              isSmallScreen(context) ? 32 : 64),
-                          elevation: 2,
-                          child: InkWell(
-                            borderRadius: BorderRadius.circular(30),
-                            onTap: () => toggleSelection(slot),
-                            child: Center(
-                              child: Text(
-                                slot,
-                                style: TextStyle(
-                                  fontSize: isSmallScreen(context) ? 16 : 18,
-                                  fontWeight: FontWeight.w700,
-                                  color:
-                                      isSelected ? Colors.white : Colors.black,
-                                ),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            width: 1,
+                            color: isSelected
+                                ? ColorPalette.green
+                                : Colors.grey.shade300,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              blurRadius: 3,
+                              offset: const Offset(0, 1),
+                              color: Colors.black.withOpacity(0.06),
+                            )
+                          ],
+                        ),
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(10),
+                          onTap: () => toggleSelection(slot),
+                          child: Center(
+                            child: Text(
+                              slot,
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: isSelected ? Colors.white : Colors.black,
                               ),
                             ),
                           ),
-                        );
-                      },
-                    );
-                  },
-                )),
+                        ),
+                      );
+                    },
+                  )),
 
                 const SizedBox(height: 16),
 
-                // SizedBox(
-                //   height: isSmallScreen(context) ? 80 : 120,
-                //   child: ListView.separated(
-                //     scrollDirection: Axis.horizontal,
-                //     padding: const EdgeInsets.only(right: 16),
-                //     itemCount: days.length,
-                //     separatorBuilder: (_, __) => const SizedBox(width: 8),
-                //     itemBuilder: (_, index) {
-                //       final day = days[index];
-                //       final isChosen =
-                //           slotController.selectedDays.contains(day);
-                //
-                //       return DayCard(
-                //         day,
-                //         selected: isChosen,
-                //         onChosen: () {
-                //           if (isChosen) {
-                //             slotController.selectedDays.remove(day);
-                //           } else {
-                //             slotController.selectedDays.add(day);
-                //           }
-                //         },
-                //       );
-                //     },
-                //   ),
-                // ),
-                //
-                // const SizedBox(height: 40),
+                buildDaySelector(),
+                const SizedBox(height: 40),
 
                 // Save button pinned at bottom
                 Align(
                   alignment: Alignment.center,
                   child: SizedBox(
-                    height: isSmallScreen(context)
-                        ? null : 52,
-                      width: isSmallScreen(context)
-                          ? displayWidth(context)
-                          : displayWidth(context) / 1.4,
-                      child: CustomButton(
-                        onPressed: slotController.loading.value
-                            ? null
-                            : () {
-                          slotController.saveSlots(
-                            availableDays: slotController.selectedDays,
-                          );
-                        },
-                        child: Text(
-                          slotController.loading.value ? "Saving..." : "Save",
-                          style: TextStyle(
-                            fontSize: isSmallScreen(context) ? AppFonts.defaultSize : 18,
-                            color: ColorPalette.white,
-                          ),
+                    height: isSmallScreen(context) ? 42 : 46,
+                    // was 80 / 120 / 52
+                    width: isSmallScreen(context)
+                        ? displayWidth(context)
+                        : displayWidth(context) / 2,
+                    // slightly narrower
+                    child: CustomButton(
+                      onPressed: slotController.loading.value
+                          ? null
+                          : () {
+                              slotController.saveSlots(
+                                availableDays: slotController.selectedDays,
+                              );
+                            },
+                      child: Text(
+                        slotController.loading.value ? "Saving..." : "Save",
+                        style: TextStyle(
+                          fontSize: isSmallScreen(context) ? 14 : 16,
+                          // smaller text
+                          fontWeight: FontWeight.w600,
+                          color: ColorPalette.white,
+                          letterSpacing: .3,
                         ),
-                      )),
+                      ),
+                    ),
+                  ),
                 ),
 
                 const SizedBox(height: 40),
-
               ],
             )),
+      ),
+    );
+  }
+
+  Widget buildDaySelector() {
+    final isSmall = isSmallScreen(context);
+
+    final dayList = SizedBox(
+      height: isSmall ? 48 : 52,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        shrinkWrap: true,
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        itemCount: days.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 8),
+        itemBuilder: (_, index) {
+          final day = days[index];
+          final isChosen = slotController.selectedDays.contains(day);
+          return DayCard(
+            day,
+            selected: isChosen,
+            onChosen: () {
+              if (isChosen) {
+                slotController.selectedDays.remove(day);
+              } else {
+                slotController.selectedDays.add(day);
+              }
+
+              setState(() {});
+            },
+          );
+        },
+      ),
+    );
+
+    // If it's a large screen (tablet/desktop), pin it to bottom center.
+    if (!isSmall) {
+      return Align(
+        alignment: Alignment.bottomCenter,
+        child: Padding(
+          padding: const EdgeInsets.only(top: 16),
+          child: SizedBox(
+            width: displayWidth(context) / 1.6, // centered narrower width
+            child: Center(child: Column(
+              children: [
+                CustomText(text: "Select work days",
+                    color: ColorPalette.grey[600],
+                    size: AppFonts.largeSize,
+                    fontFamily: AppFonts.mulishSemiBold),
+
+                const SizedBox(height: 16),
+                dayList
+              ],
+            )),
+          ),
+        ),
+      );
+    }
+
+    // On small screens, just show it inline as usual.
+    return Padding(
+      padding: const EdgeInsets.only(top: 12),
+      child: Column(
+        children: [
+          CustomText(text: "Select work days",
+              color: ColorPalette.grey[600],
+              size: AppFonts.largeSize,
+              fontFamily: AppFonts.mulishSemiBold),
+
+          const SizedBox(height: 16),
+          dayList
+        ],
       ),
     );
   }

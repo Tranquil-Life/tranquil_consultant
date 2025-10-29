@@ -37,7 +37,7 @@ class MeetingTileRegularState extends State<MeetingTileRegular> {
               child: UserAvatar(
                 imageUrl: widget.meeting.client.avatarUrl,
                 source: AvatarSource.url,
-                size: 70,
+                // size: 70,
               ),
             ),
             const SizedBox(width: 8),
@@ -52,7 +52,8 @@ class MeetingTileRegularState extends State<MeetingTileRegular> {
                     children: [
                       CustomText(
                         text: widget.meeting.client.displayName,
-                        size: 20,
+                        size: 16,
+                        // size: 20,
                         weight: FontWeight.w600,
                         color: ColorPalette.grey[500],
                         fontFamily: AppFonts.mulishSemiBold,
@@ -61,12 +62,12 @@ class MeetingTileRegularState extends State<MeetingTileRegular> {
                         CustomText(
                           text: "Expired ($timeRange)",
                           color: ColorPalette.red,
-                          size: 20,
+                          // size: 20,
                         )
                       else
                         CustomText(
                           text: "$minutes mins",
-                          size: 20,
+                          // size: 20,
                         ),
                     ],
                   ),
@@ -81,13 +82,16 @@ class MeetingTileRegularState extends State<MeetingTileRegular> {
                       children: [
                         SvgPicture.asset(
                           SvgElements.svgCalendar,
-                          height: 20,
-                          width: 20,
+                          height: 14,
+                          width: 14,
+                          // height: 20,
+                          // width: 20,
                         ),
                         const SizedBox(width: 4),
                         CustomText(
                           text: formattedDate,
-                          size: 16,
+                          size: 13,
+                          // size: 16,
                           weight: FontWeight.w400
                         ),
                       ],
@@ -98,7 +102,7 @@ class MeetingTileRegularState extends State<MeetingTileRegular> {
                       Row(
                         children: [
                           Icon(Icons.check_circle, color: ColorPalette.green),
-                          CustomText(text: "Rated by client", size: 16,)
+                          CustomText(text: "Rated by client")
                         ],
                       ),
                     if (!widget.meeting.ratedByClient &&
@@ -106,7 +110,7 @@ class MeetingTileRegularState extends State<MeetingTileRegular> {
                       Row(
                         children: [
                           Icon(Icons.check_circle, color: ColorPalette.yellow),
-                          CustomText(text: "Rated by you", size: 16)
+                          CustomText(text: "Rated by you")
                         ],
                       ),
                     if (widget.meeting.ratedByClient &&
@@ -117,7 +121,7 @@ class MeetingTileRegularState extends State<MeetingTileRegular> {
                           SizedBox(width: 4),
                           SizedBox(child: CustomText(
                             text: "Rated by both sides",
-                            size: 16))
+                            ))
                         ],
                       ),
                     if (!widget.meeting.ratedByClient &&
@@ -137,7 +141,9 @@ class MeetingTileRegularState extends State<MeetingTileRegular> {
                               );
                             },
                             child: Icon(Icons.star_border_rounded,
-                                color: Colors.grey, size: 32,),
+                                color: Colors.grey,
+                              // size: 32,
+                            ),
                           ),
                         ),
                       ),

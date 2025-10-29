@@ -53,8 +53,10 @@ class BuildNavItem extends StatelessWidget {
             children: [
               SvgPicture.asset(
                 icon,
-                height: isSmallScreen(context) ? 24 : 32,
-                width: isSmallScreen(context) ? 24 : 32,
+                height: 24,
+                width: 24,
+                // height: isSmallScreen(context) ? 24 : 32,
+                // width: isSmallScreen(context) ? 24 : 32,
                 color: isSelected
                     ? const Color(0xFF388D4D)
                     : ColorPalette.grey[700],
@@ -62,11 +64,13 @@ class BuildNavItem extends StatelessWidget {
               SizedBox(height: size.height * 0.006),
               CustomText(
                 text: label,
-                size: isSmallScreen(context) ? (isSelected ? AppFonts.defaultSize : AppFonts.smallSize) : AppFonts.largeSize,
+                size: AppFonts.defaultSize,
+                // size: isSmallScreen(context) ? (isSelected ? AppFonts.defaultSize : AppFonts.smallSize) : AppFonts.largeSize,
                 color: isSelected
                     ?  ColorPalette.grey[400]
                     : ColorPalette.grey[700],
-                weight: isSelected ? FontWeight.w700 : FontWeight.normal,
+                weight: FontWeight.normal,
+                // weight: isSelected ? FontWeight.w700 : FontWeight.normal,
               ),
             ],
           ),

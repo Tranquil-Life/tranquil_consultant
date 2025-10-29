@@ -13,8 +13,10 @@ class CustomIconButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       clipBehavior: Clip.hardEdge,
-      height: isSmallScreen(context) ? 50 : 60,
-      width: isSmallScreen(context) ? 50 : 60,
+      height: 50,
+      width: 50,
+      // height: isSmallScreen(context) ? 50 : 60,
+      // width: isSmallScreen(context) ? 50 : 60,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(100),

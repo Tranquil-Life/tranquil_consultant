@@ -24,11 +24,14 @@ class AppBarButton extends StatelessWidget {
     final isSmall = isSmallScreen(context);
 
     return SizedBox(
-      height: isSmall ? 32 : size,
-      width: isSmall ? 32 : size,
+      height: 32,
+      width: 32,
+      // height: isSmall ? 32 : size,
+      // width: isSmall ? 32 : size,
       child: Material(
         color: bg,
-        borderRadius: BorderRadius.circular(isSmallScreen(context) ? 9 : 16),
+        borderRadius: BorderRadius.circular(9),
+        // borderRadius: BorderRadius.circular(isSmallScreen(context) ? 9 : 16),
         child: InkWell(
           borderRadius: BorderRadius.circular(9),
           onTap: onPressed,

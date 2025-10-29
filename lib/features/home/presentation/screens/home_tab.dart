@@ -87,23 +87,26 @@ class _HomeTabState extends State<HomeTab> {
                                           "Scheduled sessions",
                                           style: TextStyle(
                                               color: ColorPalette.grey[600],
-                                              fontSize: isSmallScreen(context)
-                                                  ? 16
-                                                  : 22,
-                                              fontWeight: isSmallScreen(context)
-                                                  ? FontWeight.w600
-                                                  : FontWeight.w700),
+                                              fontSize: AppFonts.largeSize,
+                                              fontFamily: AppFonts.mulishSemiBold
+                                              // fontSize: isSmallScreen(context)
+                                              //     ? 16
+                                              //     : 22,
+                                              // fontWeight: isSmallScreen(context)
+                                              //     ? FontWeight.w600
+                                              //     : FontWeight.w700
+                                              ),
                                         ),
                                         Text(
                                           "See all",
                                           style: TextStyle(
-                                              color: ColorPalette.green,
-                                              fontSize: isSmallScreen(context)
-                                                  ? 14
-                                                  : 18,
-                                              fontFamily:
-                                                  AppFonts.mulishRegular,
-                                              fontWeight: FontWeight.w600),
+                                            color: ColorPalette.green,
+                                            fontSize: AppFonts.baseSize,
+                                            // fontSize: isSmallScreen(context)
+                                            //     ? 14
+                                            //     : 18,
+                                            fontFamily: AppFonts.mulishBold,
+                                          ),
                                         ),
                                       ],
                                     ),
@@ -120,9 +123,13 @@ class _HomeTabState extends State<HomeTab> {
                                     const SizedBox(height: 12),
                                     ConstrainedBox(
                                         constraints: BoxConstraints(
-                                            maxWidth: isSmallScreen(context)
-                                                ? displayWidth(context)
-                                                : displayWidth(context) / 1.4),
+                                            maxWidth: displayWidth(context)
+
+                                            // isSmallScreen(context)
+                                            //     ? displayWidth(context)
+                                            //     : displayWidth(context) / 1.4
+
+                                            ),
                                         child: CustomButton(
                                           onPressed: () async {
                                             var isEmpty =
@@ -146,11 +153,13 @@ class _HomeTabState extends State<HomeTab> {
                                                             ColorPalette.green,
                                                         fontFamily: AppFonts
                                                             .mulishRegular,
-                                                        fontSize: isSmallScreen(
-                                                                context)
-                                                            ? AppFonts
-                                                                .defaultSize
-                                                            : 18,
+                                                        fontSize: AppFonts
+                                                            .defaultSize,
+                                                        // fontSize: isSmallScreen(
+                                                        //         context)
+                                                        //     ? AppFonts
+                                                        //         .defaultSize
+                                                        //     : 18,
                                                         fontWeight:
                                                             FontWeight.w600)),
                                                 Icon(
@@ -172,24 +181,26 @@ class _HomeTabState extends State<HomeTab> {
                                           "Events near you",
                                           style: TextStyle(
                                               color: ColorPalette.grey[600],
-                                              fontFamily:
-                                                  AppFonts.mulishRegular,
-                                              fontSize: isSmallScreen(context)
-                                                  ? 16
-                                                  : 22,
-                                              fontWeight: isSmallScreen(context)
-                                                  ? FontWeight.w600
-                                                  : FontWeight.w700),
+                                              fontSize: AppFonts.largeSize,
+                                              fontFamily: AppFonts.mulishSemiBold
+
+                                              // fontWeight: isSmallScreen(context)
+                                              //     ? FontWeight.w600
+                                              //     : FontWeight.w700
+                                              ),
                                         ),
                                         Text(
                                           "See all",
                                           style: TextStyle(
+                                              // fontSize: isSmallScreen(context)
+                                              //     ? 14
+                                              //     : 18,
                                               color: ColorPalette.green,
-                                              fontSize: isSmallScreen(context)
-                                                  ? 14
-                                                  : 18,
-                                              fontFamily:
-                                                  AppFonts.mulishRegular,
+                                              fontSize: AppFonts.baseSize,
+                                              // fontSize: isSmallScreen(context)
+                                              //     ? 14
+                                              //     : 18,
+                                              fontFamily: AppFonts.mulishBold,
                                               fontWeight: FontWeight.w600),
                                         ),
                                       ],

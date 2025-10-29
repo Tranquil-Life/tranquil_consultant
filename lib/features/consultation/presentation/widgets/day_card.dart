@@ -14,31 +14,39 @@ class DayCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isSmall = isSmallScreen(context);
     return GestureDetector(
       onTap: onChosen,
       child: Container(
-          width: isSmallScreen(context) ? 80 : 160,
-          decoration: BoxDecoration(
-              color: selected ? ColorPalette.green : ColorPalette.grey,
-              borderRadius: BorderRadius.circular(isSmallScreen(context) ? 16.0 : 32),
-              border: !selected
-                  ? Border.all(width: 2, color: ColorPalette.white)
-                  : null,
-              boxShadow: !selected
-                  ? [
-                      BoxShadow(
-                          blurRadius: 6,
-                          color: Colors.black12,
-                          offset: Offset(0, 3)),
-                    ]
-                  : null),
-          child: Center(
-            child: CustomText(
-                text: day.substring(0, 3),
-                color: selected ? Colors.white : ColorPalette.black,
-                weight: FontWeight.w700,
-                size: isSmallScreen(context) ? AppFonts.defaultSize : 18),
-          )),
+        width: isSmall ? 66 : 88, // was 80/160
+        height: isSmall ? 36 : 40, // explicit compact height
+        decoration: BoxDecoration(
+          color: selected ? ColorPalette.green : Colors.white,
+          borderRadius: BorderRadius.circular(isSmall ? 10 : 12), // was 16/32
+          border: Border.all(
+            width: 1,
+            color: selected ? ColorPalette.green : Colors.grey.shade300,
+          ),
+          boxShadow: [
+            BoxShadow(
+              blurRadius: 3,
+              color: Colors.black.withOpacity(0.06),
+              offset: const Offset(0, 1),
+            )
+          ],
+        ),
+        child: Center(
+          child: Text(
+            day.substring(0, 3).toUpperCase(),
+            style: TextStyle(
+              color: selected ? Colors.white : ColorPalette.black,
+              fontWeight: FontWeight.w700,
+              fontSize: isSmall ? 12 : 13, // smaller text
+              letterSpacing: .2,
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

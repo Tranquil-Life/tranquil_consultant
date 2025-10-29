@@ -87,8 +87,10 @@ class ExplorePerksWidget extends StatelessWidget {
                                 fontWeight: FontWeight.w600),
                           ),
                           SizedBox(
-                            width: 232,
-                            height: 48,
+                            // width: 232,
+                            // height: 48,
+                            width: 160,
+                            height: 40,
                             child: CustomButton(
                                 bgColor: ColorPalette.white,
                                 onPressed: () {
@@ -105,20 +107,22 @@ class ExplorePerksWidget extends StatelessWidget {
                                         text: "Get started",
                                         color: ColorPalette.black,
                                         weight: FontWeight.w600,
-                                        size: 18,
+                                        // size: 18,
                                       ),
                                       SizedBox(width: 12),
                                       Icon(
                                         Icons.keyboard_arrow_right_outlined,
                                         color: ColorPalette.black,
-                                        size: 30,
+                                        // size: 30,
                                       )
                                     ],
                                   ),
                                 )),
                           ),
                         ],
-                      )))
+                      )
+
+            ))
       ],
     );
   }
