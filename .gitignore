@@ -50,5 +50,5 @@ tl_ssh_key
 tl_ssh_key.pub
 
 #3rd party api keys
-lib/core/utils/app_config.dart
+/lib/core/utils/app_config.dart
 
