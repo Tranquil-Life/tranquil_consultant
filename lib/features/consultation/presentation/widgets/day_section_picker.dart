@@ -17,7 +17,7 @@ class DaySectionPickerState extends State<DaySectionPicker> {
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Expanded(
           child: DaySectionWidget(
@@ -25,23 +25,22 @@ class DaySectionPickerState extends State<DaySectionPicker> {
             icon: TranquilIcons.bright,
             isSelected: !isNightSelected,
             onPressed: () {
-              isNightSelected = false;
-
-              widget.onDaySelected!(false);
+              setState(() => isNightSelected = false);
+              widget.onDaySelected?.call(false);
             },
           ),
         ),
-        const SizedBox(width: 24),
+        const SizedBox(width: 12), // reduced from 24
         Expanded(
           child: DaySectionWidget(
-              title: 'Nighttime',
-              icon: TranquilIcons.night,
-              isSelected: isNightSelected,
-              onPressed: () {
-                isNightSelected = true;
-
-                widget.onDaySelected!(true);
-              }),
+            title: 'Nighttime',
+            icon: TranquilIcons.night,
+            isSelected: isNightSelected,
+            onPressed: () {
+              setState(() => isNightSelected = true);
+              widget.onDaySelected?.call(true);
+            },
+          ),
         ),
       ],
     );

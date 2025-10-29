@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class ColorPalette {
@@ -20,10 +19,11 @@ class ColorPalette {
   static const green = MaterialColor(
     0xff388D4D,
     {
-      100: Color(0xffA1D4AE),
-      200: Color(0xff82C693),
-      300: Color(0xFF62B778),
-      400: Color(0xFF43A95D),
+      100: Color(0xffEEF7F0),
+      200: Color(0xffA1D4AE),
+      300: Color(0xff82C693),
+      400: Color(0xFF62B778),
+      500: Color(0xFF43A95D),
       600: Color(0xff2D713E),
       700: Color(0xff21542E),
       800: Color(0xff16381F),

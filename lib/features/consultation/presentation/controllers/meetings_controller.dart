@@ -1,8 +1,10 @@
+import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tl_consultant/core/global/custom_snackbar.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/features/consultation/data/models/meeting_model.dart';
+import 'package:tl_consultant/features/consultation/data/models/rating_model.dart';
 import 'package:tl_consultant/features/consultation/data/repos/consultation_repo.dart';
 import 'package:tl_consultant/features/consultation/domain/entities/meeting.dart';
 import 'package:tl_consultant/features/consultation/presentation/controllers/slot_controller.dart';
@@ -17,13 +19,17 @@ class MeetingsController extends GetxController {
 
   //pagination vars
   var page = 1.obs;
+
   // There is next page or not
   var hasNextPage = true.obs;
+
   // Used to display loading indicators when _firstLoad function is running
   var isFirstLoadRunning = false.obs;
+
   // Used to display loading indicators when _loadMore function is running
   var isLoadMoreRunning = false.obs;
   var lastMessageId = 0.obs;
+
   // The controller for the ListView
   late ScrollController scrollController;
 
@@ -42,17 +48,19 @@ class MeetingsController extends GetxController {
 
       var either = await ConsultationRepoImpl().getMeetings(page: page.value);
 
-      either.fold(
-          (l) {
-            print("MEETINGS: Error message: ${l.message}");
+      either.fold((l) {
+        if(!l.message!.contains('unauthenticated')){
+          print("Load first meetings: error: ${l.message}");
 
-            return CustomSnackBar.showSnackBar(
-              context: Get.context!,
-              title: "Error",
-              message: l.message.toString(),
-              backgroundColor: ColorPalette.red,
-            );
-          }, (r) async {
+          return CustomSnackBar.showSnackBar(
+            context: Get.context!,
+            title: "Error",
+            message: l.message.toString(),
+            backgroundColor: ColorPalette.red,
+          );
+        }
+
+      }, (r) async {
         var data = r;
 
         if (data['error'] == false && data['data'] != null) {
@@ -87,12 +95,18 @@ class MeetingsController extends GetxController {
       var either = await ConsultationRepoImpl().getMeetings(page: page.value);
 
       either.fold(
-          (l) => CustomSnackBar.showSnackBar(
+          (l) {
+            if(!l.message!.contains('unauthenticated')){
+              print("Load more meetings: error: ${l.message}");
+
+              return CustomSnackBar.showSnackBar(
                 context: Get.context!,
                 title: "Error",
                 message: l.message.toString(),
                 backgroundColor: ColorPalette.red,
-              ), (r) async {
+              );
+            }
+          }, (r) async {
         var data = r;
 
         List<Meeting> fetchedMeetings = [];
@@ -107,6 +121,29 @@ class MeetingsController extends GetxController {
 
       isLoadMoreRunning.value = false;
     }
+  }
+
+  Future rateMeeting(
+      {int? meetingId,
+      int? participantId,
+      int? ratingByConsultant,
+      String? commentByConsultant,
+      int? overallMeetingRatingByConsultant}) async {
+    Either either = await repo.rateMeeting(
+        rating: RatingModel(
+            meetingId: meetingId!,
+            participantId: participantId!,
+            ratingByConsultant: ratingByConsultant!,
+            commentByConsultant: commentByConsultant,
+            overallMeetingRatingByConsultant:
+                overallMeetingRatingByConsultant));
+
+    either.fold((l){
+      print(l.message!);
+      CustomSnackBar.errorSnackBar(l.message!);
+    }, (r) {
+      print("rate meeting: $r");
+    });
   }
 
   // navigateToDashboard() {

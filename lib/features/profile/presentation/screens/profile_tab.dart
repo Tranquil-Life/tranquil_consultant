@@ -9,9 +9,9 @@ import 'package:tl_consultant/core/global/user_avatar.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/theme/fonts.dart';
-import 'package:tl_consultant/core/utils/extensions/date_time_extension.dart';
 import 'package:tl_consultant/core/utils/functions.dart';
 import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
+import 'package:tl_consultant/core/utils/routes/app_pages.dart';
 import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
 import 'package:tl_consultant/features/journal/presentation/widgets/tab_bar.dart';
 import 'package:tl_consultant/features/profile/data/models/user_model.dart';
@@ -108,7 +108,6 @@ class _ProfileScreenState extends State<ProfileScreen>
                       children: [
                         BioTabView(),
                         SingleChildScrollView(
-                          physics: NeverScrollableScrollPhysics(),
                           child: QualificationsTabView(
                               profileController: profileController),
                         ),
@@ -165,12 +164,15 @@ class _ProfileHeadState extends State<ProfileHead> {
         const SizedBox(
           width: 8,
         ),
-        Column(
+        Expanded(flex: 4, child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Obx(()=>Text(
-              truncateWithEllipsis((displayWidth(context) / 20).toInt(),
-                  "${widget.profileController.firstNameTEC.text} ${containsTitle(widget.profileController.titles.join(', '))}"),
+              truncateWithEllipsis(
+                  (displayWidth(context) / 14).toInt(),
+                  "${widget.profileController.firstNameTEC.text} ${widget.profileController.lastNameTEC.text} ${containsTitle(widget.profileController.titles.join(', '))}"
+              )
+              ,
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
@@ -190,23 +192,25 @@ class _ProfileHeadState extends State<ProfileHead> {
               height: 10,
             ),
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Icon(
                   Icons.location_on_outlined,
                   color: ColorPalette.blue.shade600,
                 ),
-                Text(
-                  "${widget.profileController.countryTEC.text}/${widget.profileController.cityTEC.text}",
+                Expanded(child: Text(
+                  truncateWithEllipsis(28, "${widget.profileController.countryTEC.text}/${widget.profileController.cityTEC.text}"),
                   style: TextStyle(
                     color: ColorPalette.blue.shade600,
                     fontSize: AppFonts.defaultSize,
                     fontWeight: FontWeight.w400,
                   ),
-                ),
+                ),)
               ],
-            ),
+            )
+
           ],
-        ),
+        )),
         Expanded(
           child: Align(
             alignment: Alignment.topRight,
@@ -259,15 +263,16 @@ class _ProfileHeadState extends State<ProfileHead> {
           value: 'edit',
           child: Text('Edit profile'),
         ),
-        PopupMenuItem(
-          onTap: () => showDialog(
-              context: context, builder: (context) => SignOutDialog()),
-          value: 'sign out',
-          child: Text('Sign out'),
-        ),
-        const PopupMenuItem(
+        // PopupMenuItem(
+        //   onTap: () => showDialog(
+        //       context: context, builder: (context) => SignOutDialog()),
+        //   value: 'sign out',
+        //   child: Text('Sign out'),
+        // ),
+         PopupMenuItem(
+          onTap: ()=>Get.toNamed(Routes.SETTINGS),
           value: 'delete',
-          child: Text('Delete account', style: TextStyle(color: Colors.red)),
+          child: Text('Settings'),
         ),
       ],
     );

@@ -22,13 +22,14 @@ class VideoRecordOption extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
+      child: Obx(()=>Container(
         height: 83,
         padding: const EdgeInsets.all(12),
         width: displayWidth(context),
         decoration: BoxDecoration(
-          color:
-              selected ? ColorPalette.green[200] : ColorPalette.green.shade300,
+          color: (selected && authController.introVideo.value.isEmpty)
+              ? ColorPalette.green[500]
+              : ColorPalette.green[100],
           borderRadius: BorderRadius.circular(8.0),
           border: Border.all(width: 1, color: ColorPalette.grey.shade100),
         ),
@@ -46,7 +47,7 @@ class VideoRecordOption extends StatelessWidget {
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8.0),
                           border:
-                              Border.all(width: 1, color: Color(0xFF62B778))),
+                          Border.all(width: 1, color: Color(0xFF62B778))),
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: SvgPicture.asset(SvgElements.svgVideoPlayIcon),
@@ -80,16 +81,13 @@ class VideoRecordOption extends StatelessWidget {
                 ],
               ),
             ),
-            Obx(() {
-              if (authController.introVideo.value.isNotEmpty) {
-                return SvgPicture.asset(SvgElements.svgDoubleCheckmarkIcon);
-              } else {
-                return SizedBox();
-              }
-            })
+            if (authController.introVideo.value.isNotEmpty)
+              SvgPicture.asset(SvgElements.svgDoubleCheckmarkIcon)
+            else
+              SizedBox()
           ],
         ),
-      ),
+      )),
     );
   }
 }

@@ -38,11 +38,11 @@ class CustomScaffold extends StatelessWidget {
             onBackPressed: hideBackButton == true ? null : () => Get.back(),
           ),
       body: SafeArea(
-        child: SizedBox(
+        child: SizedBox.expand(
           child: Stack(
             children: [
               Positioned(
-                bottom: displayHeight(context) / 30,
+                bottom: 0,
                 // Shifts the image to the bottom
                 right: 0,
                 // Shifts the image to the right

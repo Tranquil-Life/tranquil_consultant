@@ -6,7 +6,7 @@ import 'package:tl_consultant/core/utils/helpers/svg_elements.dart';
 import 'package:tl_consultant/features/profile/data/models/user_model.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
-import 'package:tl_consultant/features/profile/presentation/widgets/custom_form_field.dart';
+import 'package:tl_consultant/features/profile/presentation/widgets/form_fields.dart';
 
 class QualificationFields extends StatelessWidget {
   const QualificationFields(

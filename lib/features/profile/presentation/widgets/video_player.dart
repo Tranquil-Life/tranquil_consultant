@@ -190,7 +190,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> with SingleTicker
                       ),
                       GestureDetector(
                         onTap: () {
-                          //shareFile();
+                          shareFile(urlToShare: widget.videoUrl);
                         },
                         child: SvgPicture.asset(
                           SvgElements.svgShareIcon,

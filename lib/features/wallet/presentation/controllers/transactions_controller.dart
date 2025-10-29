@@ -2,16 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tl_consultant/core/global/custom_snackbar.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
+import 'package:tl_consultant/features/profile/data/models/user_model.dart';
+import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 import 'package:tl_consultant/features/wallet/data/repos/wallet_repo_impl.dart';
+import 'package:tl_consultant/features/wallet/domain/entities/stripe_transaction.dart';
 import 'package:tl_consultant/features/wallet/domain/entities/transaction.dart';
+import 'package:tl_consultant/features/wallet/presentation/controllers/earnings_controller.dart';
 
 class TransactionsController extends GetxController {
   static TransactionsController instance = Get.find();
 
+  final earningsController = EarningsController.instance;
+
   WalletRepositoryImpl walletRepo = WalletRepositoryImpl();
 
   var currPageIndex = 0.obs;
-  RxList<Transaction> transactions = <Transaction>[].obs;
+
+  // RxList<Transaction> transactions = <Transaction>[].obs;
+
+  RxList<StripeTransaction> stripeTrnx = <StripeTransaction>[].obs;
+  RxString? startingAfter;
 
   //pagination vars
   var page = 1.obs;
@@ -29,10 +39,10 @@ class TransactionsController extends GetxController {
   // The controller for the ListView
   late ScrollController scrollController;
 
-  loadFirstTransactions() async {
-    var result =
-        await walletRepo.getTransactions(page: page.value, limit: limit.value);
-
+  Future loadInitialStripeTranx() async {
+    var result = await walletRepo.getStripeTransactions(
+        startingAfter: startingAfter?.value,
+        accountId: "${UserModel.fromJson(userDataStore.user).stripeAccountId}");
     isFirstLoadRunning.value = true;
 
     result.fold(
@@ -41,18 +51,17 @@ class TransactionsController extends GetxController {
             title: "Error",
             message: l.message.toString(),
             backgroundColor: ColorPalette.red), (r) {
-          transactions.clear();
-
-      result.map((r) => transactions.value =
-          (r['data'] as List).map((e) => Transaction.fromJson(e)).toList());
+      stripeTrnx.clear();
+      result.map((r) => stripeTrnx.value = (r['data']['transactions'] as List)
+          .map((e) => StripeTransaction.fromJson(e))
+          .toList());
     });
 
     update();
-
     isFirstLoadRunning.value = false;
   }
 
-  loadMoreTransactions() async {
+  Future loadMoreStripeTranx() async {
     if (hasNextPage.value == true &&
         isFirstLoadRunning.value == false &&
         isLoadMoreRunning.value == false &&
@@ -61,21 +70,22 @@ class TransactionsController extends GetxController {
           true; // Display a progress indicator at the bottom
       page.value += 1; // Increase _page by 1
 
-      var result = await walletRepo.getTransactions(
-          page: page.value, limit: limit.value);
+      var result = await walletRepo.getStripeTransactions(
+          startingAfter: startingAfter?.value,
+          accountId:
+              "${UserModel.fromJson(userDataStore.user).stripeAccountId}");
 
       isLoadMoreRunning.value = false; // Hide the loading indicator
 
       if (result.isRight()) {
         result.map((r) {
           // If we have new transactions, add them to the existing list
-          List<Transaction> fetchedTransactions =
-              (r as List).map((e) => Transaction.fromJson(e)).toList();
+          List<StripeTransaction> fetchedTransactions =
+              (r['data']['transactions'] as List).map((e) => StripeTransaction.fromJson(e)).toList();
 
           // Check if there are transactions to add
           if (fetchedTransactions.isNotEmpty) {
-            transactions
-                .addAll(fetchedTransactions); // Add to the existing list
+            stripeTrnx.addAll(fetchedTransactions); // Add to the existing list
           } else {
             // No more data to load, set hasNextPage to false
             hasNextPage.value = false;
@@ -90,13 +100,14 @@ class TransactionsController extends GetxController {
               backgroundColor: ColorPalette.red,
             ));
       }
+
       update();
     }
   }
 
-  clearData(){
+  clearData() {
     currPageIndex.value = 0;
-    transactions.clear();
+    stripeTrnx.clear();
     page.value = 1;
     limit.value = 10;
     hasNextPage.value = false;

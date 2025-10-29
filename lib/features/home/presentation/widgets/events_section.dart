@@ -61,7 +61,6 @@ class _EventsSectionState extends State<EventsSection> {
                                 itemCount: eventsController.events.length,
                                 padding: EdgeInsets.zero,
                                 itemBuilder: (_, index) {
-                                  print("event: $index");
                                   if (index == eventsController.events.length) {
                                     return const Center(
                                       child: CircularProgressIndicator(

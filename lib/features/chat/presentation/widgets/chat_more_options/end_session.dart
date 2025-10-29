@@ -14,10 +14,10 @@ class _EndSessionDialog extends StatelessWidget {
         onPressed: () {
           Get.back();
 
-          showDialog(
-            context: context,
-            builder: (_) => const RateConsultationDialog(),
-          );
+          // showDialog(
+          //   context: context,
+          //   builder: (_) => const RateConsultationDialog(),
+          // );
         },
       ),
     );

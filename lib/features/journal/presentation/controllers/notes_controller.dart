@@ -10,7 +10,7 @@ import 'package:tl_consultant/features/journal/domain/entities/personal_note.dar
 import 'package:tl_consultant/features/journal/domain/entities/shared_note/shared_note.dart';
 
 class NotesController extends GetxController with GetTickerProviderStateMixin {
-  static NotesController instance = Get.find();
+  static NotesController get instance => Get.find();
 
   late TabController tabController = TabController(length: 2, vsync: this);
 
@@ -29,15 +29,19 @@ class NotesController extends GetxController with GetTickerProviderStateMixin {
   //pagination vars
   var page = 1.obs;
   var limit = 10.obs;
+
   // There is next page or not
   var hasNextPage = true.obs;
+
   // Used to display loading indicators when _firstLoad function is running
   var isFirstPersonalNotesLoading = false.obs;
+
   // Used to display loading indicators when _loadMore function is running
   var isMorePersonalNotesLoading = false.obs;
   var isFirstSharedNotesLoading = false.obs;
   var isMoreSharedNotesLoading = false.obs;
   var lastNoteId = 0.obs;
+
   // The controller for the ListView
   late ScrollController scrollController;
 
@@ -48,14 +52,12 @@ class NotesController extends GetxController with GetTickerProviderStateMixin {
       case 0:
         journalTabIndex.value = tabController.index;
         if (sharedNotesList.isEmpty) {
-          print("shared notes");
-          //await loadfirstSharedNotes();
+          //await loadFirstSharedNotes();
         }
         break;
       case 1:
         journalTabIndex.value = tabController.index;
         if (personalNotesList.isEmpty) {
-          print("personal notes");
           await loadFirstPersonalNotes();
         }
         break;
@@ -70,12 +72,16 @@ class NotesController extends GetxController with GetTickerProviderStateMixin {
 
     Either either = await journalRepo.getPersonalNotes(
         page: page.value, limit: limit.value);
-    either.fold((l) => CustomSnackBar.showSnackBar(
-            context: Get.context!,
-            title: "Error",
-            message: l.message.toString(),
-            backgroundColor: ColorPalette.red),
-            (r) {
+    either.fold((l) {
+      if (!l.message!.contains('unauthenticated')) {
+        return CustomSnackBar.showSnackBar(
+          context: Get.context!,
+          title: "Error",
+          message: l.message.toString(),
+          backgroundColor: ColorPalette.red,
+        );
+      }
+    }, (r) {
       personalNotesList.clear();
 
       var data = r['data'];
@@ -108,34 +114,37 @@ class NotesController extends GetxController with GetTickerProviderStateMixin {
       var result = await journalRepo.getPersonalNotes(
           page: page.value, limit: limit.value);
 
-      if (result.isRight()) {
-        List<PersonalNote> fetchedNotes = [];
+      result.fold((l) {
+        if (!l.message!.contains('unauthenticated')) {
+          print("Load more personal notes: error: ${l.message}");
 
-        result.map((r) {
-          final data = (r as Map<String, dynamic>)['data'];
-          if (data is List) {
-            fetchedNotes = data.map((e) => PersonalNoteModel.fromJson(e)).toList();
-          } else {
-            fetchedNotes = [];
-          }
-
-          if (fetchedNotes.isNotEmpty) {
-            personalNotesList.addAll(fetchedNotes);
-          } else {
-            // No more data; stop further GET requests
-            hasNextPage.value = false;
-          }
-        });
-
-
-        isMorePersonalNotesLoading.value = false;
-      } else {
-        result.leftMap((l) => CustomSnackBar.showSnackBar(
+          return CustomSnackBar.showSnackBar(
             context: Get.context!,
             title: "Error",
             message: l.message.toString(),
-            backgroundColor: ColorPalette.red));
-      }
+            backgroundColor: ColorPalette.red,
+          );
+        }
+      }, (r) {
+        List<PersonalNote> fetchedNotes = [];
+
+        final data = (r as Map<String, dynamic>)['data'];
+        if (data is List) {
+          fetchedNotes =
+              data.map((e) => PersonalNoteModel.fromJson(e)).toList();
+        } else {
+          fetchedNotes = [];
+        }
+
+        if (fetchedNotes.isNotEmpty) {
+          personalNotesList.addAll(fetchedNotes);
+        } else {
+          // No more data; stop further GET requests
+          hasNextPage.value = false;
+        }
+
+        isMorePersonalNotesLoading.value = false;
+      });
 
       update();
     }

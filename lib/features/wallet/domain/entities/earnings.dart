@@ -5,6 +5,7 @@ class Earnings {
   double withdrawn;
   double availableForWithdrawal;
   double pendingClearance;
+  String? stripeAccountId;
 
   Earnings(
       {
@@ -13,6 +14,7 @@ class Earnings {
         this.balance = 0.00,
         this.withdrawn = 0.00,
         this.availableForWithdrawal = 0.00,
-        this.pendingClearance = 0.00
+        this.pendingClearance = 0.00,
+        this.stripeAccountId
       });
 }

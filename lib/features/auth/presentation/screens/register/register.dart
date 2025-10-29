@@ -94,6 +94,7 @@ class _RegisterState extends State<Register> {
                             var sent = await verificationController
                                 .requestVerificationToken(
                                     email: authController.emailTEC.text);
+
                             if (sent) {
                               Get.to(SoloBasedVerification());
                             }

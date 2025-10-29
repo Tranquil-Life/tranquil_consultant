@@ -22,77 +22,75 @@ class PictureUploadOption extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        height: 83,
-        padding: const EdgeInsets.all(12),
-        width: displayWidth(context),
-        decoration: BoxDecoration(
-          color:
-              selected ? ColorPalette.green[200] : ColorPalette.green.shade300,
-          borderRadius: BorderRadius.circular(8.0),
-          border: Border.all(width: 1, color: ColorPalette.grey.shade100),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Row(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(right: 12),
-                    child: Container(
-                      height: 40,
-                      width: 40,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8.0),
-                          border:
-                              Border.all(width: 1, color: Color(0xFF62B778))),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: SvgPicture.asset(SvgElements.svgImageIcon),
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Profile picture',
-                          style: TextStyle(
-                            color: ColorPalette.grey.shade400,
-                            fontSize: AppFonts.baseSize,
-                            fontWeight: FontWeight.w400,
+      child: Obx(() => Container(
+            height: 83,
+            padding: const EdgeInsets.all(12),
+            width: displayWidth(context),
+            decoration: BoxDecoration(
+              color: (selected && authController.profilePic.value.isEmpty)
+                  ? ColorPalette.green[500]
+                  : ColorPalette.green[100],
+              borderRadius: BorderRadius.circular(8.0),
+              border: Border.all(width: 1, color: ColorPalette.grey.shade100),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(right: 12),
+                        child: Container(
+                          height: 40,
+                          width: 40,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8.0),
+                              border: Border.all(
+                                  width: 1, color: Color(0xFF62B778))),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: SvgPicture.asset(SvgElements.svgImageIcon),
                           ),
                         ),
-                        SizedBox(
-                          width: displayWidth(context) / 2,
-                          child: Text(
-                            "Upload a profile picture for your clients",
-                            style: TextStyle(
-                              color: ColorPalette.grey.shade300,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w400,
+                      ),
+                      Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Profile picture',
+                              style: TextStyle(
+                                color: ColorPalette.grey.shade400,
+                                fontSize: AppFonts.baseSize,
+                                fontWeight: FontWeight.w400,
+                              ),
                             ),
-                          ),
-                        )
-                      ],
-                    ),
+                            SizedBox(
+                              width: displayWidth(context) / 2,
+                              child: Text(
+                                "Upload a profile picture for your clients",
+                                style: TextStyle(
+                                  color: ColorPalette.grey.shade300,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+                if (authController.profilePic.value.isNotEmpty)
+                  SvgPicture.asset(SvgElements.svgDoubleCheckmarkIcon)
+                else
+                  SizedBox()
+              ],
             ),
-            Obx(() {
-              if (authController.profilePic.value.isNotEmpty) {
-                return SvgPicture.asset(SvgElements.svgDoubleCheckmarkIcon);
-              } else {
-                return SizedBox();
-              }
-            })
-          ],
-        ),
-      ),
+          )),
     );
   }
 }

@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
+import 'package:tl_consultant/core/global/custom_text.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
+import 'package:tl_consultant/core/theme/fonts.dart';
+import 'package:tl_consultant/core/utils/functions.dart';
 import 'package:tl_consultant/features/journal/domain/entities/personal_note.dart';
 import 'package:tl_consultant/features/journal/presentation/controllers/notes_controller.dart';
 import 'package:tl_consultant/features/journal/presentation/screens/create_note.dart';
 import 'package:tl_consultant/features/journal/presentation/widgets/note_widget.dart';
+import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
+import 'package:tl_consultant/features/profile/presentation/screens/edit_profile.dart';
 
 class PersonalNotesTab extends StatefulWidget {
   const PersonalNotesTab({super.key});
@@ -15,7 +20,8 @@ class PersonalNotesTab extends StatefulWidget {
 }
 
 class _PersonalNotesTabState extends State<PersonalNotesTab> {
-  final _ = Get.put(NotesController());
+  final _ = NotesController.instance;
+
 
   @override
   void initState() {
@@ -28,21 +34,46 @@ class _PersonalNotesTabState extends State<PersonalNotesTab> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Obx(
-          () => CurrentView(
-              layout: _.layout.value,
-              notes: _.personalNotesList,
-              controller: _),
-        ),
+        Obx(() {
+          if (_.personalNotesList.isEmpty) {
+            return Center(
+              child: RichText(
+                textAlign: TextAlign.center,
+                text: TextSpan(
+                  style: TextStyle(color: Colors.black, fontSize: AppFonts.baseSize),
+                  children: [
+                    TextSpan(text: "You don’t have any notes yet. Tap the ", style: TextStyle(fontFamily: AppFonts.mulishRegular)),
+                    TextSpan(
+                      text: "+",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    TextSpan(text: " button to create your first one.", style: TextStyle(fontFamily: AppFonts.mulishRegular)),
+                  ],
+                ),
+              )
+            );
+          } else {
+            return CurrentView(
+                layout: _.layout.value,
+                notes: _.personalNotesList,
+                controller: _);
+          }
+        }),
         Positioned(
           right: 25,
           bottom: 50,
           child: FloatingActionButton(
-            heroTag: "personal_notes_fab", // Unique tag to avoid conflicts
+            heroTag: "personal_notes_fab",
+            // Unique tag to avoid conflicts
             shape: CircleBorder(),
             backgroundColor: ColorPalette.green,
-            onPressed: () {
-              Get.to(const CreateNote());
+            onPressed: () async{
+              var isEmpty = await checkForEmptyProfileInfo();
+              if(isEmpty){
+                Get.to(() => EditProfileScreen());
+              }else{
+                Get.to(const CreateNote());
+              }
             },
             child: const Icon(
               Icons.add,
@@ -69,18 +100,20 @@ class CurrentView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() => GridView.builder(
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: layout == grid ? 2 : 1,
-          childAspectRatio: 0.85,
-          mainAxisSpacing: 16.0,
-          crossAxisSpacing: 16.0,
-        ),
-        itemCount: notes.length,
-        shrinkWrap: true,
-        controller: controller.scrollController,
-        padding: const EdgeInsets.only(bottom: 40), // Add padding to the bottom
-        itemBuilder: (context, index) => NoteWidget(
-          personalNote: notes[index],
-        ),));
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: layout == grid ? 2 : 1,
+            childAspectRatio: 0.85,
+            mainAxisSpacing: 16.0,
+            crossAxisSpacing: 16.0,
+          ),
+          itemCount: notes.length,
+          shrinkWrap: true,
+          controller: controller.scrollController,
+          padding: const EdgeInsets.only(bottom: 40),
+          // Add padding to the bottom
+          itemBuilder: (context, index) => NoteWidget(
+            personalNote: notes[index],
+          ),
+        ));
   }
 }

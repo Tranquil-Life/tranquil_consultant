@@ -15,8 +15,8 @@ class Meeting {
   final List<Participant> participants;
   final DateTime startAt;
   final DateTime endAt;
-  // final DateTime? createdAt;
-  final DateTime? updatedAt;
+  final bool ratedByClient;
+  final bool ratedByTherapist;
 
   int get duration => endAt.difference(startAt).inMinutes;
 
@@ -34,11 +34,12 @@ class Meeting {
         required this.endAt,
         required this.rescheduled,
         // this.createdAt,
-        this.updatedAt,
         this.isExpired = false,
         this.reason = "",
         required this.participants,
-        this.status = ""
+        this.status = "",
+        required this.ratedByClient,
+        required this.ratedByTherapist,
       });
 
   Map<String, dynamic> toJson() => {

@@ -1,11 +1,11 @@
 import 'package:tl_consultant/features/profile/domain/entities/user.dart';
 
 class ClientUser extends User {
-  final int id;
+  final int? id;
   final String displayName;
 
   ClientUser({
-    required this.id,
+    this.id,
     super.avatarUrl = '',
     super.usesBitmoji,
     this.displayName = '',

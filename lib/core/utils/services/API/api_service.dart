@@ -6,6 +6,7 @@ import 'package:tl_consultant/core/errors/api_error.dart';
 import 'package:tl_consultant/features/profile/data/models/user_model.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 import 'package:tl_consultant/features/profile/domain/entities/user.dart';
+import 'package:tl_consultant/features/settings/presentation/controllers/settings_controller.dart';
 
 class ApiData {
   final int? statusCode;
@@ -19,7 +20,7 @@ class ApiService {
 
   static const certVerifyFailed = "CERTIFICATE_VERIFY_FAILED";
 
-  Map<String, String> _getHeaders() {
+  Map<String, String> getHeaders() {
     User user = UserModel.fromJson(userDataStore.user);
 
     return {
@@ -44,12 +45,13 @@ class ApiService {
     try {
       return await function();
     } on DioException catch (e) {
-      print(e);
-
       if (e.response != null) {
         if(e.response!.toString().isEmpty){
           return Left(ApiError(message: "Unexpected error occurred: $e"));
         }else{
+          if(e.response!.data['message'].toLowerCase().contains('unauthenticated')){
+            SettingsController().signOut();
+          }
           return Left(ApiError(
               message: displayErrorMessages(e.response!.data)));
         }
@@ -65,7 +67,7 @@ class ApiService {
   Future<Either<ApiError, dynamic>> postReq(String subPath,
       {dynamic body}) async {
     String url = baseUrl + subPath;
-    final headers = _getHeaders();
+    final headers = getHeaders();
     Response<dynamic> response;
 
     bool hasMultipartFile = containsMultipartFile(body);
@@ -99,7 +101,6 @@ class ApiService {
         response.statusCode == 204) {
       return Right(response.data);
     } else {
-      print("response: ${response}");
       return Left(
           ApiError(message: response.data['message'] ?? "Unknown error"));
     }
@@ -107,7 +108,7 @@ class ApiService {
 
   Future<Either<ApiError, dynamic>> getReq(String subPath,
       [bool exchange = false]) async {
-    final headers = _getHeaders();
+    final headers = getHeaders();
     String url = (exchange ? "" : baseUrl) + subPath;
 
     var response = await dio.get(
@@ -129,7 +130,7 @@ class ApiService {
 
   Future<Either<ApiError, bool>> deleteReq(String subPath,
       {dynamic body}) async {
-    final headers = _getHeaders();
+    final headers = getHeaders();
     String url = baseUrl + subPath;
 
     var response =

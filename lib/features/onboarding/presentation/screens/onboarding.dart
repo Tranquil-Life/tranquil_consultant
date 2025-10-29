@@ -9,7 +9,7 @@ import 'package:tl_consultant/features/auth/presentation/widgets/means_of_id_fie
 import 'package:tl_consultant/features/onboarding/presentation/controllers/onboarding_controller.dart';
 
 class OnBoardingScreen extends StatefulWidget {
-  const OnBoardingScreen({Key? key}) : super(key: key);
+  const OnBoardingScreen({super.key});
 
   @override
   State<OnBoardingScreen> createState() => _OnBoardingScreenState();

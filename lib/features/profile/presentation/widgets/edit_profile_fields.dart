@@ -10,7 +10,7 @@ import 'package:tl_consultant/core/utils/helpers/svg_elements.dart';
 import 'package:tl_consultant/features/media/presentation/controllers/video_recording_controller.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
-import 'package:tl_consultant/features/profile/presentation/widgets/custom_form_field.dart';
+import 'package:tl_consultant/features/profile/presentation/widgets/form_fields.dart';
 import 'package:tl_consultant/features/profile/presentation/widgets/intro_media_section.dart';
 import 'package:tl_consultant/features/profile/presentation/widgets/qualification_fields.dart';
 
@@ -105,59 +105,62 @@ class _EditProfileFieldsState extends State<EditProfileFields> {
                       return SingleChildScrollView(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
-                              children: titleOptions.map((title) {
-                                return Obx(() {
-                                  bool isSelected = widget
-                                      .profileController.titles
-                                      .contains(title);
+                          mainAxisSize: MainAxisSize.min,
+                          children: titleOptions.map((title) {
+                            return Obx(() {
+                              bool isSelected = widget
+                                  .profileController.titles
+                                  .contains(title);
 
-                                  void toggleSelection() {
-                                    if (!isSelected &&
-                                        widget.profileController.titles
-                                                .length >=
-                                            5) {
-                                      Get.snackbar(
-                                        'Limit Reached',
-                                        'You cannot select more than 5 titles.',
-                                        snackPosition: SnackPosition.BOTTOM,
-                                      );
-                                      return;
-                                    }
-
-                                    if (isSelected) {
-                                      widget.profileController.titles
-                                          .remove(title);
-                                    } else {
-                                      widget.profileController.titles
-                                          .add(title);
-                                    }
-
-                                    setState(() {}); // Update local state
-                                  }
-
-                                  return ListTile(
-                                    contentPadding: EdgeInsets.all(0),
-                                    leading: Checkbox(
-                                      activeColor: ColorPalette.green,
-                                      value: isSelected,
-                                      onChanged: (value) {
-                                        toggleSelection();
-                                      },
-                                    ),
-                                    title: Text(title,
-                                        style: TextStyle(fontSize: 14)),
-                                    onTap:
-                                        toggleSelection, // Make the ListTile clickable
+                              void toggleSelection() {
+                                if (!isSelected &&
+                                    widget.profileController.titles
+                                        .length >=
+                                        5) {
+                                  Get.snackbar(
+                                    'Limit Reached',
+                                    'You cannot select more than 5 titles.',
+                                    snackPosition: SnackPosition.BOTTOM,
                                   );
-                                });
-                              }).toList(),
-                            ),
-                          ],
+                                  return;
+                                }
+
+                                if (isSelected) {
+                                  widget.profileController.titles
+                                      .remove(title);
+                                } else {
+                                  widget.profileController.titles
+                                      .add(title);
+                                }
+
+                                setState(() {}); // Update local state
+                              }
+
+                              return ListTile(
+                                contentPadding: EdgeInsets.all(0),
+                                leading: Checkbox(
+                                  activeColor: ColorPalette.green,
+                                  value: isSelected,
+                                  onChanged: (value) {
+                                    toggleSelection();
+                                  },
+                                ),
+                                title: Text(title,
+                                    style: TextStyle(fontSize: 14)),
+                                onTap:
+                                toggleSelection, // Make the ListTile clickable
+                              );
+                            });
+                          }).toList(),
                         ),
+
+
+                        // Column(
+                        //   crossAxisAlignment: CrossAxisAlignment.start,
+                        //   children: [
+                        //
+                        //   ],
+                        // ),
                       );
                     },
                   ),
@@ -359,6 +362,7 @@ class _EditProfileFieldsState extends State<EditProfileFields> {
         ),
         const SizedBox(height: 20),
 
+        //VIDEO AND AUDIO RECORDINGS
         IntroMediaSection(
             profileController: widget.profileController,
             videoRecordingController: widget.videoRecordingController),
@@ -373,7 +377,9 @@ class _EditProfileFieldsState extends State<EditProfileFields> {
         (item['certification']?.isEmpty ?? true));
 
     if (hasMissingOrEmptyCertification) {
-      print("Please fill in the current on before adding another");
+      if (kDebugMode) {
+        print("Please fill in the current on before adding another");
+      }
     } else {
       userDataStore.qualifications.add(<String, dynamic>{});
       List<Map<String, dynamic>> updatedQualifications =

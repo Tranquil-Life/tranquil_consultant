@@ -24,6 +24,7 @@ class UserModel extends User{
     // super.companyName,
     super.totalMeetings,
     super.totalClients,
+    super.stripeAccountId
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) =>

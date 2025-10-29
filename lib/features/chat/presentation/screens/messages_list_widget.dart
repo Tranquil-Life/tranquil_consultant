@@ -3,11 +3,13 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
+import 'package:tl_consultant/features/chat/presentation/controllers/audio_player_manager.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/chat_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/widgets/chat_boxes/chat_item.dart';
 
 class Messages extends StatefulWidget {
-  const Messages({super.key});
+  const Messages({super.key, required this.playerManager});
+  final AudioPlayerManager playerManager;
 
   @override
   State<Messages> createState() => MessagesState();
@@ -15,7 +17,10 @@ class Messages extends StatefulWidget {
 
 class MessagesState extends State<Messages>
     with SingleTickerProviderStateMixin {
-  ChatController chatController = Get.put(ChatController());
+  // ChatController chatController = Get.put(ChatController());
+
+  final chatController = ChatController.instance;
+
 
   late final AnimationController animController;
   late final Animation<double> highlightAnim;
@@ -44,7 +49,7 @@ class MessagesState extends State<Messages>
       TweenSequenceItem(tween: Tween(begin: 1.0, end: 0.0), weight: 0.2),
     ]));
 
-    _addScrollListener(); //initialize the scroll listener
+    _addScrollListener();
 
     super.initState();
   }
@@ -63,30 +68,38 @@ class MessagesState extends State<Messages>
 
   @override
   Widget build(BuildContext context) {
-    chatController.messages.sort((a, b) => b.createdAt!.compareTo(a.createdAt!));
 
-    return Obx(()=>ListView.builder(
-      physics: const BouncingScrollPhysics(),
-      reverse: true,
-      controller: _scrollController,
-      itemCount: chatController.messages.length + (chatController.isLoadMoreRunning.value ? 1 : 0),
-      itemBuilder: (context, index) {
-        // Display messages in reverse order
-        //final reversedIndex = chatController.messages.length - index - 1;
+    return Obx(() {
+      // Sort messages descending by createdAt
+      chatController.messages.sort((a, b) => b.createdAt!.compareTo(a.createdAt!));
 
-        if (index == chatController.messages.length) {
-          // Display a loading indicator at the end of the list while loading more messages
-          return const Center(
-            child: CircularProgressIndicator(color: ColorPalette.green),
+      // Only set recentMsgEvent if messages is not empty
+      if (chatController.messages.isNotEmpty) {
+        chatController.recentMsgEvent.value = chatController.messages.first;
+      }
+
+      return ListView.builder(
+        padding: EdgeInsets.only(top: 8),
+        physics: const BouncingScrollPhysics(),
+        reverse: true,
+        controller: _scrollController,
+        itemCount: chatController.messages.length + (chatController.isLoadMoreRunning.value ? 1 : 0),
+        itemBuilder: (context, index) {
+          if (index == chatController.messages.length) {
+            return const Center(
+              child: CircularProgressIndicator(color: ColorPalette.green),
+            );
+          }
+
+          return ChatItem(
+            chatController.messages[index],
+            highlightAnim: highlightAnim,
+            animate: index == -1,
+            playerManager: widget.playerManager,
           );
-        }
+        },
+      );
+    });
 
-        return ChatItem(
-          chatController.messages[index],
-          highlightAnim: highlightAnim,
-          animate: index == -1,
-        );
-      },
-    ));
   }
 }

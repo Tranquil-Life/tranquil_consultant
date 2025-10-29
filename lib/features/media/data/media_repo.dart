@@ -8,6 +8,7 @@ import 'package:path/path.dart' as p;
 import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/constants/end_points.dart';
 import 'package:tl_consultant/core/errors/api_error.dart';
+import 'package:tl_consultant/core/global/custom_snackbar.dart';
 import 'package:tl_consultant/features/media/domain/media_repo.dart';
 import 'package:tl_consultant/features/profile/data/models/user_model.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
@@ -25,7 +26,7 @@ class MediaRepoImpl extends MediaRepo {
       );
 
       if (info == null || info.file == null) {
-        print("Video compression failed");
+        CustomSnackBar.errorSnackBar("Oops, video compression failed!");
         return null;
       }
 
@@ -33,6 +34,69 @@ class MediaRepoImpl extends MediaRepo {
     } catch (e) {
       print("Error compressing video: $e");
       return null;
+    }
+  }
+
+  @override
+  Future<Either<ApiError, dynamic>> uploadFileWithHttp(
+      File file, String uploadType,
+      [String? previousImgUrl]) async {
+    User therapist = UserModel.fromJson(userDataStore.user);
+
+    String mediaType = "";
+    String mediaSubType = "";
+
+    switch (uploadType) {
+      case profileImage:
+        mediaType = "image";
+        mediaSubType = "png";
+        break;
+      case voiceNote:
+        mediaType = "audio";
+        mediaSubType = "wav";
+        break;
+    }
+
+    try {
+      /// MultiPart request
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse(baseUrl + MediaEndpoints.uploadFile),
+      );
+      Map<String, String> headers = {
+        "Authorization": "Bearer ${therapist.authToken}",
+        "Content-type": "multipart/form-data"
+      };
+      request.files.add(
+        http.MultipartFile(
+          'file',
+          file.openRead(), // Use openRead() to stream the file
+          await file.length(), // Use await to get the file length
+          filename: p.basename(file.path),
+          contentType: MediaType(mediaType, mediaSubType),
+        ),
+      );
+      request.headers.addAll(headers);
+      request.fields.addAll({
+        "upload_type": uploadType,
+      });
+
+      // Setting a timeout duration
+      var res = await request
+          .send()
+          .timeout(Duration(minutes: 5)); // Increase timeout duration
+
+      var newRes = await http.Response.fromStream(res);
+      var data = jsonDecode(newRes.body);
+
+      if (newRes.statusCode == 200) {
+        return Right(data);
+      } else {
+        return Left(
+            ApiError(message: data['message'] ?? 'Unknown error occurred'));
+      }
+    } catch (e) {
+      return Left(ApiError(message: e.toString()));
     }
   }
 }

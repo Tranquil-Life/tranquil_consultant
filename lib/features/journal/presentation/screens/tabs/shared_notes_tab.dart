@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
+import 'package:tl_consultant/core/global/custom_text.dart';
+import 'package:tl_consultant/core/theme/fonts.dart';
 import 'package:tl_consultant/features/journal/domain/entities/shared_note/shared_note.dart';
 import 'package:tl_consultant/features/journal/presentation/controllers/notes_controller.dart';
 import 'package:tl_consultant/features/journal/presentation/widgets/note_widget.dart';
@@ -13,8 +15,20 @@ class SharedNotesTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(
-          () => CurrentView(
-          view: _.layout.value, notes: _.sharedNotesList, controller: _),
+      () {
+        if (_.sharedNotesList.isEmpty) {
+          return Center(
+              child: CustomText(
+                textAlign: TextAlign.center,
+                text: "Your client hasn’t shared a follow-up note with you yet. Notes will appear here once they do.",
+                size: AppFonts.baseSize,
+              )
+          );
+        } else {
+          return CurrentView(
+              view: _.layout.value, notes: _.sharedNotesList, controller: _);
+        }
+      },
     );
   }
 }

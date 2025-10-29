@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:tl_consultant/core/global/user_avatar.dart';
+import 'package:tl_consultant/features/consultation/domain/entities/meeting.dart';
+import 'package:tl_consultant/features/consultation/presentation/controllers/meetings_controller.dart';
 
 class RateConsultationDialog extends StatefulWidget {
-  const RateConsultationDialog({Key? key}) : super(key: key);
+  const RateConsultationDialog(
+      {super.key, this.selectedRating, required this.meetingsController, required this.meeting});
+
+  final int? selectedRating;
+  final MeetingsController meetingsController;
+  final Meeting meeting;
 
   @override
   State<RateConsultationDialog> createState() => _RateConsultationDialogState();
@@ -12,6 +19,13 @@ class _RateConsultationDialogState extends State<RateConsultationDialog> {
   int? rating;
   String? message;
   bool displayMessageBox = false;
+
+  @override
+  void initState() {
+    rating = widget.selectedRating;
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,13 +55,14 @@ class _RateConsultationDialogState extends State<RateConsultationDialog> {
                       shape: BoxShape.circle,
                       color: Colors.white54,
                     ),
-                    child: UserAvatar(imageUrl: "consultant.avatarUrl", size: 64),
+                    child: UserAvatar(
+                        imageUrl: widget.meeting.client.avatarUrl, size: 64),
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(bottom: 4),
                   child: Text(
-                    "consultant.displayName",
+                    widget.meeting.client.displayName,
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -55,7 +70,7 @@ class _RateConsultationDialogState extends State<RateConsultationDialog> {
             ),
             smallPadding,
             Text(
-              'How was your consultation with\nconsultant.displayName}?',
+              'How was your consultation with\n${widget.meeting.client.displayName}?',
               textAlign: TextAlign.center,
             ),
             smallPadding,
@@ -77,18 +92,27 @@ class _RateConsultationDialogState extends State<RateConsultationDialog> {
               Padding(
                 padding: const EdgeInsets.only(bottom: 13),
                 child: _RateWidget(
-                  onRate: (chosenRating) {
-                    setState(() => rating = chosenRating);
-                  },
+                    onRate: (chosenRating) {
+                      setState(() => rating = chosenRating);
+                    },
+                    selectedRating: rating
                 ),
               ),
             const Divider(color: Colors.white, thickness: 1.5, height: 32),
             TextButton(
               onPressed: rating == null
                   ? null
-                  : () {
+                  : () async{
                 if (displayMessageBox || rating! > 3) {
                   Navigator.of(context).pop();
+
+                  await widget.meetingsController.rateMeeting(
+                      meetingId: widget.meeting.id,
+                      participantId: widget.meeting.client.id,
+                      ratingByConsultant: rating,
+                      commentByConsultant: message,
+                      overallMeetingRatingByConsultant: null
+                  );
                 } else {
                   setState(() => displayMessageBox = true);
                 }
@@ -103,8 +127,10 @@ class _RateConsultationDialogState extends State<RateConsultationDialog> {
 }
 
 class _RateWidget extends StatefulWidget {
-  const _RateWidget({Key? key, required this.onRate}) : super(key: key);
+  const _RateWidget({required this.onRate, this.selectedRating});
+
   final Function(int rating) onRate;
+  final int? selectedRating;
 
   @override
   State<_RateWidget> createState() => _RateWidgetState();
@@ -114,32 +140,42 @@ class _RateWidgetState extends State<_RateWidget> {
   int rating = -1;
 
   @override
+  void initState() {
+    if (widget.selectedRating != null) {
+      rating = widget.selectedRating!;
+    }
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return ConstrainedBox(
       constraints: const BoxConstraints(maxWidth: 220),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: List.generate(5, (index) {
-          return IconButton(
-            padding: EdgeInsets.zero,
-            onPressed: () {
-              setState(() => rating = index + 1);
-              widget.onRate(rating);
-            },
-            icon: AnimatedCrossFade(
-              duration: kThemeAnimationDuration,
-              crossFadeState: rating > index
-                  ? CrossFadeState.showSecond
-                  : CrossFadeState.showFirst,
-              firstChild: Icon(
-                Icons.star_border,
-                color: Theme.of(context).primaryColor,
-                size: 36,
-              ),
-              secondChild: Icon(
-                Icons.star,
-                color: Theme.of(context).primaryColor,
-                size: 36,
+          return Expanded(
+            child: IconButton(
+              padding: EdgeInsets.zero,
+              onPressed: () {
+                setState(() => rating = index + 1);
+                widget.onRate(rating);
+              },
+              icon: AnimatedCrossFade(
+                duration: kThemeAnimationDuration,
+                crossFadeState: rating > index
+                    ? CrossFadeState.showSecond
+                    : CrossFadeState.showFirst,
+                firstChild: Icon(
+                  Icons.star_border,
+                  color: Theme.of(context).primaryColor,
+                  size: 36,
+                ),
+                secondChild: Icon(
+                  Icons.star,
+                  color: Theme.of(context).primaryColor,
+                  size: 36,
+                ),
               ),
             ),
           );

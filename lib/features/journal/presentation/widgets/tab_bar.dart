@@ -9,12 +9,12 @@ class CustomTabBar extends StatelessWidget {
   final String? label2;
 
   const CustomTabBar({
-    Key? key,
+    super.key,
     required this.controller,
     required this.onTap,
     required this.label1,
     required this.label2,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -38,8 +38,8 @@ class CustomTabBar extends StatelessWidget {
         Container(
           height: 20,
           width: 150,
-          margin: const EdgeInsets.only(bottom: 5, top: 5),
-          padding: EdgeInsets.only(left: controller.index == 0 ? 5 : 40 ),
+          margin: const EdgeInsets.only(bottom: 10, top: 5),
+          padding: EdgeInsets.only(left: controller.index == 0 ? 5 : 40,),
           child: Text(
             label1 ?? '',
             style: const TextStyle(fontSize: AppFonts.baseSize),

@@ -15,13 +15,11 @@ class ChatRepoImpl extends ChatRepo {
     throw UnimplementedError();
   }
 
-  @override
   Future<Either<ApiError, dynamic>> endSession() {
     // TODO: implement endSession
     throw UnimplementedError();
   }
 
-  @override
   Future<Either<ApiError, dynamic>> invite() {
     // TODO: implement invite
     throw UnimplementedError();
@@ -65,17 +63,25 @@ class ChatRepoImpl extends ChatRepo {
 
   @override
   Future<Either<ApiError, dynamic>> sendChat(
-      {required int? chatId,
-      required String message,
-      required String messageType,
-      String? caption,
-      int? parentId}) async {
+      {
+        required String eventName,
+        required String channel,
+        required int? chatId,
+        required String? message,
+        required String messageType,
+        String? caption,
+        int? parentId,
+        int? clientId}) async {
     final body = {
       "chat_id": chatId,
       "message": message,
       "message_type": messageType,
       "caption": caption,
       "parent_id": parentId,
+      "sender_id": clientId,
+      "ai_chat": false,
+      'event_name': eventName,
+      'channel': channel
     };
 
     return await catchSocketException(
@@ -85,12 +91,12 @@ class ChatRepoImpl extends ChatRepo {
 
   @override
   Future<Either<ApiError, dynamic>> getChatInfo(
-      {required int consultantId, required int clientId}) async {
+      {required int consultantId, required int clientId, required int meetingId}) async {
     var data = {
       "consultant_id": consultantId,
       "client_id": clientId,
+      "meeting_id": meetingId
     };
-    print(data);
 
     return await catchSocketException(
             () => postReq(ChatEndPoints.getChatInfo, body: data))
@@ -98,14 +104,24 @@ class ChatRepoImpl extends ChatRepo {
   }
 
   @override
-  Future<Either<ApiError, dynamic>> getAgoraToken(String channelId) async {
+  Future<Either<ApiError, dynamic>> getAgoraToken(String channelId, int meetingId) async {
     var input = {
-      "display_name": userDataStore.user['f_name'],
       "channel_name": channelId,
+      "meeting_id": meetingId,
+      "user_id": userDataStore.user['id']
     };
 
     return await catchSocketException(
             () => postReq(ChatEndPoints.generateToken, body: input))
         .then((value) => handleResponse(value));
+  }
+
+  @override
+  Future<Either<ApiError, dynamic>> triggerPusherEvent(String channel, String eventName, Map<String, dynamic> data) async {
+    var input = {"channel": channel, "event_name": eventName, "data": data};
+
+    return await catchSocketException(
+          () => postReq(ChatEndPoints.triggerPusherEvent, body: input),
+    ).then((value) => handleResponse(value));
   }
 }

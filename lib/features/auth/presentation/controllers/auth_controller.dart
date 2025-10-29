@@ -4,12 +4,14 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
+import 'package:tl_consultant/core/data/store.dart';
 import 'package:tl_consultant/core/global/custom_snackbar.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/utils/routes/app_pages.dart';
 import 'package:tl_consultant/core/utils/services/app_data_store.dart';
 import 'package:tl_consultant/features/auth/data/repos/auth_repo.dart';
+import 'package:tl_consultant/features/auth/data/repos/reg_data_store.dart';
 import 'package:tl_consultant/features/auth/domain/entities/register_data.dart';
 import 'package:tl_consultant/features/auth/presentation/controllers/verification_controller.dart';
 import 'package:tl_consultant/features/media/data/media_repo.dart';
@@ -27,8 +29,7 @@ class AuthController extends GetxController {
   MediaRepoImpl mediaRepo = MediaRepoImpl();
 
   TextEditingController emailTEC =
-      // TextEditingController(text: "apple2@gmail.com");
-      TextEditingController();
+      TextEditingController(text: registrationDataStore.fields[email] ?? "");
 
   // TextEditingController passwordTEC = TextEditingController(text: "password");
   TextEditingController confirmPasswordTEC = TextEditingController();
@@ -80,16 +81,16 @@ class AuthController extends GetxController {
     params.videoIntro = introVideo.value;
     params.pictureUrl = profilePic.value;
     params.therapistKind = selectedType.value;
-    params.emailVerifiedAt = VerificationController.instance.emailVerifiedAt.value;
-
-    print(params.toJson());
+    params.emailVerifiedAt =
+        VerificationController.instance.emailVerifiedAt.value;
 
     Either either = await authRepo.register(params);
     either.fold(
         (l) => CustomSnackBar.showSnackBar(
             context: Get.context!,
             message: l.message.toString(),
-            backgroundColor: ColorPalette.red), (r) async {
+            backgroundColor: ColorPalette.red),
+        (r) async {
       Map<String, dynamic> data = r;
       userDataStore.user = data['data']['user'];
       userDataStore.qualifications =
@@ -103,6 +104,9 @@ class AuthController extends GetxController {
       if (kDebugMode) {
         print(user.toJson());
       }
+
+      registrationDataStore.fields.clear();
+      await getStore.set('fields', registrationDataStore.fields);
 
       await Get.offAllNamed(Routes.DASHBOARD);
       emailTEC.clear();
@@ -125,8 +129,6 @@ class AuthController extends GetxController {
       Map<String, dynamic> data = r;
 
       if (data['error'] == false && data['data'] != null) {
-
-
         userDataStore.user = data['data']['user'];
         userDataStore.qualifications =
             List<Map<String, dynamic>>.from(data['data']['qualifications']);
@@ -183,7 +185,7 @@ class AuthController extends GetxController {
   Future sendTokenToEndpoint(String fcmToken) async {
     Either either = await authRepo.sendTokenToEndpoint(fcmToken);
     either.fold((l) => CustomSnackBar.errorSnackBar(l.message.toString()),
-        (r) => debugPrint(r.toString()));
+        (r) => debugPrint("FCM_TOKEN: $r"));
   }
 
   Future<String> generateFcmToken() async {
@@ -260,7 +262,7 @@ class AuthController extends GetxController {
             title: "Error",
             message: l.message.toString(),
             backgroundColor: ColorPalette.red), (r) async {
-          updated = true;
+      updated = true;
 
       CustomSnackBar.showSnackBar(
           context: Get.context!,

@@ -296,7 +296,7 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
                                         ),
                                         GestureDetector(
                                           onTap: () {
-                                            shareFile(File(video.path));
+                                            shareFile(fileToShare: File(video.path));
                                           },
                                           child: SvgPicture.asset(
                                             SvgElements.svgShareIcon,
@@ -347,10 +347,6 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
                                                       .uploadFile(
                                                           File(video.path),
                                                           videoIntro, profileController);
-
-                                                  print("Intro Video1: ${UserModel.fromJson(userDataStore.user).videoIntroUrl}");
-                                                  print("Intro Video2: ${userDataStore.user['video_intro']}");
-                                                  print("Intro Video3: ${profileController.introVideo.value}");
                                                 }
                                               },
                                         textColor: uploadTextState() ==

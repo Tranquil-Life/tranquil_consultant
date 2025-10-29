@@ -10,7 +10,7 @@ import 'package:tl_consultant/features/auth/presentation/widgets/bg.dart';
 import 'package:tl_consultant/features/auth/presentation/widgets/form_fields.dart';
 
 class SignUpScreen0 extends StatefulWidget {
-  const SignUpScreen0({Key? key}) : super(key: key);
+  const SignUpScreen0({super.key});
 
   @override
   State<SignUpScreen0> createState() => _SignUpScreen0State();

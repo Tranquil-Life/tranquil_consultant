@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
+import 'package:tl_consultant/core/theme/fonts.dart';
+import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 
 // ignore: must_be_immutable
 class CustomFormField extends StatelessWidget {
@@ -21,6 +24,7 @@ class CustomFormField extends StatelessWidget {
   void Function(String)? onChanged;
   final TextInputAction? textInputAction;
   final TextCapitalization textCapitalization;
+  final List<TextInputFormatter>? inputFormatter;
 
   CustomFormField(
       {super.key,
@@ -42,7 +46,10 @@ class CustomFormField extends StatelessWidget {
       this.verContentPadding,
       this.horContentPadding,
       this.textCapitalization = TextCapitalization.none,
-      this.onChanged, this.hintColor, this.onFieldSubmitted});
+      this.onChanged,
+      this.hintColor,
+      this.onFieldSubmitted,
+      this.inputFormatter});
 
   @override
   Widget build(BuildContext context) {
@@ -58,12 +65,13 @@ class CustomFormField extends StatelessWidget {
       textCapitalization: textCapitalization,
       onChanged: onChanged,
       onTap: onTap,
+      inputFormatters: inputFormatter,
       onFieldSubmitted: onFieldSubmitted,
       decoration: InputDecoration(
           errorText: errorText,
           hintText: hint,
           hintStyle: TextStyle(
-              fontSize: 14,
+              fontSize: isSmallScreen(context) ? AppFonts.defaultSize : AppFonts.baseSize,
               fontWeight: FontWeight.w400,
               color: hintColor ?? ColorPalette.grey[200]),
           errorStyle: const TextStyle(color: ColorPalette.white, fontSize: 14),

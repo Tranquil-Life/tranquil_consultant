@@ -1,13 +1,15 @@
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:fluttermoji/fluttermoji.dart';
+import 'package:get/get.dart';
+import 'package:tl_consultant/core/utils/helpers/svg_elements.dart';
+import 'package:tl_consultant/core/utils/routes/app_pages.dart';
+import 'package:tl_consultant/features/profile/data/models/user_model.dart';
+import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 import 'package:uuid/uuid.dart';
 
 const insuficientFundsMessage =
     'You dont have enough funds to schedule a meeting with this consultant';
 const cardSaveLimitExceededMessage = 'Your card slot is full';
-const agoraId = 'a2782460e26a405cb9ffda0ae62e8038';
-const paystackPublicKey = 'pk_test_2442c1c75c79a8cbd1fdd8cba558a68ea1dd8524';
-const agoraAppId = 'a2782460e26a405cb9ffda0ae62e8038';
 const fileMaxSize = "File must be less than 2 MB";
 const emptyCvField = "Your resumé is required";
 const emptyIdField = "A means of identification is required";
@@ -27,7 +29,12 @@ final fluttermojiFunctions = FluttermojiFunctions();
 const consultant = "consultant";
 const client = "client";
 
-const thisUserType = consultant;
+int myId = UserModel.fromJson(userDataStore.user).id!;
+String authToken = UserModel.fromJson(userDataStore.user).authToken!;
+String? stripeAccountId = UserModel.fromJson(userDataStore.user).stripeAccountId;
+
+const String payout = "payout";
+const String transfer = "transfer";
 
 //firebase vars
 const chatsCollection = "chats";
@@ -84,6 +91,15 @@ final titleOptions = [
   'BCC'
 ];
 
+final recipientCountries = [
+  'United States',
+  'Nigeria',
+  'United Kingdom',
+  'Ghana',
+  'Canada',
+  'South Africa'
+];
+
 const solo = "solo";
 const agency = "agency";
 const video = "video";
@@ -94,3 +110,83 @@ const agencyVerifyIdentityMsg = "Confirm your affiliation with our partner agenc
 const contactAgencyForCodeMsg = "It seems the code you used is incorrect. Please check the code and try again to make sure it is correct. If the issue persists, contact your clinic or reach out to our team at ";
 const verifyFailedMsg = "Verification failed";
 const verifySuccessMsg = "Verification confirmed";
+
+const email = "email";
+const firstName = "first_name";
+const lastName = "last_name";
+const phoneNumber = "phone_number";
+const avatarUrl = "avatar_url";
+
+const verificationCodeMsg = "Check your email or spam for the verification code";
+const withdrawFundsTitle = "Withdraw funds";
+const withdrawFundsDesc = "Enter your details to receive payment to your local account";
+const notConnectedAccountMsg = "No connected account found for this user.";
+
+const String sentryDSN = "https://ffcc9ccf78c403bfe74b17a7ed1b4d1c@o4508213507588096.ingest.us.sentry.io/4510109029498880";
+
+//Settings
+
+var settings = <String, List<Map<String, dynamic>>>{
+  "general": [
+    {
+      "prefix": SvgElements.svgShareIcon,
+      "label": "Invite friends",
+      "suffix": SvgElements.svgArrowRight,
+      "onTap": (){}
+    },
+    {
+      "prefix": SvgElements.svgAboutUs,
+      "label": "About Us",
+      "suffix": SvgElements.svgArrowRight
+    },
+    {
+      "prefix": SvgElements.svgTermsOfUse,
+      "label": "Terms of Use",
+      "suffix": SvgElements.svgArrowRight
+    },
+    {
+      "prefix": SvgElements.svgPrivacyPolicy,
+      "label": "Privacy Policy",
+      "suffix": SvgElements.svgArrowRight
+    },
+    {
+      "prefix": SvgElements.svgWebsite,
+      "label": "www.tranquillife.app",
+      "suffix": SvgElements.svgArrowRight
+    },
+  ],
+  "security": [
+    {
+      "prefix": SvgElements.svgManagePwd,
+      "label": "Manage password",
+      "suffix": SvgElements.svgArrowRight,
+      "onTap": (){
+        Get.toNamed(Routes.FORGOT_PASSWORD);
+      }
+    },
+    {
+      "prefix": SvgElements.svgPinReset,
+      "label": "Pin reset",
+      "suffix": SvgElements.svgArrowRight
+    }
+  ],
+  "support": [
+    {
+      "prefix": SvgElements.svgContactUs,
+      "label": "Contact us",
+      "suffix": SvgElements.svgArrowRight,
+      "onTap": (){
+      }
+    },
+    {
+      "prefix": SvgElements.svgFeedback,
+      "label": "Support & Feedback",
+      "suffix": SvgElements.svgArrowRight
+    },
+    {
+      "prefix": SvgElements.svgFaqs,
+      "label": "Frequently asked questions (FAQs)",
+      "suffix": SvgElements.svgArrowRight
+    }
+  ]
+};

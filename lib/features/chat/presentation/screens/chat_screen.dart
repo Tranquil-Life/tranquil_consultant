@@ -1,152 +1,711 @@
 import 'dart:async';
-import 'dart:developer';
 import 'dart:io';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:tl_consultant/core/global/app_bar_button.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:audio_session/audio_session.dart' as av;
+import 'package:audioplayers/audioplayers.dart' as ap;
+import 'package:flutter_sound/flutter_sound.dart' as fs;
+import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/global/unfocus_bg.dart';
-import 'package:tl_consultant/core/global/user_avatar.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
-import 'package:tl_consultant/core/theme/tranquil_icons.dart';
-import 'package:tl_consultant/core/utils/functions.dart';
-import 'package:tl_consultant/core/utils/services/formatters.dart';
-import 'package:tl_consultant/features/chat/domain/entities/message.dart';
-import 'package:tl_consultant/features/chat/presentation/controllers/agora_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/chat_controller.dart';
-import 'package:tl_consultant/features/chat/presentation/controllers/recording_controller.dart';
-import 'package:tl_consultant/features/chat/presentation/controllers/upload_controller.dart';
-import 'package:tl_consultant/features/chat/presentation/screens/messages_list_widget.dart';
-import 'package:tl_consultant/features/chat/presentation/widgets/attachment_sheet.dart';
-import 'package:tl_consultant/features/chat/presentation/widgets/chat_boxes/chat_item.dart';
-import 'package:tl_consultant/features/chat/presentation/widgets/chat_boxes/shared/replied_chat_box.dart';
-import 'package:tl_consultant/features/chat/presentation/widgets/chat_more_options.dart';
-import 'package:tl_consultant/features/chat/presentation/widgets/dialogs/vn_dialog.dart';
-import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
-import 'package:vibration/vibration.dart';
+import 'package:tl_consultant/features/chat/presentation/widgets/chat_app_bar.dart';
 
-part '../widgets/chat_app_bar.dart';
+/// ====== AUDIO PLAYER MANAGER (audioplayers) ======
 
-part '../widgets/input_bar.dart';
+class PositionData {
+  final Duration position;
+  final Duration duration;
+  PositionData(this.position, this.duration);
+}
+
+class AudioPlayerManager {
+  final ap.AudioPlayer _player = ap.AudioPlayer();
+  bool _isPlaying = false;
+
+  final _playingCtrl = StreamController<bool>.broadcast();
+  final _durationCtrl = StreamController<Duration>.broadcast();
+  final _positionCtrl = StreamController<PositionData>.broadcast();
+
+  Stream<bool> get playingStream => _playingCtrl.stream;
+  Stream<Duration> get durationStream => _durationCtrl.stream;
+  Stream<PositionData> get positionDataStream => _positionCtrl.stream;
+  bool get isPlaying => _isPlaying;
+
+  AudioPlayerManager() {
+    _player.onPlayerStateChanged.listen((state) {
+      _isPlaying = (state == ap.PlayerState.playing);
+      _playingCtrl.add(_isPlaying);
+    });
+
+    _player.onPositionChanged.listen((pos) async {
+      final dur = await _player.getDuration();
+      final d = dur ?? Duration.zero;
+      _durationCtrl.add(d);
+      _positionCtrl.add(PositionData(pos, d));
+    });
+  }
+
+  Future<void> setSource(String pathOrUrl, {bool isLocal = true}) async {
+    if (isLocal) {
+      await _player.setSourceDeviceFile(pathOrUrl);
+    } else {
+      await _player.setSourceUrl(pathOrUrl);
+    }
+  }
+
+  Future<void> play([String? pathOrUrl, bool isLocal = true]) async {
+    if (pathOrUrl != null) await setSource(pathOrUrl, isLocal: isLocal);
+    await _player.resume();
+  }
+
+  Future<void> pause() async => _player.pause();
+  Future<void> stop() async => _player.stop();
+  Future<void> seek(Duration pos) async => _player.seek(pos);
+
+  Future<void> toggle() async {
+    if (_isPlaying) {
+      await pause();
+    } else {
+      await _player.resume();
+    }
+  }
+
+  void dispose() {
+    _player.dispose();
+    _playingCtrl.close();
+    _durationCtrl.close();
+    _positionCtrl.close();
+  }
+}
+
+/// ====== SIMPLE CHAT MODELS ======
+
+class ChatItem {
+  final String? text;
+  final String? vnPath; // local file path
+  final bool fromMe;
+  ChatItem.text(this.text, {this.fromMe = true}) : vnPath = null;
+  ChatItem.voice(this.vnPath, {this.fromMe = true}) : text = null;
+  bool get isVoice => vnPath != null;
+}
+
+/// ====== PAGE ======
 
 class ChatScreen extends StatefulWidget {
-  const ChatScreen({Key? key}) : super(key: key);
+  const ChatScreen({super.key});
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  final chatController = Get.put(ChatController());
-  final uploadController = Get.put(UploadController());
-  final _recordingController = RecordingController()..onInit();
+  final chatController = ChatController.instance;
 
-  bool micMode = true;
-  bool get showMic => micMode && !_recordingController.isRecording.value;
+  // Playback (shared by draft + bubbles)
+  final AudioPlayerManager _pm = AudioPlayerManager();
 
-  Future _startRecording() => _recordingController.record();
+  // Chat state
+  final List<ChatItem> _items = <ChatItem>[];
+  final ScrollController _scroll = ScrollController();
+  final TextEditingController _text = TextEditingController();
 
-  Future _stopRecording() async {
-    await _recordingController.stop();
-    if (_recordingController.localAudioPath != null) {
-      chatController.setVoiceFile(File(_recordingController.localAudioPath!));
+  // Recording
+  fs.FlutterSoundRecorder _recorder = fs.FlutterSoundRecorder();
+  bool _recorderInited = false;
+  bool _isRecording = false;
+  int _sec = 0;
+  Timer? _timer;
+  static const int _maxSec = 60;
+  String? _draftPath; // just-recorded voice note in input
+
+  // UI helpers
+  bool get _showMic => _text.text.trim().isEmpty && !_isRecording;
+
+  /// ----- Recorder init (idempotent) -----
+  Future<void> _initRecorder() async {
+    if (_recorderInited) return;
+
+    final status = await Permission.microphone.request();
+    await Permission.manageExternalStorage.request();
+
+    if (status != PermissionStatus.granted) {
+      debugPrint('Microphone permission is not granted');
     }
 
-    return chatController.audioFile!;
+    _recorder = fs.FlutterSoundRecorder();
+    await _recorder.openRecorder();
+    final session = await av.AudioSession.instance;
+
+    await session.configure(av.AudioSessionConfiguration(
+      avAudioSessionCategory: av.AVAudioSessionCategory.playAndRecord,
+      avAudioSessionCategoryOptions:
+      av.AVAudioSessionCategoryOptions.allowBluetooth |
+      av.AVAudioSessionCategoryOptions.defaultToSpeaker,
+      avAudioSessionMode: av.AVAudioSessionMode.spokenAudio,
+      avAudioSessionRouteSharingPolicy:
+      av.AVAudioSessionRouteSharingPolicy.defaultPolicy,
+      avAudioSessionSetActiveOptions: av.AVAudioSessionSetActiveOptions.none,
+      androidAudioAttributes: const av.AndroidAudioAttributes(
+        contentType: av.AndroidAudioContentType.speech,
+        flags: av.AndroidAudioFlags.none,
+        usage: av.AndroidAudioUsage.voiceCommunication,
+      ),
+      androidAudioFocusGainType: av.AndroidAudioFocusGainType.gain,
+      androidWillPauseWhenDucked: true,
+    ));
+
+    _recorderInited = true;
   }
 
-  Future _uploadVn() async {
-    var hasVibrator = await Vibration.hasVibrator();
-    if (hasVibrator!) {
-      await Vibration.vibrate(duration: 4000, amplitude: 225);
+  /// ----- Start recording -----
+  Future<void> _startRecording() async {
+    if (_isRecording) return;
+
+    final dir = await getTemporaryDirectory();
+    final filePath =
+        '${dir.path}/vn_${DateTime.now().millisecondsSinceEpoch}.aac';
+
+    await _recorder.startRecorder(
+      toFile: filePath,
+      codec: fs.Codec.aacADTS,
+    );
+
+    setState(() {
+      _isRecording = true;
+      _sec = 0;
+      _draftPath = null; // reset any previous draft
+    });
+
+    _timer?.cancel();
+    _timer = Timer.periodic(const Duration(seconds: 1), (t) async {
+      if (!_isRecording) {
+        t.cancel();
+        return;
+      }
+      setState(() => _sec++);
+      if (_sec >= _maxSec) {
+        await _stopRecording(autoplay: false); // just stop at max
+      }
+    });
+  }
+
+  /// ----- Stop recording (returns local path) -----
+  Future<String?> _stopRecording({bool autoplay = true}) async {
+    if (!_isRecording) return _draftPath;
+
+    final path = await _recorder.stopRecorder(); // may be null in some builds
+    _timer?.cancel();
+
+    setState(() {
+      _isRecording = false;
+      _sec = 0;
+      _draftPath = path;
+    });
+
+    // Autoplay the draft in the input
+    if (autoplay && path != null) {
+      await _pm.setSource(path, isLocal: true);
+      await _pm.play();
     }
 
-    chatController.audioFile = await _stopRecording();
+    return path;
+  }
 
-    await UploadController().handleVoiceNoteUpload(
-        file: chatController.audioFile,
-        quotedMessage: chatController.replyMessage.value);
+  /// ----- Discard the draft VN -----
+  Future<void> _discardDraft() async {
+    if (_draftPath != null) {
+      final f = File(_draftPath!);
+      if (await f.exists()) {
+        await f.delete();
+      }
+    }
+    await _pm.stop();
+    setState(() => _draftPath = null);
+  }
+
+  /// ----- Send text -----
+  void _sendText() {
+    final txt = _text.text.trim();
+    if (txt.isEmpty) return;
+    setState(() {
+      _items.add(ChatItem.text(txt, fromMe: true));
+      _text.clear();
+    });
+    _scrollToEnd();
+  }
+
+  /// ----- Send draft VN -----
+  Future<void> _sendDraft() async {
+    if (_draftPath == null) return;
+    await _pm.stop();
+    setState(() {
+      _items.add(ChatItem.voice(_draftPath!, fromMe: true));
+      _draftPath = null;
+    });
+    _scrollToEnd();
+  }
+
+  void _scrollToEnd() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scroll.hasClients) {
+        _scroll.animateTo(
+          _scroll.position.maxScrollExtent + 120,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
   }
 
   @override
   void initState() {
-    chatController.onInit();
-    //chatController.listenChannel();
-
-    _recordingController.onInit();
-
-    //re-instantiate the controller here to allow reuse after disposal
-    chatController.textController = TextEditingController();
-
-    chatController.textController.addListener(() {
-      setState(() => micMode =
-          chatController.textController.text.removeAllWhitespace.isEmpty);
-    });
-
     super.initState();
+
+    _text.addListener(() => setState(() {}));
+    _initRecorder();
+
+    // initial data
+    chatController.loadRecentMessages();
+    chatController.initializePusher(channel: chatController.chatChannel.value);
+
+    // 👇 load older when user scrolls to top (with reverse: true)
+    // Trigger load-older when user scrolls near the top (because reverse: true)
+    _scroll.addListener(() {
+      if (!_scroll.hasClients) return;
+      final pos = _scroll.position;
+      const threshold = 200.0; // how close to the top to trigger
+
+      // With reverse:true, pixels grow as you scroll "up" toward older messages.
+      final nearTop = pos.pixels >= (pos.maxScrollExtent - threshold);
+
+      if (nearTop && !chatController.isLoadMoreRunning.value) {
+        chatController.loadOlderMessages();
+      }
+    });
   }
 
   @override
   void dispose() {
-    //chatController.leaveChatChannel();
-    _recordingController.dispose();
-    chatController.textController.dispose();
-    chatController.onClose();
-
+    _scroll.dispose();
+    _timer?.cancel();
+    _text.dispose();
+    _pm.dispose();
+    _recorder.closeRecorder();
     super.dispose();
   }
 
+  /// ----- UI -----
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          const Image(
-            image: AssetImage('assets/images/chat_bg.png'),
-            fit: BoxFit.cover,
-            color: Colors.black26,
-            colorBlendMode: BlendMode.darken,
-          ),
-          Obx(() {
-            if (_recordingController.time.value == "01:00") {
-              _uploadVn();
-            }
-
-            return SafeArea(
-              bottom: false,
-              child: Padding(
-                padding: const EdgeInsets.all(4),
-                child: Column(
-                  children: [
-                    _TitleBar(),
-
-                    // Chat messages list
-                    Expanded(
-                        child: chatController.isFirstLoadRunning.value
-                            ? const Center(
-                                child: CircularProgressIndicator(
-                                    color: ColorPalette.green))
-                            : const UnFocusWidget(
-                                child: Messages(),
-                              )),
-                    SafeArea(
-                      top: false,
-                      child: _InputBar(
-                          chatController: chatController,
-                          recordingController: _recordingController,
-                          startRecording: _startRecording,
-                          stopRecording: _stopRecording,
-                          showMic: showMic),
-                    )
-                  ],
-                ),
+    return UnFocusWidget(
+      child: Scaffold(
+        resizeToAvoidBottomInset: true,
+        body: Stack(
+          children: [
+            // Background
+            Positioned.fill(
+              child: const Image(
+                image: AssetImage('assets/images/chat_bg.png'),
+                fit: BoxFit.cover,
+                color: Colors.black26,
+                colorBlendMode: BlendMode.darken,
               ),
-            );
-          })
+            ),
+
+            // Foreground content
+            SafeArea(
+              bottom: false, // we'll handle bottom insets for the input bar
+              child: Column(
+                children: [
+                  const TitleBar(),
+
+                  // Messages
+                  // Messages
+                  Expanded(
+                    child: Obx(() {
+                      // Make a safe copy and sort descending (newest first)
+                      final messages = [...chatController.messages];
+                      messages.sort((a, b) => b.createdAt!.compareTo(a.createdAt!));
+
+                      // Update the recent message event
+                      if (messages.isNotEmpty) {
+                        chatController.recentMsgEvent.value = messages.first;
+                      }
+
+                      final showLoader = chatController.isLoadMoreRunning.value;
+                      final totalCount = messages.length + (showLoader ? 1 : 0);
+
+                      return ListView.builder(
+                        controller: _scroll,
+                        physics: const BouncingScrollPhysics(),
+                        reverse: true, // so new messages appear at the bottom
+                        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12)
+                            .add(const EdgeInsets.only(bottom: 72)),
+                        itemCount: totalCount,
+                        itemBuilder: (context, index) {
+                          // Loader at top (because reverse:true)
+                          if (showLoader && index == messages.length) {
+                            return const Padding(
+                              padding: EdgeInsets.symmetric(vertical: 12),
+                              child: Center(
+                                child: SizedBox(
+                                  width: 22,
+                                  height: 22,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: ColorPalette.green,
+                                  ),
+                                ),
+                              ),
+                            );
+                          }
+
+                          final msg = messages[index];
+                          final fromMe = (msg.senderId == myId && msg.senderType == consultant);
+                          final align =
+                          fromMe ? CrossAxisAlignment.end : CrossAxisAlignment.start;
+                          final bubbleColor =
+                          fromMe ? Colors.green.shade600 : Colors.grey.shade200;
+                          final textColor = fromMe ? Colors.white : Colors.black87;
+
+                          // Determine if it’s a voice message
+                          final isVoice =
+                              msg.messageType == 'voice' || msg.messageType == 'audio';
+
+                          return Align(
+                            alignment: fromMe ? Alignment.centerRight : Alignment.centerLeft,
+                            child: Container(
+                              margin: const EdgeInsets.symmetric(vertical: 6),
+                              padding: const EdgeInsets.all(10),
+                              constraints: BoxConstraints(
+                                maxWidth: MediaQuery.of(context).size.width * 0.78,
+                              ),
+                              decoration: BoxDecoration(
+                                color: bubbleColor,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: isVoice
+                                  ? VoiceBubble(
+                                path: msg.message ?? '',
+                                fromMe: fromMe,
+                                pm: _pm, // your AudioPlayerManager instance
+                              )
+                                  : Column(
+                                crossAxisAlignment: align,
+                                children: [
+                                  Text(
+                                    msg.message ?? '',
+                                    style: TextStyle(
+                                      color: textColor,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    }),
+                  ),
+
+
+                  // Input bar
+
+                  SafeArea(
+                    top: false,
+                    child: _InputBar(
+                      text: _text,
+                      isRecording: _isRecording,
+                      sec: _sec,
+                      showMic: _showMic,
+                      draftPath: _draftPath,
+                      pm: _pm,
+                      onStartRecording: _startRecording,
+                      onStopRecording: () => _stopRecording(autoplay: true),
+                      onDiscardDraft: _discardDraft,
+                      onSendText: _sendText,
+                      onSendDraft: _sendDraft,
+                    ),
+                  )
+
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+}
+
+/// ====== INPUT BAR (handles recording, draft VN, text) ======
+
+class _InputBar extends StatelessWidget {
+  const _InputBar({
+    Key? key,
+    required this.text,
+    required this.isRecording,
+    required this.sec,
+    required this.showMic,
+    required this.draftPath,
+    required this.pm,
+    required this.onStartRecording,
+    required this.onStopRecording,
+    required this.onDiscardDraft,
+    required this.onSendText,
+    required this.onSendDraft,
+  }) : super(key: key);
+
+  final TextEditingController text;
+  final bool isRecording;
+  final int sec;
+  final bool showMic;
+  final String? draftPath;
+  final AudioPlayerManager pm;
+
+  final Future<void> Function() onStartRecording;
+  final Future<String?> Function() onStopRecording;
+  final Future<void> Function() onDiscardDraft;
+  final VoidCallback onSendText;
+  final Future<void> Function() onSendDraft;
+
+  String _fmt(int s) => '${(s ~/ 60).toString().padLeft(2, '0')}:${(s % 60).toString().padLeft(2, '0')}';
+
+  @override
+  Widget build(BuildContext context) {
+    final border = OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: BorderSide.none,
+    );
+
+    return SafeArea(
+      top: false,
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
+        child: Row(
+          children: [
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade100,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: _buildMiddle(context),
+              ),
+            ),
+            const SizedBox(width: 8),
+            _buildActionButton(context),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMiddle(BuildContext context) {
+    // 1) While recording: show timer + trash + stop
+    if (isRecording) {
+      return Row(
+        children: [
+          const Icon(Icons.mic, color: Colors.red),
+          const SizedBox(width: 8),
+          Text(_fmt(sec), style: const TextStyle(fontWeight: FontWeight.w600)),
+          const Spacer(),
+          IconButton(
+            icon: const Icon(Icons.delete, color: Colors.black87),
+            onPressed: () async {
+              await onStopRecording(); // stop first (no autoplay)
+              await onDiscardDraft();   // then discard
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.stop, color: Colors.black87),
+            onPressed: () => onStopRecording(), // this will autoplay draft
+          ),
         ],
+      );
+    }
+
+    // 2) If there is a draft VN: show mini player (seekbar) + send/trash
+    if (draftPath != null) {
+      return Row(
+        children: [
+          // Play/Pause
+          StreamBuilder<bool>(
+            initialData: false,
+            stream: pm.playingStream,
+            builder: (_, snap) {
+              final playing = snap.data ?? false;
+              return IconButton(
+                icon: Icon(playing ? Icons.pause : Icons.play_arrow,
+                    color: Colors.green),
+                onPressed: pm.toggle,
+              );
+            },
+          ),
+          // Seekbar
+          Expanded(
+            child: StreamBuilder<PositionData>(
+              stream: pm.positionDataStream,
+              builder: (_, s) {
+                final pos = s.data?.position ?? Duration.zero;
+                final dur = s.data?.duration ?? Duration(seconds: 1);
+                final value = dur.inMilliseconds == 0
+                    ? 0.0
+                    : pos.inMilliseconds / dur.inMilliseconds;
+                return Slider(
+                  min: 0,
+                  max: 1,
+                  value: value.clamp(0.0, 1.0),
+                  onChanged: (v) => pm.seek(dur * v),
+                );
+              },
+            ),
+          ),
+          // Send + Trash
+          IconButton(
+            icon: const Icon(Icons.send, color: Colors.green),
+            onPressed: onSendDraft,
+          ),
+          IconButton(
+            icon: const Icon(Icons.delete_outline, color: Colors.black87),
+            onPressed: onDiscardDraft,
+          ),
+        ],
+      );
+    }
+
+    // 3) Default: text input
+    return TextField(
+      controller: text,
+      minLines: 1,
+      maxLines: 5,
+      decoration: const InputDecoration(
+        hintText: 'Type a message...',
+        border: InputBorder.none,
+      ),
+      textCapitalization: TextCapitalization.sentences,
+    );
+  }
+
+  Widget _buildActionButton(BuildContext context) {
+    // Mic when empty + not recording + no draft
+    if (showMic && draftPath == null) {
+      return InkWell(
+        onTap: onStartRecording,
+        borderRadius: BorderRadius.circular(28),
+        child: Container(
+          width: 48,
+          height: 48,
+          decoration: const BoxDecoration(
+            color: Colors.green,
+            shape: BoxShape.circle,
+          ),
+          child: const Icon(Icons.mic, color: Colors.white),
+        ),
+      );
+    }
+
+    // Send text if typing, otherwise if there's a draft the send button is in the draft row
+    return InkWell(
+      onTap: onSendText,
+      borderRadius: BorderRadius.circular(28),
+      child: Container(
+        width: 48,
+        height: 48,
+        decoration: const BoxDecoration(
+          color: Colors.green,
+          shape: BoxShape.circle,
+        ),
+        child: const Icon(Icons.send, color: Colors.white),
       ),
     );
   }
 }
+
+/// ====== VOICE BUBBLE WIDGET (for sent voice notes) ======
+
+class VoiceBubble extends StatefulWidget {
+  const VoiceBubble({
+    Key? key,
+    required this.path,
+    required this.fromMe,
+    required this.pm,
+  }) : super(key: key);
+
+  final String path; // local file path
+  final bool fromMe;
+  final AudioPlayerManager pm;
+
+  @override
+  State<VoiceBubble> createState() => _VoiceBubbleState();
+}
+
+class _VoiceBubbleState extends State<VoiceBubble> {
+  bool _prepared = false;
+
+  Future<void> _prepare() async {
+    if (_prepared) return;
+    _prepared = true;
+    await widget.pm.setSource(widget.path, isLocal: true);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _prepare();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final color = widget.fromMe ? Colors.white : Colors.black87;
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        StreamBuilder<bool>(
+          initialData: false,
+          stream: widget.pm.playingStream,
+          builder: (_, s) {
+            final playing = s.data ?? false;
+            return IconButton(
+              icon: Icon(playing ? Icons.pause : Icons.play_arrow,
+                  color: color),
+              onPressed: widget.pm.toggle,
+            );
+          },
+        ),
+        SizedBox(
+          width: 160,
+          child: StreamBuilder<PositionData>(
+            stream: widget.pm.positionDataStream,
+            builder: (_, s) {
+              final pos = s.data?.position ?? Duration.zero;
+              final dur = s.data?.duration ?? const Duration(seconds: 1);
+              final value = dur.inMilliseconds == 0
+                  ? 0.0
+                  : pos.inMilliseconds / dur.inMilliseconds;
+              return Slider(
+                min: 0,
+                max: 1,
+                value: value.clamp(0.0, 1.0),
+                onChanged: (v) => widget.pm.seek(dur * v),
+                activeColor: color,
+                inactiveColor:
+                widget.fromMe ? Colors.white70 : Colors.black26,
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+}
+

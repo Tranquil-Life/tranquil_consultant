@@ -9,6 +9,7 @@ import 'package:tl_consultant/features/chat/presentation/controllers/upload_cont
 import 'package:tl_consultant/features/consultation/presentation/controllers/meetings_controller.dart';
 import 'package:tl_consultant/features/consultation/presentation/controllers/slot_controller.dart';
 import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
+import 'package:tl_consultant/features/growth_kit/presentation/controllers/growth_kit_controller.dart';
 import 'package:tl_consultant/features/home/presentation/controllers/home_controller.dart';
 import 'package:tl_consultant/features/journal/presentation/controllers/notes_controller.dart';
 import 'package:tl_consultant/features/media/presentation/controllers/video_recording_controller.dart';
@@ -18,7 +19,7 @@ import 'package:tl_consultant/features/settings/presentation/controllers/setting
 import 'package:tl_consultant/features/wallet/presentation/controllers/earnings_controller.dart';
 import 'package:tl_consultant/features/wallet/presentation/controllers/transactions_controller.dart';
 
-class AllControllerBindings extends Bindings{
+class AllControllerBindings extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut(() => OnboardingController());
@@ -40,6 +41,6 @@ class AllControllerBindings extends Bindings{
     Get.lazyPut(() => UploadController());
     Get.lazyPut(() => VideoRecordingController());
     Get.lazyPut(() => NetworkController());
+    Get.lazyPut(() => GrowthKitController());
   }
-
 }

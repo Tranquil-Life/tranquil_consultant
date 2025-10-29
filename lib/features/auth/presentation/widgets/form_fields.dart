@@ -6,6 +6,7 @@ import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/theme/properties.dart';
 import 'package:tl_consultant/core/utils/services/validators.dart';
+import 'package:tl_consultant/features/auth/data/repos/reg_data_store.dart';
 import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';
 
 //email field
@@ -18,8 +19,11 @@ CustomFormField emailFormField(AuthController authController,
     textEditingController: authController.emailTEC,
     textInputType: TextInputType.emailAddress,
     validator: (_)=>authController.signInValidation(),
-    onChanged: onChanged ?? (_)=>
-      authController.signInValidation(),
+    onChanged: onChanged ?? (value){
+      registrationDataStore.setField(email, value.toString());
+      authController.signInValidation();
+    }
+
     // validator: (val) {
     //   if (val!.isEmpty) {
     //     return 'Please input your email';

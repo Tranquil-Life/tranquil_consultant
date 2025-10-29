@@ -3,6 +3,7 @@ import 'package:tl_consultant/core/global/custom_form_field.dart';
 import 'package:tl_consultant/core/global/drop_down_menu.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
+import 'package:tl_consultant/features/wallet/presentation/controllers/earnings_controller.dart';
 
 CustomFormField nameFormField(String hint, TextEditingController controller) {
   return CustomFormField(
@@ -146,3 +147,4 @@ CustomFormField modalities(
     hint: hint,
   );
 }
+
