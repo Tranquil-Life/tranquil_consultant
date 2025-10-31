@@ -33,6 +33,8 @@ class PositionData {
 
 class AudioPlayerManager {
   final ap.AudioPlayer _player = ap.AudioPlayer();
+  VoidCallback? _onComplete;
+
   bool _isPlaying = false;
 
   final _playingCtrl = StreamController<bool>.broadcast();
@@ -53,6 +55,11 @@ class AudioPlayerManager {
       _playingCtrl.add(_isPlaying);
     });
 
+    _player.onPlayerComplete.listen((_) {
+      _playingCtrl.add(false);
+      if (_onComplete != null) _onComplete!();
+    });
+
     _player.onPositionChanged.listen((pos) async {
       final dur = await _player.getDuration();
       final d = dur ?? Duration.zero;
@@ -60,6 +67,8 @@ class AudioPlayerManager {
       _positionCtrl.add(PositionData(pos, d));
     });
   }
+
+  void onComplete(VoidCallback cb) => _onComplete = cb;
 
   Future<void> setSource(String pathOrUrl, {bool isLocal = true}) async {
     if (isLocal) {
@@ -627,6 +636,10 @@ class _ChatScreenState extends State<ChatScreen> {
         chatController.loadOlderMessages();
       }
     });
+
+    _pm.onComplete(() {
+      chatController.activeAudioId.value = null;     // 👈 reset when finished
+    });
   }
 
   @override
@@ -743,7 +756,9 @@ class _ChatScreenState extends State<ChatScreen> {
                                   ? VoiceBubble(
                                       path: msg.message ?? '',
                                       fromMe: fromMe,
-                                      pm: _pm, // your AudioPlayerManager instance
+                                      pm: _pm,
+                                      id: msg.messageId!,
+                                      activeAudioId: chatController.activeAudioId, // your AudioPlayerManager instance
                                     )
                                   : Column(
                                       crossAxisAlignment: align,
@@ -1037,71 +1052,85 @@ class _InputBar extends StatelessWidget {
 class VoiceBubble extends StatelessWidget {
   const VoiceBubble({
     super.key,
+    required this.id,
     required this.path,
     required this.fromMe,
     required this.pm,
+    required this.activeAudioId,
   });
 
-  final String path; // local path or URL
+  final int id;
+  final String path;       // local path or URL (http/blob)
   final bool fromMe;
   final AudioPlayerManager pm;
+  final RxnInt activeAudioId;
 
-  bool get _isUrl {
-    // treat http(s) and blob: as URL sources
-    return path.startsWith('http') || path.startsWith('blob:');
+  bool get _isUrl => path.startsWith('http') || path.startsWith('blob:');
+
+  Future<void> _activateAndPlay() async {
+    activeAudioId.value = id;                    // mark this bubble active
+    await pm.setSource(path, isLocal: !_isUrl);  // bind source to shared player
+    await pm.play();                             // start playback
   }
 
   @override
   Widget build(BuildContext context) {
     final color = fromMe ? Colors.white : Colors.black87;
 
-    Future<void> _toggle() async {
-      if (pm.isPlaying) {
-        await pm.pause();
-      } else {
-        // always set the correct source for THIS bubble before playing
-        await pm.setSource(path, isLocal: !_isUrl);
-        await pm.play();
-      }
-    }
+    return Obx(() {
+      final isActive = (activeAudioId.value == id);
 
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        StreamBuilder<bool>(
-          initialData: false,
-          stream: pm.playingStream,
+      // Play/Pause button
+      final Widget playPause = isActive
+          ? StreamBuilder<bool>(
+        initialData: pm.isPlaying,
+        stream: pm.playingStream,
+        builder: (_, snap) {
+          final playing = snap.data ?? false;
+          return IconButton(
+            icon: Icon(playing ? Icons.pause : Icons.play_arrow, color: color),
+            onPressed: () async {
+              if (playing) {
+                await pm.pause();
+              } else {
+                // already active: just resume
+                await pm.play();
+              }
+            },
+          );
+        },
+      )
+          : IconButton(
+        icon: Icon(Icons.play_arrow, color: color),
+        onPressed: _activateAndPlay, // make this bubble active & play
+      );
+
+      // Slider: only live for active bubble
+      final Widget slider = SizedBox(
+        width: 160,
+        child: isActive
+            ? StreamBuilder<PositionData>(
+          stream: pm.positionDataStream,
           builder: (_, s) {
-            final playing = s.data ?? false;
-            return IconButton(
-              icon:
-                  Icon(playing ? Icons.pause : Icons.play_arrow, color: color),
-              onPressed: _toggle,
+            final pos = s.data?.position ?? Duration.zero;
+            final dur = s.data?.duration ?? const Duration(seconds: 1);
+            final value = dur.inMilliseconds == 0
+                ? 0.0
+                : pos.inMilliseconds / dur.inMilliseconds;
+            return Slider(
+              min: 0,
+              max: 1,
+              value: value.clamp(0.0, 1.0),
+              onChanged: (v) => pm.seek(dur * v),
+              activeColor: color,
+              inactiveColor: fromMe ? Colors.white70 : Colors.black26,
             );
           },
-        ),
-        SizedBox(
-          width: 160,
-          child: StreamBuilder<PositionData>(
-            stream: pm.positionDataStream,
-            builder: (_, s) {
-              final pos = s.data?.position ?? Duration.zero;
-              final dur = s.data?.duration ?? const Duration(seconds: 1);
-              final value = dur.inMilliseconds == 0
-                  ? 0.0
-                  : pos.inMilliseconds / dur.inMilliseconds;
-              return Slider(
-                min: 0,
-                max: 1,
-                value: value.clamp(0.0, 1.0),
-                onChanged: (v) => pm.seek(dur * v),
-                activeColor: color,
-                inactiveColor: fromMe ? Colors.white70 : Colors.black26,
-              );
-            },
-          ),
-        ),
-      ],
-    );
+        )
+            : const Slider(value: 0, min: 0, max: 1, onChanged: null),
+      );
+
+      return Row(mainAxisSize: MainAxisSize.min, children: [playPause, slider]);
+    });
   }
 }
