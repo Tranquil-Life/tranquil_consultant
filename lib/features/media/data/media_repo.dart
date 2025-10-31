@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:dartz/dartz.dart';
 import 'package:http_parser/http_parser.dart';
@@ -88,6 +89,47 @@ class MediaRepoImpl extends MediaRepo {
 
       var newRes = await http.Response.fromStream(res);
       var data = jsonDecode(newRes.body);
+
+      if (newRes.statusCode == 200) {
+        return Right(data);
+      } else {
+        return Left(
+            ApiError(message: data['message'] ?? 'Unknown error occurred'));
+      }
+    } catch (e) {
+      return Left(ApiError(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<ApiError, dynamic>> uploadBytesWithHttp(
+      Uint8List bytes, String filename, String uploadType,
+      {required String mediaType, required String mediaSubType}) async {
+    final therapist = UserModel.fromJson(userDataStore.user);
+
+    try {
+      final req = http.MultipartRequest(
+        'POST',
+        Uri.parse(baseUrl + MediaEndpoints.uploadFile),
+      );
+
+      req.headers.addAll({
+        "Authorization": "Bearer ${therapist.authToken}",
+        "Content-Type": "multipart/form-data",
+      });
+
+      req.files.add(http.MultipartFile.fromBytes(
+        'file',
+        bytes,
+        filename: filename,
+        contentType: MediaType(mediaType, mediaSubType),
+      ));
+
+      req.fields['upload_type'] = uploadType;
+
+      final res = await req.send().timeout(const Duration(minutes: 5));
+      final newRes = await http.Response.fromStream(res);
+      final data = jsonDecode(newRes.body);
 
       if (newRes.statusCode == 200) {
         return Right(data);

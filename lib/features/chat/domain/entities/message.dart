@@ -15,7 +15,6 @@ class Message {
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
-
   Message({
     this.messageId,
     this.chatId,

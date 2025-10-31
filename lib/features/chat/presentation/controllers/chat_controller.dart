@@ -35,6 +35,7 @@ class ChatController extends GetxController {
   ChatRepoImpl repo = ChatRepoImpl();
 
   RxList<Message> messages = <Message>[].obs;
+  final RxnInt activeAudioId = RxnInt(); // null = none
 
   File? audioFile;
   late PusherChannel myChannel;
@@ -121,6 +122,7 @@ class ChatController extends GetxController {
     update();
     isLoadMoreRunning.value = false;
   }
+
   //Get specific chat history
   Future<Map<String, dynamic>> getChatInfo({ClientUser? client}) async {
     print(client?.toJson());

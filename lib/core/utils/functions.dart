@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
+import 'dart:html' as html;
 import 'package:add_2_calendar/add_2_calendar.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:flutter/material.dart';
@@ -342,3 +344,28 @@ String countryCodeToEmoji(String countryCode) {
         (match) => String.fromCharCode(match.group(0)!.codeUnitAt(0) + 127397),
       );
 }
+
+Future<Uint8List> blobToBytes(html.Blob blob) async {
+  final c = Completer<Uint8List>();
+  final reader = html.FileReader();
+  reader.readAsArrayBuffer(blob);
+  reader.onLoadEnd.listen((_) => c.complete(reader.result as Uint8List));
+  reader.onError.listen((e) => c.completeError(e));
+  return c.future;
+}
+
+
+// Future<Uint8List> blobToBytes(html.Blob blob) async {
+//   final completer = Completer<Uint8List>();
+//   final reader = html.FileReader();
+//
+//   reader.readAsArrayBuffer(blob);
+//   reader.onLoadEnd.listen((_) {
+//     completer.complete(reader.result as Uint8List);
+//   });
+//   reader.onError.listen((e) {
+//     completer.completeError(e);
+//   });
+//
+//   return completer.future;
+// }
