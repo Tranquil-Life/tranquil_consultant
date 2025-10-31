@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:html' as html;
 
+import 'package:dartz/dartz.dart' as dz;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -126,7 +127,6 @@ class _ChatScreenState extends State<ChatScreen> {
   final AudioPlayerManager _pm = AudioPlayerManager();
 
   // Chat state
-  final List<ChatItem> _items = <ChatItem>[];
   final ScrollController _scroll = ScrollController();
   final TextEditingController _text = TextEditingController();
 
@@ -141,6 +141,7 @@ class _ChatScreenState extends State<ChatScreen> {
   html.MediaRecorder? webRecorder;
   html.MediaStream? webStream;
   String? webRecordingPath;
+  html.Blob? _lastWebBlob; // add to _ChatScreenState
 
   // UI helpers
   bool get _showMic => _text.text.trim().isEmpty && !_isRecording;
@@ -149,131 +150,136 @@ class _ChatScreenState extends State<ChatScreen> {
   Future<void> _initRecorder() async {
     if (_recorderInited) return;
 
-   if(!kIsWeb){
-     //Only request this on mobile
-     final status = await Permission.microphone.request();
-     await Permission.manageExternalStorage.request();
+    if (!kIsWeb) {
+      //Only request this on mobile
+      final status = await Permission.microphone.request();
+      await Permission.manageExternalStorage.request();
 
-     if (status != PermissionStatus.granted) {
-       debugPrint('Microphone permission is not granted');
-     }
+      if (status != PermissionStatus.granted) {
+        debugPrint('Microphone permission is not granted');
+      }
 
-     _recorder = fs.FlutterSoundRecorder();
-     await _recorder.openRecorder();
-     final session = await av.AudioSession.instance;
+      _recorder = fs.FlutterSoundRecorder();
+      await _recorder.openRecorder();
+      final session = await av.AudioSession.instance;
 
-     await session.configure(av.AudioSessionConfiguration(
-       avAudioSessionCategory: av.AVAudioSessionCategory.playAndRecord,
-       avAudioSessionCategoryOptions:
-       av.AVAudioSessionCategoryOptions.allowBluetooth |
-       av.AVAudioSessionCategoryOptions.defaultToSpeaker,
-       avAudioSessionMode: av.AVAudioSessionMode.spokenAudio,
-       avAudioSessionRouteSharingPolicy:
-       av.AVAudioSessionRouteSharingPolicy.defaultPolicy,
-       avAudioSessionSetActiveOptions: av.AVAudioSessionSetActiveOptions.none,
-       androidAudioAttributes: const av.AndroidAudioAttributes(
-         contentType: av.AndroidAudioContentType.speech,
-         flags: av.AndroidAudioFlags.none,
-         usage: av.AndroidAudioUsage.voiceCommunication,
-       ),
-       androidAudioFocusGainType: av.AndroidAudioFocusGainType.gain,
-       androidWillPauseWhenDucked: true,
-     ));
-
-   }else{
-     //On web, no permission_handler - browser handles mic access directly
-     debugPrint('Web platform detected - skipping permission_handler requests');
-   }
+      await session.configure(av.AudioSessionConfiguration(
+        avAudioSessionCategory: av.AVAudioSessionCategory.playAndRecord,
+        avAudioSessionCategoryOptions:
+            av.AVAudioSessionCategoryOptions.allowBluetooth |
+                av.AVAudioSessionCategoryOptions.defaultToSpeaker,
+        avAudioSessionMode: av.AVAudioSessionMode.spokenAudio,
+        avAudioSessionRouteSharingPolicy:
+            av.AVAudioSessionRouteSharingPolicy.defaultPolicy,
+        avAudioSessionSetActiveOptions: av.AVAudioSessionSetActiveOptions.none,
+        androidAudioAttributes: const av.AndroidAudioAttributes(
+          contentType: av.AndroidAudioContentType.speech,
+          flags: av.AndroidAudioFlags.none,
+          usage: av.AndroidAudioUsage.voiceCommunication,
+        ),
+        androidAudioFocusGainType: av.AndroidAudioFocusGainType.gain,
+        androidWillPauseWhenDucked: true,
+      ));
+    } else {
+      //On web, no permission_handler - browser handles mic access directly
+      debugPrint(
+          'Web platform detected - skipping permission_handler requests');
+    }
     _recorderInited = true;
   }
 
   /// ----- Start recording -----
   Future<void> _startRecording() async {
-    if (_isRecording) {
-      return;
-    } else {
-      if (kIsWeb) {
-        recordWebAudio();
-      } else {
-        final dir = await getTemporaryDirectory();
-        final filePath =
-            '${dir.path}/vn_${DateTime.now().millisecondsSinceEpoch}.aac';
+    if (_isRecording) return;
 
-        await _recorder.startRecorder(
-          toFile: filePath,
-          codec: fs.Codec.aacADTS,
-        );
+    if (kIsWeb) {
+      try {
+        await recordWebAudio();
+        // ✅ flip UI right away so you see the timer/stop/trash
+        setState(() {
+          _isRecording = true;
+          _sec = 0;
+          _draftPath = null;
+        });
+      } catch (e) {
+        CustomSnackBar.errorSnackBar('Mic access failed: $e');
+        return;
       }
-
-      //change ui state
+    } else {
+      final dir = await getTemporaryDirectory();
+      final filePath =
+          '${dir.path}/vn_${DateTime.now().millisecondsSinceEpoch}.aac';
+      await _recorder.startRecorder(toFile: filePath, codec: fs.Codec.aacADTS);
       setState(() {
         _isRecording = true;
         _sec = 0;
-        _draftPath = null; // reset any previous draft
-      });
-
-      _timer?.cancel();
-      _timer = Timer.periodic(const Duration(seconds: 1), (t) async {
-        if (!_isRecording) {
-          t.cancel();
-          return;
-        }
-        setState(() => _sec++);
-        if (_sec >= _maxSec) {
-          if (kIsWeb) {
-            await stopWebAudioRecording(autoplay: false);
-          } else {
-            await stopLocalAudioRecording(autoplay: false);
-          }
-        }
+        _draftPath = null;
       });
     }
+
+    _timer?.cancel();
+    _timer = Timer.periodic(const Duration(seconds: 1), (t) async {
+      if (!_isRecording) {
+        t.cancel();
+        return;
+      }
+      setState(() => _sec++);
+      if (_sec >= _maxSec) {
+        if (kIsWeb) {
+          await stopWebAudioRecording(autoplay: false);
+        } else {
+          await stopLocalAudioRecording(autoplay: false);
+        }
+      }
+    });
   }
 
   Future<void> recordWebAudio() async {
-    try {
-      // 1 Ask for mic permission
-      final stream = await html.window.navigator.getUserMedia(audio: true);
-      webStream = stream;
-      print('🎤 Microphone permission granted.');
-
-      // 2 Create the MediaRecorder instance
-      webRecorder = html.MediaRecorder(stream);
-      final List<html.Blob> chunks = [];
-
-      // 3 When data is available (browser gives recorded chunks)
-      webRecorder?.addEventListener('dataavailable', (html.Event e) {
-        final dataEvent = e as html.BlobEvent;
-        chunks.add(dataEvent.data!);
-        print('📦 Received chunk: ${dataEvent.data!.size} bytes');
-      });
-
-      // 4 Listen for "stop" event
-      webRecorder?.addEventListener('stop', (html.Event e) {
-        print('🛑 Recording stopped. Combining chunks...');
-        final blob = html.Blob(chunks, 'audio/webm');
-
-        // Create blob URL
-        final blobUrl = html.Url.createObjectUrl(blob);
-        print('✅ Recording complete! Blob URL: $blobUrl');
-        webRecordingPath = blobUrl; // this becomes your playable "path"
-
-        // Auto-play it in browser
-        final audio = html.AudioElement(blobUrl)
-          ..controls = true
-          ..autoplay = true;
-        html.document.body!.append(audio);
-        print('▶️ Playback started.');
-
-        //"_startRecording" handles the auto stopping
-      });
-
-      // 5 Start recording
-      webRecorder?.start();
-      print('🔴 Recording started...');
-    } catch (e) {
-      print('❌ Error accessing microphone: $e');
+    // Use modern API
+    final mediaDevices = html.window.navigator.mediaDevices;
+    if (mediaDevices == null) {
+      throw 'mediaDevices API not available in this browser';
     }
+
+    // Request mic
+    final stream = await mediaDevices.getUserMedia({'audio': true});
+    webStream = stream;
+
+    // Create recorder (force a common mime; browsers may fall back)
+    // ignore: undefined_named_parameter
+    webRecorder = html.MediaRecorder(stream, {'mimeType': 'audio/webm'});
+
+    final List<html.Blob> chunks = [];
+
+    // ✅ correct event name
+    webRecorder!.addEventListener('dataavailable', (html.Event e) {
+      final ev = e as html.BlobEvent;
+      if (ev.data != null) chunks.add(ev.data!);
+    });
+
+    webRecorder!.addEventListener('stop', (html.Event e) {
+      final blob = html.Blob(chunks, 'audio/webm');
+      _lastWebBlob = blob;
+
+      final blobUrl = html.Url.createObjectUrl(blob);
+      webRecordingPath = blobUrl;
+
+      //Auto-play it in browser
+      final audio = html.AudioElement(blobUrl)
+        ..controls = true
+        ..autoplay = true;
+      html.document.body!.append(audio);
+      print('Playback started.');
+
+      setState(() {
+        _isRecording = false;
+        _sec = 0;
+        _draftPath = blobUrl; // show in input; action button → Send
+      });
+    });
+
+    webRecorder!
+        .start(); // optionally: webRecorder!.start(1000) to get periodic chunks
   }
 
   ///New one
@@ -303,27 +309,6 @@ class _ChatScreenState extends State<ChatScreen> {
 
     return url;
   }
-
-  ///Old stop web audio recirdung code
-  // Future<String?> stopWebAudioRecording({bool autoplay = true}) async {
-  //   if (!_isRecording) return _draftPath;
-  //
-  //   webRecorder?.stop(); // triggers the onStop event you set up
-  //   _timer?.cancel();
-  //
-  //   setState(() {
-  //     _isRecording = false;
-  //     _sec = 0;
-  //     _draftPath = webRecordingPath; // blob URL stored earlier
-  //   });
-  //
-  //   if (autoplay && webRecordingPath != null) {
-  //     // await _pm.setSource(webRecordingPath!, isLocal: false); // 👈 use URL mode
-  //     // await _pm.play();
-  //   }
-  //
-  //   return webRecordingPath;
-  // }
 
   /// ----- Stop recording (returns local path) -----
   Future<String?> stopLocalAudioRecording({bool autoplay = true}) async {
@@ -406,21 +391,19 @@ class _ChatScreenState extends State<ChatScreen> {
 
       // 3️⃣ Handle success or failure
       either.fold(
-            (l) {
+        (l) {
           // Error → remove optimistic bubble and show error
           chatController.messages.remove(temp);
           CustomSnackBar.errorSnackBar(l.message.toString());
         },
-            (r) {
+        (r) {
           // Success → build final Message object
-          final map = (r is Map && r['data'] is Map)
-              ? (r['data'] as Map)
-              : (r as Map);
+          final map =
+              (r is Map && r['data'] is Map) ? (r['data'] as Map) : (r as Map);
 
           final created =
               DateTime.tryParse('${map['created_at']}') ?? DateTime.now();
-          final updated =
-              DateTime.tryParse('${map['updated_at']}') ?? created;
+          final updated = DateTime.tryParse('${map['updated_at']}') ?? created;
 
           final serverMsg = Message(
             messageId: map['id'] as int?,
@@ -456,20 +439,156 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
-
-  /// ----- Send draft VN -----
   Future<void> _sendDraft() async {
     if (_draftPath == null) return;
+
+    // 1) Stop any preview playback
     await _pm.stop();
-    setState(() {
-      // _items.add(ChatItem.voice(_draftPath!, fromMe: true));
-      //TODO: Uncomment
-      // uploadController.handleVoiceNoteUpload(file: File(_draftPath!),
-      //     chatId: chatController.chatId!.value,
-      //     clientID: chatController.rxClient.value.id!);
-      _draftPath = null;
-    });
+
+    // 2) Create optimistic message
+    final temp = Message(
+      messageId: null,
+      chatId: chatController.chatId!.value,
+      senderId: myId,
+      senderType: consultant,
+      message: _draftPath,
+      // local path (mobile) or blob: URL (web)
+      messageType: 'audio',
+      caption: null,
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    );
+
+    chatController.messages.insert(0, temp);
     _scrollToEnd();
+
+    // 3) Kick off upload
+    try {
+      dz.Either uploadEither;
+
+      if (kIsWeb) {
+        // Ensure we have the blob
+        final blob = _lastWebBlob;
+        if (blob == null) {
+          // no recorded data available; revert optimistic bubble
+          chatController.messages.remove(temp);
+          CustomSnackBar.errorSnackBar(
+              'Nothing to upload. Please record again.');
+          return;
+        }
+        final bytes = await blobToBytes(_lastWebBlob!);
+        final filename = 'vn_${DateTime.now().millisecondsSinceEpoch}.webm';
+
+        uploadEither = await uploadController.mediaRepo.uploadBytesWithHttp(
+          bytes,
+          filename,
+          "chat_audio",
+          mediaType: 'audio',
+          mediaSubType: 'webm', // matches your MediaRecorder mime
+        );
+      } else {
+        // Mobile: upload from File
+        final f = File(_draftPath!);
+        if (!await f.exists()) {
+          chatController.messages.remove(temp);
+          CustomSnackBar.errorSnackBar('Recorded file missing.');
+          return;
+        }
+        uploadEither = await uploadController.mediaRepo.uploadFileWithHttp(
+          f,
+          "chat_audio",
+        );
+      }
+
+      // 4) Handle upload result
+      await uploadEither.fold(
+        (l) async {
+          chatController.messages.remove(temp);
+          CustomSnackBar.errorSnackBar(l.message.toString());
+        },
+        (r) async {
+          final secureUrl = r['data']?['secure_url']?.toString();
+          if (secureUrl == null || secureUrl.isEmpty) {
+            chatController.messages.remove(temp);
+            CustomSnackBar.errorSnackBar('Upload returned an invalid URL.');
+            return;
+          }
+
+          // 5) Send the uploaded URL as a message
+          final either = await uploadController.chatRepo.sendChat(
+            chatId: chatController.chatId!.value,
+            message: secureUrl,
+            // 👈 the URL to your audio
+            messageType: strMsgType(MessageType.audio.toString()),
+            parentId: null,
+            // or quotedMessage?.messageId
+            caption: null,
+            clientId: chatController.rxClient.value.id!,
+            eventName: 'new-message',
+            channel: chatController.myChannel.channelName,
+          );
+
+          either.fold(
+            (l) {
+              chatController.messages.remove(temp);
+              CustomSnackBar.errorSnackBar(l.message.toString());
+            },
+            (res) {
+              final map = (res is Map && res['data'] is Map)
+                  ? (res['data'] as Map)
+                  : (res as Map);
+
+              final created =
+                  DateTime.tryParse('${map['created_at']}') ?? DateTime.now();
+              final updated =
+                  DateTime.tryParse('${map['updated_at']}') ?? created;
+
+              final serverMsg = Message(
+                messageId: map['id'] as int?,
+                chatId: map['chat_id'] as int?,
+                senderId: map['sender_id'] as int?,
+                parentId: map['parent_id'] as int?,
+                senderType: map['sender_type'] as String?,
+                message: map['message'] as String?,
+                // server URL
+                messageType: map['message_type'] as String?,
+                // 'audio'
+                caption: map['caption'] as String?,
+                read: (map['read'] as List?)?.cast<Map<String, dynamic>>(),
+                createdAt: created,
+                updatedAt: updated,
+              );
+
+              // Replace optimistic
+              final idx = chatController.messages.indexOf(temp);
+              if (idx != -1) {
+                chatController.messages[idx] = serverMsg;
+              } else {
+                chatController.messages.insert(0, serverMsg);
+              }
+              chatController.messages.refresh();
+
+              // Clean local draft & web blob url
+              setState(() {
+                _draftPath = null;
+              });
+
+              // (Optional) free the blob url on web
+              if (kIsWeb && webRecordingPath != null) {
+                html.Url.revokeObjectUrl(webRecordingPath!);
+                webRecordingPath = null;
+                _lastWebBlob = null;
+              }
+
+              _scrollToEnd();
+            },
+          );
+        },
+      );
+    } catch (e) {
+      chatController.messages.remove(temp);
+      CustomSnackBar.errorSnackBar('Upload failed: $e');
+    }
   }
 
   void _scrollToEnd() {
@@ -482,7 +601,6 @@ class _ChatScreenState extends State<ChatScreen> {
       );
     });
   }
-
 
   @override
   void initState() {
@@ -677,10 +795,8 @@ class _ChatScreenState extends State<ChatScreen> {
 }
 
 /// ====== INPUT BAR (handles recording, draft VN, text) ======
-
 class _InputBar extends StatelessWidget {
   const _InputBar({
-    super.key,
     required this.text,
     required this.isRecording,
     required this.sec,
@@ -712,11 +828,6 @@ class _InputBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final border = OutlineInputBorder(
-      borderRadius: BorderRadius.circular(12),
-      borderSide: BorderSide.none,
-    );
-
     return SafeArea(
       top: false,
       child: Container(
@@ -760,17 +871,40 @@ class _InputBar extends StatelessWidget {
           ),
           IconButton(
             icon: const Icon(Icons.stop, color: Colors.black87),
-            onPressed: () => onStopRecording(), // this will autoplay draft
+            onPressed: () => onStopRecording(),
           ),
         ],
       );
     }
 
-    // 2) If there is a draft VN: show mini player (seekbar) + send/trash
+    // 2) WEB: show the blob URL + trash
+    if (kIsWeb && draftPath != null) {
+      return Row(
+        children: [
+          const Icon(Icons.audiotrack, color: Colors.green),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              draftPath!, // blob:... url
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontWeight: FontWeight.w500),
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.delete_outline, color: Colors.black87),
+            onPressed: onDiscardDraft,
+            // 👈 clears draft → action button becomes Mic
+            tooltip: 'Remove recording',
+          ),
+        ],
+      );
+    }
+
+    // 3) NON-WEB: draft mini player
     if (draftPath != null && !kIsWeb) {
       return Row(
         children: [
-          // Play/Pause
           StreamBuilder<bool>(
             initialData: false,
             stream: pm.playingStream,
@@ -783,13 +917,12 @@ class _InputBar extends StatelessWidget {
               );
             },
           ),
-          // Seekbar
           Expanded(
             child: StreamBuilder<PositionData>(
               stream: pm.positionDataStream,
               builder: (_, s) {
                 final pos = s.data?.position ?? Duration.zero;
-                final dur = s.data?.duration ?? Duration(seconds: 1);
+                final dur = s.data?.duration ?? const Duration(seconds: 1);
                 final value = dur.inMilliseconds == 0
                     ? 0.0
                     : pos.inMilliseconds / dur.inMilliseconds;
@@ -802,13 +935,6 @@ class _InputBar extends StatelessWidget {
               },
             ),
           ),
-
-          ///Unnecessary send icon
-          // Send + Trash
-          // IconButton(
-          //   icon: const Icon(Icons.send, color: Colors.green),
-          //   onPressed: onSendDraft,
-          // ),
           IconButton(
             icon: const Icon(Icons.delete_outline, color: Colors.black87),
             onPressed: onDiscardDraft,
@@ -816,8 +942,6 @@ class _InputBar extends StatelessWidget {
         ],
       );
     }
-
-    if (draftPath != null) {}
 
     // 4) Default: text input
     return TextField(
@@ -836,41 +960,50 @@ class _InputBar extends StatelessWidget {
     final hasText = text.text.trim().isNotEmpty;
     final hasDraft = draftPath != null;
 
-    // 🔧 Web behavior:
-    // - If user isn't typing, show MIC (so after stop—auto or manual—it goes back to mic)
-    // - If user is typing, show SEND (sends text)
+    // WEB: if a recorded draft exists → SEND; else if typing → SEND; else MIC
     if (kIsWeb) {
-      if (!hasText) {
+      if (hasDraft) {
         return InkWell(
-          onTap: onStartRecording,
+          onTap: onSendDraft, // 👈 uploads + sends URL
           borderRadius: BorderRadius.circular(28),
           child: Container(
             width: 48,
             height: 48,
             decoration: const BoxDecoration(
-              color: Colors.green,
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(Icons.mic, color: Colors.white),
+                color: Colors.green, shape: BoxShape.circle),
+            child: const Icon(Icons.send, color: Colors.white),
           ),
         );
       }
+
+      if (hasText) {
+        return InkWell(
+          onTap: onSendText,
+          borderRadius: BorderRadius.circular(28),
+          child: Container(
+            width: 48,
+            height: 48,
+            decoration: const BoxDecoration(
+                color: Colors.green, shape: BoxShape.circle),
+            child: const Icon(Icons.send, color: Colors.white),
+          ),
+        );
+      }
+
       return InkWell(
-        onTap: onSendText,
+        onTap: onStartRecording,
         borderRadius: BorderRadius.circular(28),
         child: Container(
           width: 48,
           height: 48,
-          decoration: const BoxDecoration(
-            color: Colors.green,
-            shape: BoxShape.circle,
-          ),
-          child: const Icon(Icons.send, color: Colors.white),
+          decoration:
+              const BoxDecoration(color: Colors.green, shape: BoxShape.circle),
+          child: const Icon(Icons.mic, color: Colors.white),
         ),
       );
     }
 
-    // ✅ Mobile/desktop (non-web): keep your existing behavior
+    // NON-WEB: your existing behavior
     if (showMic && !hasDraft) {
       return InkWell(
         onTap: onStartRecording,
@@ -878,10 +1011,8 @@ class _InputBar extends StatelessWidget {
         child: Container(
           width: 48,
           height: 48,
-          decoration: const BoxDecoration(
-            color: Colors.green,
-            shape: BoxShape.circle,
-          ),
+          decoration:
+              const BoxDecoration(color: Colors.green, shape: BoxShape.circle),
           child: const Icon(Icons.mic, color: Colors.white),
         ),
       );
@@ -893,10 +1024,8 @@ class _InputBar extends StatelessWidget {
       child: Container(
         width: 48,
         height: 48,
-        decoration: const BoxDecoration(
-          color: Colors.green,
-          shape: BoxShape.circle,
-        ),
+        decoration:
+            const BoxDecoration(color: Colors.green, shape: BoxShape.circle),
         child: const Icon(Icons.send, color: Colors.white),
       ),
     );
@@ -905,60 +1034,56 @@ class _InputBar extends StatelessWidget {
 
 /// ====== VOICE BUBBLE WIDGET (for sent voice notes) ======
 
-class VoiceBubble extends StatefulWidget {
+class VoiceBubble extends StatelessWidget {
   const VoiceBubble({
-    Key? key,
+    super.key,
     required this.path,
     required this.fromMe,
     required this.pm,
-  }) : super(key: key);
+  });
 
-  final String path; // local file path
+  final String path; // local path or URL
   final bool fromMe;
   final AudioPlayerManager pm;
 
-  @override
-  State<VoiceBubble> createState() => _VoiceBubbleState();
-}
-
-class _VoiceBubbleState extends State<VoiceBubble> {
-  bool _prepared = false;
-
-  Future<void> _prepare() async {
-    if (_prepared) return;
-    _prepared = true;
-    await widget.pm.setSource(widget.path, isLocal: true);
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _prepare();
+  bool get _isUrl {
+    // treat http(s) and blob: as URL sources
+    return path.startsWith('http') || path.startsWith('blob:');
   }
 
   @override
   Widget build(BuildContext context) {
-    final color = widget.fromMe ? Colors.white : Colors.black87;
+    final color = fromMe ? Colors.white : Colors.black87;
+
+    Future<void> _toggle() async {
+      if (pm.isPlaying) {
+        await pm.pause();
+      } else {
+        // always set the correct source for THIS bubble before playing
+        await pm.setSource(path, isLocal: !_isUrl);
+        await pm.play();
+      }
+    }
 
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         StreamBuilder<bool>(
           initialData: false,
-          stream: widget.pm.playingStream,
+          stream: pm.playingStream,
           builder: (_, s) {
             final playing = s.data ?? false;
             return IconButton(
               icon:
                   Icon(playing ? Icons.pause : Icons.play_arrow, color: color),
-              onPressed: widget.pm.toggle,
+              onPressed: _toggle,
             );
           },
         ),
         SizedBox(
           width: 160,
           child: StreamBuilder<PositionData>(
-            stream: widget.pm.positionDataStream,
+            stream: pm.positionDataStream,
             builder: (_, s) {
               final pos = s.data?.position ?? Duration.zero;
               final dur = s.data?.duration ?? const Duration(seconds: 1);
@@ -969,9 +1094,9 @@ class _VoiceBubbleState extends State<VoiceBubble> {
                 min: 0,
                 max: 1,
                 value: value.clamp(0.0, 1.0),
-                onChanged: (v) => widget.pm.seek(dur * v),
+                onChanged: (v) => pm.seek(dur * v),
                 activeColor: color,
-                inactiveColor: widget.fromMe ? Colors.white70 : Colors.black26,
+                inactiveColor: fromMe ? Colors.white70 : Colors.black26,
               );
             },
           ),

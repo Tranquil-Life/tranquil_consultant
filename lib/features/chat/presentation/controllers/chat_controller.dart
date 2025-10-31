@@ -35,6 +35,7 @@ class ChatController extends GetxController {
   ChatRepoImpl repo = ChatRepoImpl();
 
   RxList<Message> messages = <Message>[].obs;
+  final RxnInt activeAudioId = RxnInt(); // null = none
 
   File? audioFile;
   late PusherChannel myChannel;
