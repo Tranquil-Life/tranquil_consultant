@@ -121,6 +121,7 @@ class ChatController extends GetxController {
     update();
     isLoadMoreRunning.value = false;
   }
+
   //Get specific chat history
   Future<Map<String, dynamic>> getChatInfo({ClientUser? client}) async {
     print(client?.toJson());

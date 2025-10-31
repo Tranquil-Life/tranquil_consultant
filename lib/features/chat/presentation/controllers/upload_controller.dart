@@ -27,53 +27,66 @@ class UploadController extends GetxController {
   var uploading = false.obs;
 
 
-  handleTextUpload({
+  Future<void> handleTextUpload({
     required int chatId,
     required String message,
     Message? quotedMessage,
-    required int clientID}) async {
+    required int clientID,
+  }) async {
     if (message.isEmpty) return;
 
     chatController.messageType.value = MessageType.text.toString();
 
-    Either either = await chatRepo.sendChat(
+    // Build payload safely: don't send parentId if null
+    final either = await chatRepo.sendChat(
       chatId: chatId,
       message: message,
       messageType: strMsgType(chatController.messageType.value),
-      parentId: quotedMessage!.messageId,
+      parentId: quotedMessage?.messageId, // ✅ null-safe
       caption: null,
       clientId: clientID,
       eventName: 'new-message',
       channel: chatController.myChannel.channelName,
     );
 
-    either.fold((l) => CustomSnackBar.errorSnackBar(l.message.toString()), (r) {
-      //TODO: Comment this and put it outside the either method
-      uploading.value = false;
+    either.fold(
+          (l) => CustomSnackBar.errorSnackBar(l.message.toString()),
+          (r) {
+        uploading.value = false;
 
-      // var messageMap = r['data'];
-      var messageMap = r;
+        // Some APIs return { data: {...} }, others return the object directly
+        final map = (r is Map && r['data'] is Map) ? (r['data'] as Map) : (r as Map);
 
-      var messageObj = Message(
-        messageId: messageMap['id'],
-        chatId: messageMap['chat_id'],
-        senderId: messageMap['sender_id'],
-        parentId: messageMap['parent_id'],
-        senderType: messageMap['sender_type'],
-        message: messageMap['message'],
-        messageType: messageMap['message_type'],
-        caption: messageMap['caption'],
-        quoteMessage: null,
-        read: null,
-        createdAt: DateTime.parse(messageMap['created_at']),
-        updatedAt: DateTime.parse(messageMap['updated_at']),
-      );
+        // Safe time parsing
+        final created = DateTime.tryParse('${map['created_at']}') ?? DateTime.now();
+        final updated = DateTime.tryParse('${map['updated_at']}') ?? created;
 
-      chatController.messages.insert(0, messageObj);
+        final msg = Message(
+          messageId: map['id'] as int?,
+          chatId: map['chat_id'] as int?,
+          senderId: map['sender_id'] as int?,
+          parentId: map['parent_id'] as int?,
+          senderType: map['sender_type'] as String?,
+          message: map['message'] as String?,
+          messageType: map['message_type'] as String?,
+          caption: map['caption'] as String?,
+          quoteMessage: null,
+          read: (map['read'] as List?)?.cast<Map<String, dynamic>>(),
+          createdAt: created,
+          updatedAt: updated,
+        );
 
-      update();
-    });
+        // Insert into the *observable* list that your Obx uses
+        chatController.messages.insert(0, msg);
+
+        // If your Obx still doesn't react (e.g., you reassign 'messages' elsewhere), force it:
+        chatController.messages.refresh(); // ✅ ensures rebuild
+
+        // DO NOT call 'update()' here; it targets UploadController listeners, not the Obx on messages
+      },
+    );
   }
+
 
   Future handleVoiceNoteUpload({
     File? file,
