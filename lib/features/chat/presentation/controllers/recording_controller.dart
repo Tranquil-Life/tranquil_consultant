@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:audio_session/audio_session.dart' as av;
 import 'package:audioplayers/audioplayers.dart';
-import 'package:file/local.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:get/get.dart';

@@ -1,7 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:html' as html;
-
 import 'package:dartz/dartz.dart' as dz;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +19,10 @@ import 'package:tl_consultant/features/chat/domain/entities/message.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/chat_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/upload_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/widgets/chat_app_bar.dart';
+import 'package:tl_consultant/webrecorder/web_recorder.dart';
+import 'package:tl_consultant/webrecorder/web_recorder_stub.dart'
+    if (dart.library.html) 'package:tl_consultant/webrecorder/web_recorder_web.dart'
+    as wr;
 
 /// ====== AUDIO PLAYER MANAGER (audioplayers) ======
 
@@ -147,10 +149,13 @@ class _ChatScreenState extends State<ChatScreen> {
   Timer? _timer;
   static const int _maxSec = 60;
   String? _draftPath; // just-recorded voice note in input
-  html.MediaRecorder? webRecorder;
-  html.MediaStream? webStream;
+  // html.MediaRecorder? webRecorder;
+  // html.MediaStream? webStream;
   String? webRecordingPath;
-  html.Blob? _lastWebBlob; // add to _ChatScreenState
+
+  // html.Blob? _lastWebBlob; // add to _ChatScreenState
+
+  WebRecorder? webRecorder; // instead of html.MediaRecorder / html.Blob / urls
 
   // UI helpers
   bool get _showMic => _text.text.trim().isEmpty && !_isRecording;
@@ -203,7 +208,12 @@ class _ChatScreenState extends State<ChatScreen> {
 
     if (kIsWeb) {
       try {
-        await recordWebAudio();
+        webRecorder ??=
+            wr.WebRecorderImpl(); // ✅ comes from the conditional import
+        await webRecorder!.start();
+
+        //        await recordWebAudio();
+
         // ✅ flip UI right away so you see the timer/stop/trash
         setState(() {
           _isRecording = true;
@@ -243,72 +253,75 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
-  Future<void> recordWebAudio() async {
-    // Use modern API
-    final mediaDevices = html.window.navigator.mediaDevices;
-    if (mediaDevices == null) {
-      throw 'mediaDevices API not available in this browser';
-    }
-
-    // Request mic
-    final stream = await mediaDevices.getUserMedia({'audio': true});
-    webStream = stream;
-
-    // Create recorder (force a common mime; browsers may fall back)
-    // ignore: undefined_named_parameter
-    webRecorder = html.MediaRecorder(stream, {'mimeType': 'audio/webm'});
-
-    final List<html.Blob> chunks = [];
-
-    // ✅ correct event name
-    webRecorder!.addEventListener('dataavailable', (html.Event e) {
-      final ev = e as html.BlobEvent;
-      if (ev.data != null) chunks.add(ev.data!);
-    });
-
-    webRecorder!.addEventListener('stop', (html.Event e) {
-      final blob = html.Blob(chunks, 'audio/webm');
-      _lastWebBlob = blob;
-
-      final blobUrl = html.Url.createObjectUrl(blob);
-      webRecordingPath = blobUrl;
-
-      //Auto-play it in browser
-      final audio = html.AudioElement(blobUrl)
-        ..controls = true
-        ..autoplay = true;
-      html.document.body!.append(audio);
-      print('Playback started.');
-
-      setState(() {
-        _isRecording = false;
-        _sec = 0;
-        _draftPath = blobUrl; // show in input; action button → Send
-      });
-    });
-
-    webRecorder!
-        .start(); // optionally: webRecorder!.start(1000) to get periodic chunks
-  }
+  // Future<void> recordWebAudio() async {
+  //   // Use modern API
+  //   final mediaDevices = html.window.navigator.mediaDevices;
+  //   if (mediaDevices == null) {
+  //     throw 'mediaDevices API not available in this browser';
+  //   }
+  //
+  //   // Request mic
+  //   final stream = await mediaDevices.getUserMedia({'audio': true});
+  //   webStream = stream;
+  //
+  //   // Create recorder (force a common mime; browsers may fall back)
+  //   // ignore: undefined_named_parameter
+  //   webRecorder = html.MediaRecorder(stream, {'mimeType': 'audio/webm'});
+  //
+  //   final List<html.Blob> chunks = [];
+  //
+  //   // ✅ correct event name
+  //   webRecorder!.addEventListener('dataavailable', (html.Event e) {
+  //     final ev = e as html.BlobEvent;
+  //     if (ev.data != null) chunks.add(ev.data!);
+  //   });
+  //
+  //   webRecorder!.addEventListener('stop', (html.Event e) {
+  //     final blob = html.Blob(chunks, 'audio/webm');
+  //     _lastWebBlob = blob;
+  //
+  //     final blobUrl = html.Url.createObjectUrl(blob);
+  //     webRecordingPath = blobUrl;
+  //
+  //     //Auto-play it in browser
+  //     final audio = html.AudioElement(blobUrl)
+  //       ..controls = true
+  //       ..autoplay = true;
+  //     html.document.body!.append(audio);
+  //     print('Playback started.');
+  //
+  //     setState(() {
+  //       _isRecording = false;
+  //       _sec = 0;
+  //       _draftPath = blobUrl; // show in input; action button → Send
+  //     });
+  //   });
+  //
+  //   webRecorder!
+  //       .start(); // optionally: webRecorder!.start(1000) to get periodic chunks
+  // }
 
   ///New one
   Future<String?> stopWebAudioRecording({bool autoplay = true}) async {
     if (!_isRecording || webRecorder == null) return _draftPath;
 
-    final c = Completer<String?>();
-    void onStopped(html.Event _) {
-      webRecorder?.removeEventListener('stop', onStopped);
-      c.complete(webRecordingPath);
-    }
-
-    webRecorder!.addEventListener('stop', onStopped);
-
-    webRecorder!.stop();
-    webStream?.getTracks().forEach((t) => t.stop());
-    webStream = null;
+    final url = await webRecorder!.stop(); // blob: URL
     _timer?.cancel();
 
-    final url = await c.future;
+    // final c = Completer<String?>();
+    // void onStopped(html.Event _) {
+    //   webRecorder?.removeEventListener('stop', onStopped);
+    //   c.complete(webRecordingPath);
+    // }
+    //
+    // webRecorder!.addEventListener('stop', onStopped);
+    //
+    // webRecorder!.stop();
+    // webStream?.getTracks().forEach((t) => t.stop());
+    // webStream = null;
+    // _timer?.cancel();
+    //
+    // final url = await c.future;
 
     setState(() {
       _isRecording = false;
@@ -344,10 +357,12 @@ class _ChatScreenState extends State<ChatScreen> {
   /// ----- Discard the draft VN -----
   Future<void> _discardDraft() async {
     if (kIsWeb) {
-      if (webRecordingPath != null) {
-        html.Url.revokeObjectUrl(webRecordingPath!);
-        webRecordingPath = null;
-      }
+      webRecorder?.dispose(); // revokes blob URL if any
+      webRecorder = null;
+      // if (webRecordingPath != null) {
+      //   // html.Url.revokeObjectUrl(webRecordingPath!);
+      //   webRecordingPath = null;
+      // }
     } else if (_draftPath != null) {
       await _pm.stop();
 
@@ -476,25 +491,41 @@ class _ChatScreenState extends State<ChatScreen> {
       dz.Either uploadEither;
 
       if (kIsWeb) {
-        // Ensure we have the blob
-        final blob = _lastWebBlob;
-        if (blob == null) {
-          // no recorded data available; revert optimistic bubble
+        final bytes = await webRecorder?.takeBytes();
+        if (bytes == null) {
           chatController.messages.remove(temp);
           CustomSnackBar.errorSnackBar(
               'Nothing to upload. Please record again.');
           return;
         }
-        final bytes = await blobToBytes(_lastWebBlob!);
         final filename = 'vn_${DateTime.now().millisecondsSinceEpoch}.webm';
-
         uploadEither = await uploadController.mediaRepo.uploadBytesWithHttp(
           bytes,
           filename,
           "chat_audio",
           mediaType: 'audio',
-          mediaSubType: 'webm', // matches your MediaRecorder mime
+          mediaSubType: 'webm',
         );
+
+        // Ensure we have the blob
+        // final blob = _lastWebBlob;
+        // if (blob == null) {
+        //   // no recorded data available; revert optimistic bubble
+        //   chatController.messages.remove(temp);
+        //   CustomSnackBar.errorSnackBar(
+        //       'Nothing to upload. Please record again.');
+        //   return;
+        // }
+        // final bytes = await blobToBytes(_lastWebBlob!);
+        // final filename = 'vn_${DateTime.now().millisecondsSinceEpoch}.webm';
+        //
+        // uploadEither = await uploadController.mediaRepo.uploadBytesWithHttp(
+        //   bytes,
+        //   filename,
+        //   "chat_audio",
+        //   mediaType: 'audio',
+        //   mediaSubType: 'webm', // matches your MediaRecorder mime
+        // );
       } else {
         // Mobile: upload from File
         final f = File(_draftPath!);
@@ -580,14 +611,22 @@ class _ChatScreenState extends State<ChatScreen> {
               // Clean local draft & web blob url
               setState(() {
                 _draftPath = null;
+                webRecorder?.dispose(); // revokes object URL on web
+                webRecorder = null;
               });
 
               // (Optional) free the blob url on web
-              if (kIsWeb && webRecordingPath != null) {
-                html.Url.revokeObjectUrl(webRecordingPath!);
-                webRecordingPath = null;
-                _lastWebBlob = null;
-              }
+              // if (kIsWeb && webRecordingPath != null) {
+              //   // html.Url.revokeObjectUrl(webRecordingPath!);
+              //
+              // /****** TODO:: Remove if sudden issues ****/
+              //   webRecorder?.dispose(); // revokes blob URL if any
+              //   webRecorder = null;
+              //     /****** ******/
+              //
+              //     // webRecordingPath = null;
+              //   // _lastWebBlob = null;
+              // }
 
               _scrollToEnd();
             },
@@ -638,7 +677,7 @@ class _ChatScreenState extends State<ChatScreen> {
     });
 
     _pm.onComplete(() {
-      chatController.activeAudioId.value = null;     // 👈 reset when finished
+      chatController.activeAudioIdString.value = null; // 👈 reset when finished
     });
   }
 
@@ -737,6 +776,9 @@ class _ChatScreenState extends State<ChatScreen> {
                           final isVoice = msg.messageType == 'voice' ||
                               msg.messageType == 'audio';
 
+                          final bubbleId = (msg.messageId?.toString() ??
+                              'temp-${msg.createdAt?.microsecondsSinceEpoch ?? msg.hashCode}');
+
                           return Align(
                             alignment: fromMe
                                 ? Alignment.centerRight
@@ -757,8 +799,10 @@ class _ChatScreenState extends State<ChatScreen> {
                                       path: msg.message ?? '',
                                       fromMe: fromMe,
                                       pm: _pm,
-                                      id: msg.messageId!,
-                                      activeAudioId: chatController.activeAudioId, // your AudioPlayerManager instance
+                                      id: bubbleId,
+                                      activeAudioId: chatController
+                                          .activeAudioIdString, // RxnString
+                                      // your AudioPlayerManager instance
                                     )
                                   : Column(
                                       crossAxisAlignment: align,
@@ -1059,18 +1103,18 @@ class VoiceBubble extends StatelessWidget {
     required this.activeAudioId,
   });
 
-  final int id;
-  final String path;       // local path or URL (http/blob)
+  final String id;
+  final String path;
   final bool fromMe;
   final AudioPlayerManager pm;
-  final RxnInt activeAudioId;
+  final RxnString activeAudioId; // <- String
 
   bool get _isUrl => path.startsWith('http') || path.startsWith('blob:');
 
   Future<void> _activateAndPlay() async {
-    activeAudioId.value = id;                    // mark this bubble active
-    await pm.setSource(path, isLocal: !_isUrl);  // bind source to shared player
-    await pm.play();                             // start playback
+    activeAudioId.value = id;
+    await pm.setSource(path, isLocal: !_isUrl);
+    await pm.play();
   }
 
   @override
@@ -1080,53 +1124,51 @@ class VoiceBubble extends StatelessWidget {
     return Obx(() {
       final isActive = (activeAudioId.value == id);
 
-      // Play/Pause button
-      final Widget playPause = isActive
+      final playPause = isActive
           ? StreamBuilder<bool>(
-        initialData: pm.isPlaying,
-        stream: pm.playingStream,
-        builder: (_, snap) {
-          final playing = snap.data ?? false;
-          return IconButton(
-            icon: Icon(playing ? Icons.pause : Icons.play_arrow, color: color),
-            onPressed: () async {
-              if (playing) {
-                await pm.pause();
-              } else {
-                // already active: just resume
-                await pm.play();
-              }
-            },
-          );
-        },
-      )
+              initialData: pm.isPlaying,
+              stream: pm.playingStream,
+              builder: (_, s) {
+                final playing = s.data ?? false;
+                return IconButton(
+                  icon: Icon(playing ? Icons.pause : Icons.play_arrow,
+                      color: color),
+                  onPressed: () async {
+                    if (playing) {
+                      await pm.pause();
+                    } else {
+                      await pm.play();
+                    }
+                  },
+                );
+              },
+            )
           : IconButton(
-        icon: Icon(Icons.play_arrow, color: color),
-        onPressed: _activateAndPlay, // make this bubble active & play
-      );
+              icon: Icon(Icons.play_arrow, color: color),
+              onPressed: _activateAndPlay,
+            );
 
-      // Slider: only live for active bubble
-      final Widget slider = SizedBox(
+      final slider = SizedBox(
         width: 160,
         child: isActive
             ? StreamBuilder<PositionData>(
-          stream: pm.positionDataStream,
-          builder: (_, s) {
-            final pos = s.data?.position ?? Duration.zero;
-            final dur = s.data?.duration ?? const Duration(seconds: 1);
-            final value = dur.inMilliseconds == 0
-                ? 0.0
-                : pos.inMilliseconds / dur.inMilliseconds;
-            return Slider(
-              min: 0,
-              max: 1,
-              value: value.clamp(0.0, 1.0),
-              onChanged: (v) => pm.seek(dur * v),
-              activeColor: color,
-              inactiveColor: fromMe ? Colors.white70 : Colors.black26,
-            );
-          },
-        )
+                stream: pm.positionDataStream,
+                builder: (_, s) {
+                  final pos = s.data?.position ?? Duration.zero;
+                  final dur = s.data?.duration ?? const Duration(seconds: 1);
+                  final value = dur.inMilliseconds == 0
+                      ? 0.0
+                      : pos.inMilliseconds / dur.inMilliseconds;
+                  return Slider(
+                    min: 0,
+                    max: 1,
+                    value: value.clamp(0.0, 1.0),
+                    onChanged: (v) => pm.seek(dur * v),
+                    activeColor: color,
+                    inactiveColor: fromMe ? Colors.white70 : Colors.black26,
+                  );
+                },
+              )
             : const Slider(value: 0, min: 0, max: 1, onChanged: null),
       );
 
