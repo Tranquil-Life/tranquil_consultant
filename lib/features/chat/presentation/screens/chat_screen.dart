@@ -39,16 +39,13 @@ class AudioPlayerManager {
 
   bool _isPlaying = false;
 
-  final _playingCtrl = StreamController<bool>.broadcast();
+  final _playingCtrl  = StreamController<bool>.broadcast();
   final _durationCtrl = StreamController<Duration>.broadcast();
   final _positionCtrl = StreamController<PositionData>.broadcast();
 
   Stream<bool> get playingStream => _playingCtrl.stream;
-
   Stream<Duration> get durationStream => _durationCtrl.stream;
-
   Stream<PositionData> get positionDataStream => _positionCtrl.stream;
-
   bool get isPlaying => _isPlaying;
 
   AudioPlayerManager() {
@@ -57,38 +54,68 @@ class AudioPlayerManager {
       _playingCtrl.add(_isPlaying);
     });
 
-    _player.onPlayerComplete.listen((_) {
-      _playingCtrl.add(false);
-      if (_onComplete != null) _onComplete!();
-    });
+    _player.onDurationChanged.listen((d) => _durationCtrl.add(d));
 
     _player.onPositionChanged.listen((pos) async {
-      final dur = await _player.getDuration();
-      final d = dur ?? Duration.zero;
-      _durationCtrl.add(d);
-      _positionCtrl.add(PositionData(pos, d));
+      final dur = await _player.getDuration() ?? Duration.zero;
+      _positionCtrl.add(PositionData(pos, dur));
+    });
+
+    _player.onPlayerComplete.listen((_) {
+      _playingCtrl.add(false);
+      _onComplete?.call();
     });
   }
 
   void onComplete(VoidCallback cb) => _onComplete = cb;
 
-  Future<void> setSource(String pathOrUrl, {bool isLocal = true}) async {
-    if (isLocal) {
-      await _player.setSourceDeviceFile(pathOrUrl);
-    } else {
-      await _player.setSourceUrl(pathOrUrl);
+  // ---- PLATFORM HELPERS -----------------------------------------------------
+
+  bool get _isApple {
+    // Platform.* throws on web, guard with kIsWeb
+    if (kIsWeb) return false;
+    try {
+      return Platform.isIOS || Platform.isMacOS;
+    } catch (_) {
+      return false;
     }
   }
 
+  // If the URL is Cloudinary .webm, ask Cloudinary for an mp3/aac rendition.
+  String _appleSafeUrl(String url) {
+    if (!_isApple) return url;
+    if (!url.contains('/upload/')) return url;
+
+    // Prefer AAC (m4a); mp3 also works.
+    final isWebm = url.endsWith('.webm');
+    final transformed = url.replaceFirst('/upload/', '/upload/f_aac/'); // or f_mp3
+    return isWebm ? transformed.replaceFirst('.webm', '.m4a') : transformed;
+  }
+
+  // ---- PUBLIC API -----------------------------------------------------------
+
+  Future<void> setSourceSmart(String pathOrUrl, {required bool isLocal}) async {
+    if (isLocal) {
+      await _player.setSourceDeviceFile(pathOrUrl);
+    } else {
+      final safeUrl = _appleSafeUrl(pathOrUrl);
+      await _player.setSourceUrl(safeUrl);
+    }
+  }
+
+  // (kept for compatibility)
+  Future<void> setSource(String pathOrUrl, {bool isLocal = true}) =>
+      setSourceSmart(pathOrUrl, isLocal: isLocal);
+
   Future<void> play([String? pathOrUrl, bool isLocal = true]) async {
-    if (pathOrUrl != null) await setSource(pathOrUrl, isLocal: isLocal);
+    if (pathOrUrl != null) {
+      await setSourceSmart(pathOrUrl, isLocal: isLocal);
+    }
     await _player.resume();
   }
 
   Future<void> pause() async => _player.pause();
-
   Future<void> stop() async => _player.stop();
-
   Future<void> seek(Duration pos) async => _player.seek(pos);
 
   Future<void> toggle() async {
@@ -1104,16 +1131,18 @@ class VoiceBubble extends StatelessWidget {
   });
 
   final String id;
-  final String path;
+  final String path;             // local path or URL
   final bool fromMe;
   final AudioPlayerManager pm;
-  final RxnString activeAudioId; // <- String
+  final RxnString activeAudioId; // using String in your state
 
   bool get _isUrl => path.startsWith('http') || path.startsWith('blob:');
 
   Future<void> _activateAndPlay() async {
+    // Make this bubble the active one,
+    // bind the *correct* source, then start.
     activeAudioId.value = id;
-    await pm.setSource(path, isLocal: !_isUrl);
+    await pm.setSourceSmart(path, isLocal: !_isUrl);
     await pm.play();
   }
 
@@ -1126,49 +1155,51 @@ class VoiceBubble extends StatelessWidget {
 
       final playPause = isActive
           ? StreamBuilder<bool>(
-              initialData: pm.isPlaying,
-              stream: pm.playingStream,
-              builder: (_, s) {
-                final playing = s.data ?? false;
-                return IconButton(
-                  icon: Icon(playing ? Icons.pause : Icons.play_arrow,
-                      color: color),
-                  onPressed: () async {
-                    if (playing) {
-                      await pm.pause();
-                    } else {
-                      await pm.play();
-                    }
-                  },
-                );
-              },
-            )
+        initialData: pm.isPlaying,
+        stream: pm.playingStream,
+        builder: (_, s) {
+          final playing = s.data ?? false;
+          return IconButton(
+            icon: Icon(playing ? Icons.pause : Icons.play_arrow,
+                color: color),
+            onPressed: () async {
+              if (playing) {
+                await pm.pause();
+              } else {
+                // Re-bind BEFORE resuming to avoid stale source
+                await pm.setSourceSmart(path, isLocal: !_isUrl);
+                await pm.play();
+              }
+            },
+          );
+        },
+      )
           : IconButton(
-              icon: Icon(Icons.play_arrow, color: color),
-              onPressed: _activateAndPlay,
-            );
+        icon: Icon(Icons.play_arrow, color: color),
+        onPressed: _activateAndPlay,
+      );
 
       final slider = SizedBox(
         width: 160,
         child: isActive
             ? StreamBuilder<PositionData>(
-                stream: pm.positionDataStream,
-                builder: (_, s) {
-                  final pos = s.data?.position ?? Duration.zero;
-                  final dur = s.data?.duration ?? const Duration(seconds: 1);
-                  final value = dur.inMilliseconds == 0
-                      ? 0.0
-                      : pos.inMilliseconds / dur.inMilliseconds;
-                  return Slider(
-                    min: 0,
-                    max: 1,
-                    value: value.clamp(0.0, 1.0),
-                    onChanged: (v) => pm.seek(dur * v),
-                    activeColor: color,
-                    inactiveColor: fromMe ? Colors.white70 : Colors.black26,
-                  );
-                },
-              )
+          stream: pm.positionDataStream,
+          builder: (_, s) {
+            final pos = s.data?.position ?? Duration.zero;
+            final dur = s.data?.duration ?? const Duration(seconds: 1);
+            final value = dur.inMilliseconds == 0
+                ? 0.0
+                : pos.inMilliseconds / dur.inMilliseconds;
+            return Slider(
+              min: 0,
+              max: 1,
+              value: value.clamp(0.0, 1.0),
+              onChanged: (v) => pm.seek(dur * v),
+              activeColor: color,
+              inactiveColor: fromMe ? Colors.white70 : Colors.black26,
+            );
+          },
+        )
             : const Slider(value: 0, min: 0, max: 1, onChanged: null),
       );
 
