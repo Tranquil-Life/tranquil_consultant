@@ -36,6 +36,10 @@ class PositionData {
 class AudioPlayerManager {
   final ap.AudioPlayer _player = ap.AudioPlayer();
   VoidCallback? _onComplete;
+  String? _lastPath;
+  bool _lastIsLocal = true;
+  bool _hasCompleted = false;
+
 
   bool _isPlaying = false;
 
@@ -62,9 +66,11 @@ class AudioPlayerManager {
     _player.onPositionChanged.listen((pos) async {
       final dur = await _player.getDuration() ?? Duration.zero;
       _positionCtrl.add(PositionData(pos, dur));
+      if (dur > Duration.zero && pos < dur) _hasCompleted = false;
     });
 
     _player.onPlayerComplete.listen((_) {
+      _hasCompleted = true;
       _playingCtrl.add(false);
       _onComplete?.call();
     });
@@ -99,13 +105,17 @@ class AudioPlayerManager {
   // ---- PUBLIC API -----------------------------------------------------------
 
   Future<void> setSourceSmart(String pathOrUrl, {required bool isLocal}) async {
+    _lastPath = isLocal ? pathOrUrl : _appleSafeUrl(pathOrUrl);
+    _lastIsLocal = isLocal;
+
     if (isLocal) {
-      await _player.setSourceDeviceFile(pathOrUrl);
+      await _player.setSourceDeviceFile(_lastPath!);
     } else {
-      final safeUrl = _appleSafeUrl(pathOrUrl);
-      await _player.setSourceUrl(safeUrl);
+      await _player.setSourceUrl(_lastPath!);
     }
+    _hasCompleted = false;
   }
+
 
   // (kept for compatibility)
   Future<void> setSource(String pathOrUrl, {bool isLocal = true}) =>
@@ -115,7 +125,11 @@ class AudioPlayerManager {
     if (pathOrUrl != null) {
       await setSourceSmart(pathOrUrl, isLocal: isLocal);
     }
-    await _player.resume();
+    if (_hasCompleted) {
+      await _restartFromBeginning();
+    } else {
+      await _player.resume();
+    }
   }
 
   Future<void> pause() async => _player.pause();
@@ -127,18 +141,35 @@ class AudioPlayerManager {
   Future<void> toggle() async {
     if (_isPlaying) {
       await pause();
-    } else {
-      // if already at end → reset to 0 first
-      final pos = await _player.getCurrentPosition() ?? Duration.zero;
-      final dur = await _player.getDuration() ?? Duration.zero;
-
-      if (dur > Duration.zero && pos >= dur) {
-        await _player.seek(Duration.zero);
-      }
-
-      await _player.resume();
+      return;
     }
+    // Not playing
+    if (_hasCompleted) {
+      await _restartFromBeginning();
+      return;
+    }
+    // Edge: pos at end but not marked completed yet
+    final pos = await _player.getCurrentPosition() ?? Duration.zero;
+    final dur = await _player.getDuration() ?? Duration.zero;
+    if (dur > Duration.zero && pos >= dur - const Duration(milliseconds: 10)) {
+      await _restartFromBeginning();
+      return;
+    }
+    await _player.resume();
   }
+
+  Future<void> _restartFromBeginning() async {
+    if (_lastPath == null) return;
+    await _player.stop(); // fully reset pipeline
+    if (_lastIsLocal) {
+      await _player.setSourceDeviceFile(_lastPath!);
+    } else {
+      await _player.setSourceUrl(_lastPath!);
+    }
+    _hasCompleted = false;
+    await _player.resume();
+  }
+
 
   void dispose() {
     _player.dispose();
@@ -921,6 +952,8 @@ class _InputBar extends StatelessWidget {
                   min: 0,
                   max: 1,
                   value: value.clamp(0.0, 1.0),
+                    activeColor: ColorPalette.yellow,
+                  inactiveColor: ColorPalette.yellow,
                   onChanged: (v) => pm.seek(dur * v),
                 );
               },
