@@ -39,13 +39,16 @@ class AudioPlayerManager {
 
   bool _isPlaying = false;
 
-  final _playingCtrl  = StreamController<bool>.broadcast();
+  final _playingCtrl = StreamController<bool>.broadcast();
   final _durationCtrl = StreamController<Duration>.broadcast();
   final _positionCtrl = StreamController<PositionData>.broadcast();
 
   Stream<bool> get playingStream => _playingCtrl.stream;
+
   Stream<Duration> get durationStream => _durationCtrl.stream;
+
   Stream<PositionData> get positionDataStream => _positionCtrl.stream;
+
   bool get isPlaying => _isPlaying;
 
   AudioPlayerManager() {
@@ -88,7 +91,8 @@ class AudioPlayerManager {
 
     // Prefer AAC (m4a); mp3 also works.
     final isWebm = url.endsWith('.webm');
-    final transformed = url.replaceFirst('/upload/', '/upload/f_aac/'); // or f_mp3
+    final transformed =
+        url.replaceFirst('/upload/', '/upload/f_aac/'); // or f_mp3
     return isWebm ? transformed.replaceFirst('.webm', '.m4a') : transformed;
   }
 
@@ -115,7 +119,9 @@ class AudioPlayerManager {
   }
 
   Future<void> pause() async => _player.pause();
+
   Future<void> stop() async => _player.stop();
+
   Future<void> seek(Duration pos) async => _player.seek(pos);
 
   Future<void> toggle() async {
@@ -161,9 +167,8 @@ class _ChatScreenState extends State<ChatScreen> {
   final chatController = ChatController.instance;
   final uploadController = UploadController.instance;
 
-  // Playback (shared by draft + bubbles)
-  final AudioPlayerManager _pm = AudioPlayerManager();
-
+  late final AudioPlayerManager _pmFeed;   // bubbles / feed
+  late final AudioPlayerManager _pmDraft;  // input mini-player
   // Chat state
   final ScrollController _scroll = ScrollController();
   final TextEditingController _text = TextEditingController();
@@ -280,75 +285,11 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
-  // Future<void> recordWebAudio() async {
-  //   // Use modern API
-  //   final mediaDevices = html.window.navigator.mediaDevices;
-  //   if (mediaDevices == null) {
-  //     throw 'mediaDevices API not available in this browser';
-  //   }
-  //
-  //   // Request mic
-  //   final stream = await mediaDevices.getUserMedia({'audio': true});
-  //   webStream = stream;
-  //
-  //   // Create recorder (force a common mime; browsers may fall back)
-  //   // ignore: undefined_named_parameter
-  //   webRecorder = html.MediaRecorder(stream, {'mimeType': 'audio/webm'});
-  //
-  //   final List<html.Blob> chunks = [];
-  //
-  //   // ✅ correct event name
-  //   webRecorder!.addEventListener('dataavailable', (html.Event e) {
-  //     final ev = e as html.BlobEvent;
-  //     if (ev.data != null) chunks.add(ev.data!);
-  //   });
-  //
-  //   webRecorder!.addEventListener('stop', (html.Event e) {
-  //     final blob = html.Blob(chunks, 'audio/webm');
-  //     _lastWebBlob = blob;
-  //
-  //     final blobUrl = html.Url.createObjectUrl(blob);
-  //     webRecordingPath = blobUrl;
-  //
-  //     //Auto-play it in browser
-  //     final audio = html.AudioElement(blobUrl)
-  //       ..controls = true
-  //       ..autoplay = true;
-  //     html.document.body!.append(audio);
-  //     print('Playback started.');
-  //
-  //     setState(() {
-  //       _isRecording = false;
-  //       _sec = 0;
-  //       _draftPath = blobUrl; // show in input; action button → Send
-  //     });
-  //   });
-  //
-  //   webRecorder!
-  //       .start(); // optionally: webRecorder!.start(1000) to get periodic chunks
-  // }
-
-  ///New one
   Future<String?> stopWebAudioRecording({bool autoplay = true}) async {
     if (!_isRecording || webRecorder == null) return _draftPath;
 
     final url = await webRecorder!.stop(); // blob: URL
     _timer?.cancel();
-
-    // final c = Completer<String?>();
-    // void onStopped(html.Event _) {
-    //   webRecorder?.removeEventListener('stop', onStopped);
-    //   c.complete(webRecordingPath);
-    // }
-    //
-    // webRecorder!.addEventListener('stop', onStopped);
-    //
-    // webRecorder!.stop();
-    // webStream?.getTracks().forEach((t) => t.stop());
-    // webStream = null;
-    // _timer?.cancel();
-    //
-    // final url = await c.future;
 
     setState(() {
       _isRecording = false;
@@ -374,25 +315,24 @@ class _ChatScreenState extends State<ChatScreen> {
 
     // Autoplay the draft in the input
     if (autoplay && path != null) {
-      await _pm.setSource(path, isLocal: true);
-      await _pm.play();
+      await _pmFeed.stop();                 // stop bubbles
+      await _pmDraft.setSource(path, isLocal: true);
+      await _pmDraft.play();
+      chatController.activeAudioIdString.value = null;
     }
-
     return path;
   }
 
   /// ----- Discard the draft VN -----
   Future<void> _discardDraft() async {
-    if (kIsWeb) {
-      webRecorder?.dispose(); // revokes blob URL if any
-      webRecorder = null;
-      // if (webRecordingPath != null) {
-      //   // html.Url.revokeObjectUrl(webRecordingPath!);
-      //   webRecordingPath = null;
-      // }
-    } else if (_draftPath != null) {
-      await _pm.stop();
+    // Stop the draft preview player
+    await _pmDraft.stop();
 
+    if (kIsWeb) {
+      // Revoke blob URL & free memory
+      webRecorder?.dispose();
+      webRecorder = null;
+    } else if (_draftPath != null) {
       final f = File(_draftPath!);
       if (await f.exists()) await f.delete();
     }
@@ -403,6 +343,7 @@ class _ChatScreenState extends State<ChatScreen> {
       _sec = 0;
     });
   }
+
 
   /// ----- Send text -----
   Future<void> _sendText() async {
@@ -493,8 +434,10 @@ class _ChatScreenState extends State<ChatScreen> {
   Future<void> _sendDraft() async {
     if (_draftPath == null) return;
 
-    // 1) Stop any preview playback
-    await _pm.stop();
+    // 1) Ensure no other audio is playing
+    await _pmDraft.stop();                          // stop input preview
+    await _pmFeed.stop();                           // stop any bubble playback
+    chatController.activeAudioIdString.value = null;
 
     // 2) Create optimistic message
     final temp = Message(
@@ -502,8 +445,7 @@ class _ChatScreenState extends State<ChatScreen> {
       chatId: chatController.chatId!.value,
       senderId: myId,
       senderType: consultant,
-      message: _draftPath,
-      // local path (mobile) or blob: URL (web)
+      message: _draftPath,               // local path (mobile) or blob: URL (web)
       messageType: 'audio',
       caption: null,
       createdAt: DateTime.now(),
@@ -518,11 +460,11 @@ class _ChatScreenState extends State<ChatScreen> {
       dz.Either uploadEither;
 
       if (kIsWeb) {
+        // Take bytes BEFORE disposing the recorder
         final bytes = await webRecorder?.takeBytes();
         if (bytes == null) {
           chatController.messages.remove(temp);
-          CustomSnackBar.errorSnackBar(
-              'Nothing to upload. Please record again.');
+          CustomSnackBar.errorSnackBar('Nothing to upload. Please record again.');
           return;
         }
         final filename = 'vn_${DateTime.now().millisecondsSinceEpoch}.webm';
@@ -533,28 +475,7 @@ class _ChatScreenState extends State<ChatScreen> {
           mediaType: 'audio',
           mediaSubType: 'webm',
         );
-
-        // Ensure we have the blob
-        // final blob = _lastWebBlob;
-        // if (blob == null) {
-        //   // no recorded data available; revert optimistic bubble
-        //   chatController.messages.remove(temp);
-        //   CustomSnackBar.errorSnackBar(
-        //       'Nothing to upload. Please record again.');
-        //   return;
-        // }
-        // final bytes = await blobToBytes(_lastWebBlob!);
-        // final filename = 'vn_${DateTime.now().millisecondsSinceEpoch}.webm';
-        //
-        // uploadEither = await uploadController.mediaRepo.uploadBytesWithHttp(
-        //   bytes,
-        //   filename,
-        //   "chat_audio",
-        //   mediaType: 'audio',
-        //   mediaSubType: 'webm', // matches your MediaRecorder mime
-        // );
       } else {
-        // Mobile: upload from File
         final f = File(_draftPath!);
         if (!await f.exists()) {
           chatController.messages.remove(temp);
@@ -569,11 +490,11 @@ class _ChatScreenState extends State<ChatScreen> {
 
       // 4) Handle upload result
       await uploadEither.fold(
-        (l) async {
+            (l) async {
           chatController.messages.remove(temp);
           CustomSnackBar.errorSnackBar(l.message.toString());
         },
-        (r) async {
+            (r) async {
           final secureUrl = r['data']?['secure_url']?.toString();
           if (secureUrl == null || secureUrl.isEmpty) {
             chatController.messages.remove(temp);
@@ -585,10 +506,8 @@ class _ChatScreenState extends State<ChatScreen> {
           final either = await uploadController.chatRepo.sendChat(
             chatId: chatController.chatId!.value,
             message: secureUrl,
-            // 👈 the URL to your audio
             messageType: strMsgType(MessageType.audio.toString()),
             parentId: null,
-            // or quotedMessage?.messageId
             caption: null,
             clientId: chatController.rxClient.value.id!,
             eventName: 'new-message',
@@ -596,19 +515,17 @@ class _ChatScreenState extends State<ChatScreen> {
           );
 
           either.fold(
-            (l) {
+                (l) {
               chatController.messages.remove(temp);
               CustomSnackBar.errorSnackBar(l.message.toString());
             },
-            (res) {
+                (res) {
               final map = (res is Map && res['data'] is Map)
                   ? (res['data'] as Map)
                   : (res as Map);
 
-              final created =
-                  DateTime.tryParse('${map['created_at']}') ?? DateTime.now();
-              final updated =
-                  DateTime.tryParse('${map['updated_at']}') ?? created;
+              final created = DateTime.tryParse('${map['created_at']}') ?? DateTime.now();
+              final updated = DateTime.tryParse('${map['updated_at']}') ?? created;
 
               final serverMsg = Message(
                 messageId: map['id'] as int?,
@@ -616,10 +533,8 @@ class _ChatScreenState extends State<ChatScreen> {
                 senderId: map['sender_id'] as int?,
                 parentId: map['parent_id'] as int?,
                 senderType: map['sender_type'] as String?,
-                message: map['message'] as String?,
-                // server URL
-                messageType: map['message_type'] as String?,
-                // 'audio'
+                message: map['message'] as String?,          // server URL
+                messageType: map['message_type'] as String?, // 'audio'
                 caption: map['caption'] as String?,
                 read: (map['read'] as List?)?.cast<Map<String, dynamic>>(),
                 createdAt: created,
@@ -635,25 +550,14 @@ class _ChatScreenState extends State<ChatScreen> {
               }
               chatController.messages.refresh();
 
-              // Clean local draft & web blob url
+              // 6) Clean local draft & recorder
               setState(() {
                 _draftPath = null;
-                webRecorder?.dispose(); // revokes object URL on web
-                webRecorder = null;
+                if (kIsWeb) {
+                  webRecorder?.dispose();  // revokes object URL on web
+                  webRecorder = null;
+                }
               });
-
-              // (Optional) free the blob url on web
-              // if (kIsWeb && webRecordingPath != null) {
-              //   // html.Url.revokeObjectUrl(webRecordingPath!);
-              //
-              // /****** TODO:: Remove if sudden issues ****/
-              //   webRecorder?.dispose(); // revokes blob URL if any
-              //   webRecorder = null;
-              //     /****** ******/
-              //
-              //     // webRecordingPath = null;
-              //   // _lastWebBlob = null;
-              // }
 
               _scrollToEnd();
             },
@@ -681,6 +585,10 @@ class _ChatScreenState extends State<ChatScreen> {
   void initState() {
     super.initState();
 
+    // instantiate the two players
+    _pmFeed  = AudioPlayerManager();
+    _pmDraft = AudioPlayerManager();
+
     _text.addListener(() => setState(() {}));
     _initRecorder();
 
@@ -688,23 +596,26 @@ class _ChatScreenState extends State<ChatScreen> {
     chatController.loadRecentMessages();
     chatController.initializePusher(channel: chatController.chatChannel.value);
 
-    // 👇 load older when user scrolls to top (with reverse: true)
-    // Trigger load-older when user scrolls near the top (because reverse: true)
+    // load older when user scrolls to top (with reverse: true)
     _scroll.addListener(() {
       if (!_scroll.hasClients) return;
       final pos = _scroll.position;
-      const threshold = 200.0; // how close to the top to trigger
-
-      // With reverse:true, pixels grow as you scroll "up" toward older messages.
+      const threshold = 200.0;
       final nearTop = pos.pixels >= (pos.maxScrollExtent - threshold);
-
       if (nearTop && !chatController.isLoadMoreRunning.value) {
         chatController.loadOlderMessages();
       }
     });
 
-    _pm.onComplete(() {
-      chatController.activeAudioIdString.value = null; // 👈 reset when finished
+    // When a bubble finishes, clear "active" so its slider resets
+    _pmFeed.onComplete(() {
+      chatController.activeAudioIdString.value = null;
+    });
+
+    // Optional: when the draft preview finishes, you may want to refresh the
+    // input UI (e.g., to flip the play icon back). Not strictly required.
+    _pmDraft.onComplete(() {
+      setState(() {}); // safe no-op if your input depends on pmDraft streams
     });
   }
 
@@ -713,13 +624,13 @@ class _ChatScreenState extends State<ChatScreen> {
     _scroll.dispose();
     _timer?.cancel();
     _text.dispose();
-    _pm.dispose();
+    _pmFeed.dispose();
+    _pmDraft.dispose();
     _recorder.closeRecorder();
     super.dispose();
   }
 
   /// ----- UI -----
-
   @override
   Widget build(BuildContext context) {
     return UnFocusWidget(
@@ -825,7 +736,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                   ? VoiceBubble(
                                       path: msg.message ?? '',
                                       fromMe: fromMe,
-                                      pm: _pm,
+                                      pm: _pmFeed,
                                       id: bubbleId,
                                       activeAudioId: chatController
                                           .activeAudioIdString, // RxnString
@@ -860,7 +771,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       sec: _sec,
                       showMic: _showMic,
                       draftPath: _draftPath,
-                      pm: _pm,
+                      pm: _pmDraft,
                       onStartRecording: _startRecording,
                       onStopRecording: () => kIsWeb
                           ? stopWebAudioRecording(autoplay: true)
@@ -1128,19 +1039,22 @@ class VoiceBubble extends StatelessWidget {
     required this.fromMe,
     required this.pm,
     required this.activeAudioId,
+    this.onBeforePlay, // 👈 NEW
   });
 
   final String id;
-  final String path;             // local path or URL
+  final String path;
   final bool fromMe;
-  final AudioPlayerManager pm;
-  final RxnString activeAudioId; // using String in your state
+  final AudioPlayerManager pm;        // this is the feed/bubbles player
+  final RxnString activeAudioId;
+  final Future<void> Function()? onBeforePlay; // 👈 NEW
 
   bool get _isUrl => path.startsWith('http') || path.startsWith('blob:');
 
   Future<void> _activateAndPlay() async {
-    // Make this bubble the active one,
-    // bind the *correct* source, then start.
+    // Stop draft/other player first, if provided
+    if (onBeforePlay != null) await onBeforePlay!();
+
     activeAudioId.value = id;
     await pm.setSourceSmart(path, isLocal: !_isUrl);
     await pm.play();
@@ -1160,14 +1074,13 @@ class VoiceBubble extends StatelessWidget {
         builder: (_, s) {
           final playing = s.data ?? false;
           return IconButton(
-            icon: Icon(playing ? Icons.pause : Icons.play_arrow,
-                color: color),
+            icon: Icon(playing ? Icons.pause : Icons.play_arrow, color: color),
             onPressed: () async {
               if (playing) {
                 await pm.pause();
               } else {
-                // Re-bind BEFORE resuming to avoid stale source
-                await pm.setSourceSmart(path, isLocal: !_isUrl);
+                if (onBeforePlay != null) await onBeforePlay!();   // 👈 ensure focus
+                await pm.setSourceSmart(path, isLocal: !_isUrl);    // re-bind
                 await pm.play();
               }
             },
