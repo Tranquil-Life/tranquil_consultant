@@ -128,6 +128,14 @@ class AudioPlayerManager {
     if (_isPlaying) {
       await pause();
     } else {
+      // if already at end → reset to 0 first
+      final pos = await _player.getCurrentPosition() ?? Duration.zero;
+      final dur = await _player.getDuration() ?? Duration.zero;
+
+      if (dur > Duration.zero && pos >= dur) {
+        await _player.seek(Duration.zero);
+      }
+
       await _player.resume();
     }
   }
