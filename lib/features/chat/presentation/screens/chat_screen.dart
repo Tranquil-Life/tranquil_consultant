@@ -140,20 +140,6 @@ class AudioPlayerManager {
   }
 }
 
-/// ====== SIMPLE CHAT MODELS ======
-
-class ChatItem {
-  final String? text;
-  final String? vnPath; // local file path
-  final bool fromMe;
-
-  ChatItem.text(this.text, {this.fromMe = true}) : vnPath = null;
-
-  ChatItem.voice(this.vnPath, {this.fromMe = true}) : text = null;
-
-  bool get isVoice => vnPath != null;
-}
-
 /// ====== PAGE ======
 
 class ChatScreen extends StatefulWidget {
@@ -277,9 +263,9 @@ class _ChatScreenState extends State<ChatScreen> {
       setState(() => _sec++);
       if (_sec >= _maxSec) {
         if (kIsWeb) {
-          await stopWebAudioRecording(autoplay: false);
+          await stopWebAudioRecording(autoplay: true);
         } else {
-          await stopLocalAudioRecording(autoplay: false);
+          await stopLocalAudioRecording(autoplay: true);
         }
       }
     });
@@ -1030,7 +1016,6 @@ class _InputBar extends StatelessWidget {
 }
 
 /// ====== VOICE BUBBLE WIDGET (for sent voice notes) ======
-
 class VoiceBubble extends StatelessWidget {
   const VoiceBubble({
     super.key,
