@@ -1,6 +1,8 @@
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:fluttermoji/fluttermoji.dart';
+import 'package:get/get.dart';
 import 'package:tl_consultant/core/utils/helpers/svg_elements.dart';
+import 'package:tl_consultant/core/utils/routes/app_pages.dart';
 import 'package:tl_consultant/features/profile/data/models/user_model.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 import 'package:uuid/uuid.dart';
@@ -8,10 +10,6 @@ import 'package:uuid/uuid.dart';
 const insuficientFundsMessage =
     'You dont have enough funds to schedule a meeting with this consultant';
 const cardSaveLimitExceededMessage = 'Your card slot is full';
-const agoraId = 'a2782460e26a405cb9ffda0ae62e8038';
-const paystackPublicKey = 'pk_test_2442c1c75c79a8cbd1fdd8cba558a68ea1dd8524';
-const mapApiKey = "AIzaSyDVIeUnWdJiSLrWnI4_PaBAxYIFWd9rb7M";
-const agoraAppId = 'a2782460e26a405cb9ffda0ae62e8038';
 const fileMaxSize = "File must be less than 2 MB";
 const emptyCvField = "Your resumé is required";
 const emptyIdField = "A means of identification is required";
@@ -161,7 +159,10 @@ var settings = <String, List<Map<String, dynamic>>>{
     {
       "prefix": SvgElements.svgManagePwd,
       "label": "Manage password",
-      "suffix": SvgElements.svgArrowRight
+      "suffix": SvgElements.svgArrowRight,
+      "onTap": (){
+        Get.toNamed(Routes.FORGOT_PASSWORD);
+      }
     },
     {
       "prefix": SvgElements.svgPinReset,
@@ -169,5 +170,23 @@ var settings = <String, List<Map<String, dynamic>>>{
       "suffix": SvgElements.svgArrowRight
     }
   ],
-  "support": []
+  "support": [
+    {
+      "prefix": SvgElements.svgContactUs,
+      "label": "Contact us",
+      "suffix": SvgElements.svgArrowRight,
+      "onTap": (){
+      }
+    },
+    {
+      "prefix": SvgElements.svgFeedback,
+      "label": "Support & Feedback",
+      "suffix": SvgElements.svgArrowRight
+    },
+    {
+      "prefix": SvgElements.svgFaqs,
+      "label": "Frequently asked questions (FAQs)",
+      "suffix": SvgElements.svgArrowRight
+    }
+  ]
 };

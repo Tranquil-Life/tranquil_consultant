@@ -21,13 +21,13 @@ class UpdatePasswordPage extends StatelessWidget {
   final authController = Get.put(AuthController());
   final verificationController = Get.put(VerificationController());
 
-  void _continue() async{
+  void _continue() async {
     if (authController.isAllPwdCriteriaMet) {
       var updated = await authController.updatePassword(
           token: verificationController.verificationToken.value,
           password: authController.params.password);
 
-      if(updated){
+      if (updated) {
         await Future.delayed(Duration(seconds: 2));
 
         Get.toNamed(Routes.SIGN_IN);
@@ -50,32 +50,41 @@ class UpdatePasswordPage extends StatelessWidget {
               Text(
                 "Now, all you have to do is create a new, unique password to regain access to your account",
                 style: TextStyle(
-                    fontSize: AppFonts.defaultSize,
+                    fontSize: isSmallScreen(context)
+                        ? AppFonts.defaultSize
+                        : AppFonts.baseSize,
                     fontWeight: FontWeight.w400,
                     color: ColorPalette.grey.shade500),
               ),
               const SizedBox(
                 height: 25,
               ),
-              const Text(
+              Text(
                 "Password",
                 style: TextStyle(
-                    fontSize: AppFonts.defaultSize,
+                    fontSize: isSmallScreen(context)
+                        ? AppFonts.defaultSize
+                        : AppFonts.baseSize,
                     fontWeight: FontWeight.w400,
                     color: ColorPalette.black),
+              ),
+              const SizedBox(
+                height: 8,
               ),
               Obx(() => passwordField(authController)),
               const SizedBox(
                 height: 8,
               ),
-              Obx(() => buildPasswordCriteria(authController)),
+              Obx(() => buildPasswordCriteria(authController, context)),
               const SizedBox(
                 height: 16,
               ),
-              const Text(
+              Text(
                 "Re-enter password",
-                style: const TextStyle(
-                    fontSize: AppFonts.defaultSize,
+                style: TextStyle(
+                    fontSize: isSmallScreen(context)
+                        ? AppFonts.defaultSize
+                        : AppFonts.baseSize,
                     fontWeight: FontWeight.w400,
                     color: ColorPalette.black),
               ),
@@ -86,16 +95,22 @@ class UpdatePasswordPage extends StatelessWidget {
               const SizedBox(
                 height: 8,
               ),
-              Obx(() => buildCriteriaRow(
-                    "Must match password above",
-                    authController.isPasswordsMatching.value,
-                    initialColor: ColorPalette.grey.shade300,
-                  )),
+              Obx(() => buildCriteriaRow("Must match password above",
+                  authController.isPasswordsMatching.value,
+                  initialColor: ColorPalette.grey.shade300, context: context)),
               Spacer(),
-              Obx(() => CustomButton(
-                  onPressed:
-                      !authController.isAllPwdCriteriaMet ? null : _continue,
-                  text: "Reset password")),
+
+              Align(
+                alignment: Alignment.center,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: isSmallScreen(context) ? displayWidth(context) : displayWidth(context) /1.4),
+                  child:Obx(() => CustomButton(
+                    onPressed:
+                    !authController.isAllPwdCriteriaMet ? null : _continue,
+                    text: "Reset password", )),
+                ),
+              ),
+
               SizedBox(height: 44),
               Align(
                 alignment: Alignment.bottomCenter,
@@ -106,11 +121,12 @@ class UpdatePasswordPage extends StatelessWidget {
                   child: RichText(
                     text: TextSpan(
                       text: 'I have an account. ',
-                      children: const [
+                      children: [
                         TextSpan(
                           text: 'Sign me in',
                           style: TextStyle(
-                            fontSize: 16,
+                            fontFamily: AppFonts.mulishBold,
+                            fontSize: isSmallScreen(context) ? AppFonts.defaultSize : AppFonts.baseSize,
                             fontWeight: FontWeight.w400,
                             color: ColorPalette.green,
                           ),
@@ -118,7 +134,8 @@ class UpdatePasswordPage extends StatelessWidget {
                       ],
                       style: TextStyle(
                         color: ColorPalette.grey.shade300,
-                        fontSize: 16,
+                        fontFamily: AppFonts.mulishRegular,
+                        fontSize: isSmallScreen(context) ? AppFonts.defaultSize : AppFonts.baseSize,
                         fontWeight: FontWeight.w400,
                       ),
                     ),

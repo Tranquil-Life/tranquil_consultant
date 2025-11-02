@@ -4,6 +4,7 @@ import 'package:tl_consultant/core/global/dialogs.dart';
 import 'package:tl_consultant/core/global/user_avatar.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
+import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 import 'package:tl_consultant/features/chat/presentation/widgets/dialogs/rate_consultation_dialog.dart';
 import 'package:tl_consultant/features/consultation/domain/entities/participant.dart';
 
@@ -16,7 +17,7 @@ class MoreOptions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton(
-      icon: const Icon(Icons.more_vert, color: Colors.white),
+      icon: Icon(Icons.more_vert, color: Colors.white, size: isSmallScreen(context) ? 24 : 32,),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       itemBuilder: (_) => [
         const PopupMenuItem(value: 0, child: Text('View participants')),

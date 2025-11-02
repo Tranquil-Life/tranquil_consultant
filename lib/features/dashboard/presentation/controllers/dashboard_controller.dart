@@ -12,6 +12,7 @@ import 'package:tl_consultant/core/utils/extensions/date_time_extension.dart';
 import 'package:tl_consultant/core/utils/functions.dart';
 import 'package:tl_consultant/features/activity/presentation/controllers/activity_controller.dart';
 import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';
+import 'package:tl_consultant/features/chat/presentation/screens/chat_screen.dart';
 import 'package:tl_consultant/features/consultation/presentation/controllers/meetings_controller.dart';
 import 'package:tl_consultant/features/dashboard/data/repos/location_repo.dart';
 import 'package:tl_consultant/features/growth_kit/presentation/screens/growth_kit_page.dart';
@@ -30,7 +31,7 @@ import 'package:tl_consultant/features/wallet/presentation/controllers/transacti
 import 'package:tl_consultant/features/wallet/presentation/screens/wallet_tab.dart';
 
 class DashboardController extends GetxController {
-  static DashboardController get instance => Get.find();
+  static DashboardController get instance => Get.find<DashboardController>();
 
   final LocationRepoImpl locationRepo = LocationRepoImpl();
 
@@ -38,6 +39,14 @@ class DashboardController extends GetxController {
   final List<Widget> pages = [
     HomeTab(),
     JournalTab(),
+    WalletTab(),
+    GrowthKitPage()
+  ];
+
+  final List<Widget> largePages = [
+    HomeTab(),
+    JournalTab(),
+    ChatScreen(),
     WalletTab(),
     GrowthKitPage()
   ];
@@ -125,7 +134,7 @@ class DashboardController extends GetxController {
               meeting.startAt == DateTimeExtension.now)) {
         currentMeetingCount.value = 1;
         currentMeetingId.value = meeting.id;
-        clientId.value = meeting.client.id;
+        clientId.value = meeting.client.id!;
         clientDp.value = meeting.client.avatarUrl;
         clientName.value = meeting.client.firstName;
         currentMeetingST.value = meeting.startAt.formatDate;

@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:tl_consultant/core/global/app_bar_button.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/theme/fonts.dart';
+import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 
 class AppBarAction {
   final Widget child;
@@ -55,38 +56,38 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         fontFamily: fontFamily,
       ),
       leading: centerTitle == true ? null : (Navigator.of(context).canPop() || onBackPressed != null) &&
-              !hideBackButton
+          !hideBackButton
           ? Hero(
-              tag: 'back_button',
-              child: Center(
-                child: AppBarButton(
-                  backgroundColor: ColorPalette.green,
-                  onPressed: onBackPressed ?? Navigator.of(context).pop,
-                  icon: const Padding(
-                    padding: EdgeInsets.all(1),
-                    child: Icon(
-                      Icons.arrow_back_ios_new,
-                      color: Colors.white,
-                      size: 19,
-                    ),
-                  ),
-                ),
+        tag: 'back_button',
+        child: Center(
+          child: AppBarButton(
+            backgroundColor: ColorPalette.green,
+            onPressed: onBackPressed ?? Navigator.of(context).pop,
+            icon: const Padding(
+              padding: EdgeInsets.all(1),
+              child: Icon(
+                Icons.arrow_back_ios_new,
+                color: Colors.white,
+                size: 19,
               ),
-            )
+            ),
+          ),
+        ),
+      )
           : const SizedBox.shrink(),
       title: title != null
           ? Padding(
-              padding: const EdgeInsets.only(top: 4),
-              child: Text(
-                title!,
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w500,
-                  color: titleColor ?? ColorPalette.black,
-                  fontFamily: AppFonts.josefinSansRegular
-                ),
-              ),
-            )
+        padding: const EdgeInsets.only(top: 4),
+        child: Text(
+          title!,
+          style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.w500,
+              color: titleColor ?? ColorPalette.black,
+              fontFamily: AppFonts.mulishRegular
+          ),
+        ),
+      )
           : null,
       actions: actions?.map<Widget>((e) {
         return Padding(
@@ -108,6 +109,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
+
 
 class _NormalButton extends StatelessWidget {
   const _NormalButton(this.data, {super.key});

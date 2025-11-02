@@ -13,6 +13,9 @@ import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:tl_consultant/app.dart';
 import 'package:timezone/data/latest.dart' as tz;
+import 'package:tl_consultant/features/chat/presentation/controllers/agora_controller.dart';
+import 'package:tl_consultant/features/chat/presentation/controllers/chat_controller.dart';
+import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
 import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
 
 import 'core/constants/constants.dart';
@@ -53,6 +56,9 @@ void main() async {
 
   // Register before running the app
   Get.put(ProfileController());
+  Get.put(AgoraController());
+  Get.put(ChatController());
+  Get.put(DashboardController());
 
   // Listen for messages
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {

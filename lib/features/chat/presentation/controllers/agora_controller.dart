@@ -8,12 +8,11 @@ import 'package:tl_consultant/features/chat/presentation/screens/video_call_view
 import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
 
 class AgoraController extends GetxController {
-  static AgoraController get instance => Get.find();
+  static AgoraController get instance => Get.find<AgoraController>();
 
   ChatRepoImpl repo = ChatRepoImpl();
 
-  final chatController = ChatController.instance;
-  final dashboardController = DashboardController.instance;
+  // final dashboardController = DashboardController.instance;
 
   RxSet<int> remoteIds = <int>{}.obs;
   var agoraToken = "".obs;
@@ -24,13 +23,14 @@ class AgoraController extends GetxController {
   }
 
   Future getAgoraToken() async {
+
     //Tell backend dev to set expiry time of token to be the duration of the
     //meeting time left in seconds on the API
 
     //if agora token and channelId don't exist on the firebase DB
     //do this
     Either either = await repo.getAgoraToken(
-        chatController.myChannel.channelName, dashboardController.currentMeetingId.value);
+       ChatController.instance.chatChannel.value, DashboardController.instance.currentMeetingId.value);
     either.fold((l) => CustomSnackBar.errorSnackBar(l.message.toString()),
             (r) {
           agoraToken.value = r['data']['token'];

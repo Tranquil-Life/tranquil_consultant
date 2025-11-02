@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
+import 'package:tl_consultant/core/theme/fonts.dart';
+import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 
 // ignore: must_be_immutable
 class CustomFormField extends StatelessWidget {
@@ -69,7 +71,7 @@ class CustomFormField extends StatelessWidget {
           errorText: errorText,
           hintText: hint,
           hintStyle: TextStyle(
-              fontSize: 14,
+              fontSize: isSmallScreen(context) ? AppFonts.defaultSize : AppFonts.baseSize,
               fontWeight: FontWeight.w400,
               color: hintColor ?? ColorPalette.grey[200]),
           errorStyle: const TextStyle(color: ColorPalette.white, fontSize: 14),

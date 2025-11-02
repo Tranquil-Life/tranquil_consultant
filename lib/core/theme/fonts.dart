@@ -12,4 +12,5 @@ class AppFonts {
   static const double smallSize = 12.0;
   static const double defaultSize = 14.0;
   static const double baseSize = 16.0;
+  static const double largeSize = 18.0;
 }

@@ -1,4 +1,5 @@
 import 'package:tl_consultant/core/constants/constants.dart';
+import 'package:tl_consultant/core/utils/app_config.dart';
 import 'package:tl_consultant/features/wallet/presentation/controllers/earnings_controller.dart';
 
 const staging = 'https://tranquil-api-staging-205081a15c84.herokuapp.com';
@@ -125,8 +126,8 @@ abstract class CountriesNowEndpoints {
 
 abstract class GoogleMapsEndpoints {
   static getBankBranches({required String bankName, required String state}) =>
-      "$mapPlacesBaseUrl?query=$bankName+branches+in+$state&type=bank&key=$mapApiKey";
+      "$mapPlacesBaseUrl?query=$bankName+branches+in+$state&type=bank&key=${AppConfig.mapApiKey}";
 
   static getFromNextPage({required String nextPageToken}) =>
-      "$mapPlacesBaseUrl?pagetoken=$nextPageToken&key=$mapApiKey";
+      "$mapPlacesBaseUrl?pagetoken=$nextPageToken&key=${AppConfig.mapApiKey}";
 }

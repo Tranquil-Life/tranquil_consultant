@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
+import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 
 class DaySectionWidget extends StatefulWidget {
   const DaySectionWidget({
@@ -22,10 +23,11 @@ class DaySectionWidget extends StatefulWidget {
 class DaySectionWidgetState extends State<DaySectionWidget> {
   @override
   Widget build(BuildContext context) {
-    var onBgColor = widget.isSelected ? Colors.white : Colors.black;
+    final onBgColor = widget.isSelected ? Colors.white : Colors.black;
+    final isSmall = isSmallScreen(context);
 
     return SizedBox(
-      height: 80,
+      height: isSmall ? 60 : 90, // reduced from 80/160
       child: InkResponse(
         containedInkWell: true,
         highlightShape: BoxShape.rectangle,
@@ -33,39 +35,38 @@ class DaySectionWidgetState extends State<DaySectionWidget> {
         child: Container(
           decoration: BoxDecoration(
             color: widget.isSelected ? ColorPalette.green : ColorPalette.white,
-            borderRadius: BorderRadius.circular(16.0),
-            border: widget.isSelected ? Border.all(width: 2, color: ColorPalette.white) : null,
-
-            boxShadow: widget.isSelected ? [
+            borderRadius: BorderRadius.circular(isSmall ? 12.0 : 20.0),
+            border: widget.isSelected
+                ? Border.all(width: 2, color: ColorPalette.green.withOpacity(.7))
+                : Border.all(width: 1, color: Colors.grey.shade300),
+            boxShadow: [
               BoxShadow(
-                  blurRadius: 6, color: Colors.black12, offset: Offset(0, 3)),
-            ] : null
+                blurRadius: 4,
+                color: Colors.black12,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
           child: Padding(
-            padding: const EdgeInsets.all(12),
-            child: Center(
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Expanded(
-                    child: FittedBox(
-                      fit: BoxFit.contain,
-                      child: Icon(widget.icon, color: onBgColor),
-                    ),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  widget.icon,
+                  size: isSmall ? 20 : 28,
+                  color: onBgColor,
+                ),
+                const SizedBox(width: 10),
+                Text(
+                  widget.title,
+                  style: TextStyle(
+                    color: onBgColor,
+                    fontWeight: FontWeight.w600,
+                    fontSize: isSmall ? 16 : 18,
                   ),
-                  const SizedBox(width: 16),
-                  Flexible(
-                    flex: 3,
-                    child: FittedBox(
-                      fit: BoxFit.contain,
-                      child: Text(
-                        widget.title,
-                        style: TextStyle(color: onBgColor, fontSize: 20),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),

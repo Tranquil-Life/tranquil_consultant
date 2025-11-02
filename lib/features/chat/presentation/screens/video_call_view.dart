@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
+import 'package:tl_consultant/core/utils/app_config.dart';
 import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/agora_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/chat_controller.dart';
@@ -49,7 +50,7 @@ class _VideoCallViewState extends State<VideoCallView> {
     //create the engine
     rtcEngine = createAgoraRtcEngine();
     await rtcEngine?.initialize(const RtcEngineContext(
-      appId: agoraAppId,
+      appId: AppConfig.agoraAppId,
       channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
     ));
 

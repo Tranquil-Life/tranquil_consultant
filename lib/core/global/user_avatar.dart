@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:tl_consultant/core/global/pulsing_widget.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
+import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/theme/tranquil_icons.dart';
 import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
 
@@ -39,7 +40,7 @@ class UserAvatar extends StatelessWidget {
   static const Widget _placeHolder = Center(
     child: Padding(
       padding: EdgeInsets.all(12),
-      child: FittedBox(fit: BoxFit.contain, child: Icon(Icons.person)),
+      child: FittedBox(fit: BoxFit.contain, child: Icon(Icons.person, color: ColorPalette.grey,)),
     ),
   );
 
@@ -53,9 +54,9 @@ class UserAvatar extends StatelessWidget {
 
   // Fallback UI on errors
   Widget _errorBuilder(BuildContext _, Object __, StackTrace? ___) =>
-      const Padding(
+      Padding(
         padding: EdgeInsets.all(8),
-        child: FittedBox(fit: BoxFit.contain, child: Icon(Icons.person_outline)),
+        child: FittedBox(fit: BoxFit.contain, child: Icon(Icons.person_outline, color: ColorPalette.grey,)),
       );
 
   // ---- Helpers --------------------------------------------------------------
@@ -183,7 +184,7 @@ class MyAvatarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final profileController = Get.put(ProfileController());
+    final profileController = ProfileController.instance;
 
     return Obx(() {
       final value = profileController.profilePic.value.trim();

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
@@ -342,3 +343,12 @@ String countryCodeToEmoji(String countryCode) {
         (match) => String.fromCharCode(match.group(0)!.codeUnitAt(0) + 127397),
       );
 }
+
+// Future<Uint8List> blobToBytes(html.Blob blob) async {
+//   final c = Completer<Uint8List>();
+//   final reader = html.FileReader();
+//   reader.readAsArrayBuffer(blob);
+//   reader.onLoadEnd.listen((_) => c.complete(reader.result as Uint8List));
+//   reader.onError.listen((e) => c.completeError(e));
+//   return c.future;
+// }

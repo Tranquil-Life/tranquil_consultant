@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tl_consultant/core/global/custom_text.dart';
+import 'package:tl_consultant/core/theme/colors.dart';
+import 'package:tl_consultant/core/theme/fonts.dart';
+import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 import 'package:tl_consultant/core/utils/routes/app_pages.dart';
 import 'package:tl_consultant/features/onboarding/presentation/controllers/onboarding_controller.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
@@ -49,14 +53,12 @@ class _SplashScreenState extends State<SplashScreen> {
             right: 50,
             bottom: 48,
             child: Center(
-              child: Text(
-                'A safe space to talk and feel without judgement.',
+              child: CustomText(
+                text: 'A safe space to talk and feel without judgement.',
                 textAlign: TextAlign.center,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyLarge!
-                    .copyWith(color: Colors.white, height: 1.5),
-              ),
+                color: ColorPalette.white,
+                size: isSmallScreen(context) ? AppFonts.baseSize : 18,
+              )
             ),
           ),
         ],

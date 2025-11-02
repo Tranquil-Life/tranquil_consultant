@@ -37,6 +37,7 @@ class MeetingTileRegularState extends State<MeetingTileRegular> {
               child: UserAvatar(
                 imageUrl: widget.meeting.client.avatarUrl,
                 source: AvatarSource.url,
+                // size: 70,
               ),
             ),
             const SizedBox(width: 8),
@@ -49,23 +50,24 @@ class MeetingTileRegularState extends State<MeetingTileRegular> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        widget.meeting.client.displayName,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: ColorPalette.grey[500],
-                          fontFamily: AppFonts.mulishSemiBold,
-                        ),
+                      CustomText(
+                        text: widget.meeting.client.displayName,
+                        size: 16,
+                        // size: 20,
+                        weight: FontWeight.w600,
+                        color: ColorPalette.grey[500],
+                        fontFamily: AppFonts.mulishSemiBold,
                       ),
                       if (widget.meeting.isExpired)
-                        Text(
-                          "Expired ($timeRange)",
-                          style: TextStyle(color: ColorPalette.red),
+                        CustomText(
+                          text: "Expired ($timeRange)",
+                          color: ColorPalette.red,
+                          // size: 20,
                         )
                       else
-                         Text(
-                          "$minutes mins",
+                        CustomText(
+                          text: "$minutes mins",
+                          // size: 20,
                         ),
                     ],
                   ),
@@ -82,14 +84,15 @@ class MeetingTileRegularState extends State<MeetingTileRegular> {
                           SvgElements.svgCalendar,
                           height: 14,
                           width: 14,
+                          // height: 20,
+                          // width: 20,
                         ),
                         const SizedBox(width: 4),
-                        Text(
-                          formattedDate,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w400,
-                          ),
+                        CustomText(
+                          text: formattedDate,
+                          size: 13,
+                          // size: 16,
+                          weight: FontWeight.w400
                         ),
                       ],
                     ),
@@ -116,10 +119,9 @@ class MeetingTileRegularState extends State<MeetingTileRegular> {
                         children: [
                           Icon(Icons.check_circle, color: ColorPalette.green),
                           SizedBox(width: 4),
-                          SizedBox(width: 100, child: CustomText(
+                          SizedBox(child: CustomText(
                             text: "Rated by both sides",
-                            size: 12,
-                          ))
+                            ))
                         ],
                       ),
                     if (!widget.meeting.ratedByClient &&
@@ -139,7 +141,9 @@ class MeetingTileRegularState extends State<MeetingTileRegular> {
                               );
                             },
                             child: Icon(Icons.star_border_rounded,
-                                color: Colors.grey),
+                                color: Colors.grey,
+                              // size: 32,
+                            ),
                           ),
                         ),
                       ),
