@@ -28,7 +28,7 @@ class _DashboardState extends State<Dashboard> {
   final dashboardController = DashboardController.instance;
   final profileController = ProfileController.instance;
   final chatController = ChatController.instance;
-  final meetingsController = Get.put(MeetingsController());
+  final meetingsController = MeetingsController.instance;
 
   ClientUser? client;
 
@@ -56,7 +56,7 @@ class _DashboardState extends State<Dashboard> {
     super.didChangeDependencies();
   }
 
-  updateDashboardMeetingInfo() async {
+  Future<void> updateDashboardMeetingInfo() async {
     for (var meeting in meetingsController.meetings) {
       if (meeting.id == 1) {
         dashboardController.currentMeetingCount.value = 1;
@@ -89,16 +89,18 @@ class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
     return Obx(() => Scaffold(
-          appBar: isSmallScreen(context) ? PreferredSize(
-            preferredSize: Size.fromHeight(0),
-            // Completely removes AppBar height
-            child: CustomAppBar(
-              backgroundColor: (!isSmallScreen(context) &&
-                      dashboardController.currentIndex.value == 0)
-                  ? ColorPalette.white
-                  : Colors.grey.shade100,
-            ),
-          ): null,
+          appBar: isSmallScreen(context)
+              ? PreferredSize(
+                  preferredSize: Size.fromHeight(0),
+                  // Completely removes AppBar height
+                  child: CustomAppBar(
+                    backgroundColor: (!isSmallScreen(context) &&
+                            dashboardController.currentIndex.value == 0)
+                        ? ColorPalette.white
+                        : Colors.grey.shade100,
+                  ),
+                )
+              : null,
           resizeToAvoidBottomInset: false,
           backgroundColor: Colors.grey.shade100,
           floatingActionButton: isSmallScreen(context)
@@ -140,97 +142,98 @@ class _DashboardState extends State<Dashboard> {
 
   Widget large() {
     final iconSize = 0.0;
-    // final iconSize = displayWidth(context) * 0.02;
     return Row(
       children: [
         Container(
-          width: 120,
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 40),
-          decoration: BoxDecoration(color: ColorPalette.white, boxShadow: [
-            BoxShadow(
-              blurRadius: 4,
-              color: Colors.black12,
-              offset: Offset(3, 0),
+            width: 120,
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 40),
+            decoration: BoxDecoration(color: ColorPalette.white, boxShadow: [
+              BoxShadow(
+                blurRadius: 4,
+                color: Colors.black12,
+                offset: Offset(3, 0),
+              ),
+            ]),
+            child:
+
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                BuildNavItem(
+                  index: 0,
+                  icon: dashboardController.isSelected(0)
+                      ? SvgElements.svgHomeActive
+                      : SvgElements.svgHomeInactive,
+                  label: 'Home',
+                  size: displaySize(context),
+                  iconSize: iconSize,
+                  isSelected: dashboardController.isSelected(0),
+                  dashboardController: dashboardController,
+                  onTap: () => dashboardController.updateIndex(0),
+                ),
+                SizedBox(height: 40),
+                BuildNavItem(
+                  index: 1,
+                  icon: dashboardController.isSelected(1)
+                      ? SvgElements.svgNotesActive
+                      : SvgElements.svgNotesInactive,
+                  label: 'Notes',
+                  size: displaySize(context),
+                  iconSize: iconSize,
+                  isSelected: dashboardController.isSelected(1),
+                  dashboardController: dashboardController,
+                  onTap: () => dashboardController.updateIndex(1),
+                ),
+                SizedBox(height: 40),
+                BuildNavItem(
+                  index: 1,
+                  icon: dashboardController.isSelected(2)
+                      ? SvgElements.svgChat
+                      : SvgElements.svgChat,
+                  label: 'Chat',
+                  size: displaySize(context),
+                  iconSize: iconSize,
+                  isSelected: dashboardController.isSelected(2),
+                  dashboardController: dashboardController,
+                  onTap: () async{
+                    await updateDashboardMeetingInfo();
+
+                    if (client != null) {
+                      await chatController.getChatInfo(client: client);
+                    }
+                    dashboardController.updateIndex(2);
+
+                  },
+                ),
+                SizedBox(height: 40),
+                BuildNavItem(
+                  index: 2,
+                  icon: dashboardController.isSelected(3)
+                      ? SvgElements.svgWalletActive
+                      : SvgElements.svgWalletInactive,
+                  label: 'Wallet',
+                  size: displaySize(context),
+                  iconSize: iconSize,
+                  isSelected: dashboardController.isSelected(3),
+                  dashboardController: dashboardController,
+                  onTap: () => dashboardController.updateIndex(3),
+                ),
+                SizedBox(height: 40),
+                BuildNavItem(
+                  index: 3,
+                  icon: dashboardController.isSelected(4)
+                      ? SvgElements.svgMoreActive
+                      : SvgElements.svgMoreInactive,
+                  label: 'More',
+                  size: displaySize(context),
+                  iconSize: iconSize,
+                  isSelected: dashboardController.isSelected(4),
+                  dashboardController: dashboardController,
+                  onTap: () => dashboardController.updateIndex(4),
+                ),
+              ],
             ),
-          ]),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              BuildNavItem(
-                index: 0,
-                icon: dashboardController.isSelected(0)
-                    ? SvgElements.svgHomeActive
-                    : SvgElements.svgHomeInactive,
-                label: 'Home',
-                size: displaySize(context),
-                iconSize: iconSize,
-                isSelected: dashboardController.isSelected(0),
-                dashboardController: dashboardController,
-                onTap: () => dashboardController.updateIndex(0),
-              ),
-              SizedBox(height: 40),
-              BuildNavItem(
-                index: 1,
-                icon: dashboardController.isSelected(1)
-                    ? SvgElements.svgNotesActive
-                    : SvgElements.svgNotesInactive,
-                label: 'Notes',
-                size: displaySize(context),
-                iconSize: iconSize,
-                isSelected: dashboardController.isSelected(1),
-                dashboardController: dashboardController,
-                onTap: () => dashboardController.updateIndex(1),
-              ),
-              SizedBox(height: 40),
-              BuildNavItem(
-                index: 1,
-                icon: dashboardController.isSelected(2)
-                    ? SvgElements.svgChat
-                    : SvgElements.svgChat,
-                label: 'Chat',
-                size: displaySize(context),
-                iconSize: iconSize,
-                isSelected: dashboardController.isSelected(2),
-                dashboardController: dashboardController,
-                onTap: () async{
-                  await updateDashboardMeetingInfo();
-
-                  if (client != null) {
-                    await chatController.getChatInfo(client: client);
-                  }
-                  dashboardController.updateIndex(2);
-
-                },
-              ),
-              SizedBox(height: 40),
-              BuildNavItem(
-                index: 2,
-                icon: dashboardController.isSelected(3)
-                    ? SvgElements.svgWalletActive
-                    : SvgElements.svgWalletInactive,
-                label: 'Wallet',
-                size: displaySize(context),
-                iconSize: iconSize,
-                isSelected: dashboardController.isSelected(3),
-                dashboardController: dashboardController,
-                onTap: () => dashboardController.updateIndex(3),
-              ),
-              SizedBox(height: 40),
-              BuildNavItem(
-                index: 3,
-                icon: dashboardController.isSelected(4)
-                    ? SvgElements.svgMoreActive
-                    : SvgElements.svgMoreInactive,
-                label: 'More',
-                size: displaySize(context),
-                iconSize: iconSize,
-                isSelected: dashboardController.isSelected(4),
-                dashboardController: dashboardController,
-                onTap: () => dashboardController.updateIndex(4),
-              ),
-            ],
-          ),
-        ),
+            ),
         Expanded(
             child: dashboardController
                 .largePages[dashboardController.currentIndex.value])

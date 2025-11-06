@@ -16,20 +16,20 @@ import 'package:tl_consultant/features/journal/presentation/controllers/notes_co
 import 'package:tl_consultant/features/journal/presentation/widgets/text_options_dialog.dart';
 
 class CreateNote extends StatefulWidget {
-  const CreateNote({Key? key}) : super(key: key);
+  const CreateNote({super.key});
 
   @override
-  _CreateNoteState createState() => _CreateNoteState();
+  State<CreateNote> createState() => _CreateNoteState();
 }
 
 class _CreateNoteState extends State<CreateNote> {
+  final notesController = NotesController.instance;
+
   String formatTextIcon = SvgElements.svgFormatTextIcon;
   String attachIconPath = SvgElements.svgAttachIcon;
   String micIconPath = SvgElements.svgMicIcon;
 
-  NotesController notesController = Get.put(NotesController());
   FocusNode focusNode = FocusNode();
-
   bool inPreviewMode = false;
   bool isAlreadySaved = false;
   String previewMode = SvgElements.svgPreviewModeIcon;

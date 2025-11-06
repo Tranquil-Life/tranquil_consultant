@@ -14,7 +14,7 @@ class GrowthKitPage extends StatefulWidget {
 }
 
 class _GrowthKitPageState extends State<GrowthKitPage> {
-  GrowthKitController growthKitController = Get.put(GrowthKitController());
+  final growthKitController = GrowthKitController.instance;
 
   @override
   Widget build(BuildContext context) {

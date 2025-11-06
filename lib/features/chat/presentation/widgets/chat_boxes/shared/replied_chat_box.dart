@@ -10,98 +10,98 @@ import 'package:tl_consultant/features/chat/presentation/widgets/chat_boxes/shar
 import 'package:flutter/material.dart';
 
 
-class RepliedChatBox extends StatefulWidget {
-  const RepliedChatBox({
-    super.key,
-    required this.backgroundColor,
-    this.message});
-
-  final Color backgroundColor;
-  final Message? message;
-
-  @override
-  State<RepliedChatBox> createState() => _RepliedChatBoxState();
-}
-
-class _RepliedChatBoxState extends State<RepliedChatBox> {
-  ChatController chatController = Get.put(ChatController());
-
-  Widget _message() {
-    return Padding(
-      padding: EdgeInsets.all(3),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _Header(fromYou: true),
-          SizedBox(height: 3),
-          Obx(()=>Text(chatController.replyMessage.value.message!,
-            style: TextStyle(color: ColorPalette.black),
-          ),)
-        ],
-      ),
-    );
-
-    // switch (message.type) {
-    //   // case MessageType.image:
-    //   // case MessageType.video:
-    //   // case MessageType.audio:
-    //   //   return _MediaReplyWidget(message: message);
-    //   default:
-    //     return const Padding(
-    //       padding: EdgeInsets.all(3),
-    //       child: Column(
-    //         crossAxisAlignment: CrossAxisAlignment.start,
-    //         children: [
-    //           _Header(fromYou: true),
-    //           SizedBox(height: 3),
-    //           Text("message.data"),
-    //         ],
-    //       ),
-    //     );
-    // }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 4),
-      child: Stack(
-        children: [
-          ChatBoxBase(
-            padding: 4,
-            heightScale: 0.9,
-            color: widget.backgroundColor,
-            child: MyDefaultTextStyle(
-              inherit: true,
-              style: TextStyle(
-                color:Colors.white,
-              ),
-              child: _message(),
-            ),
-          ),
-          Positioned.fill(
-            child: Material(
-              type: MaterialType.transparency,
-              child: InkResponse(
-                containedInkWell: true,
-
-                highlightShape: BoxShape.rectangle,
-                onTap: () {
-                  // final chatBloc = context.read<ChatBloc>();
-                  // final replyIndex =
-                  // chatBloc.chatMessagesNotifier.value.indexOf(message.repliedMessage);
-                  // if (replyIndex < 0) return;
-                  // log( chatBloc.chatMessagesNotifier.value.where((element) => element == message.repliedMessage).toList().first.message);
-                  // chatBloc.add(ScrollToChatEvent(replyIndex));
-                },
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
+// class RepliedChatBox extends StatefulWidget {
+//   const RepliedChatBox({
+//     super.key,
+//     required this.backgroundColor,
+//     this.message});
+//
+//   final Color backgroundColor;
+//   final Message? message;
+//
+//   @override
+//   State<RepliedChatBox> createState() => _RepliedChatBoxState();
+// }
+//
+// class _RepliedChatBoxState extends State<RepliedChatBox> {
+//   // ChatController chatController = Get.put(ChatController());
+//
+//   Widget _message() {
+//     return Padding(
+//       padding: EdgeInsets.all(3),
+//       child: Column(
+//         crossAxisAlignment: CrossAxisAlignment.start,
+//         children: [
+//           _Header(fromYou: true),
+//           SizedBox(height: 3),
+//           Obx(()=>Text(chatController.replyMessage.value.message!,
+//             style: TextStyle(color: ColorPalette.black),
+//           ),)
+//         ],
+//       ),
+//     );
+//
+//     // switch (message.type) {
+//     //   // case MessageType.image:
+//     //   // case MessageType.video:
+//     //   // case MessageType.audio:
+//     //   //   return _MediaReplyWidget(message: message);
+//     //   default:
+//     //     return const Padding(
+//     //       padding: EdgeInsets.all(3),
+//     //       child: Column(
+//     //         crossAxisAlignment: CrossAxisAlignment.start,
+//     //         children: [
+//     //           _Header(fromYou: true),
+//     //           SizedBox(height: 3),
+//     //           Text("message.data"),
+//     //         ],
+//     //       ),
+//     //     );
+//     // }
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Padding(
+//       padding: const EdgeInsets.only(bottom: 4),
+//       child: Stack(
+//         children: [
+//           ChatBoxBase(
+//             padding: 4,
+//             heightScale: 0.9,
+//             color: widget.backgroundColor,
+//             child: MyDefaultTextStyle(
+//               inherit: true,
+//               style: TextStyle(
+//                 color:Colors.white,
+//               ),
+//               child: _message(),
+//             ),
+//           ),
+//           Positioned.fill(
+//             child: Material(
+//               type: MaterialType.transparency,
+//               child: InkResponse(
+//                 containedInkWell: true,
+//
+//                 highlightShape: BoxShape.rectangle,
+//                 onTap: () {
+//                   // final chatBloc = context.read<ChatBloc>();
+//                   // final replyIndex =
+//                   // chatBloc.chatMessagesNotifier.value.indexOf(message.repliedMessage);
+//                   // if (replyIndex < 0) return;
+//                   // log( chatBloc.chatMessagesNotifier.value.where((element) => element == message.repliedMessage).toList().first.message);
+//                   // chatBloc.add(ScrollToChatEvent(replyIndex));
+//                 },
+//               ),
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
 
 // class _MediaReplyWidget extends StatefulWidget {
 //   const _MediaReplyWidget({Key? key, required this.message}) : super(key: key);

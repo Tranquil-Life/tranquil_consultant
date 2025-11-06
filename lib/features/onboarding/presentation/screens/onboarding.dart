@@ -3,9 +3,7 @@ import 'package:get/get.dart';
 import 'package:tl_consultant/core/global/buttons.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/theme/fonts.dart';
-import 'package:tl_consultant/features/auth/presentation/screens/register/therapist_type_screen.dart';
 import 'package:tl_consultant/features/auth/presentation/screens/sign_in/sign_in.dart';
-import 'package:tl_consultant/features/auth/presentation/widgets/means_of_id_field.dart';
 import 'package:tl_consultant/features/onboarding/presentation/controllers/onboarding_controller.dart';
 
 class OnBoardingScreen extends StatefulWidget {
@@ -16,7 +14,7 @@ class OnBoardingScreen extends StatefulWidget {
 }
 
 class _OnBoardingScreenState extends State<OnBoardingScreen> {
-  OnboardingController controller = Get.put(OnboardingController());
+  final onboardingController = OnboardingController.instance;
 
   static const _text = [
     'Let\'s help people live better and tranquil lives',
@@ -129,11 +127,10 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                             if (page < _text.length - 1) {
                               _goToPage(page + 1);
                             } else {
-                              controller.saveOnboardedStatus();
+                              onboardingController.saveOnboardedStatus();
                               Get.offAll(SignInScreen());
                             }
                           });
-
                         },
                       ),
                     ),

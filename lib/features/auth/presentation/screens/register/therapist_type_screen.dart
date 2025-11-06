@@ -23,7 +23,7 @@ class AccountTypeScreen extends StatefulWidget {
 }
 
 class _AccountTypeScreenState extends State<AccountTypeScreen> {
-  final AuthController authController = Get.put(AuthController());
+  final authController = AuthController.instance;
 
   var types = [
     {

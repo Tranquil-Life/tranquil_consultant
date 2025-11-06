@@ -29,7 +29,7 @@ class VideoCallView extends StatefulWidget {
 }
 
 class _VideoCallViewState extends State<VideoCallView> {
-  final agoraController = Get.put(AgoraController());
+  final agoraController = AgoraController.instance;
   final chatController = ChatController.instance;
 
   int? remoteUID;

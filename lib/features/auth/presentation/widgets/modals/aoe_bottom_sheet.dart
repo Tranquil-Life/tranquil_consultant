@@ -13,7 +13,7 @@ class AreaOfExpertiseModalSheet extends StatefulWidget {
 }
 
 class _AreaOfExpertiseModalSheetState extends State<AreaOfExpertiseModalSheet> {
-  final authController = Get.put(AuthController());
+  final authController = AuthController.instance;
 
   Map<String, bool> numbers = {
     'Addiction & Recovery' : false,

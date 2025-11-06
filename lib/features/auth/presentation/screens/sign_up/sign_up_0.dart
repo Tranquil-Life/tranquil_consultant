@@ -17,7 +17,7 @@ class SignUpScreen0 extends StatefulWidget {
 }
 
 class _SignUpScreen0State extends State<SignUpScreen0> {
-  final authController = Get.put(AuthController());
+  final authController = AuthController.instance;
 
   final _formKey = GlobalKey<FormState>();
   final termsOfServiceGS = TapGestureRecognizer();

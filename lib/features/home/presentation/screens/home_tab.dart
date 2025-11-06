@@ -45,7 +45,7 @@ class _HomeTabState extends State<HomeTab> {
   final dashboardController = DashboardController.instance;
   final profileController = ProfileController.instance;
   final activityController = ActivityController();
-  final meetingsController = Get.put(MeetingsController());
+  final meetingsController = MeetingsController.instance;
 
   @override
   Widget build(BuildContext context) {

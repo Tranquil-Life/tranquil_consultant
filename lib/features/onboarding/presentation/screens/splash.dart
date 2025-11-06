@@ -9,23 +9,22 @@ import 'package:tl_consultant/features/onboarding/presentation/controllers/onboa
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 
 class SplashScreen extends StatefulWidget {
-
-  const SplashScreen({Key? key}) : super(key: key);
+  const SplashScreen({super.key});
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  OnboardingController controller = Get.put(OnboardingController());
+  final onboardingController = OnboardingController.instance;
 
   @override
   void initState() {
     Future.delayed(const Duration(seconds: 3), () async {
-      final bool isUserOnboarded = await controller.checkOnboardingStatus();
+      final bool isUserOnboarded = await onboardingController.checkOnboardingStatus();
 
       if (isUserOnboarded) {
-        controller.checkAuthStatus();
+        onboardingController.checkAuthStatus();
       } else {
         Get.toNamed(Routes.ONBOARDING);
       }

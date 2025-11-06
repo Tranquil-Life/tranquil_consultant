@@ -26,8 +26,9 @@ class VerifyResetAccountPage extends StatefulWidget {
 }
 
 class _VerifyResetAccountPageState extends State<VerifyResetAccountPage> {
-  final authController = Get.put(AuthController());
-  final verificationController = Get.put(VerificationController());
+  final authController = AuthController.instance;
+  final verificationController = VerificationController.instance;
+
   TextEditingController pinController = TextEditingController();
   int countdownSeconds = 60;
   Timer? timer;

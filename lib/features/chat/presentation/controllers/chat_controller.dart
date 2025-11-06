@@ -30,7 +30,6 @@ import 'package:vibration/vibration.dart';
 class ChatController extends GetxController {
   static ChatController get instance => Get.find<ChatController>();
 
-  final dashboardController = Get.put(DashboardController());
 
   ChatRepoImpl repo = ChatRepoImpl();
 
@@ -125,6 +124,8 @@ class ChatController extends GetxController {
 
   //Get specific chat history
   Future<Map<String, dynamic>> getChatInfo({ClientUser? client}) async {
+    final dashboardController = DashboardController.instance;
+
     print(client?.toJson());
     rxClient.value = client!;
 
@@ -277,6 +278,8 @@ class ChatController extends GetxController {
   }
 
   void handleIncomingCall(MessageModel message) {
+    final dashboardController = DashboardController.instance;
+
     Get.to(
       IncomingCallView(
         clientId: dashboardController.clientId.value,

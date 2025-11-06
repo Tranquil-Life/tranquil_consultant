@@ -203,38 +203,39 @@ String formatDuration(double milliseconds) {
 }
 
 Future shareFile({File? fileToShare, String? urlToShare}) async {
-  File file;
-  Uri uri;
-
   try {
     if (fileToShare != null) {
-      file = File(fileToShare.path);
+      final file = File(fileToShare.path);
 
       if (file.existsSync()) {
         await Share.shareXFiles([XFile(file.path)]);
       } else {
         CustomSnackBar.showSnackBar(
-            context: Get.context!,
-            title: "Error",
-            message: "File does not exist",
-            backgroundColor: ColorPalette.red);
+          context: Get.context!,
+          title: "Error",
+          message: "File does not exist",
+          backgroundColor: ColorPalette.red,
+        );
       }
     } else {
-      uri = Uri.parse(urlToShare!);
-      await Share.shareUri(uri);
+      if (urlToShare == null || urlToShare.isEmpty) {
+        CustomSnackBar.showSnackBar(
+          context: Get.context!,
+          title: "Error",
+          message: "URL to share is empty",
+          backgroundColor: ColorPalette.red,
+        );
+        return;
+      }
+      await Share.share(urlToShare);
     }
-
-    // Debugging the file path and existence
-    // print('File path: ${file.path}');
-    // print('File exists: ${file.existsSync()}');
-
-    // Check if the file exists before trying to share
   } catch (e) {
     CustomSnackBar.showSnackBar(
-        context: Get.context!,
-        title: "Error",
-        message: "Failed to share video",
-        backgroundColor: ColorPalette.red);
+      context: Get.context!,
+      title: "Error",
+      message: "Failed to share",
+      backgroundColor: ColorPalette.red,
+    );
   }
 }
 

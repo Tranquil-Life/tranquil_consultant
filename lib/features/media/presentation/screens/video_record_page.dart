@@ -29,9 +29,10 @@ class VideoRecordingPage extends StatefulWidget {
 
 class _VideoRecordingPageState extends State<VideoRecordingPage>
     with SingleTickerProviderStateMixin {
-  final videoRecordingController = Get.put(VideoRecordingController());
-  final profileController = Get.put(ProfileController());
-  final authController = Get.put(AuthController());
+  final videoRecordingController = VideoRecordingController.instance;
+  final profileController = ProfileController.instance;
+  final authController = AuthController.instance;
+
   late CameraController _cameraController;
   late VideoPlayerController _videoPlayerController;
   late AnimationController animationController;
@@ -296,7 +297,8 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
                                         ),
                                         GestureDetector(
                                           onTap: () {
-                                            shareFile(fileToShare: File(video.path));
+                                            shareFile(
+                                                fileToShare: File(video.path));
                                           },
                                           child: SvgPicture.asset(
                                             SvgElements.svgShareIcon,
@@ -311,15 +313,17 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
                                     SizedBox(height: 40),
 
                                     CustomButton(
-                                        onPressed: () async{
+                                        onPressed: () async {
                                           Get.back();
 
-                                          await Future.delayed(Duration(seconds: 1));
+                                          await Future.delayed(
+                                              Duration(seconds: 1));
 
-                                          videoRecordingController.resetUploadVars();
+                                          videoRecordingController
+                                              .resetUploadVars();
 
-                                          Get.to(() => const VideoRecordingPage());
-
+                                          Get.to(
+                                              () => const VideoRecordingPage());
                                         },
                                         text: "Retake video",
                                         textColor: ColorPalette.green,
@@ -341,12 +345,14 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
                                                   await videoRecordingController
                                                       .uploadFile(
                                                           File(video.path),
-                                                          videoIntro, authController);
+                                                          videoIntro,
+                                                          authController);
                                                 } else {
                                                   await videoRecordingController
                                                       .uploadFile(
                                                           File(video.path),
-                                                          videoIntro, profileController);
+                                                          videoIntro,
+                                                          profileController);
                                                 }
                                               },
                                         textColor: uploadTextState() ==
@@ -370,7 +376,6 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-
                             // Container(
                             //   height: 40,
                             //   width: 40,
@@ -383,77 +388,81 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
                             //       SvgPicture.asset(SvgElements.svgPlayIcon),
                             // ),
                             Expanded(child: Container()),
-                            Expanded(flex:3, child: GestureDetector(
-                              onTap: () {
-                                startRecording();
-                              },
-                              child: Stack(
-                                alignment: Alignment.center,
-                                // Align both widgets perfectly at the center
-                                children: [
-                                  // Base Container - the circle with a border
-                                  Container(
-                                    height: 60,
-                                    width: 60,
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                          width: 6,
-                                          color: Colors.green.shade200),
-                                      borderRadius:
-                                      BorderRadius.circular(100),
-                                    ),
-                                    child: Center(
-                                      child: Container(
-                                        padding: EdgeInsets.all(14),
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                          BorderRadius.circular(100),
-                                          color: ColorPalette.green,
-                                        ),
-                                        height: 32,
-                                        width: 32,
-                                      ),
-                                    ),
-                                  ),
-
-                                  // Circular Progress Indicator
-                                  if (isRecording)
-                                    SizedBox(
-                                      height:
-                                      54, // Match the container size
-                                      width: 54,
-                                      child: CircularProgressIndicator(
-                                        value: _animation.value,
-                                        strokeWidth: 4,
-                                        valueColor:
-                                        AlwaysStoppedAnimation<Color>(
-                                            Colors.green),
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            ),),
-
-                            Expanded(flex: 1, child: GestureDetector(
-                              onTap: () => stopRecording(),
-                              child: Wrap(
-                                children: [
-                                  Container(
-                                    height: 40,
-                                    width: 40,
-                                    padding: EdgeInsets.all(12),
-                                    decoration: BoxDecoration(
+                            Expanded(
+                              flex: 3,
+                              child: GestureDetector(
+                                onTap: () {
+                                  startRecording();
+                                },
+                                child: Stack(
+                                  alignment: Alignment.center,
+                                  // Align both widgets perfectly at the center
+                                  children: [
+                                    // Base Container - the circle with a border
+                                    Container(
+                                      height: 60,
+                                      width: 60,
+                                      decoration: BoxDecoration(
                                         border: Border.all(
-                                            width: 1,
-                                            color: ColorPalette.green),
+                                            width: 6,
+                                            color: Colors.green.shade200),
                                         borderRadius:
-                                        BorderRadius.circular(100)),
-                                    child: SvgPicture.asset(
-                                        SvgElements.svgStopIcon),
-                                  )
-                                ],
+                                            BorderRadius.circular(100),
+                                      ),
+                                      child: Center(
+                                        child: Container(
+                                          padding: EdgeInsets.all(14),
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(100),
+                                            color: ColorPalette.green,
+                                          ),
+                                          height: 32,
+                                          width: 32,
+                                        ),
+                                      ),
+                                    ),
+
+                                    // Circular Progress Indicator
+                                    if (isRecording)
+                                      SizedBox(
+                                        height: 54, // Match the container size
+                                        width: 54,
+                                        child: CircularProgressIndicator(
+                                          value: _animation.value,
+                                          strokeWidth: 4,
+                                          valueColor:
+                                              AlwaysStoppedAnimation<Color>(
+                                                  Colors.green),
+                                        ),
+                                      ),
+                                  ],
+                                ),
                               ),
-                            ))
+                            ),
+
+                            Expanded(
+                                flex: 1,
+                                child: GestureDetector(
+                                  onTap: () => stopRecording(),
+                                  child: Wrap(
+                                    children: [
+                                      Container(
+                                        height: 40,
+                                        width: 40,
+                                        padding: EdgeInsets.all(12),
+                                        decoration: BoxDecoration(
+                                            border: Border.all(
+                                                width: 1,
+                                                color: ColorPalette.green),
+                                            borderRadius:
+                                                BorderRadius.circular(100)),
+                                        child: SvgPicture.asset(
+                                            SvgElements.svgStopIcon),
+                                      )
+                                    ],
+                                  ),
+                                ))
                           ],
                         )
                     ],
@@ -485,7 +494,7 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
     if (videoRecordingController.compressing.value) {
       return compressingVideoMsg;
     } else if ((videoRecordingController.uploadProgress.value > 0.0 &&
-        videoRecordingController.uploadProgress.value < 100.0) ||
+            videoRecordingController.uploadProgress.value < 100.0) ||
         videoRecordingController.uploading.value) {
       return "$uploadingVideoMsg: ${videoRecordingController.uploadProgress.value.toStringAsFixed(2)}%";
     } else if (videoRecordingController.uploadProgress.value.toInt() == 100) {
@@ -493,6 +502,5 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
     } else {
       return "Save video and upload";
     }
-
   }
 }

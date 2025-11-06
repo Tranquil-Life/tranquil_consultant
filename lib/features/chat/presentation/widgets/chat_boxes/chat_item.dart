@@ -44,7 +44,7 @@ class ChatItem extends StatefulWidget {
 }
 
 class ChatItemState extends State<ChatItem> {
-  ChatController chatController = Get.put(ChatController());
+  // ChatController chatController = Get.put(ChatController());
 
   bool dialogShowing = false;
 

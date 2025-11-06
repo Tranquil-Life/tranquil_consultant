@@ -34,9 +34,8 @@ class _ProfileScreenState extends State<ProfileScreen>
     with TickerProviderStateMixin {
   late TabController controller = TabController(length: 2, vsync: this);
   final GlobalKey profileKey = GlobalKey();
-  final DashboardController dashboardController =
-      Get.put(DashboardController());
-  final ProfileController profileController = Get.put(ProfileController());
+  final dashboardController = DashboardController.instance;
+  final profileController = ProfileController.instance;
 
   int index = 0;
 

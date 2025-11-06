@@ -14,7 +14,7 @@ class EventsSection extends StatefulWidget {
 }
 
 class _EventsSectionState extends State<EventsSection> {
-  EventsController eventsController = Get.put(EventsController());
+  final eventsController = EventsController.instance;
 
   final ValueNotifier<DateTime> _timeNotifier = ValueNotifier(DateTime.now());
 

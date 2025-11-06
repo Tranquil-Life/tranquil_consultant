@@ -18,7 +18,7 @@ class VideoPlayerWidget extends StatefulWidget {
 }
 
 class _VideoPlayerWidgetState extends State<VideoPlayerWidget> with SingleTickerProviderStateMixin {
-  final videoRecordingController = Get.put(VideoRecordingController());
+  // final videoRecordingController = Get.put(VideoRecordingController());
   late VideoPlayerController _videoPlayerController;
   late AnimationController animationController;
   late Animation<double> _animation;

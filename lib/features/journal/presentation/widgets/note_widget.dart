@@ -25,7 +25,7 @@ class NoteWidget extends StatelessWidget {
   final PersonalNote? personalNote;
   final SharedNote? sharedNote;
 
-  final notesController = Get.put(NotesController());
+  final notesController = NotesController.instance;
 
   String attachIcon = SvgElements.svgAttachIcon;
 
@@ -50,18 +50,19 @@ class NoteWidget extends StatelessWidget {
           clipBehavior: Clip.none,
           children: [
             Container(
-              decoration:  BoxDecoration(
+              decoration: BoxDecoration(
                   color: personalNote == null
-        ? sharedNote!.note == null
-        ? ColorPalette.grey
-            : Color(int.parse(sharedNote!.note!.hexColor))
-        : ColorPalette.pNoteBgColor,
+                      ? sharedNote!.note == null
+                          ? ColorPalette.grey
+                          : Color(int.parse(sharedNote!.note!.hexColor))
+                      : ColorPalette.pNoteBgColor,
                   borderRadius: BorderRadius.circular(8.0),
                   boxShadow: [
                     const BoxShadow(
-                        blurRadius: 6, color: Colors.black12, offset: Offset(0, 3))
-                  ]
-              ),
+                        blurRadius: 6,
+                        color: Colors.black12,
+                        offset: Offset(0, 3))
+                  ]),
               child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: personalNote == null
@@ -281,7 +282,7 @@ class NoteBottomSheet extends StatelessWidget {
 
   NoteBottomSheet({super.key, this.personalNote, this.sharedNote});
 
-  NotesController notesController = Get.put(NotesController());
+  // NotesController notesController = Get.put(NotesController());
 
   @override
   Widget build(BuildContext context) {
@@ -298,18 +299,17 @@ class NoteBottomSheet extends StatelessWidget {
                 label: 'View Note',
                 icon: const Icon(Icons.remove_red_eye_outlined),
                 onPressed: () async {
-                  if(personalNote != null){
+                  if (personalNote != null) {
                     await Get.to(
                       const CreateNote(),
                       arguments: {'personal_note': personalNote},
                     );
-                  }else{
+                  } else {
                     await Get.to(
                       const CreateNote(),
                       arguments: {'shared_note': sharedNote},
                     );
                   }
-
                 },
               ),
               // const SizedBox(height: 4),

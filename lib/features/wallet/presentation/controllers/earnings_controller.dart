@@ -6,17 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
-import 'package:tl_consultant/core/constants/end_points.dart';
 import 'package:tl_consultant/core/data/place_result_model.dart';
 import 'package:tl_consultant/core/data/places_search_response_model.dart';
 import 'package:tl_consultant/core/global/custom_snackbar.dart';
-import 'package:tl_consultant/core/theme/colors.dart';
-import 'package:tl_consultant/core/utils/services/API/api_service.dart';
-import 'package:tl_consultant/features/wallet/data/models/earnings_model.dart';
 import 'package:tl_consultant/features/wallet/data/models/stripe_account_model.dart';
 import 'package:tl_consultant/features/wallet/data/repos/wallet_repo_impl.dart';
 import 'package:tl_consultant/features/wallet/domain/entities/create_stripe_account.dart';
-import 'package:tl_consultant/features/wallet/domain/entities/earnings.dart';
 
 class EarningsController extends GetxController {
   static EarningsController get instance => Get.find();

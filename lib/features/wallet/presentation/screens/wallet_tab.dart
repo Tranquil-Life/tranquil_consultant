@@ -25,8 +25,8 @@ class WalletTab extends StatefulWidget {
 }
 
 class _WalletTabState extends State<WalletTab> {
-  final earningsController = Get.put(EarningsController());
-  final trnxController = Get.put(TransactionsController()); // put ONCE here
+  final earningsController = EarningsController.instance;
+  final trnxController = TransactionsController.instance;
   NumberFormat? formatCurrency;
 
   double balance = 0;

@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:audio_session/audio_session.dart' as av;
 import 'package:audioplayers/audioplayers.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
@@ -15,7 +15,7 @@ import 'package:path/path.dart' as path;
 class RecordingController extends GetxController {
   static RecordingController get instance => Get.find();
 
-  final chatController = Get.put(ChatController());
+  // final chatController = Get.put(ChatController());
 
   FlutterSoundRecorder? audioRecorder;
   final RxBool isRecording = false.obs;
@@ -126,17 +126,20 @@ class RecordingController extends GetxController {
     });
   }
 
-  stopTimer() {
+  void stopTimer() {
     _timer!.cancel();
   }
 
   @override
   void onInit() {
-    if (Platform.isIOS) {
-      initRecorder();
-    } else {
-      // initAndroidRecorder();
+    if(!kIsWeb){
+      if (Platform.isIOS) {
+        initRecorder();
+      } else {
+        // initAndroidRecorder();
+      }
     }
+
 
     super.onInit();
   }

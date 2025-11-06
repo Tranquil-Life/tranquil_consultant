@@ -8,9 +8,9 @@ import 'package:tl_consultant/features/journal/presentation/controllers/notes_co
 import 'package:tl_consultant/features/journal/presentation/widgets/note_widget.dart';
 
 class SharedNotesTab extends StatelessWidget {
-  SharedNotesTab({Key? key}) : super(key: key);
+  SharedNotesTab({super.key});
 
-  final _ = Get.put(NotesController());
+  final _ = NotesController.instance;
 
   @override
   Widget build(BuildContext context) {

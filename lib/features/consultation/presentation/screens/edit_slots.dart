@@ -23,7 +23,7 @@ class EditSlots extends StatefulWidget {
 }
 
 class _EditSlotsState extends State<EditSlots> {
-  final slotController = Get.put(SlotController());
+  final slotController = SlotController.instance;
 
   DaySectionOption? selectedSection = DaySectionOption.day;
 

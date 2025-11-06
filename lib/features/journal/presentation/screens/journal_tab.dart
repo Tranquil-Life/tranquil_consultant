@@ -17,7 +17,7 @@ class JournalTab extends StatefulWidget {
 }
 
 class _JournalTabState extends State<JournalTab> {
-  final notesController = Get.put(NotesController());
+  final notesController = NotesController.instance;
 
   String gridViewIcon = SvgElements.svgGridViewIcon;
   String listViewIcon = SvgElements.svgGridViewIcon;

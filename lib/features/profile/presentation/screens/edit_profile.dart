@@ -28,8 +28,9 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
-  final profileController = Get.put(ProfileController());
-  final videoRecordingController = Get.put(VideoRecordingController());
+  final profileController = ProfileController.instance;
+  final videoRecordingController = VideoRecordingController.instance;
+
   final editProfileKey = GlobalKey();
 
   String pageTitle() {
@@ -238,10 +239,9 @@ class EditProfileHead extends StatefulWidget {
 }
 
 class _EditProfileHeadState extends State<EditProfileHead> {
-  ProfileController profileController = Get.put(ProfileController());
-  EarningsController earningsController = Get.put(EarningsController());
-  VideoRecordingController videoRecordingController =
-      Get.put(VideoRecordingController());
+  final profileController = ProfileController.instance;
+  final earningsController = EarningsController.instance;
+  final videoRecordingController = VideoRecordingController.instance;
 
   @override
   Widget build(BuildContext context) {

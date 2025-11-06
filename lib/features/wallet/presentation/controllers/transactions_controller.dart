@@ -10,7 +10,7 @@ import 'package:tl_consultant/features/wallet/domain/entities/transaction.dart';
 import 'package:tl_consultant/features/wallet/presentation/controllers/earnings_controller.dart';
 
 class TransactionsController extends GetxController {
-  static TransactionsController instance = Get.find();
+  static TransactionsController get instance => Get.find();
 
   final earningsController = EarningsController.instance;
 

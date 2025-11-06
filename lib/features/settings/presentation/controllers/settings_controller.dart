@@ -12,7 +12,7 @@ import 'package:tl_consultant/features/media/presentation/controllers/video_reco
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 
 class SettingsController extends GetxController {
-  static SettingsController instance = SettingsController();
+  static SettingsController get instance => Get.find();
 
   AuthRepoImpl authRepoImpl = AuthRepoImpl();
 

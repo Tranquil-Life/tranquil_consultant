@@ -15,7 +15,7 @@ class NotificationScreen extends StatefulWidget {
 }
 
 class _NotificationScreenState extends State<NotificationScreen> {
-  ActivityController activityController = Get.put(ActivityController());
+  final activityController = ActivityController.instance;
 
   @override
   void initState() {

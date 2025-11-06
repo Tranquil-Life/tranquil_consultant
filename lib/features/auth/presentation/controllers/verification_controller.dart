@@ -7,7 +7,7 @@ import 'package:tl_consultant/core/utils/functions.dart';
 import 'package:tl_consultant/features/auth/data/repos/auth_repo.dart';
 
 class VerificationController extends GetxController {
-  static VerificationController instance = Get.find();
+  static VerificationController get instance => Get.find();
 
   RxBool isVerified = false.obs;
   RxBool isConfirmed = false.obs;

@@ -7,7 +7,7 @@ import 'package:tl_consultant/core/utils/extensions/date_time_extension.dart';
 import 'package:tl_consultant/features/consultation/data/repos/consultation_repo.dart';
 
 class SlotController extends GetxController {
-  // static SlotController instance = Get.find();
+  static SlotController get instance => Get.find<SlotController>();
 
   ConsultationRepoImpl repo = ConsultationRepoImpl();
 

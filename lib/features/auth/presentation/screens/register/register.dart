@@ -22,8 +22,8 @@ class Register extends StatefulWidget {
 }
 
 class _RegisterState extends State<Register> {
-  final authController = Get.put(AuthController());
-  final verificationController = Get.put(VerificationController());
+  final authController = AuthController.instance;
+  final verificationController = VerificationController.instance;
 
   @override
   Widget build(BuildContext context) {

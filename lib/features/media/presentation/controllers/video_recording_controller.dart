@@ -16,6 +16,8 @@ import 'package:tl_consultant/features/profile/presentation/controllers/profile_
 import 'package:video_player/video_player.dart';
 
 class VideoRecordingController extends GetxController {
+  static VideoRecordingController get instance => Get.find();
+
   MediaRepoImpl mediaRepo = MediaRepoImpl();
 
   RxDouble uploadProgress = 0.0.obs;

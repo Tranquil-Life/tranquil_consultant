@@ -22,9 +22,9 @@ class SoloBasedVerification extends StatefulWidget {
 }
 
 class _SoloBasedVerificationState extends State<SoloBasedVerification> {
-  AuthController authController = Get.put(AuthController());
-  VerificationController verificationController =
-      Get.put(VerificationController());
+  final authController = AuthController.instance;
+  final verificationController = VerificationController.instance;
+
   TextEditingController pinController = TextEditingController();
   int countdownSeconds = 60;
   Timer? timer;

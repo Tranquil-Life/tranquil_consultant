@@ -21,7 +21,7 @@ import 'package:tl_consultant/features/profile/data/repos/user_info_repo.dart';
 import 'package:tl_consultant/features/profile/domain/entities/user.dart';
 
 class AuthController extends GetxController {
-  static AuthController instance = Get.find();
+  static AuthController get instance => Get.find();
 
   UserDataStore userDataStore = UserDataStore();
   UserInfoRepoImpl userInfoRepoImpl = UserInfoRepoImpl();

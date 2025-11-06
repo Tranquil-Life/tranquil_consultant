@@ -7,7 +7,7 @@ import 'package:tl_consultant/features/activity/data/repos/notification_repo.dar
 import 'package:tl_consultant/features/activity/domain/entities/notification.dart';
 
 class ActivityController extends GetxController {
-  static ActivityController instance = Get.find();
+  static ActivityController get instance => Get.find();
 
   var count = 0.obs;
 

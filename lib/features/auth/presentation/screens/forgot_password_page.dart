@@ -24,8 +24,8 @@ class ForgotPasswordPage extends StatefulWidget {
 }
 
 class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
-  final authController = Get.put(AuthController());
-  final verificationController = Get.put(VerificationController());
+  final authController = AuthController.instance;
+  final verificationController = VerificationController.instance;
 
   String error = '';
 

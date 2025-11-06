@@ -7,36 +7,37 @@ import 'package:tl_consultant/core/global/custom_snackbar.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
 
 class NetworkController extends GetxController {
-  static NetworkController instance = Get.find();
+  static NetworkController get instance => Get.find();
 
   var connectionStatus = 0.obs;
 
-  Connectivity connectivity = Connectivity();
-  StreamSubscription<ConnectivityResult>? connectivitySubscription;
+  final Connectivity connectivity = Connectivity();
+  StreamSubscription<List<ConnectivityResult>>? connectivitySubscription;
 
   @override
   void onInit() {
-    initConnectivity();
-    connectivitySubscription = connectivity.onConnectivityChanged.listen(
-            updateConnectionStatus as void Function(
-                List<ConnectivityResult> event)?)
-        as StreamSubscription<ConnectivityResult>?;
-
     super.onInit();
+    initConnectivity();
+
+    connectivitySubscription = connectivity.onConnectivityChanged.listen(
+      updateConnectionStatus,
+    );
   }
 
   Future<void> initConnectivity() async {
-    ConnectivityResult? result;
     try {
-      result = (await connectivity.checkConnectivity()) as ConnectivityResult?;
-    } on PlatformException catch (e) {
+      final result = await connectivity.checkConnectivity();
+      updateConnectionStatus(result);
+    } catch (e) {
       print("Network: Error: $e");
     }
-    return updateConnectionStatus(result!);
   }
 
-  Future<void> updateConnectionStatus(ConnectivityResult? result) async {
-    switch (result!) {
+  Future<void> updateConnectionStatus(List<ConnectivityResult> results) async {
+    if (results.isEmpty) return;
+    final result = results.first;
+
+    switch (result) {
       case ConnectivityResult.wifi:
         connectionStatus.value = 2;
         break;
@@ -47,12 +48,7 @@ class NetworkController extends GetxController {
         connectionStatus.value = 0;
         break;
       default:
-        CustomSnackBar.showSnackBar(
-            context: Get.context!,
-            title: "Network Error",
-            message: "Failed to get network connection",
-            backgroundColor: ColorPalette.red);
-        break;
+        connectionStatus.value = 0;
     }
   }
 

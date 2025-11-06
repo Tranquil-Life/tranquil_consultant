@@ -11,7 +11,7 @@ import 'package:tl_consultant/core/utils/routes/app_pages.dart';
 import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:tl_consultant/features/auth/presentation/screens/register/therapist_type_screen.dart';
 import 'package:tl_consultant/features/auth/presentation/widgets/form_fields.dart';
-import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
+
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -21,7 +21,7 @@ class SignInScreen extends StatefulWidget {
 }
 
 class _SignInScreenState extends State<SignInScreen> {
-  final authController = Get.put(AuthController());
+  final authController = AuthController.instance;
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 

@@ -11,9 +11,9 @@ import 'package:tl_consultant/features/consultation/presentation/controllers/slo
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 
 class MeetingsController extends GetxController {
-  static MeetingsController instance = Get.find();
+  static MeetingsController get instance => Get.find();
 
-  SlotController slotController = Get.put(SlotController());
+  // SlotController slotController = Get.put(SlotController());
 
   ConsultationRepoImpl repo = ConsultationRepoImpl();
 

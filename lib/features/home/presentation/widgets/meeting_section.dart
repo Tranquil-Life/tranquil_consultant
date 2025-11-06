@@ -8,8 +8,8 @@ class Meetings extends StatefulWidget {
 }
 
 class _MeetingsState extends State<Meetings> {
-  final meetingsController = Get.put(MeetingsController());
-  final dashboardController = Get.put(DashboardController());
+  final meetingsController = MeetingsController.instance;
+  final dashboardController = DashboardController.instance;
 
   final ValueNotifier<DateTime> _timeNotifier = ValueNotifier(DateTime.now());
   ClientUser? clientUser;

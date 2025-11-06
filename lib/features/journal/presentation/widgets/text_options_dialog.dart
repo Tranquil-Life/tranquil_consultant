@@ -10,11 +10,11 @@ class TextOptionsDialog extends StatefulWidget {
   const TextOptionsDialog({super.key});
 
   @override
-  _TextOptionsDialogState createState() => _TextOptionsDialogState();
+  State<TextOptionsDialog> createState() => _TextOptionsDialogState();
 }
 
 class _TextOptionsDialogState extends State<TextOptionsDialog> {
-  NotesController notesController = Get.put(NotesController());
+  final notesController = NotesController.instance;
 
   bool _isItalic = false;
   bool _isBold = false;

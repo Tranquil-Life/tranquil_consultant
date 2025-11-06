@@ -22,8 +22,8 @@ class AgencyBasedVerification extends StatefulWidget {
 }
 
 class _AgencyBasedVerificationState extends State<AgencyBasedVerification> {
-  VerificationController verificationController =
-      Get.put(VerificationController());
+  final verificationController =
+      VerificationController.instance;
   final pinController = TextEditingController();
 
   @override

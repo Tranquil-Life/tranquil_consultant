@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 import 'package:tl_consultant/features/consultation/domain/entities/event.dart';
 
 class EventsController extends GetxController{
-  static EventsController instance = Get.find();
+  static EventsController get instance => Get.find();
 
   //pagination vars
   var page = 1.obs;

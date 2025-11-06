@@ -21,7 +21,7 @@ class SignUpScreen2 extends StatefulWidget {
 }
 
 class _SignUpScreen2State extends State<SignUpScreen2> {
-  final authController = Get.put(AuthController());
+  final authController = AuthController.instance;
 
   final _formKey = GlobalKey<FormState>();
 

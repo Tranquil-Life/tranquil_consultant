@@ -18,8 +18,8 @@ import 'package:tl_consultant/features/auth/presentation/widgets/password_criter
 class UpdatePasswordPage extends StatelessWidget {
   UpdatePasswordPage({super.key});
 
-  final authController = Get.put(AuthController());
-  final verificationController = Get.put(VerificationController());
+  final authController = AuthController.instance;
+  final verificationController = VerificationController.instance;
 
   void _continue() async {
     if (authController.isAllPwdCriteriaMet) {

@@ -29,8 +29,8 @@ class IntroduceYourselfPage extends StatefulWidget {
 }
 
 class _IntroduceYourselfPageState extends State<IntroduceYourselfPage> {
-  final authController = Get.put(AuthController());
-  final videoRecordingController = Get.put(VideoRecordingController());
+  final authController = AuthController.instance;
+  final videoRecordingController =VideoRecordingController.instance;
 
   var selectedOption = '';
 
