@@ -70,15 +70,13 @@ class ChatRepoImpl extends ChatRepo {
         required String? message,
         required String messageType,
         String? caption,
-        int? parentId,
-        int? clientId}) async {
+        int? parentId}) async {
     final body = {
       "chat_id": chatId,
       "message": message,
       "message_type": messageType,
-      "caption": caption,
       "parent_id": parentId,
-      "sender_id": clientId,
+      "caption": caption,
       "ai_chat": false,
       'event_name': eventName,
       'channel': channel

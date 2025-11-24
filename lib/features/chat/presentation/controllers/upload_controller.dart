@@ -44,7 +44,6 @@ class UploadController extends GetxController {
       messageType: strMsgType(chatController.messageType.value),
       parentId: quotedMessage?.messageId, // ✅ null-safe
       caption: null,
-      clientId: clientID,
       eventName: 'new-message',
       channel: chatController.myChannel.channelName,
     );
@@ -174,7 +173,6 @@ class UploadController extends GetxController {
       messageType: strMsgType(chatController.messageType.value),
       parentId: quotedMessage!.messageId,
       caption: null,
-      clientId: clientID,
       eventName: 'new-message',
       channel: chatController.myChannel.channelName,
     );

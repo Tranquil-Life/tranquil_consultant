@@ -401,7 +401,6 @@ class _ChatScreenState extends State<ChatScreen> {
         messageType: strMsgType(MessageType.text.toString()),
         parentId: null,
         caption: null,
-        clientId: chatController.rxClient.value.id!,
         eventName: 'new-message',
         channel: chatController.myChannel.channelName,
       );
@@ -534,7 +533,6 @@ class _ChatScreenState extends State<ChatScreen> {
             messageType: strMsgType(MessageType.audio.toString()),
             parentId: null,
             caption: null,
-            clientId: chatController.rxClient.value.id!,
             eventName: 'new-message',
             channel: chatController.myChannel.channelName,
           );
