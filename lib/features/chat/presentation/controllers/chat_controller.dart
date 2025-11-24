@@ -30,7 +30,6 @@ import 'package:vibration/vibration.dart';
 class ChatController extends GetxController {
   static ChatController get instance => Get.find<ChatController>();
 
-
   ChatRepoImpl repo = ChatRepoImpl();
 
   RxList<Message> messages = <Message>[].obs;
@@ -60,7 +59,6 @@ class ChatController extends GetxController {
   // Used to display loading indicators when _loadMore function is running
   var isLoadMoreRunning = false.obs;
   RxBool allPagesLoaded = false.obs; // Flag to check if all pages are loaded
-
 
   //recent messages
   Future loadRecentMessages() async {
@@ -131,10 +129,9 @@ class ChatController extends GetxController {
 
     loadingChatRoom.value = true;
     Either either = await repo.getChatInfo(
-      consultantId: userDataStore.user['id'],
-      clientId: dashboardController.clientId.value,
-      meetingId: dashboardController.currentMeetingId.value
-    );
+        consultantId: userDataStore.user['id'],
+        clientId: dashboardController.clientId.value,
+        meetingId: dashboardController.currentMeetingId.value);
 
     var chatInfo = <String, dynamic>{};
 
@@ -158,7 +155,7 @@ class ChatController extends GetxController {
       dashboardController.clientDp.value = chatInfo['client']['avatar_url'];
     });
 
-    if(isSmallScreen(Get.context!)){
+    if (isSmallScreen(Get.context!)) {
       Get.toNamed(
         Routes.CHAT_SCREEN,
         arguments: <String, dynamic>{
@@ -178,7 +175,7 @@ class ChatController extends GetxController {
     return chatInfo;
   }
 
-  setVoiceFile(File file) {
+  void setVoiceFile(File file) {
     audioFile = file;
     update();
   }
@@ -196,13 +193,12 @@ class ChatController extends GetxController {
       await pusher.init(
         apiKey: AppConfig.pusherKey,
         cluster: 'eu',
-        onConnectionStateChange: (dynamic currentState, dynamic previousState) {},
+        onConnectionStateChange:
+            (dynamic currentState, dynamic previousState) {},
         onError: (String message, int? code, dynamic e) {
           // print("onError: $message code: $code exception: $e");
         },
-        onSubscriptionSucceeded: (channelName, data) {
-
-        },
+        onSubscriptionSucceeded: (channelName, data) {},
         onEvent: (PusherEvent event) async {
           print("Received event: ${event.eventName}, data: ${event.data}");
 
@@ -231,13 +227,11 @@ class ChatController extends GetxController {
 
               // print("Event '${event.eventName}' received with message ID: ${message.messageId}");
             }
-          }
-          else {
+          } else {
             // print("Missing 'message' in event data.");
           }
         },
-        onSubscriptionError: (String message, dynamic e) {
-        },
+        onSubscriptionError: (String message, dynamic e) {},
         onDecryptionFailure: (String event, String reason) {
           // print("onDecryptionFailure: $event reason: $reason");
         },
@@ -258,7 +252,7 @@ class ChatController extends GetxController {
     }
   }
 
-  void enterChatRoom(channel) async{
+  void enterChatRoom(String channel) async {
     myChannel = await pusher.subscribe(channelName: channel);
   }
 
@@ -303,5 +297,3 @@ class ChatController extends GetxController {
     super.onClose();
   }
 }
-
-

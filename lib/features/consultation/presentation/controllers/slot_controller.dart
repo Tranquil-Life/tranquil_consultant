@@ -19,8 +19,8 @@ class SlotController extends GetxController {
   RxList selectedDays = [].obs;
   var apiSlots = [];
 
-  addToSlots(String time) => timeSlots.add(time);
-  removeFromSlots(String time) => timeSlots.remove(time);
+  void addToSlots(String time) => timeSlots.add(time);
+  bool removeFromSlots(String time) => timeSlots.remove(time);
 
   List get listInUtc {
     List utcSlots = [];
@@ -35,7 +35,7 @@ class SlotController extends GetxController {
     return utcSlots;
   }
 
-  getSlotsInLocal() {
+  void getSlotsInLocal() {
     for (var element in apiSlots) {
       var dateTime = DateFormat("yyyy-MM-dd HH:mm:ss").parse(
           "${DateTimeExtension.now.year}"
@@ -113,7 +113,7 @@ class SlotController extends GetxController {
         .toList();
   }
 
-  clearData() {
+  void clearData() {
     timeSlots.clear();
     apiSlots.clear();
     selectedDays.clear();
