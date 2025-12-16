@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
@@ -343,6 +344,31 @@ String countryCodeToEmoji(String countryCode) {
         RegExp(r'[A-Z]'),
         (match) => String.fromCharCode(match.group(0)!.codeUnitAt(0) + 127397),
       );
+}
+
+///For pusher data
+Map<String, dynamic> safeEventData(dynamic raw) {
+  if (raw == null) return {};
+
+  // If it's a JSON string: decode it first
+  if (raw is String) {
+    final decoded = jsonDecode(raw);
+
+    if (decoded is Map<String, dynamic>) {
+      return decoded;
+    } else if (decoded is Map) {
+      return decoded.map((k, v) => MapEntry(k.toString(), v));
+    } else {
+      throw Exception("Unexpected JSON type from event.data: ${decoded.runtimeType}");
+    }
+  }
+
+  // If it's already some kind of Map (LinkedMap on web)
+  if (raw is Map) {
+    return raw.map((k, v) => MapEntry(k.toString(), v));
+  }
+
+  throw Exception("Unsupported event.data type: ${raw.runtimeType}");
 }
 
 // Future<Uint8List> blobToBytes(html.Blob blob) async {

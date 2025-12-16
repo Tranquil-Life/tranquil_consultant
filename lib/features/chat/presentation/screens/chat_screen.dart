@@ -616,6 +616,8 @@ class _ChatScreenState extends State<ChatScreen> {
     _initRecorder();
 
     // initial data
+
+    chatController.getChatInfo();
     chatController.loadRecentMessages();
     chatController.initializePusher(channel: chatController.chatChannel.value);
 

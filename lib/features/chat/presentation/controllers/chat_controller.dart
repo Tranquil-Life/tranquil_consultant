@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:js_util' as js_util;
+import 'dart:html' as html;
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart';
@@ -182,73 +185,117 @@ class ChatController extends GetxController {
 
   void addMessage(Message message) {
     messages.add(message);
-    messages.sort((a, b) => a.createdAt!.compareTo(b.createdAt!));
+    messages.sort((a, b) {
+      final at = a.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+      final bt = b.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+      return at.compareTo(bt);
+    });
+    messages.refresh();
 
     // Optionally scroll to bottom if needed
   }
 
+  bool hasPusherJs() {
+    try {
+      return js_util.getProperty(html.window, 'Pusher') != null;
+    } catch (_) {
+      return false;
+    }
+  }
+
   Future initializePusher({required String channel}) async {
     try {
+      // On web, pusher-js MUST be present
+      if (kIsWeb && !hasPusherJs()) {
+        debugPrint("Pusher JS not loaded on web. Skipping init.");
+        return;
+      }
+
+      // Optional: only keep myChannel if you actually use it later
       myChannel = PusherChannel(channelName: channel);
+
       await pusher.init(
         apiKey: AppConfig.pusherKey,
         cluster: 'eu',
-        onConnectionStateChange:
-            (dynamic currentState, dynamic previousState) {},
+        onConnectionStateChange: (currentState, previousState) {
+          debugPrint(
+            "onConnectionStateChange: current=$currentState prev=$previousState",
+          );
+        },
         onError: (String message, int? code, dynamic e) {
-          // print("onError: $message code: $code exception: $e");
+          debugPrint("Pusher onError: $message code=$code ex=$e");
         },
-        onSubscriptionSucceeded: (channelName, data) {},
+        onSubscriptionSucceeded: (channelName, data) {
+          debugPrint("onSubscriptionSucceeded: $channelName data=$data");
+        },
         onEvent: (PusherEvent event) async {
-          print("Received event: ${event.eventName}, data: ${event.data}");
+          debugPrint("Received event: ${event.eventName}, data: ${event.data}");
 
-          var eventData = Map<String, dynamic>.from(jsonDecode(event.data));
+          // Skip internal Pusher events
+          if (event.eventName.startsWith('pusher:')) return;
 
-          if (eventData.containsKey('message')) {
-            final message = MessageModel.fromJson(eventData['message']);
+          final eventData = safeEventData(event.data);
+          if (!eventData.containsKey('message')) return;
 
-            if (event.eventName == 'incoming-call') {
-              if (!message.fromYou) {
-                // Trigger call UI or logic
-                handleIncomingCall(message);
+          final rawMessage = eventData['message'];
+          if (rawMessage == null) return;
 
-                var hasVibrator = await Vibration.hasVibrator();
-                if (hasVibrator) {
-                  await Vibration.vibrate(duration: 3000, amplitude: 225);
-                }
-              }
+          late final Map<String, dynamic> messageJson;
+
+          if (rawMessage is String) {
+            final decoded = jsonDecode(rawMessage);
+            if (decoded is Map<String, dynamic>) {
+              messageJson = decoded;
+            } else if (decoded is Map) {
+              messageJson = decoded.map((k, v) => MapEntry(k.toString(), v));
             } else {
-              recentMsgEvent.value = message;
-
-              if (!message.fromYou) {
-                await Future.delayed(Duration(seconds: 1));
-                addMessage(message);
-              }
-
-              // print("Event '${event.eventName}' received with message ID: ${message.messageId}");
+              throw Exception(
+                "Unexpected type for message: ${decoded.runtimeType}",
+              );
             }
+          } else if (rawMessage is Map) {
+            messageJson = rawMessage.map((k, v) => MapEntry(k.toString(), v));
           } else {
-            // print("Missing 'message' in event data.");
+            throw Exception(
+              "Unsupported message type: ${rawMessage.runtimeType}",
+            );
           }
+
+          final message = MessageModel.fromJson(messageJson);
+
+          if (event.eventName == 'incoming-call') {
+            if (!(message.senderType?.toLowerCase() == 'consultant')) {
+              handleIncomingCall(message);
+              // vibration stuff...
+            }
+            return;
+          }
+
+          recentMsgEvent.value = message;
+
+          if (!(message.senderType?.toLowerCase() == 'consultant')) {
+            await Future.delayed(const Duration(seconds: 1));
+            addMessage(message); // ✅ now this will run
+          }
+
+          debugPrint(
+            "Event '${event.eventName}' received with message ID: ${message.messageId}",
+          );
         },
-        onSubscriptionError: (String message, dynamic e) {},
-        onDecryptionFailure: (String event, String reason) {
-          // print("onDecryptionFailure: $event reason: $reason");
-        },
-        onMemberAdded: (String channelName, PusherMember member) {
-          // print("onMemberAdded: $channelName member: $member");
-        },
-        onMemberRemoved: (String channelName, PusherMember member) {
-          // print("onMemberRemoved: $channelName member: $member");
+        onSubscriptionError: (String message, dynamic e) {
+          CustomSnackBar.errorSnackBar(
+            "onSubscriptionError: $message Exception: $e",
+          );
         },
       );
 
-      //subscribe to the chat channel
+      // ✅ only subscribe/enter room after init succeeds
       enterChatRoom(channel);
 
+      // connect last
       await pusher.connect();
-    } catch (e) {
-      // print("ERROR: $e");
+    } catch (e, st) {
+      debugPrint("initializePusher ERROR: $e\n$st");
     }
   }
 
@@ -260,16 +307,16 @@ class ChatController extends GetxController {
     myChannel.unsubscribe();
   }
 
-  Future triggerPusherEvent(eventName, data) async {
-    Either either = await repo.triggerPusherEvent(
-      myChannel.channelName,
-      eventName,
-      data,
-    );
-    either.fold((l) => CustomSnackBar.errorSnackBar(l.message!), (r) {
-      //..
-    });
-  }
+  // Future triggerPusherEvent(eventName, data) async {
+  //   Either either = await repo.triggerPusherEvent(
+  //     myChannel.channelName,
+  //     eventName,
+  //     data,
+  //   );
+  //   either.fold((l) => CustomSnackBar.errorSnackBar(l.message!), (r) {
+  //     print("success: ${r['message']}");
+  //   });
+  // }
 
   void handleIncomingCall(MessageModel message) {
     final dashboardController = DashboardController.instance;
