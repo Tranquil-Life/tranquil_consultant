@@ -84,10 +84,10 @@ abstract class JournalEndPoints {
   static const updateNote = "$consultant/updateNote";
   static const deleteNote = "$consultant/deleteNote";
 
-  static sharedNotes({required int page, required int limit}) =>
+  static String sharedNotes({required int page, required int limit}) =>
       '$consultant/listSharedNotes/$page/$limit';
 
-  static personalNotes({required int page, required int limit}) =>
+  static String personalNotes({required int page, required int limit}) =>
       '$consultant/listMyNotes/$page/$limit';
 }
 
@@ -100,22 +100,30 @@ abstract class ChatEndPoints {
   static const generateToken = '$consultant/generateToken';
   static const getChatInfo = '$consultant/create-chat';
 
-  static getRecentMessages({required int chatId}) =>
+  static String webVideoCallUrl(
+          {required String appId,
+          required String channel,
+          required String token,
+          required int uid}) =>
+      'https://tl-web-videochat.netlify.app/?appId=$appId&channel=$channel&token=$token&uid=$uid';
+
+  static String getRecentMessages({required int chatId}) =>
       'client/get-recent-messages/$chatId';
 
-  static getOlderMessages({required int chatId, required int lastMessageId}) =>
+  static String getOlderMessages(
+          {required int chatId, required int lastMessageId}) =>
       'client/get-older-messages/$chatId/$lastMessageId';
   static const triggerPusherEvent = '$consultant/triggerPusherEvent';
 }
 
 abstract class ActivityEndpoints {
-  static getNotifications({required int page, required int limit}) =>
+  static String getNotifications({required int page, required int limit}) =>
       '$consultant/myActivity/$page/$limit';
   static const unreadNotifications = '$consultant/unreadNotifications';
 }
 
 abstract class CountriesNowEndpoints {
-  static get getCountries => 'countries';
+  static String get getCountries => 'countries';
 
   static getStates({required String country}) =>
       'countries/states/q?country=$country';
