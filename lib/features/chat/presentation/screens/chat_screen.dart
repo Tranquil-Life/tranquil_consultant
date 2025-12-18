@@ -40,7 +40,6 @@ class AudioPlayerManager {
   bool _lastIsLocal = true;
   bool _hasCompleted = false;
 
-
   bool _isPlaying = false;
 
   final _playingCtrl = StreamController<bool>.broadcast();
@@ -48,32 +47,55 @@ class AudioPlayerManager {
   final _positionCtrl = StreamController<PositionData>.broadcast();
 
   Stream<bool> get playingStream => _playingCtrl.stream;
-
   Stream<Duration> get durationStream => _durationCtrl.stream;
-
   Stream<PositionData> get positionDataStream => _positionCtrl.stream;
 
   bool get isPlaying => _isPlaying;
 
+  // ✅ keep subscriptions so you can cancel them
+  StreamSubscription? _stateSub;
+  StreamSubscription? _durSub;
+  StreamSubscription? _posSub;
+  StreamSubscription? _completeSub;
+
+  bool _disposed = false;
+
   AudioPlayerManager() {
-    _player.onPlayerStateChanged.listen((state) {
+    _stateSub = _player.onPlayerStateChanged.listen((state) {
       _isPlaying = (state == ap.PlayerState.playing);
-      _playingCtrl.add(_isPlaying);
+      _safeAddPlaying(_isPlaying);
     });
 
-    _player.onDurationChanged.listen((d) => _durationCtrl.add(d));
+    _durSub = _player.onDurationChanged.listen((d) {
+      _safeAddDuration(d);
+    });
 
-    _player.onPositionChanged.listen((pos) async {
+    _posSub = _player.onPositionChanged.listen((pos) async {
       final dur = await _player.getDuration() ?? Duration.zero;
-      _positionCtrl.add(PositionData(pos, dur));
+      _safeAddPosition(PositionData(pos, dur));
       if (dur > Duration.zero && pos < dur) _hasCompleted = false;
     });
 
-    _player.onPlayerComplete.listen((_) {
+    _completeSub = _player.onPlayerComplete.listen((_) {
       _hasCompleted = true;
-      _playingCtrl.add(false);
+      _safeAddPlaying(false);
       _onComplete?.call();
     });
+  }
+
+  void _safeAddPlaying(bool v) {
+    if (_disposed || _playingCtrl.isClosed) return;
+    _playingCtrl.add(v);
+  }
+
+  void _safeAddDuration(Duration d) {
+    if (_disposed || _durationCtrl.isClosed) return;
+    _durationCtrl.add(d);
+  }
+
+  void _safeAddPosition(PositionData p) {
+    if (_disposed || _positionCtrl.isClosed) return;
+    _positionCtrl.add(p);
   }
 
   void onComplete(VoidCallback cb) => _onComplete = cb;
@@ -81,7 +103,6 @@ class AudioPlayerManager {
   // ---- PLATFORM HELPERS -----------------------------------------------------
 
   bool get _isApple {
-    // Platform.* throws on web, guard with kIsWeb
     if (kIsWeb) return false;
     try {
       return Platform.isIOS || Platform.isMacOS;
@@ -90,15 +111,12 @@ class AudioPlayerManager {
     }
   }
 
-  // If the URL is Cloudinary .webm, ask Cloudinary for an mp3/aac rendition.
   String _appleSafeUrl(String url) {
     if (!_isApple) return url;
     if (!url.contains('/upload/')) return url;
 
-    // Prefer AAC (m4a); mp3 also works.
     final isWebm = url.endsWith('.webm');
-    final transformed =
-        url.replaceFirst('/upload/', '/upload/f_aac/'); // or f_mp3
+    final transformed = url.replaceFirst('/upload/', '/upload/f_aac/');
     return isWebm ? transformed.replaceFirst('.webm', '.m4a') : transformed;
   }
 
@@ -116,8 +134,6 @@ class AudioPlayerManager {
     _hasCompleted = false;
   }
 
-
-  // (kept for compatibility)
   Future<void> setSource(String pathOrUrl, {bool isLocal = true}) =>
       setSourceSmart(pathOrUrl, isLocal: isLocal);
 
@@ -133,9 +149,7 @@ class AudioPlayerManager {
   }
 
   Future<void> pause() async => _player.pause();
-
   Future<void> stop() async => _player.stop();
-
   Future<void> seek(Duration pos) async => _player.seek(pos);
 
   Future<void> toggle() async {
@@ -143,12 +157,10 @@ class AudioPlayerManager {
       await pause();
       return;
     }
-    // Not playing
     if (_hasCompleted) {
       await _restartFromBeginning();
       return;
     }
-    // Edge: pos at end but not marked completed yet
     final pos = await _player.getCurrentPosition() ?? Duration.zero;
     final dur = await _player.getDuration() ?? Duration.zero;
     if (dur > Duration.zero && pos >= dur - const Duration(milliseconds: 10)) {
@@ -160,7 +172,7 @@ class AudioPlayerManager {
 
   Future<void> _restartFromBeginning() async {
     if (_lastPath == null) return;
-    await _player.stop(); // fully reset pipeline
+    await _player.stop();
     if (_lastIsLocal) {
       await _player.setSourceDeviceFile(_lastPath!);
     } else {
@@ -170,12 +182,22 @@ class AudioPlayerManager {
     await _player.resume();
   }
 
+  // ✅ make dispose async so you can await cancellations + player.dispose
+  Future<void> dispose() async {
+    if (_disposed) return;
+    _disposed = true;
 
-  void dispose() {
-    _player.dispose();
-    _playingCtrl.close();
-    _durationCtrl.close();
-    _positionCtrl.close();
+    await _stateSub?.cancel();
+    await _durSub?.cancel();
+    await _posSub?.cancel();
+    await _completeSub?.cancel();
+
+    await _player.stop();
+    await _player.dispose();
+
+    await _playingCtrl.close();
+    await _durationCtrl.close();
+    await _positionCtrl.close();
   }
 }
 

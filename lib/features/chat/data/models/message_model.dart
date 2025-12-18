@@ -21,10 +21,10 @@ class MessageModel extends Message{
 
  // Static method for JSON data
   static MessageModel fromJson(Map<String, dynamic> json) =>
-      _$MessageModelFromJson(json);
+      messageModelFromJsonSafe(json);
 
-  // Static method for Firestore document data
-  // static MessageModel fromDoc(Map<String, dynamic> doc) =>
-  //     _$MessageModelFromDoc(doc);
+  // static MessageModel fromJson(Map<String, dynamic> json) =>
+  //     _$MessageModelFromJson(json);
+
 }
 

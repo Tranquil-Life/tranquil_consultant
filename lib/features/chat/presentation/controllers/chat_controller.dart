@@ -65,70 +65,130 @@ class ChatController extends GetxController {
 
   //recent messages
   Future loadRecentMessages() async {
-    if (chatId != null) {
-      isFirstLoadRunning.value = true;
+    final cid = chatId?.value;
+    if (cid == null || cid == 0) return;
 
-      var result = await repo.getRecentMessages(chatId: chatId!.value);
+    isFirstLoadRunning.value = true;
+    allPagesLoaded.value = false;
 
-      result.fold((l) {}, (r) {
-        messages.clear();
+    final result = await repo.getRecentMessages(chatId: cid);
 
-        var data = r['data'];
+    result.fold((l) {
+      // handle error if you want
+    }, (r) {
+      messages.clear();
 
-        for (int i = 0; i < (data as List).length; i++) {
-          Message message = MessageModel.fromJson(data[i]);
-          messages.add(message);
-        }
+      final data = r['data'];
+      if (data is! List) return;
 
-        if (messages.isNotEmpty) {
-          lastMessageId.value = messages[messages.length - 1].messageId!;
-        } else {
-          isFirstLoadRunning.value = false;
-        }
-      });
-
-      update();
-      isFirstLoadRunning.value = false;
-      // Additional logic related to chatId...
-    }
-  }
-
-  Future loadOlderMessages() async {
-    isLoadMoreRunning.value = true;
-
-    List<Message> newMessages = <Message>[];
-
-    var result = await repo.getOlderMessages(
-      chatId: chatId!.value,
-      lastMessageId: lastMessageId.value,
-    );
-
-    result.fold((l) {}, (r) {
-      var data = r['data'];
-      for (int i = 0; i < (data as List).length; i++) {
-        Message message = MessageModel.fromJson(data[i]);
-        newMessages.add(message);
+      for (final item in data) {
+        messages.add(MessageModel.fromJson(item));
       }
 
-      if (newMessages.isNotEmpty) {
-        lastMessageId.value = newMessages[newMessages.length - 1].messageId!;
-
-        messages.addAll(newMessages);
+      final cursor = lastNonNullId(messages);
+      if (cursor != null) {
+        lastMessageId.value = cursor;
       } else {
-        isLoadMoreRunning.value = false;
+        // If everything has null IDs, pagination can’t work
+        allPagesLoaded.value = true;
       }
     });
 
+    messages.refresh();
     update();
-    isLoadMoreRunning.value = false;
+    isFirstLoadRunning.value = false;
   }
+
+  Future<void> loadOlderMessages() async {
+    if (isLoadMoreRunning.value) return;
+
+    final cid = chatId?.value;
+    if (cid == null) return; // or show error
+
+    // If your API needs lastMessageId, don’t call with null
+    final lastId = lastMessageId.value;
+    if (lastId == null) {
+      // Option A: don’t load older if we don’t know the cursor yet
+      return;
+      // Option B: call API without lastMessageId if supported
+    }
+
+    isLoadMoreRunning.value = true;
+
+    try {
+      final result = await repo.getOlderMessages(
+        chatId: cid,
+        lastMessageId: lastId,
+      );
+
+      result.fold((l) {
+        // handle error if needed
+      }, (r) {
+        final data = r['data'];
+        if (data is! List) return;
+
+        final newMessages = data
+            .map((e) => MessageModel.fromJson(e))
+            .toList();
+
+        if (newMessages.isEmpty) return;
+
+        // ✅ pick the last NON-NULL messageId as cursor
+        final lastNonNull = newMessages.lastWhere(
+              (m) => m.messageId != null,
+          orElse: () => newMessages.last,
+        );
+
+        if (lastNonNull.messageId != null) {
+          lastMessageId.value = lastNonNull.messageId!;
+        }
+
+        messages.addAll(newMessages);
+        messages.refresh();
+      });
+    } finally {
+      isLoadMoreRunning.value = false;
+      update();
+    }
+  }
+
+
+  // Future loadOlderMessages() async {
+  //   isLoadMoreRunning.value = true;
+  //
+  //   List<Message> newMessages = <Message>[];
+  //
+  //   var result = await repo.getOlderMessages(
+  //     chatId: chatId!.value,
+  //     lastMessageId: lastMessageId.value,
+  //   );
+  //
+  //   result.fold((l) {}, (r) {
+  //     var data = r['data'];
+  //     for (int i = 0; i < (data as List).length; i++) {
+  //       Message message = MessageModel.fromJson(data[i]);
+  //       newMessages.add(message);
+  //     }
+  //
+  //     if (newMessages.isNotEmpty) {
+  //       lastMessageId.value = newMessages[newMessages.length - 1].messageId!;
+  //
+  //       messages.addAll(newMessages);
+  //     } else {
+  //       isLoadMoreRunning.value = false;
+  //     }
+  //   });
+  //
+  //   update();
+  //   isLoadMoreRunning.value = false;
+  // }
 
   //Get specific chat history
   Future<Map<String, dynamic>> getChatInfo({ClientUser? client}) async {
     final dashboardController = DashboardController.instance;
 
-    print(client?.toJson());
-    rxClient.value = client!;
+    // print(client?.toJson());
+    if (client != null) rxClient.value = client;
 
     loadingChatRoom.value = true;
     Either either = await repo.getChatInfo(
@@ -260,6 +320,8 @@ class ChatController extends GetxController {
               "Unsupported message type: ${rawMessage.runtimeType}",
             );
           }
+
+          debugPrint("messageJson.created_at = ${messageJson['created_at']}");
 
           final message = MessageModel.fromJson(messageJson);
 

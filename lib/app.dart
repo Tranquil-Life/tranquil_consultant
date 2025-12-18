@@ -27,7 +27,11 @@ class _AppState extends State<App> {
       ),
       initialRoute: AppPages.INITIAL,
       getPages: AppPages.routes,
-      initialBinding: AllControllerBindings(),
+      unknownRoute: GetPage(
+        name: '/404',
+        page: () => const Scaffold(body: Center(child: Text('Route not found'))),
+      ),
+      // initialBinding: AllControllerBindings(),
     );
   }
 }
