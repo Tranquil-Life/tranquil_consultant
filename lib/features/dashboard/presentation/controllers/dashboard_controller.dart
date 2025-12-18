@@ -92,69 +92,69 @@ class DashboardController extends GetxController {
   }
 
   //TODO: REMEMBER TO UNCOMMENT
-  // Future getMyLocationInfo() async {
-  //   final result = await getCurrLocation();
-  //
-  //   if (result["error"] != null) {
-  //     // handle / show error
-  //     return;
-  //   }
-  //
-  //   final List<Placemark> placemarks =
-  //       (result['placemarks'] as List<Placemark>?) ?? const [];
-  //
-  //   final Placemark? p = placemarks.isNotEmpty ? placemarks.first : null;
-  //
-  //   // Use empty string fallback instead of crashing
-  //   country.value = p?.country ?? "";
-  //   city.value = p?.locality ?? "";
-  //   neighborhood.value = p?.subLocality ?? "";
-  //   state.value = p?.administrativeArea ?? "";
-  //   county.value = p?.subAdministrativeArea ?? "";
-  //
-  //   final streetPart = [
-  //     p?.street,
-  //     p?.name,
-  //   ].whereType<String>().where((s) => s.trim().isNotEmpty).join(", ");
-  //
-  //   street.value = streetPart;
-  //
-  //   // timezone offset (this works on web too)
-  //   final timezoneOffset = DateTime.now().timeZoneOffset.inMilliseconds;
-  //   const hourInMilliSecs = 3600000;
-  //   final formattedTimeZone = timezoneOffset / hourInMilliSecs;
-  //   timezone.value = "$formattedTimeZone";
-  //
-  //   // FlutterNativeTimezone is NOT reliable on web; guard it
-  //   String timeZoneIdentifier = "";
-  //   try {
-  //     timeZoneIdentifier = await FlutterNativeTimezone.getLocalTimezone();
-  //   } catch (_) {
-  //     timeZoneIdentifier = ""; // or "UTC"
-  //   }
-  //
-  //   // Build a best-effort location string
-  //   final parts = <String>[
-  //     street.value,
-  //     neighborhood.value,
-  //     city.value,
-  //     county.value,
-  //     state.value,
-  //     country.value,
-  //   ].where((s) => s.trim().isNotEmpty).toList();
-  //
-  //   final locationString = parts.isNotEmpty
-  //       ? parts.join(", ")
-  //       : "${result['latitude']}, ${result['longitude']}";
-  //
-  //   await updateLocation(
-  //     latitude: result['latitude'],
-  //     longitude: result['longitude'],
-  //     timeZone: double.tryParse(timezone.value) ?? 0.0,
-  //     location: locationString,
-  //     timeZoneIdentifier: timeZoneIdentifier,
-  //   );
-  // }
+  Future getMyLocationInfo() async {
+    final result = await getCurrLocation();
+
+    if (result["error"] != null) {
+      // handle / show error
+      return;
+    }
+
+    final List<Placemark> placemarks =
+        (result['placemarks'] as List<Placemark>?) ?? const [];
+
+    final Placemark? p = placemarks.isNotEmpty ? placemarks.first : null;
+
+    // Use empty string fallback instead of crashing
+    country.value = p?.country ?? "";
+    city.value = p?.locality ?? "";
+    neighborhood.value = p?.subLocality ?? "";
+    state.value = p?.administrativeArea ?? "";
+    county.value = p?.subAdministrativeArea ?? "";
+
+    final streetPart = [
+      p?.street,
+      p?.name,
+    ].whereType<String>().where((s) => s.trim().isNotEmpty).join(", ");
+
+    street.value = streetPart;
+
+    // timezone offset (this works on web too)
+    final timezoneOffset = DateTime.now().timeZoneOffset.inMilliseconds;
+    const hourInMilliSecs = 3600000;
+    final formattedTimeZone = timezoneOffset / hourInMilliSecs;
+    timezone.value = "$formattedTimeZone";
+
+    // FlutterNativeTimezone is NOT reliable on web; guard it
+    String timeZoneIdentifier = "";
+    try {
+      timeZoneIdentifier = await FlutterNativeTimezone.getLocalTimezone();
+    } catch (_) {
+      timeZoneIdentifier = ""; // or "UTC"
+    }
+
+    // Build a best-effort location string
+    final parts = <String>[
+      street.value,
+      neighborhood.value,
+      city.value,
+      county.value,
+      state.value,
+      country.value,
+    ].where((s) => s.trim().isNotEmpty).toList();
+
+    final locationString = parts.isNotEmpty
+        ? parts.join(", ")
+        : "${result['latitude']}, ${result['longitude']}";
+
+    await updateLocation(
+      latitude: result['latitude'],
+      longitude: result['longitude'],
+      timeZone: double.tryParse(timezone.value) ?? 0.0,
+      location: locationString,
+      timeZoneIdentifier: timeZoneIdentifier,
+    );
+  }
 
   Future<void> getMeetings() async {
     await MeetingsController().loadFirstMeetings();
@@ -179,7 +179,7 @@ class DashboardController extends GetxController {
     ProfileController.instance.restoreUser();
 
     //TODO: REMEMBER TO UNCOMMENT
-    // getMyLocationInfo();
+    getMyLocationInfo();
 
     super.onInit();
   }
