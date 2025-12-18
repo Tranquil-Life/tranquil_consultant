@@ -128,52 +128,81 @@ Future getFileSize(String filepath, int decimals) async {
   }
 }
 
+///OLD
+// Future<Map<String, dynamic>> getCurrLocation() async {
+//   Position position;
+//   // Request location permissions
+//   LocationPermission permission = await Geolocator.requestPermission();
+//   if (permission == LocationPermission.denied) {
+//     print("Location permission denied");
+//     return {"error": "Location permission denied"};
+//   }
+//
+//   // Get current position
+//   position = await Geolocator.getCurrentPosition(
+//     desiredAccuracy: LocationAccuracy.best,
+//   );
+//
+//   // Use geocoding to get the placemarks
+//   List<Placemark> placemarks = await placemarkFromCoordinates(
+//     position.latitude,
+//     position.longitude,
+//   );
+//
+//   return {
+//     "latitude": position.latitude,
+//     "longitude": position.longitude,
+//     "placemarks": placemarks,
+//   };
+// }
 
-Future<Map<String, dynamic>> getCurrLocation() async {
-  // (Optional) check location services (mainly useful on mobile)
-  final serviceEnabled = await Geolocator.isLocationServiceEnabled();
-  if (!serviceEnabled) {
-    return {"error": "Location services are disabled"};
-  }
 
-  LocationPermission permission = await Geolocator.checkPermission();
-  if (permission == LocationPermission.denied) {
-    permission = await Geolocator.requestPermission();
-  }
-  if (permission == LocationPermission.denied) {
-    return {"error": "Location permission denied"};
-  }
-  if (permission == LocationPermission.deniedForever) {
-    return {"error": "Location permission denied forever"};
-  }
-
-  final position = await Geolocator.getCurrentPosition(
-    desiredAccuracy: LocationAccuracy.best,
-  );
-
-  List<Placemark> placemarks = const [];
-
-  // Geocoding can be flaky / unsupported depending on platform & setup.
-  // Don’t allow it to crash the whole location flow.
-  try {
-    // If web is giving you trouble, you can skip geocoding on web:
-    if (!kIsWeb) {
-      placemarks = await placemarkFromCoordinates(
-        position.latitude,
-        position.longitude,
-      );
-    }
-  } catch (e) {
-    // Keep placemarks empty; still return lat/lng
-    placemarks = const [];
-  }
-
-  return {
-    "latitude": position.latitude,
-    "longitude": position.longitude,
-    "placemarks": placemarks,
-  };
-}
+///NEW
+// Future<Map<String, dynamic>> getCurrLocation() async {
+//   // (Optional) check location services (mainly useful on mobile)
+//   final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+//   if (!serviceEnabled) {
+//     return {"error": "Location services are disabled"};
+//   }
+//
+//   LocationPermission permission = await Geolocator.checkPermission();
+//   if (permission == LocationPermission.denied) {
+//     permission = await Geolocator.requestPermission();
+//   }
+//   if (permission == LocationPermission.denied) {
+//     return {"error": "Location permission denied"};
+//   }
+//   if (permission == LocationPermission.deniedForever) {
+//     return {"error": "Location permission denied forever"};
+//   }
+//
+//   final position = await Geolocator.getCurrentPosition(
+//     desiredAccuracy: LocationAccuracy.best,
+//   );
+//
+//   List<Placemark> placemarks = const [];
+//
+//   // Geocoding can be flaky / unsupported depending on platform & setup.
+//   // Don’t allow it to crash the whole location flow.
+//   try {
+//     // If web is giving you trouble, you can skip geocoding on web:
+//     if (!kIsWeb) {
+//       placemarks = await placemarkFromCoordinates(
+//         position.latitude,
+//         position.longitude,
+//       );
+//     }
+//   } catch (e) {
+//     // Keep placemarks empty; still return lat/lng
+//     placemarks = const [];
+//   }
+//
+//   return {
+//     "latitude": position.latitude,
+//     "longitude": position.longitude,
+//     "placemarks": placemarks,
+//   };
+// }
 
 
 List<TextSpan> parseNoteText(String text) {
