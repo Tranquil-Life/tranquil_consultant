@@ -92,40 +92,70 @@ class DashboardController extends GetxController {
   }
 
   Future getMyLocationInfo() async {
-    var result = await getCurrLocation();
-    List<Placemark> placemarks = result['placemarks'];
-    country.value = placemarks.first.country!;
-    city.value = placemarks.first.locality!;
-    neighborhood.value = placemarks.first.subLocality!;
-    state.value = placemarks.first.administrativeArea!;
-    county.value = placemarks.first.subAdministrativeArea!;
-    street.value = "${placemarks.first.street}, ${placemarks.first.name}";
-    int timezoneOffset = DateTime.now().timeZoneOffset.inMilliseconds;
-    var hourInMilliSecs = 3600000;
-    var formattedTimeZone = timezoneOffset / hourInMilliSecs;
+    final result = await getCurrLocation();
 
-    //timezone
+    if (result["error"] != null) {
+      // handle / show error
+      return;
+    }
+
+    final List<Placemark> placemarks =
+        (result['placemarks'] as List<Placemark>?) ?? const [];
+
+    final Placemark? p = placemarks.isNotEmpty ? placemarks.first : null;
+
+    // Use empty string fallback instead of crashing
+    country.value = p?.country ?? "";
+    city.value = p?.locality ?? "";
+    neighborhood.value = p?.subLocality ?? "";
+    state.value = p?.administrativeArea ?? "";
+    county.value = p?.subAdministrativeArea ?? "";
+
+    final streetPart = [
+      p?.street,
+      p?.name,
+    ].whereType<String>().where((s) => s.trim().isNotEmpty).join(", ");
+
+    street.value = streetPart;
+
+    // timezone offset (this works on web too)
+    final timezoneOffset = DateTime.now().timeZoneOffset.inMilliseconds;
+    const hourInMilliSecs = 3600000;
+    final formattedTimeZone = timezoneOffset / hourInMilliSecs;
     timezone.value = "$formattedTimeZone";
 
-    //timezone identifier e.g., "America/Chicago"
-    final String timeZoneIdentifier =
-        await FlutterNativeTimezone.getLocalTimezone();
+    // FlutterNativeTimezone is NOT reliable on web; guard it
+    String timeZoneIdentifier = "";
+    try {
+      timeZoneIdentifier = await FlutterNativeTimezone.getLocalTimezone();
+    } catch (_) {
+      timeZoneIdentifier = ""; // or "UTC"
+    }
+
+    // Build a best-effort location string
+    final parts = <String>[
+      street.value,
+      neighborhood.value,
+      city.value,
+      county.value,
+      state.value,
+      country.value,
+    ].where((s) => s.trim().isNotEmpty).toList();
+
+    final locationString = parts.isNotEmpty
+        ? parts.join(", ")
+        : "${result['latitude']}, ${result['longitude']}";
 
     await updateLocation(
-        latitude: result['latitude'],
-        longitude: result['longitude'],
-        timeZone: double.parse(timezone.value),
-        location:
-            "${street.value}, "
-                "${neighborhood.value}, "
-                "${city.value}, "
-                "${county.value}, "
-                "${state.value}, "
-                "${country.value}",
-        timeZoneIdentifier: timeZoneIdentifier);
+      latitude: result['latitude'],
+      longitude: result['longitude'],
+      timeZone: double.tryParse(timezone.value) ?? 0.0,
+      location: locationString,
+      timeZoneIdentifier: timeZoneIdentifier,
+    );
   }
 
-  getMeetings() async {
+  Future<void> getMeetings() async {
     await MeetingsController().loadFirstMeetings();
 
     for (var meeting in MeetingsController.instance.meetings) {

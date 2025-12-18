@@ -5,6 +5,7 @@ import 'dart:math';
 
 import 'package:add_2_calendar/add_2_calendar.dart';
 import 'package:dio/dio.dart' as dio;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geocoding/geocoding.dart';
@@ -126,25 +127,45 @@ Future getFileSize(String filepath, int decimals) async {
   }
 }
 
+
 Future<Map<String, dynamic>> getCurrLocation() async {
-  Position position;
-  // Request location permissions
-  LocationPermission permission = await Geolocator.requestPermission();
-  if (permission == LocationPermission.denied) {
-    print("Location permission denied");
-    return {"error": "Location permission denied"};
+  // (Optional) check location services (mainly useful on mobile)
+  final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+  if (!serviceEnabled) {
+    return {"error": "Location services are disabled"};
   }
 
-  // Get current position
-  position = await Geolocator.getCurrentPosition(
+  LocationPermission permission = await Geolocator.checkPermission();
+  if (permission == LocationPermission.denied) {
+    permission = await Geolocator.requestPermission();
+  }
+  if (permission == LocationPermission.denied) {
+    return {"error": "Location permission denied"};
+  }
+  if (permission == LocationPermission.deniedForever) {
+    return {"error": "Location permission denied forever"};
+  }
+
+  final position = await Geolocator.getCurrentPosition(
     desiredAccuracy: LocationAccuracy.best,
   );
 
-  // Use geocoding to get the placemarks
-  List<Placemark> placemarks = await placemarkFromCoordinates(
-    position.latitude,
-    position.longitude,
-  );
+  List<Placemark> placemarks = const [];
+
+  // Geocoding can be flaky / unsupported depending on platform & setup.
+  // Don’t allow it to crash the whole location flow.
+  try {
+    // If web is giving you trouble, you can skip geocoding on web:
+    if (!kIsWeb) {
+      placemarks = await placemarkFromCoordinates(
+        position.latitude,
+        position.longitude,
+      );
+    }
+  } catch (e) {
+    // Keep placemarks empty; still return lat/lng
+    placemarks = const [];
+  }
 
   return {
     "latitude": position.latitude,
@@ -152,6 +173,7 @@ Future<Map<String, dynamic>> getCurrLocation() async {
     "placemarks": placemarks,
   };
 }
+
 
 List<TextSpan> parseNoteText(String text) {
   RegExp regExpBold = RegExp(r'\*\*(.*?)\*\*');

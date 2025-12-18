@@ -100,6 +100,13 @@ abstract class ChatEndPoints {
   static const generateToken = '$consultant/generateToken';
   static const getChatInfo = '$consultant/create-chat';
 
+  static String webVideoCallUrl(
+          {required String appId,
+          required String channel,
+          required String token,
+          required int uid}) =>
+      'https://tl-web-videochat.netlify.app/?appId=$appId&channel=$channel&token=$token&uid=$uid';
+
   static getRecentMessages({required int chatId}) =>
       'client/get-recent-messages/$chatId';
 
