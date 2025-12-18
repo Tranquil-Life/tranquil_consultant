@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:tl_consultant/core/global/custom_snackbar.dart';
 import 'package:tl_consultant/core/utils/extensions/date_time_extension.dart';
@@ -41,7 +42,13 @@ class AgoraController extends GetxController {
     );
   }
 
-  navigateToCallView() => Get.to(const VideoCallView(
+  navigateToCallView(){
+    if (kIsWeb) {
+      // Get.to(const WebVideoCallView());
+    } else {
+      Get.to(const VideoCallView(
         isLocal: true,
       ));
+    }
+  }
 }

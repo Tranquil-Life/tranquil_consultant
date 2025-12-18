@@ -20,6 +20,7 @@ import 'package:tl_consultant/core/global/IOSDatePicker.dart';
 import 'package:tl_consultant/core/global/custom_snackbar.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/utils/app_config.dart';
+import 'package:tl_consultant/features/chat/domain/entities/message.dart';
 import 'package:tl_consultant/features/profile/data/models/user_model.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 import 'package:tl_consultant/features/profile/domain/entities/user.dart';
@@ -392,6 +393,15 @@ Map<String, dynamic> safeEventData(dynamic raw) {
 
   throw Exception("Unsupported event.data type: ${raw.runtimeType}");
 }
+
+int? lastNonNullId(List<Message> list) {
+  for (int i = list.length - 1; i >= 0; i--) {
+    final id = list[i].messageId;
+    if (id != null) return id;
+  }
+  return null;
+}
+
 
 // Future<Uint8List> blobToBytes(html.Blob blob) async {
 //   final c = Completer<Uint8List>();
