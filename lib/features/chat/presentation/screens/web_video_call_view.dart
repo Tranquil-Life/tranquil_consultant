@@ -33,6 +33,15 @@ class _WebVideoCallViewState extends State<WebVideoCallView> {
       uid: 0,
     );
 
+    var data = {
+      "appId": AppConfig.agoraAppId,
+      "channel": chatController.myChannel.channelName,
+      "token": agoraController.agoraToken.value,
+      "uid": 0
+    };
+
+    print(data);
+
     // Register the IFrame element
     ui.platformViewRegistry.registerViewFactory(
       viewID,
