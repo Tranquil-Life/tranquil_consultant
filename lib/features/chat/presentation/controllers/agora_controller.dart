@@ -6,6 +6,7 @@ import 'package:tl_consultant/core/utils/extensions/date_time_extension.dart';
 import 'package:tl_consultant/features/chat/data/repos/chat_repo.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/chat_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/screens/video_call_view.dart';
+import 'package:tl_consultant/features/chat/presentation/screens/web_video_call_view.dart';
 import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
 
 class AgoraController extends GetxController {
@@ -24,27 +25,24 @@ class AgoraController extends GetxController {
   }
 
   Future getAgoraToken() async {
-
     //Tell backend dev to set expiry time of token to be the duration of the
     //meeting time left in seconds on the API
 
     //if agora token and channelId don't exist on the firebase DB
     //do this
     Either either = await repo.getAgoraToken(
-       ChatController.instance.chatChannel.value, DashboardController.instance.currentMeetingId.value);
-    either.fold((l) => CustomSnackBar.errorSnackBar(l.message.toString()),
-            (r) {
-          agoraToken.value = r['data']['token'];
+        ChatController.instance.chatChannel.value,
+        DashboardController.instance.currentMeetingId.value);
+    either.fold((l) => CustomSnackBar.errorSnackBar(l.message.toString()), (r) {
+      agoraToken.value = r['data']['token'];
 
-          navigateToCallView();
-        }
-
-    );
+      navigateToCallView();
+    });
   }
 
-  navigateToCallView(){
+  void navigateToCallView() {
     if (kIsWeb) {
-      // Get.to(const WebVideoCallView());
+      Get.to(const WebVideoCallView());
     } else {
       Get.to(const VideoCallView(
         isLocal: true,
