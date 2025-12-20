@@ -6,6 +6,7 @@ import 'package:tl_consultant/core/constants/end_points.dart';
 import 'package:tl_consultant/core/utils/app_config.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/agora_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/chat_controller.dart';
+import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 
 class WebVideoCallView extends StatefulWidget {
   const WebVideoCallView({super.key});
@@ -27,17 +28,17 @@ class _WebVideoCallViewState extends State<WebVideoCallView> {
 
     // Construct your URL with the parameters
     final String callUrl = ChatEndPoints.webVideoCallUrl(
-      appId: AppConfig.agoraAppId,
-      channel: chatController.myChannel.channelName,
-      token: agoraController.agoraToken.value,
-      uid: 0,
+      room: "c6uDfgcc8EgDsahJV6dt",
+      //TODO: The room should be the same as the pusher channel and should be created from the backend
+      //not hard-coded
     );
+
 
     var data = {
       "appId": AppConfig.agoraAppId,
       "channel": chatController.myChannel.channelName,
       "token": agoraController.agoraToken.value,
-      "uid": 0
+      "uid": userDataStore.user['id']
     };
 
     print(data);
