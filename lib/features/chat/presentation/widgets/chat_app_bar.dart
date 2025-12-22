@@ -1,5 +1,6 @@
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:tl_consultant/core/global/app_bar_button.dart';
 import 'package:tl_consultant/core/global/user_avatar.dart';
@@ -7,8 +8,8 @@ import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/theme/fonts.dart';
 import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 import 'package:tl_consultant/core/utils/services/formatters.dart';
-import 'package:tl_consultant/features/chat/presentation/controllers/agora_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/chat_controller.dart';
+import 'package:tl_consultant/features/chat/presentation/controllers/video_call_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/widgets/chat_more_options.dart';
 import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
 
@@ -24,7 +25,7 @@ class TitleBar extends StatefulWidget {
 class _TitleBarState extends State<TitleBar> {
   final duration = const Duration(minutes: 30);
 
-  final agoraController = AgoraController.instance;
+  final videoCallController = VideoCallController.instance;
   final dashboardController = DashboardController.instance;
   final chatController = ChatController.instance;
 
@@ -101,7 +102,10 @@ class _TitleBarState extends State<TitleBar> {
                 // await chatController
                 //     .triggerPusherEvent('incoming-call', messageMap);
 
-                agoraController.joinAgoraCall();
+                if(kIsWeb){
+
+                }
+                videoCallController.joinAgoraCall();
               }),
           const MoreOptions(),
         ],

@@ -1,14 +1,12 @@
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:draggable_widget/draggable_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/utils/app_config.dart';
 import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
-import 'package:tl_consultant/features/chat/presentation/controllers/agora_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/chat_controller.dart';
+import 'package:tl_consultant/features/chat/presentation/controllers/video_call_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/widgets/call/call_buttons.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 
@@ -29,7 +27,7 @@ class VideoCallView extends StatefulWidget {
 }
 
 class _VideoCallViewState extends State<VideoCallView> {
-  final agoraController = AgoraController.instance;
+  final agoraController = VideoCallController.instance;
   final chatController = ChatController.instance;
 
   int? remoteUID;

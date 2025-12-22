@@ -2,100 +2,127 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
-import 'package:tl_consultant/features/chat/presentation/controllers/audio_player_manager.dart';
+import 'package:tl_consultant/features/chat/data/repos/audio_player_manager.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/chat_controller.dart';
-import 'package:tl_consultant/features/chat/presentation/widgets/chat_boxes/chat_item.dart';
+import 'package:tl_consultant/features/chat/presentation/widgets/voice_bubble.dart';
 
 class Messages extends StatefulWidget {
-  const Messages({super.key, required this.playerManager});
-  final AudioPlayerManager playerManager;
+  const Messages({super.key, required this.scroll, required this.pmFeed});
+
+  final ScrollController scroll;
+  final AudioPlayerManager pmFeed;
+
 
   @override
   State<Messages> createState() => MessagesState();
 }
 
-class MessagesState extends State<Messages>
-    with SingleTickerProviderStateMixin {
-  // ChatController chatController = Get.put(ChatController());
-
+class MessagesState extends State<Messages>{
   final chatController = ChatController.instance;
-
-
-  late final AnimationController animController;
-  late final Animation<double> highlightAnim;
-
-  final ScrollController _scrollController = ScrollController();
-
-
-  // Add a scroll listener to the list view
-  void _addScrollListener() {
-    _scrollController.addListener(() {
-      if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
-        // User has reached the top of the list, load older messages
-        chatController.loadOlderMessages();
-      }
-    });
-  }
-
-  @override
-  void initState() {
-    animController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1500),
-    )..animateTo(1, duration: Duration.zero);
-    highlightAnim = animController.drive(TweenSequence([
-      TweenSequenceItem(tween: Tween(begin: 1.0, end: 1.0), weight: 0.8),
-      TweenSequenceItem(tween: Tween(begin: 1.0, end: 0.0), weight: 0.2),
-    ]));
-
-    _addScrollListener();
-
-    super.initState();
-  }
-
-
-  @override
-  void dispose() {
-    try{
-      animController.dispose();
-    }catch(e){
-      log("DISPOSE: Error: $e");
-    }
-    super.dispose();
-  }
-
 
   @override
   Widget build(BuildContext context) {
 
     return Obx(() {
-      // Sort messages descending by createdAt
-      chatController.messages.sort((a, b) => b.createdAt!.compareTo(a.createdAt!));
+      // Make a safe copy and sort descending (newest first)
+      final messages = [...chatController.messages];
+      messages
+          .sort((a, b) => b.createdAt!.compareTo(a.createdAt!));
 
-      // Only set recentMsgEvent if messages is not empty
-      if (chatController.messages.isNotEmpty) {
-        chatController.recentMsgEvent.value = chatController.messages.first;
+      // Update the recent message event
+      if (messages.isNotEmpty) {
+        chatController.recentMsgEvent.value = messages.first;
       }
 
+      final showLoader = chatController.isLoadMoreRunning.value;
+      final totalCount = messages.length + (showLoader ? 1 : 0);
+
       return ListView.builder(
-        padding: EdgeInsets.only(top: 8),
+        controller: widget.scroll,
         physics: const BouncingScrollPhysics(),
         reverse: true,
-        controller: _scrollController,
-        itemCount: chatController.messages.length + (chatController.isLoadMoreRunning.value ? 1 : 0),
+        // so new messages appear at the bottom
+        padding: const EdgeInsets.symmetric(
+            vertical: 8, horizontal: 12)
+            .add(const EdgeInsets.only(bottom: 72)),
+        itemCount: totalCount,
         itemBuilder: (context, index) {
-          if (index == chatController.messages.length) {
-            return const Center(
-              child: CircularProgressIndicator(color: ColorPalette.green),
+          // Loader at top (because reverse:true)
+          if (showLoader && index == messages.length) {
+            return const Padding(
+              padding: EdgeInsets.symmetric(vertical: 12),
+              child: Center(
+                child: SizedBox(
+                  width: 22,
+                  height: 22,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: ColorPalette.green,
+                  ),
+                ),
+              ),
             );
           }
 
-          return ChatItem(
-            chatController.messages[index],
-            highlightAnim: highlightAnim,
-            animate: index == -1,
-            playerManager: widget.playerManager,
+          final msg = messages[index];
+          final fromMe = (msg.senderId == myId &&
+              msg.senderType == consultant);
+          final align = fromMe
+              ? CrossAxisAlignment.end
+              : CrossAxisAlignment.start;
+          final bubbleColor = fromMe
+              ? Colors.green.shade600
+              : Colors.grey.shade200;
+          final textColor =
+          fromMe ? Colors.white : Colors.black87;
+
+          // Determine if it’s a voice message
+          final isVoice = msg.messageType == 'voice' ||
+              msg.messageType == 'audio';
+
+          final bubbleId = (msg.messageId?.toString() ??
+              'temp-${msg.createdAt?.microsecondsSinceEpoch ?? msg.hashCode}');
+
+          return Align(
+            alignment: fromMe
+                ? Alignment.centerRight
+                : Alignment.centerLeft,
+            child: Container(
+              margin: const EdgeInsets.symmetric(vertical: 6),
+              padding: const EdgeInsets.all(10),
+              constraints: BoxConstraints(
+                maxWidth:
+                MediaQuery.of(context).size.width * 0.78,
+              ),
+              decoration: BoxDecoration(
+                color: bubbleColor,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: isVoice
+                  ? VoiceBubble(
+                path: msg.message ?? '',
+                fromMe: fromMe,
+                pm: widget.pmFeed,
+                id: bubbleId,
+                activeAudioId: chatController
+                    .activeAudioIdString, // RxnString
+                // your AudioPlayerManager instance
+              )
+                  : Column(
+                crossAxisAlignment: align,
+                children: [
+                  Text(
+                    msg.message ?? '',
+                    style: TextStyle(
+                      color: textColor,
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           );
         },
       );

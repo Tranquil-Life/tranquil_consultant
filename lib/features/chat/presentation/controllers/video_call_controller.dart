@@ -9,12 +9,10 @@ import 'package:tl_consultant/features/chat/presentation/screens/video_call_view
 import 'package:tl_consultant/features/chat/presentation/screens/web_video_call_view.dart';
 import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
 
-class AgoraController extends GetxController {
-  static AgoraController get instance => Get.find<AgoraController>();
+class VideoCallController extends GetxController {
+  static VideoCallController get instance => Get.find<VideoCallController>();
 
   ChatRepoImpl repo = ChatRepoImpl();
-
-  // final dashboardController = DashboardController.instance;
 
   RxSet<int> remoteIds = <int>{}.obs;
   var agoraToken = "".obs;
@@ -38,6 +36,10 @@ class AgoraController extends GetxController {
 
       navigateToCallView();
     });
+  }
+
+  Future getDailyToken() async {
+
   }
 
   void navigateToCallView() {

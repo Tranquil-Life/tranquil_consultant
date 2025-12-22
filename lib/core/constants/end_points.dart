@@ -100,9 +100,8 @@ abstract class ChatEndPoints {
   static const generateToken = '$consultant/generateToken';
   static const getChatInfo = '$consultant/create-chat';
 
-  static String webVideoCallUrl(
-      {required String room}) =>
-      'https://tl-web-videochat.netlify.app/?room=$room';
+  static const generateDailyToken = '$consultant/daily/token';
+  static const generateDailyRoom = '$consultant/createDailyRoom';
 
   static String getRecentMessages({required int chatId}) =>
       'client/get-recent-messages/$chatId';

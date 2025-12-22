@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/theme/tranquil_icons.dart';
 import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
-import 'package:tl_consultant/features/chat/presentation/controllers/agora_controller.dart';
+import 'package:tl_consultant/features/chat/presentation/controllers/video_call_controller.dart';
 
 class IncomingCallView extends StatelessWidget {
   IncomingCallView({
@@ -17,7 +17,7 @@ class IncomingCallView extends StatelessWidget {
   final String clientName;
   final String clientDp;
 
-  final agoraController = AgoraController.instance;
+  final videoCallController = VideoCallController.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +70,7 @@ class IncomingCallView extends StatelessWidget {
                 onTap: () {
                    Get.back();
 
-                  agoraController.joinAgoraCall();
+                  videoCallController.joinAgoraCall();
                 },
                 child: PulsingCallButton(),
               ),

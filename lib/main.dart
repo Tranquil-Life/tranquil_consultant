@@ -6,7 +6,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:get/get.dart';
 import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
@@ -14,8 +13,8 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:tl_consultant/app.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:tl_consultant/core/utils/services/API/network/controllers/network_controller.dart';
-import 'package:tl_consultant/features/chat/presentation/controllers/agora_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/chat_controller.dart';
+import 'package:tl_consultant/features/chat/presentation/controllers/video_call_controller.dart';
 import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
 import 'package:tl_consultant/features/growth_kit/presentation/controllers/growth_kit_controller.dart';
 import 'package:tl_consultant/features/home/presentation/controllers/event_controller.dart';
@@ -89,7 +88,7 @@ void main() async {
   Get.put<SlotController>(SlotController());
 
   Get.put<ChatController>(ChatController());
-  Get.put<AgoraController>(AgoraController());
+  Get.put<VideoCallController>(VideoCallController());
   Get.put<RecordingController>(RecordingController());
   Get.put<UploadController>(UploadController());
   Get.put<VideoRecordingController>(VideoRecordingController());
