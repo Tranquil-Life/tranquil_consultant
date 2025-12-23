@@ -39,6 +39,7 @@ class MeetingsController extends GetxController {
   var loading = false.obs;
 
   RxList<Meeting> meetings = RxList<Meeting>();
+  Rxn<Meeting> currentMeeting = Rxn<Meeting>();
 
   Future loadFirstMeetings() async {
     if (userDataStore.user['timezone_identifier'] == null) {

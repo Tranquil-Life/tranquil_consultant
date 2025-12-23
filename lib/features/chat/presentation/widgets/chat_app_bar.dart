@@ -11,6 +11,7 @@ import 'package:tl_consultant/core/utils/services/formatters.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/chat_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/video_call_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/widgets/chat_more_options.dart';
+import 'package:tl_consultant/features/consultation/presentation/controllers/meetings_controller.dart';
 import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
 
 import 'package:tl_consultant/core/constants/constants.dart' show myId, consultant;
@@ -27,7 +28,7 @@ class _TitleBarState extends State<TitleBar> {
   final duration = const Duration(minutes: 30);
 
   final videoCallController = VideoCallController.instance;
-  final dashboardController = DashboardController.instance;
+  final meetingsController = MeetingsController.instance;
   final chatController = ChatController.instance;
 
   @override
@@ -43,7 +44,7 @@ class _TitleBarState extends State<TitleBar> {
             padding: const EdgeInsets.symmetric(vertical: 2),
             child: UserAvatar(
               size: isSmallScreen(context) ? 44 : 70,
-              imageUrl: dashboardController.clientDp.value,
+              imageUrl: meetingsController.currentMeeting.value?.client.avatarUrl,
               source: AvatarSource.url,
             ),
           ),
@@ -53,7 +54,7 @@ class _TitleBarState extends State<TitleBar> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  dashboardController.clientName.value,
+                  meetingsController.currentMeeting.value!.client.displayName,
                   style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w600,

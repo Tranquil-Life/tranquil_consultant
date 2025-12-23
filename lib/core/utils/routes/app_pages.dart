@@ -1,5 +1,6 @@
 library app_pages;
 
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tl_consultant/features/auth/presentation/screens/forgot_password_page.dart';
 import 'package:tl_consultant/features/auth/presentation/screens/profile_preview_page.dart';
@@ -10,6 +11,7 @@ import 'package:tl_consultant/features/auth/presentation/screens/sign_up/sign_up
 import 'package:tl_consultant/features/auth/presentation/screens/sign_up/sign_up_2.dart';
 import 'package:tl_consultant/features/auth/presentation/screens/update_password_page.dart';
 import 'package:tl_consultant/features/auth/presentation/screens/verify_reset_account_page.dart';
+import 'package:tl_consultant/features/chat/data/models/room_model.dart';
 import 'package:tl_consultant/features/chat/presentation/screens/chat_screen.dart';
 import 'package:tl_consultant/features/chat/presentation/screens/web_video_call_view.dart';
 import 'package:tl_consultant/features/consultation/presentation/screens/edit_slots.dart';
@@ -36,9 +38,12 @@ class AppPages {
     GetPage(name: Routes.SIGN_UP_1, page: () => SignUpScreen1()),
     GetPage(name: Routes.SIGN_UP_2, page: () => SignUpScreen2()),
     GetPage(name: Routes.SIGN_IN, page: () => SignInScreen()),
-    GetPage(name: Routes.INTRODUCE_YOURSELF, page: () => IntroduceYourselfPage()),
+    GetPage(
+        name: Routes.INTRODUCE_YOURSELF, page: () => IntroduceYourselfPage()),
     GetPage(name: Routes.PROFILE_PREVIEW, page: () => ProfilePreviewPage()),
-    GetPage(name: Routes.VERIFY_RESET_ACCOUNT, page: () => VerifyResetAccountPage()),
+    GetPage(
+        name: Routes.VERIFY_RESET_ACCOUNT,
+        page: () => VerifyResetAccountPage()),
     GetPage(name: Routes.FORGOT_PASSWORD, page: () => ForgotPasswordPage()),
     GetPage(name: Routes.UPDATE_PASSWORD, page: () => UpdatePasswordPage()),
     GetPage(name: Routes.DASHBOARD, page: () => const Dashboard()),
@@ -52,7 +57,36 @@ class AppPages {
     GetPage(name: Routes.PROFILE, page: () => ProfileScreen()),
     GetPage(name: Routes.EDIT_PROFILE, page: () => EditProfileScreen()),
     GetPage(name: Routes.SETTINGS, page: () => SettingsScreen()),
-    GetPage(name: Routes.WEB_VIDEO_CALL, page: () => WebVideoCallView()),
+    // GetPage(name: Routes.WEB_VIDEO_CALL, page: () => WebVideoCallView()),
 
+    GetPage(
+      name: Routes.WEB_VIDEO_CALL,
+      page: () {
+        final p = Get.parameters;
+
+        final room = p['room'];
+        final roomUrl = p['roomUrl'];
+        final expiresAt = int.tryParse(p['expiresAt'] ?? '');
+        final token = p['token'];
+
+        if (room == null ||
+            roomUrl == null ||
+            token == null ||
+            expiresAt == null) {
+          return const Scaffold(
+            body: Center(child: Text('Missing call details. Please rejoin.')),
+          );
+        }
+
+        final dailyRoom = DailyRoom(
+          room: room,
+          roomUrl: roomUrl,
+          expiresAt: expiresAt,
+          reused: false,
+        );
+
+        return WebVideoCallView(dailyRoom: dailyRoom, token: token);
+      },
+    )
   ];
 }

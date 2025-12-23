@@ -6,11 +6,13 @@ import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/constants/end_points.dart';
 import 'package:tl_consultant/core/global/custom_snackbar.dart';
 import 'package:tl_consultant/core/utils/extensions/date_time_extension.dart';
+import 'package:tl_consultant/core/utils/routes/app_pages.dart';
 import 'package:tl_consultant/features/chat/data/models/room_model.dart';
 import 'package:tl_consultant/features/chat/data/repos/chat_repo.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/chat_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/screens/video_call_view.dart';
 import 'package:tl_consultant/features/chat/presentation/screens/web_video_call_view.dart';
+import 'package:tl_consultant/features/consultation/presentation/controllers/meetings_controller.dart';
 import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
 import 'package:tl_consultant/features/profile/data/models/user_model.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
@@ -47,23 +49,22 @@ class VideoCallController extends GetxController {
   }
 
   Future<dynamic> createDailyRoom() async {
-    var data = <String, dynamic>{};
+    final meetingsController = MeetingsController.instance;
     final chatController = ChatController.instance;
-    DateTime dateMeetingEndAt =
-        DateTime.parse(DashboardController.instance.currentMeetingET.value)
-            .toLocal();
-    DateTime now = DateTime.now();
+    var room = chatController.chatChannel.value;
+
+    var data = <String, dynamic>{};
 
     // Duration between now and meeting end
-    int timeLeft = dateMeetingEndAt.difference(now).inSeconds;
-
+    int timeLeft = meetingsController.currentMeeting.value!.endAt
+        .difference(now)
+        .inSeconds;
+    const int maxSeconds = 35 * 60; // 2100 seconds
     // Never allow negative seconds
-    timeLeft = timeLeft.clamp(0, double.infinity).toInt();
+    timeLeft = timeLeft.clamp(0, maxSeconds).toInt();
 
     Either either = await repo.createDailyRoom(
-        channel: chatController.chatChannel.value,
-        timeLeft: 15,
-        chatId: chatController.chatId!.value);
+        channel: room, timeLeft: 15, chatId: chatController.chatId!.value);
 
     either.fold((l) => CustomSnackBar.errorSnackBar(l.message.toString()), (r) {
       if (r != null) {
@@ -77,26 +78,26 @@ class VideoCallController extends GetxController {
   }
 
   Future getDailyToken() async {
-    var endTimeInString = DashboardController.instance.currentMeetingET.value;
-    DateTime dateMeetingEndAt = DateTime.parse(endTimeInString).toLocal();
-    // Duration between now and meeting end
-    int timeLeft = dateMeetingEndAt.difference(now).inSeconds;
-    print("MEETING END DAT: $dateMeetingEndAt");
-    // Never allow negative seconds
-    timeLeft = timeLeft.clamp(0, double.infinity).toInt();
-    print("TIME LEFT: $timeLeft");
+    final meetingsController = MeetingsController.instance;
     final chatController = ChatController.instance;
-    var token = "";
     var room = chatController.chatChannel.value;
 
+    var token = "";
+
+    // Duration between now and meeting end
+    int timeLeft = meetingsController.currentMeeting.value!.endAt
+        .difference(now)
+        .inSeconds;
+    const int maxSeconds = 35 * 60; // 2100 seconds
+    // Never allow negative seconds
+    timeLeft = timeLeft.clamp(0, maxSeconds).toInt();
+
     Either either = await repo.generateDailyToken(
-        room: room,
-        timeLeft: 15,
-        userType: consultant);
+        room: room, timeLeft: 15, userType: consultant);
 
     either.fold(
-          (l) => CustomSnackBar.errorSnackBar(l.message.toString()),
-          (r) {
+      (l) => CustomSnackBar.errorSnackBar(l.message.toString()),
+      (r) {
         var data = Map<String, dynamic>.from(r);
         token = data['token'];
       },
@@ -108,12 +109,17 @@ class VideoCallController extends GetxController {
   Future navigateToCallView() async {
     if (kIsWeb) {
       DailyRoom dailyRoom = await createDailyRoom();
-      print("Daily room: ${dailyRoom.toJson()}");
       String token = await getDailyToken();
-      print("Daily token: $token");
 
-      Get.to(WebVideoCallView(dailyRoom: dailyRoom, token: token));
-
+      Get.toNamed(
+        Routes.WEB_VIDEO_CALL,
+        parameters: {
+          'room': dailyRoom.room ?? '',
+          'roomUrl': dailyRoom.roomUrl ?? '',
+          'expiresAt': '${dailyRoom.expiresAt ?? 0}',
+          'token': token,
+        },
+      );
     } else {
       Get.to(const VideoCallView(
         isLocal: true,

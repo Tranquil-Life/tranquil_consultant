@@ -18,7 +18,7 @@ class _MeetingsState extends State<Meetings> {
   final now = DateTime.now();
 
   Future<void> updateDashboardMeetingInfo() async {
-    await Future.delayed(Duration(seconds: 2));
+    await Future.delayed(Duration(seconds: 1));
 
     for (var meeting in meetingsController.meetings) {
       if (meeting.id == 1) {
@@ -26,11 +26,13 @@ class _MeetingsState extends State<Meetings> {
         dashboardController.currentMeetingId.value = meeting.id;
         clientUser = meeting.client;
 
-        dashboardController.clientId.value = clientUser!.id!;
-        dashboardController.clientDp.value = clientUser!.avatarUrl;
-        dashboardController.clientName.value = clientUser!.displayName;
-        dashboardController.currentMeetingST.value = meeting.startAt.toDateTimeString;
-        dashboardController.currentMeetingET.value = meeting.endAt.toDateTimeString;
+        // dashboardController.clientId.value = client!.id!;
+        // dashboardController.clientDp.value = client!.avatarUrl;
+        // dashboardController.clientName.value = client!.displayName;
+
+        meetingsController.currentMeeting.value = meeting;
+        // dashboardController.currentMeetingST.value = meeting.startAt.formatDate;
+        // dashboardController.currentMeetingET.value = meeting.endAt.formatDate;
       }
 
       final meetingEnd = meeting.endAt;
