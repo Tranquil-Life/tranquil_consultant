@@ -3,7 +3,7 @@ import 'package:tl_consultant/core/utils/services/API/network/controllers/networ
 import 'package:tl_consultant/features/activity/presentation/controllers/activity_controller.dart';
 import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/chat_controller.dart';
-import 'package:tl_consultant/features/chat/presentation/controllers/recording_controller.dart';
+import 'package:tl_consultant/features/chat/presentation/controllers/message_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/upload_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/video_call_controller.dart';
 import 'package:tl_consultant/features/consultation/presentation/controllers/meetings_controller.dart';
@@ -37,7 +37,7 @@ class AllControllerBindings extends Bindings {
     Get.lazyPut(() => SlotController());
     Get.lazyPut(() => ChatController());
     Get.lazyPut(() => VideoCallController());
-    Get.lazyPut(() => RecordingController());
+    Get.lazyPut(() => MessageController());
     Get.lazyPut(() => UploadController());
     Get.lazyPut(() => VideoRecordingController());
     Get.lazyPut(() => NetworkController());

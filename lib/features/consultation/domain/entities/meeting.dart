@@ -47,5 +47,7 @@ class Meeting {
     "rescheduled": rescheduled,
     "status": status,
     "reason": reason,
+    "start_at": startAt,
+    "end_at": endAt,
   };
 }

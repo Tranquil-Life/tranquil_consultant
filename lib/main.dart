@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:audioplayers/audioplayers.dart';
 import 'package:camera/camera.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -14,6 +13,7 @@ import 'package:tl_consultant/app.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:tl_consultant/core/utils/services/API/network/controllers/network_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/chat_controller.dart';
+import 'package:tl_consultant/features/chat/presentation/controllers/message_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/video_call_controller.dart';
 import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
 import 'package:tl_consultant/features/growth_kit/presentation/controllers/growth_kit_controller.dart';
@@ -23,7 +23,6 @@ import 'package:tl_consultant/features/profile/presentation/controllers/profile_
 import 'core/constants/constants.dart';
 import 'features/activity/presentation/controllers/activity_controller.dart';
 import 'features/auth/presentation/controllers/auth_controller.dart';
-import 'features/chat/presentation/controllers/recording_controller.dart';
 import 'features/chat/presentation/controllers/upload_controller.dart';
 import 'features/consultation/presentation/controllers/meetings_controller.dart';
 import 'features/consultation/presentation/controllers/slot_controller.dart';
@@ -89,7 +88,7 @@ void main() async {
 
   Get.put<ChatController>(ChatController());
   Get.put<VideoCallController>(VideoCallController());
-  Get.put<RecordingController>(RecordingController());
+  Get.put<MessageController>(MessageController());
   Get.put<UploadController>(UploadController());
   Get.put<VideoRecordingController>(VideoRecordingController());
   Get.put<NetworkController>(NetworkController());

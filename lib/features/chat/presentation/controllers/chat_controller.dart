@@ -24,6 +24,7 @@ import 'package:tl_consultant/features/chat/data/repos/chat_repo.dart';
 import 'package:tl_consultant/features/chat/domain/entities/message.dart';
 import 'package:tl_consultant/features/chat/presentation/screens/incoming_call_view.dart';
 import 'package:tl_consultant/features/consultation/domain/entities/client.dart';
+import 'package:tl_consultant/features/consultation/presentation/controllers/meetings_controller.dart';
 import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
 import 'package:tl_consultant/features/profile/data/models/user_model.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
@@ -36,7 +37,6 @@ class ChatController extends GetxController {
   ChatRepoImpl repo = ChatRepoImpl();
 
   RxList<Message> messages = <Message>[].obs;
-  final RxnString activeAudioIdString = RxnString();
 
   File? audioFile;
   late PusherChannel myChannel;
@@ -185,7 +185,7 @@ class ChatController extends GetxController {
 
   //Get specific chat history
   Future<Map<String, dynamic>> getChatInfo({ClientUser? client}) async {
-    final dashboardController = DashboardController.instance;
+    final meetingsController = MeetingsController.instance;
 
     // print(client?.toJson());
     if (client != null) rxClient.value = client;
@@ -193,8 +193,8 @@ class ChatController extends GetxController {
     loadingChatRoom.value = true;
     Either either = await repo.getChatInfo(
         consultantId: userDataStore.user['id'],
-        clientId: dashboardController.clientId.value,
-        meetingId: dashboardController.currentMeetingId.value);
+        clientId: meetingsController.currentMeeting.value!.client.id!,
+        meetingId: meetingsController.currentMeeting.value!.id);
 
     var chatInfo = <String, dynamic>{};
 
@@ -213,9 +213,6 @@ class ChatController extends GetxController {
       chatId ??= RxInt(0);
       chatId!.value = chatInfo['id'];
       chatChannel.value = chatInfo['channel'];
-      dashboardController.clientId.value = chatInfo['client']['id'];
-      dashboardController.clientName.value = chatInfo['client']['display_name'];
-      dashboardController.clientDp.value = chatInfo['client']['avatar_url'];
     });
 
     if (isSmallScreen(Get.context!)) {
@@ -369,16 +366,16 @@ class ChatController extends GetxController {
     myChannel.unsubscribe();
   }
 
-  // Future triggerPusherEvent(eventName, data) async {
-  //   Either either = await repo.triggerPusherEvent(
-  //     myChannel.channelName,
-  //     eventName,
-  //     data,
-  //   );
-  //   either.fold((l) => CustomSnackBar.errorSnackBar(l.message!), (r) {
-  //     print("success: ${r['message']}");
-  //   });
-  // }
+  Future triggerPusherEvent(eventName, data) async {
+    Either either = await repo.triggerPusherEvent(
+      myChannel.channelName,
+      eventName,
+      data,
+    );
+    either.fold((l) => CustomSnackBar.errorSnackBar(l.message!), (r) {
+      print("success: ${r['message']}");
+    });
+  }
 
   void handleIncomingCall(MessageModel message) {
     final dashboardController = DashboardController.instance;

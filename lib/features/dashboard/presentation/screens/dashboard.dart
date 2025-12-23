@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tl_consultant/core/global/custom_app_bar.dart';
 import 'package:tl_consultant/core/global/custom_fab.dart';
+import 'package:tl_consultant/core/global/custom_snackbar.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/utils/extensions/date_time_extension.dart';
 import 'package:tl_consultant/core/utils/functions.dart';
@@ -65,11 +66,13 @@ class _DashboardState extends State<Dashboard> {
 
         client = meeting.client;
 
-        dashboardController.clientId.value = client!.id!;
-        dashboardController.clientDp.value = client!.avatarUrl;
-        dashboardController.clientName.value = client!.displayName;
-        dashboardController.currentMeetingST.value = meeting.startAt.formatDate;
-        dashboardController.currentMeetingET.value = meeting.endAt.formatDate;
+        // dashboardController.clientId.value = client!.id!;
+        // dashboardController.clientDp.value = client!.avatarUrl;
+        // dashboardController.clientName.value = client!.displayName;
+
+        meetingsController.currentMeeting.value = meeting;
+        // dashboardController.currentMeetingST.value = meeting.startAt.formatDate;
+        // dashboardController.currentMeetingET.value = meeting.endAt.formatDate;
       }
 
       //TODO: Uncomment this
@@ -111,6 +114,8 @@ class _DashboardState extends State<Dashboard> {
 
                     if (client != null) {
                       await chatController.getChatInfo(client: client!);
+                    }else{
+                      CustomSnackBar.showSnackBar(context: Get.context, message: "You have no ongoing session", backgroundColor: ColorPalette.blue);
                     }
                   },
                   dbController: dashboardController,
@@ -187,7 +192,7 @@ class _DashboardState extends State<Dashboard> {
                 ),
                 SizedBox(height: 40),
                 BuildNavItem(
-                  index: 1,
+                  index: 2,
                   icon: dashboardController.isSelected(2)
                       ? SvgElements.svgChat
                       : SvgElements.svgChat,
@@ -201,14 +206,15 @@ class _DashboardState extends State<Dashboard> {
 
                     if (client != null) {
                       await chatController.getChatInfo(client: client);
+                      dashboardController.updateIndex(2);
+                    }else{
+                      CustomSnackBar.showSnackBar(context: Get.context, message: "You have no ongoing session", backgroundColor: ColorPalette.blue);
                     }
-                    dashboardController.updateIndex(2);
-
                   },
                 ),
                 SizedBox(height: 40),
                 BuildNavItem(
-                  index: 2,
+                  index: 3,
                   icon: dashboardController.isSelected(3)
                       ? SvgElements.svgWalletActive
                       : SvgElements.svgWalletInactive,
@@ -221,7 +227,7 @@ class _DashboardState extends State<Dashboard> {
                 ),
                 SizedBox(height: 40),
                 BuildNavItem(
-                  index: 3,
+                  index: 4,
                   icon: dashboardController.isSelected(4)
                       ? SvgElements.svgMoreActive
                       : SvgElements.svgMoreInactive,
