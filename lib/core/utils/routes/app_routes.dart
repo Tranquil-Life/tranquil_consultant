@@ -24,6 +24,7 @@ abstract class Routes {
   static const VERIFY_RESET_ACCOUNT = _Paths.VERIFY_RESET_ACCOUNT ;
   static const UPDATE_PASSWORD = _Paths.UPDATE_PASSWORD ;
   static const FORGOT_PASSWORD = _Paths.FORGOT_PASSWORD ;
+  static const WEB_VIDEO_CALL = _Paths.WEB_VIDEO_CALL ;
 }
 
 abstract class _Paths {
@@ -50,4 +51,5 @@ abstract class _Paths {
   static const VERIFY_RESET_ACCOUNT = '/verify-reset-account';
   static const UPDATE_PASSWORD = '/update-password';
   static const FORGOT_PASSWORD = '/forgot-password';
+  static const WEB_VIDEO_CALL = '/web-video-call';
 }

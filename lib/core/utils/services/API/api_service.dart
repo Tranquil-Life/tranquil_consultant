@@ -40,29 +40,33 @@ class ApiService {
     );
   }
 
-  Future<Either<ApiError, dynamic>> catchSocketException(
-      Function function) async {
+  Future<Either<ApiError, dynamic>> catchSocketException(Function function) async {
     try {
       return await function();
     } on DioException catch (e) {
       if (e.response != null) {
-        if(e.response!.toString().isEmpty){
+        final data = e.response!.data;
+
+        // Some APIs return a String body or null body.
+        final message = (data is Map ? data['message'] : null)?.toString() ?? '';
+
+        if (message.isEmpty && e.response.toString().isEmpty) {
           return Left(ApiError(message: "Unexpected error occurred: $e"));
-        }else{
-          if(e.response!.data['message'].toLowerCase().contains('unauthenticated')){
-            SettingsController().signOut();
-          }
-          return Left(ApiError(
-              message: displayErrorMessages(e.response!.data)));
         }
 
+        if (message.toLowerCase().contains('unauthenticated')) {
+          SettingsController().signOut();
+        }
+
+        return Left(ApiError(message: displayErrorMessages(data)));
       } else {
-        return Left(ApiError(message: e.message));
+        return Left(ApiError(message: e.message ?? 'Network error'));
       }
     } catch (e) {
       return Left(ApiError(message: "Unexpected error occurred: $e"));
     }
   }
+
 
   Future<Either<ApiError, dynamic>> postReq(String subPath,
       {dynamic body}) async {
@@ -72,6 +76,8 @@ class ApiService {
 
     bool hasMultipartFile = containsMultipartFile(body);
 
+    print("request body: $body");
+    print("Has multipartfile: $hasMultipartFile");
     if (hasMultipartFile) {
       FormData form = FormData.fromMap(body);
 
@@ -87,7 +93,8 @@ class ApiService {
           },
         ),
       );
-    } else {
+    }
+    else {
       response = await dio.post(
         url,
         data: body,

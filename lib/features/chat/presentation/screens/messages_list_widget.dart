@@ -6,6 +6,7 @@ import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/features/chat/data/repos/audio_player_manager.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/chat_controller.dart';
+import 'package:tl_consultant/features/chat/presentation/controllers/message_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/widgets/voice_bubble.dart';
 
 class Messages extends StatefulWidget {
@@ -21,6 +22,7 @@ class Messages extends StatefulWidget {
 
 class MessagesState extends State<Messages>{
   final chatController = ChatController.instance;
+  final messageController = MessageController.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -106,7 +108,7 @@ class MessagesState extends State<Messages>{
                 fromMe: fromMe,
                 pm: widget.pmFeed,
                 id: bubbleId,
-                activeAudioId: chatController
+                activeAudioId: messageController
                     .activeAudioIdString, // RxnString
                 // your AudioPlayerManager instance
               )

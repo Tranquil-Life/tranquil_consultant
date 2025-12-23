@@ -11,6 +11,7 @@ import 'package:tl_consultant/features/auth/presentation/screens/sign_up/sign_up
 import 'package:tl_consultant/features/auth/presentation/screens/update_password_page.dart';
 import 'package:tl_consultant/features/auth/presentation/screens/verify_reset_account_page.dart';
 import 'package:tl_consultant/features/chat/presentation/screens/chat_screen.dart';
+import 'package:tl_consultant/features/chat/presentation/screens/web_video_call_view.dart';
 import 'package:tl_consultant/features/consultation/presentation/screens/edit_slots.dart';
 import 'package:tl_consultant/features/dashboard/presentation/screens/dashboard.dart';
 import 'package:tl_consultant/features/home/presentation/screens/home_tab.dart';
@@ -28,7 +29,7 @@ class AppPages {
 
   static const INITIAL = Routes.SPLASH_SCREEN;
 
-  static final routes = [
+  static final pages = [
     GetPage(name: Routes.SPLASH_SCREEN, page: () => SplashScreen()),
     GetPage(name: Routes.ONBOARDING, page: () => const OnBoardingScreen()),
     GetPage(name: Routes.SIGN_UP_0, page: () => SignUpScreen0()),
@@ -51,5 +52,7 @@ class AppPages {
     GetPage(name: Routes.PROFILE, page: () => ProfileScreen()),
     GetPage(name: Routes.EDIT_PROFILE, page: () => EditProfileScreen()),
     GetPage(name: Routes.SETTINGS, page: () => SettingsScreen()),
+    GetPage(name: Routes.WEB_VIDEO_CALL, page: () => WebVideoCallView()),
+
   ];
 }

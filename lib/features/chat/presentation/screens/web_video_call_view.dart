@@ -4,63 +4,53 @@ import 'dart:html' as html;
 
 import 'package:tl_consultant/core/constants/end_points.dart';
 import 'package:tl_consultant/core/utils/app_config.dart';
+import 'package:tl_consultant/features/chat/data/models/room_model.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/chat_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/video_call_controller.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 
 class WebVideoCallView extends StatefulWidget {
-  const WebVideoCallView({super.key});
+  const WebVideoCallView({super.key, this.dailyRoom, this.token});
+
+  final DailyRoom? dailyRoom;
+  final String? token;
 
   @override
   State<WebVideoCallView> createState() => _WebVideoCallViewState();
 }
 
 class _WebVideoCallViewState extends State<WebVideoCallView> {
-  final videoCallController = VideoCallController.instance;
-  final chatController = ChatController.instance;
-
-  final String viewID = "agora-video-call";
-
+  late final String viewID;
+  late final String callUrl;
 
   @override
   void initState() {
     super.initState();
 
-    // Construct your URL with the parameters
-    // final String callUrl = ChatEndPoints.webVideoCallUrl(
-    //   room: "c6uDfgcc8EgDsahJV6dt",
-    //   //TODO: The room should be the same as the pusher channel and should be created from the backend
-    //   //not hard-coded
-    // );
-    //
-    //
-    // var data = {
-    //   "appId": AppConfig.agoraAppId,
-    //   "channel": chatController.myChannel.channelName,
-    //   "token": agoraController.agoraToken.value,
-    //   "uid": userDataStore.user['id']
-    // };
-    //
-    // print(data);
+    viewID = "video-call-${widget.dailyRoom?.room}-${DateTime.now().millisecondsSinceEpoch}";
 
+    callUrl = ChatEndPoints.webVideoCallUrl(
+      room: widget.dailyRoom!.room,
+      token: widget.token!,
+    );
 
-
-    // Register the IFrame element
-    // ui.platformViewRegistry.registerViewFactory(
-    //   viewID,
-    //       (int viewId) => html.IFrameElement()
-    //     ..src = callUrl
-    //     ..style.border = 'none'
-    //     ..style.width = '100%'
-    //     ..style.height = '100%'
-    //     ..allow = "camera; microphone; autoplay", // CRITICAL for video calls
-    // );
+    ui.platformViewRegistry.registerViewFactory(
+      viewID,
+          (int viewId) {
+        final iframe = html.IFrameElement()
+          ..src = callUrl
+          ..style.border = 'none'
+          ..style.width = '100%'
+          ..style.height = '100%'
+          ..allow = 'camera; microphone; autoplay; fullscreen; display-capture';
+        return iframe;
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Video Call")),
       body: HtmlElementView(viewType: viewID),
     );
   }

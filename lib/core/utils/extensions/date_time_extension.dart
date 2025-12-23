@@ -4,7 +4,10 @@ extension DateTimeExtension on DateTime {
   static final _dateFormat = DateFormat.yMMMd();
   static final _dateStringFormat = DateFormat('dd-MM-yyyy');
   static final _timeFormat = DateFormat('hh:mma');
+  static final _dateTimeFormat = DateFormat('dd-MM-yyyy hh:mma');
+
   static final now = DateTime.now();
+
   String get folded {
     padded(int val) => val.toString().padLeft(2, '0');
     return '${padded(day)}-${padded(month)}-$year';
@@ -17,16 +20,19 @@ extension DateTimeExtension on DateTime {
     return _timeFormat.format(toLocal());
   }
 
-  String get formatDate {
+  String get toDateTimeString {
+    return _dateTimeFormat.format(this);
+  }
 
+  String get formatDate {
     return _dateFormat.format(this);
   }
-  String get toDateString {
 
+  String get toDateString {
     return _dateStringFormat.format(this);
   }
-  String get formattedTime{
 
+  String get formattedTime {
     return _timeFormat.format(this);
   }
 }

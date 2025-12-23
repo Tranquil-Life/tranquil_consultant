@@ -15,18 +15,21 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> {
+  final GlobalKey<NavigatorState> navKey = GlobalKey<NavigatorState>();
+
   @override
   Widget build(BuildContext context) {
     setStatusBarBrightness(true);
     return GetMaterialApp(
+      navigatorKey: navKey,
       title: AppConfig.appName,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.green,
         fontFamily: AppFonts.mulishRegular,
       ),
-      initialRoute: AppPages.INITIAL,
-      getPages: AppPages.routes,
+      initialRoute: Routes.SPLASH_SCREEN,   // your route
+      getPages: AppPages.pages,
       // unknownRoute: GetPage(
       //   name: '/404',
       //   page: () => const Scaffold(body: Center(child: Text('Route not found'))),

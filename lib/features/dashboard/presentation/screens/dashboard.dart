@@ -68,8 +68,8 @@ class _DashboardState extends State<Dashboard> {
         dashboardController.clientId.value = client!.id!;
         dashboardController.clientDp.value = client!.avatarUrl;
         dashboardController.clientName.value = client!.displayName;
-        dashboardController.currentMeetingST.value = meeting.startAt.formatDate;
-        dashboardController.currentMeetingET.value = meeting.endAt.formatDate;
+        dashboardController.currentMeetingST.value = meeting.startAt.toIso8601String();
+        dashboardController.currentMeetingET.value = meeting.endAt.toIso8601String();
       }
 
       //TODO: Uncomment this

@@ -13,7 +13,8 @@ import 'package:tl_consultant/features/chat/presentation/controllers/video_call_
 import 'package:tl_consultant/features/chat/presentation/widgets/chat_more_options.dart';
 import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
 
-import '../../../../core/constants/constants.dart' show myId, consultant;
+import 'package:tl_consultant/core/constants/constants.dart' show myId, consultant;
+
 
 class TitleBar extends StatefulWidget {
   const TitleBar({super.key});
@@ -81,31 +82,32 @@ class _TitleBarState extends State<TitleBar> {
                 size: isSmallScreen(context) ? 24 : 32,
               ),
               onPressed: () async {
-                print("join call");
-                print("channel: ${chatController.chatChannel.value}");
-                print(DashboardController.instance.currentMeetingId.value);
-                print("chat_id: ${chatController.chatId!.value}");
-                print("new message id: ${chatController.recentMsgEvent.value.messageId! + 1}");
-                // final messageMap = <String, dynamic>{
-                //   'id': chatController.recentMsgEvent.value.messageId! + 1,
-                //   'chat_id': chatController.chatId!.value,
-                //   'sender_id': myId,
-                //   'parent_id': null,
-                //   'sender_type': consultant,
-                //   'message': 'incoming call...',
-                //   'message_type': 'text',
-                //   'caption': null,
-                //   'created_at': DateTime.now().toUtc().toIso8601String(),
-                //   'updated_at': DateTime.now().toUtc().toIso8601String(),
-                // };
-
-                // await chatController
-                //     .triggerPusherEvent('incoming-call', messageMap);
-
                 if(kIsWeb){
-
+                  await videoCallController.navigateToCallView();
+                }else{
+                  await videoCallController.joinAgoraCall();
                 }
-                videoCallController.joinAgoraCall();
+
+                await Future.delayed(Duration(seconds: 1));
+
+                final nextId = (chatController.recentMsgEvent.value.messageId ?? 0) + 1;
+
+
+                final messageMap = <String, dynamic>{
+                  'id': nextId,
+                  'chat_id': chatController.chatId!.value,
+                  'sender_id': myId,
+                  'parent_id': null,
+                  'sender_type': consultant,
+                  'message': 'incoming call...',
+                  'message_type': 'text',
+                  'caption': null,
+                  'created_at': DateTime.now().toUtc().toIso8601String(),
+                  'updated_at': DateTime.now().toUtc().toIso8601String(),
+                };
+
+                await chatController
+                    .triggerPusherEvent('incoming-call', messageMap);
               }),
           const MoreOptions(),
         ],

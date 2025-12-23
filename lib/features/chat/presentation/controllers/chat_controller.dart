@@ -36,7 +36,6 @@ class ChatController extends GetxController {
   ChatRepoImpl repo = ChatRepoImpl();
 
   RxList<Message> messages = <Message>[].obs;
-  final RxnString activeAudioIdString = RxnString();
 
   File? audioFile;
   late PusherChannel myChannel;
@@ -369,16 +368,16 @@ class ChatController extends GetxController {
     myChannel.unsubscribe();
   }
 
-  // Future triggerPusherEvent(eventName, data) async {
-  //   Either either = await repo.triggerPusherEvent(
-  //     myChannel.channelName,
-  //     eventName,
-  //     data,
-  //   );
-  //   either.fold((l) => CustomSnackBar.errorSnackBar(l.message!), (r) {
-  //     print("success: ${r['message']}");
-  //   });
-  // }
+  Future triggerPusherEvent(eventName, data) async {
+    Either either = await repo.triggerPusherEvent(
+      myChannel.channelName,
+      eventName,
+      data,
+    );
+    either.fold((l) => CustomSnackBar.errorSnackBar(l.message!), (r) {
+      print("success: ${r['message']}");
+    });
+  }
 
   void handleIncomingCall(MessageModel message) {
     final dashboardController = DashboardController.instance;
