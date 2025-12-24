@@ -104,7 +104,7 @@ abstract class ChatEndPoints {
   static const createDailyRoom = '$consultant/createDailyRoom';
 
   static String webVideoCallUrl(
-      {required String room, required String token}) =>
+          {required String room, required String token}) =>
       'https://tl-web-videochat.netlify.app/?room=$room&token=$token';
 
   static String getRecentMessages({required int chatId}) =>
@@ -133,9 +133,13 @@ abstract class CountriesNowEndpoints {
 }
 
 abstract class GoogleMapsEndpoints {
-  static getBankBranches({required String bankName, required String state}) =>
+  static String getBankBranches(
+          {required String bankName, required String state}) =>
       "$mapPlacesBaseUrl?query=$bankName+branches+in+$state&type=bank&key=${AppConfig.mapApiKey}";
 
-  static getFromNextPage({required String nextPageToken}) =>
+  static String getFromNextPage({required String nextPageToken}) =>
       "$mapPlacesBaseUrl?pagetoken=$nextPageToken&key=${AppConfig.mapApiKey}";
+
+  static String reverseGeocode({required double lat, required double lng}) =>
+      "$consultant/reverse-geocode?lat=$lat&lng=$lng";
 }

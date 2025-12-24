@@ -36,21 +36,28 @@ class SlotController extends GetxController {
   }
 
   void getSlotsInLocal() {
+    timeSlots.clear(); // ✅ important: replace, don’t append
+
     for (var element in apiSlots) {
-      var dateTime = DateFormat("yyyy-MM-dd HH:mm:ss").parse(
-          "${DateTimeExtension.now.year}"
-          "-${DateTimeExtension.now.month.toString().padLeft(2, "0")}"
-          "-${DateTimeExtension.now.day.toString().padLeft(2, "0")} $element",
-          true);
-      // var dateInUTC = dateTime.add(Duration(hours: -6));
+      final dateTime = DateFormat("yyyy-MM-dd HH:mm:ss").parse(
+        "${DateTimeExtension.now.year}"
+            "-${DateTimeExtension.now.month.toString().padLeft(2, "0")}"
+            "-${DateTimeExtension.now.day.toString().padLeft(2, "0")} $element",
+        true,
+      );
 
-      var dateLocal = dateTime.toLocal();
-      // var dateLocal = dateInUTC;
+      final dateLocal = dateTime.toLocal();
 
-      timeSlots.add("${dateLocal.hour.toString().padLeft(2, "0")}"
-          ":${dateLocal.minute.toString().padLeft(2, "0")}");
+      timeSlots.add(
+        "${dateLocal.hour.toString().padLeft(2, "0")}"
+            ":${dateLocal.minute.toString().padLeft(2, "0")}",
+      );
     }
+
+    // optional safety: de-dupe local list
+    timeSlots.value = timeSlots.toSet().toList();
   }
+
 
   Future saveSlots({List? availableDays}) async {
     var result =
@@ -87,23 +94,20 @@ class SlotController extends GetxController {
 
       print("Error: ${l.message}");
     }, (r) {
-      print(r);
       loading.value = false;
-
-      apiSlots = r['slots'];
 
       if(r['days'] != null){
         availableDays(r['days']);
       }
 
-      if (apiSlots.isNotEmpty) {
-        getSlotsInLocal();
-      }
+      apiSlots = r['slots'] ?? [];
+      timeSlots.clear(); // so it doesn't keep previous state
+      if (apiSlots.isNotEmpty) getSlotsInLocal();
 
     });
   }
 
-  availableDays(Map<String, dynamic> daysMap) {
+  void availableDays(Map<String, dynamic> daysMap) {
     selectedDays.value = daysMap.keys
         .map((e) {
           if (daysMap[e] == true) return e.capitalizeFirst;

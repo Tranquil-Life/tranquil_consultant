@@ -108,7 +108,7 @@ class _ChatScreenState extends State<ChatScreen> {
           sec = 0;
         });
 
-        messageController.draftPath.value = null; // ✅ FIX (do NOT set wrapper null)
+        messageController.draftPath.value = null;
       } catch (e) {
         CustomSnackBar.errorSnackBar('Mic access failed: $e');
         return;
@@ -125,7 +125,7 @@ class _ChatScreenState extends State<ChatScreen> {
         sec = 0;
       });
 
-      messageController.draftPath.value = null; // ✅ FIX
+      messageController.draftPath.value = null;
     }
 
     timer?.cancel();
@@ -175,7 +175,7 @@ class _ChatScreenState extends State<ChatScreen> {
       sec = 0;
     });
 
-    messageController.draftPath.value = path; // FIX (no !)
+    messageController.draftPath.value = path;
 
     // Autoplay the draft in the input
     if (autoplay && path != null) {

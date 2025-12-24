@@ -10,6 +10,7 @@ import 'package:tl_consultant/core/theme/fonts.dart';
 import 'package:tl_consultant/core/utils/functions.dart';
 import 'package:tl_consultant/core/utils/helpers/day_section_option.dart';
 import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
+import 'package:tl_consultant/core/utils/routes/app_pages.dart';
 import 'package:tl_consultant/features/consultation/domain/entities/client.dart';
 import 'package:tl_consultant/features/consultation/presentation/controllers/slot_controller.dart';
 import 'package:tl_consultant/features/consultation/presentation/widgets/day_card.dart';
@@ -58,8 +59,13 @@ class _EditSlotsState extends State<EditSlots> {
       slotController.timeSlots.add(slot);
     }
 
+    // optional: ensure no duplicates
+    slotController.timeSlots.value =
+        slotController.timeSlots.toSet().toList();
+
     setState(() {});
   }
+
 
   void setSection(bool isNight) {
     selectedSection = isNight ? DaySectionOption.night : DaySectionOption.day;
@@ -77,6 +83,7 @@ class _EditSlotsState extends State<EditSlots> {
         backgroundColor: Colors.grey[200],
         title: 'Edit Availability',
         fontFamily: AppFonts.mulishSemiBold,
+        onBackPressed: () => Get.offAllNamed(Routes.DASHBOARD),
       ),
       backgroundColor: Colors.grey[200],
       body: Padding(

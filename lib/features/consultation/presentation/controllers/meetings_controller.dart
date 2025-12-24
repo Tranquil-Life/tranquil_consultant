@@ -47,7 +47,7 @@ class MeetingsController extends GetxController {
     } else {
       isFirstLoadRunning.value = true;
 
-      var either = await ConsultationRepoImpl().getMeetings(page: page.value);
+      Either either = await repo.getMeetings(page: page.value);
 
       either.fold((l) {
         if(!l.message!.contains('unauthenticated')){
