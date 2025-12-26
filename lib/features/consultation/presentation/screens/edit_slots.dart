@@ -83,7 +83,8 @@ class _EditSlotsState extends State<EditSlots> {
         backgroundColor: Colors.grey[200],
         title: 'Edit Availability',
         fontFamily: AppFonts.mulishSemiBold,
-        onBackPressed: () => Get.offAllNamed(Routes.DASHBOARD),
+        // onBackPressed: () => Get.offAllNamed(Routes.DASHBOARD),
+        onBackPressed: () => Get.back(),
       ),
       backgroundColor: Colors.grey[200],
       body: Padding(

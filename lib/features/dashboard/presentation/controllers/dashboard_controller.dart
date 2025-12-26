@@ -121,69 +121,53 @@ class DashboardController extends GetxController {
     return result;
   }
 
+  String _clean(String? s) => (s ?? '').trim();
+
+  String normalizeCountry(String c) {
+    final x = c.trim();
+    final lower = x.toLowerCase();
+    if (lower == 'usa' || lower == 'us' || lower.contains('united states')) return 'United States';
+    if (lower == 'uk' || lower == 'gb' || lower.contains('united kingdom')) return 'United Kingdom';
+    return x;
+  }
 
   Future<void> getMyLocationInfo() async {
     final result = await getCurrLocation();
-
     if (result["error"] == true) return;
 
     final lat = result['latitude'] as double;
     final lng = result['longitude'] as double;
 
-    // timezone offset (works on web too)
     final timeZoneHours = DateTime.now().timeZoneOffset.inMinutes / 60.0;
 
-    // FlutterNativeTimezone is NOT reliable on web; guard it
     String timeZoneIdentifier = "";
     try {
       timeZoneIdentifier = await FlutterNativeTimezone.getLocalTimezone();
     } catch (_) {}
 
-    String locationToSend;
+    String locationToSend = "";
 
-    if (kIsWeb) {
-      // Prefer backend reverse geocode
+    try {
+      //Using backend reverse coding
       final geo = await reverseGeocodeViaBackend(lat: lat, lng: lng);
-      final c = (geo['country'] ?? '').toString().trim();
-      final s = (geo['state'] ?? '').toString().trim();
+
+      final c = normalizeCountry(_clean(geo['country']?.toString()));
+      final s = _clean(geo['state']?.toString());
 
       country.value = c;
       state.value = s;
 
       locationToSend = [c, s].where((x) => x.isNotEmpty).join('/');
 
-      // fallback if backend failed
       if (locationToSend.isEmpty) {
         locationToSend = "$lat, $lng";
       }
-    } else {
-      final List<Placemark> placemarks =
-          (result['placemarks'] as List<Placemark>?) ?? const [];
-      final p = placemarks.isNotEmpty ? placemarks.first : null;
+    } catch (e) {
+      // Fallback: use placemark if backend/network fails
+      //TODO: Display dialog for countries and states
 
-      country.value = p?.country ?? "";
-      city.value = p?.locality ?? "";
-      neighborhood.value = p?.subLocality ?? "";
-      state.value = p?.administrativeArea ?? "";
-      county.value = p?.subAdministrativeArea ?? "";
 
-      final streetPart = [p?.street, p?.name]
-          .whereType<String>()
-          .where((s) => s.trim().isNotEmpty)
-          .join(", ");
-      street.value = streetPart;
-
-      final parts = <String>[
-        street.value,
-        neighborhood.value,
-        city.value,
-        county.value,
-        state.value,
-        country.value,
-      ].where((s) => s.trim().isNotEmpty).toList();
-
-      locationToSend =
-      parts.isNotEmpty ? parts.join(", ") : "$lat, $lng";
+      CustomSnackBar.errorSnackBar("Reverse coding failed: $e");
     }
 
     await updateLocation(
@@ -194,96 +178,8 @@ class DashboardController extends GetxController {
       timeZoneIdentifier: timeZoneIdentifier,
     );
 
-
-
-    print("dashboard update: country: ${country.value}\nstate: ${state.value}");
+    print("dashboard update: country: ${country.value}\nstate: ${state.value}\nlocationToSend: $locationToSend");
   }
-
-
-  // Future getMyLocationInfo() async {
-  //   final result = await getCurrLocation();
-  //
-  //   String locationToSend = "";
-  //
-  //   if (result["error"] == true) {
-  //     // handle / show error
-  //     return;
-  //   }
-  //
-  //   //  if (result["error"] != null) {
-  //   //       // handle / show error
-  //   //       return;
-  //   //     }
-  //
-  //   final List<Placemark> placemarks =
-  //       (result['placemarks'] as List<Placemark>?) ?? const [];
-  //
-  //   final Placemark? p = placemarks.isNotEmpty ? placemarks.first : null;
-  //
-  //   // Use empty string fallback instead of crashing
-  //   country.value = p?.country ?? "";
-  //   city.value = p?.locality ?? "";
-  //   neighborhood.value = p?.subLocality ?? "";
-  //   state.value = p?.administrativeArea ?? "";
-  //   county.value = p?.subAdministrativeArea ?? "";
-  //
-  //   final streetPart = [
-  //     p?.street,
-  //     p?.name,
-  //   ].whereType<String>().where((s) => s.trim().isNotEmpty).join(", ");
-  //
-  //   street.value = streetPart;
-  //
-  //   // timezone offset (this works on web too)
-  //   final timezoneOffset = DateTime.now().timeZoneOffset.inMilliseconds;
-  //   const hourInMilliSecs = 3600000;
-  //   final formattedTimeZone = timezoneOffset / hourInMilliSecs;
-  //   timezone.value = "$formattedTimeZone";
-  //
-  //   // FlutterNativeTimezone is NOT reliable on web; guard it
-  //   String timeZoneIdentifier = "";
-  //   try {
-  //     timeZoneIdentifier = await FlutterNativeTimezone.getLocalTimezone();
-  //   } catch (_) {
-  //     timeZoneIdentifier = ""; // or "UTC"
-  //   }
-  //
-  //   // Build a best-effort location string
-  //   final parts = <String>[
-  //     street.value,
-  //     neighborhood.value,
-  //     city.value,
-  //     county.value,
-  //     state.value,
-  //     country.value,
-  //   ].where((s) => s.trim().isNotEmpty).toList();
-  //
-  //   final locationString = parts.isNotEmpty
-  //       ? parts.join(", ")
-  //       : "${result['latitude']}, ${result['longitude']}";
-  //
-  //   if (kIsWeb) {
-  //     final lat = result['latitude'] as double;
-  //     final lng = result['longitude'] as double;
-  //
-  //     final geo = await reverseGeocodeViaBackend(lat: lat, lng: lng);
-  //
-  //     final c = (geo['country'] ?? '').trim();
-  //     final s = (geo['state'] ?? '').trim();
-  //
-  //     locationToSend = [c, s].where((x) => x.isNotEmpty).join('/');
-  //   }
-  //
-  //   var location = !kIsWeb ? locationString : locationToSend;
-  //
-  //   await updateLocation(
-  //     latitude: result['latitude'],
-  //     longitude: result['longitude'],
-  //     timeZone: double.tryParse(timezone.value) ?? 0.0,
-  //     location: location,
-  //     timeZoneIdentifier: timeZoneIdentifier,
-  //   );
-  // }
 
   Future<void> getMeetings() async {
     await MeetingsController().loadFirstMeetings();

@@ -170,7 +170,7 @@ class ProfileController extends GetxController {
   }
 
   ///restore user info
-  restoreUser() {
+  void restoreUser() {
     profilePic.value = UserModel.fromJson(userDataStore.user).avatarUrl;
     introVideo.value = UserModel.fromJson(userDataStore.user).videoIntroUrl!;
     firstNameTEC.text = UserModel.fromJson(userDataStore.user).firstName;
