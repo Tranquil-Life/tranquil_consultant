@@ -10,6 +10,7 @@ import 'package:tl_consultant/features/dashboard/presentation/controllers/dashbo
 import 'package:tl_consultant/features/journal/presentation/controllers/notes_controller.dart';
 import 'package:tl_consultant/features/media/presentation/controllers/video_recording_controller.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
+import 'package:tl_consultant/main.dart';
 
 class SettingsController extends GetxController {
   static SettingsController get instance => Get.find();
@@ -18,7 +19,7 @@ class SettingsController extends GetxController {
 
   UserDataStore userDataStore = UserDataStore();
 
-  signOut() async {
+  Future<void> signOut() async {
     Either either = await authRepoImpl.signOut();
     either.fold((l) async{
       DashboardController().clearAllData();
@@ -28,6 +29,7 @@ class SettingsController extends GetxController {
     }, (r) async {
       DashboardController().clearAllData();
       await getStore.clearAllData();
+      //TODO: Test the above by signing out. => storage.erase();
 
       Get.offAllNamed(Routes.SIGN_IN);
     });
