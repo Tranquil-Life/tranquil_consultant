@@ -53,6 +53,15 @@ Future<void> initializeFirebase() async {
   print('Initialized default app $app');
 }
 
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  debugPrint("🔕 Background message: $message");
+  debugPrint("🔕 Background message title: ${message.notification?.title}");
+  debugPrint("🔕 Background message body: ${message.notification?.body}");
+}
+
+GetStorage storage = GetStorage();
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (Firebase.apps.isEmpty) {
@@ -62,11 +71,22 @@ void main() async {
       await Firebase.initializeApp();
     }
   }
-
-
   await Firebase.initializeApp();
 
-  tz.initializeTimeZones(); //for timezone initialization
+  final settings = await FirebaseMessaging.instance.requestPermission(
+    criticalAlert: true,
+    announcement: true,
+    carPlay: true,
+    providesAppNotificationSettings: true,
+  );
+  debugPrint('User granted permission: ${settings.authorizationStatus}');
+
+  FirebaseMessaging.instance.getToken().then((String? token) {
+    debugPrint('Firebase messaging token: $token');
+  });
+
+  // Register this first!
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   // Register before running the app
   Get.put<ProfileController>(ProfileController());
@@ -103,9 +123,11 @@ void main() async {
     // print('Notification clicked: ${message.notification?.title}');
   });
 
+  tz.initializeTimeZones(); //for timezone initialization
+
   try {
-    cameras = await availableCameras()
-        .timeout(Duration(seconds: 5), onTimeout: () {
+    cameras =
+        await availableCameras().timeout(Duration(seconds: 5), onTimeout: () {
       // print('Camera detection timed out');
       return [];
     });
@@ -117,14 +139,13 @@ void main() async {
 
   await GetStorage.init();
 
-  await SentryFlutter.init(
-        (options) {
-      options.dsn = sentryDSN;
-      options.tracesSampleRate = 1.0;
-      options.profilesSampleRate = 1.0;
-    },
-  );
+  // await SentryFlutter.init(
+  //       (options) {
+  //     options.dsn = sentryDSN;
+  //     options.tracesSampleRate = 1.0;
+  //     options.profilesSampleRate = 1.0;
+  //   },
+  // );
 
   runApp(const App());
 }
-

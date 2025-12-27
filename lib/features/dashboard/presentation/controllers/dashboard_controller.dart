@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:tl_consultant/core/global/custom_snackbar.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
@@ -29,11 +30,14 @@ import 'package:tl_consultant/features/profile/presentation/controllers/profile_
 import 'package:tl_consultant/features/wallet/presentation/controllers/earnings_controller.dart';
 import 'package:tl_consultant/features/wallet/presentation/controllers/transactions_controller.dart';
 import 'package:tl_consultant/features/wallet/presentation/screens/wallet_tab.dart';
+import 'package:tl_consultant/main.dart';
 
 class DashboardController extends GetxController {
   static DashboardController get instance => Get.find<DashboardController>();
 
   final LocationRepoImpl locationRepo = LocationRepoImpl();
+
+  static const int locationUpdateIntervalMs = 24 * 60 * 60 * 1000; // 24 hours
 
   RxInt currentIndex = 0.obs;
   final List<Widget> pages = [
@@ -181,35 +185,61 @@ class DashboardController extends GetxController {
     print("dashboard update: country: ${country.value}\nstate: ${state.value}\nlocationToSend: $locationToSend");
   }
 
-  Future<void> getMeetings() async {
-    await MeetingsController().loadFirstMeetings();
+  int? _readInt(String key) {
+    final v = storage.read(key);
+    if (v == null) return null;
+    if (v is int) return v;
+    if (v is double) return v.toInt();
+    if (v is String) return int.tryParse(v);
+    return null;
+  }
 
-    for (var meeting in MeetingsController.instance.meetings) {
-      if (meeting.endAt.isAfter(DateTimeExtension.now) &&
-          (meeting.startAt.isBefore(DateTimeExtension.now) ||
-              meeting.startAt == DateTimeExtension.now)) {
-        currentMeetingCount.value = 1;
-        currentMeetingId.value = meeting.id;
-        clientId.value = meeting.client.id!;
-        clientDp.value = meeting.client.avatarUrl;
-        clientName.value = meeting.client.firstName;
-        currentMeetingST.value = meeting.startAt.formatDate;
-        currentMeetingET.value = meeting.endAt.formatDate;
-      }
+  Future<void> getMyLocationInfoCached() async {
+    final now = DateTime.now().millisecondsSinceEpoch;
+    final lastTs = _readInt(Keys.lastLocationUpdateKey);
+
+    print("old last timestamp: $lastTs");
+
+    // If we have a timestamp and it's still within 24h, skip
+    if (lastTs != null && (now - lastTs) < locationUpdateIntervalMs) {
+      debugPrint('Location update skipped (cached)');
+      return;
+    }
+
+    debugPrint('Running location update');
+
+    try {
+      await getMyLocationInfo(); // Update location
+
+      await storage.write(Keys.lastLocationUpdateKey, now); // ✅ await write
+      await storage.save(); // ✅ force flush (important on web)
+
+      final savedTs = _readInt(Keys.lastLocationUpdateKey);
+      print("new last timestamp: $savedTs");
+    } catch (e, s) {
+      debugPrint('Location update failed: $e');
+      debugPrintStack(stackTrace: s);
     }
   }
 
-  @override
-  void onInit() {
-    ProfileController.instance.restoreUser();
-
-    //TODO: REMEMBER TO UNCOMMENT
-    getMyLocationInfo();
-
-    super.onInit();
+  //FORCE RESET LOCATION
+  Future<void> refreshLocationNow() async {
+    await storage.remove(Keys.lastLocationUpdateKey); // ✅ await remove
+    await storage.save(); // ✅ flush removal
+    await getMyLocationInfoCached();
   }
 
-  clearData() {
+
+  // @override
+  // void onInit() {
+  //   ProfileController.instance.restoreUser();
+  //
+  //   getMyLocationInfo();
+  //
+  //   super.onInit();
+  // }
+
+  void clearData() {
     currentIndex.value = 0;
 
     currentMeetingCount.value = 0;
@@ -225,7 +255,7 @@ class DashboardController extends GetxController {
     timezone.value = '';
   }
 
-  clearAllData() {
+  void clearAllData() {
     AuthController().clearData();
     HomeController().clearData();
     MeetingsController().clearData();
@@ -239,7 +269,7 @@ class DashboardController extends GetxController {
     clearData();
   }
 
-  updateIndex(int index) {
+  void updateIndex(int index) {
     currentIndex.value = index;
   }
 

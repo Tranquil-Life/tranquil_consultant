@@ -5,6 +5,7 @@ abstract class Keys {
   static const user = 'user';
   static const usingAvatar = 'usingAvatar';
   static const qualifications = 'qualifications';
+  static const String lastLocationUpdateKey = 'last_location_update_ts';
 }
 
 UserDataStore userDataStore = UserDataStore();
