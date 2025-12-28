@@ -22,6 +22,7 @@ import 'package:tl_consultant/core/utils/routes/app_pages.dart';
 import 'package:tl_consultant/features/chat/data/models/message_model.dart';
 import 'package:tl_consultant/features/chat/data/repos/chat_repo.dart';
 import 'package:tl_consultant/features/chat/domain/entities/message.dart';
+import 'package:tl_consultant/features/chat/presentation/controllers/video_call_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/screens/incoming_call_view.dart';
 import 'package:tl_consultant/features/consultation/domain/entities/client.dart';
 import 'package:tl_consultant/features/consultation/presentation/controllers/meetings_controller.dart';
@@ -261,6 +262,8 @@ class ChatController extends GetxController {
   }
 
   Future initializePusher({required String channel}) async {
+    final  videoCallController = VideoCallController.instance;
+
     try {
       // On web, pusher-js MUST be present
       if (kIsWeb && !hasPusherJs()) {
@@ -323,18 +326,43 @@ class ChatController extends GetxController {
           final message = MessageModel.fromJson(messageJson);
 
           if (event.eventName == 'incoming-call') {
-            if (!(message.senderType?.toLowerCase() == 'consultant')) {
-              handleIncomingCall(message);
+            if (!(message.senderType?.toLowerCase() == consultant)) {
+              handleIncomingCall(message: message);
               // vibration stuff...
+            }
+            return;
+          }
+
+          if (event.eventName == accepted) {
+            if (!(message.senderType?.toLowerCase() == consultant)) {
+              Get.back();
+
+              await Future.delayed(Duration(seconds: 1));
+
+              await videoCallController.navigateToCallView();
+            }
+            return;
+          }
+
+          if (event.eventName == declined) {
+            if (!(message.senderType?.toLowerCase() == consultant)) {
+              Get.back();
+            }
+            return;
+          }
+
+          if (event.eventName == cancelled) {
+            if (!(message.senderType?.toLowerCase() == consultant)) {
+              Get.back();
             }
             return;
           }
 
           recentMsgEvent.value = message;
 
-          if (!(message.senderType?.toLowerCase() == 'consultant')) {
+          if (!(message.senderType?.toLowerCase() == consultant)) {
             await Future.delayed(const Duration(seconds: 1));
-            addMessage(message); // ✅ now this will run
+            addMessage(message);
           }
 
           debugPrint(
@@ -377,14 +405,16 @@ class ChatController extends GetxController {
     });
   }
 
-  void handleIncomingCall(MessageModel message) {
-    final dashboardController = DashboardController.instance;
+  void handleIncomingCall({MessageModel? message}) {
+    // final dashboardController = DashboardController.instance;
+    final meetingsController = MeetingsController.instance;
 
     Get.to(
       IncomingCallView(
-        clientId: dashboardController.clientId.value,
-        clientName: dashboardController.clientName.value,
-        clientDp: dashboardController.clientDp.value,
+        clientId:  meetingsController.currentMeeting.value!.client.id!,
+        clientName: meetingsController.currentMeeting.value!.client.displayName,
+        clientDp: meetingsController.currentMeeting.value!.client.avatarUrl,
+        userType: message?.senderType?.toLowerCase()
       ),
     );
   }

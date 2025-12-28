@@ -137,7 +137,9 @@ Future<void> main() async {
   Get.put(NetworkController());
   Get.put(GrowthKitController());
 
-  tz.initializeTimeZones();
+  if(!kIsWeb){
+    tz.initializeTimeZones();
+  }
 
   // Cameras (optional)
   try {

@@ -25,6 +25,11 @@ num? androidVersion;
 // const secureStore = FlutterSecureStorage();
 final fluttermojiFunctions = FluttermojiFunctions();
 
+//video call responses
+const declined = "declined";
+const accepted = "accepted";
+const cancelled = "cancelled";
+
 //User types
 const consultant = "consultant";
 const client = "client";

@@ -83,6 +83,7 @@ class _WebVideoCallViewState extends State<WebVideoCallView> {
     super.initState();
 
     getSecondsLeft();
+
     _timer =
         Timer.periodic(const Duration(seconds: 1), (_) => getSecondsLeft());
 

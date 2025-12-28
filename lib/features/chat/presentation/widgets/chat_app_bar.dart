@@ -8,6 +8,7 @@ import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/theme/fonts.dart';
 import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 import 'package:tl_consultant/core/utils/services/formatters.dart';
+import 'package:tl_consultant/features/chat/data/models/message_model.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/chat_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/video_call_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/widgets/chat_more_options.dart';
@@ -83,16 +84,8 @@ class _TitleBarState extends State<TitleBar> {
                 size: isSmallScreen(context) ? 24 : 32,
               ),
               onPressed: () async {
-                if(kIsWeb){
-                  await videoCallController.navigateToCallView();
-                }else{
-                  await videoCallController.joinAgoraCall();
-                }
-
-                await Future.delayed(Duration(seconds: 1));
 
                 final nextId = (chatController.recentMsgEvent.value.messageId ?? 0) + 1;
-
 
                 final messageMap = <String, dynamic>{
                   'id': nextId,
@@ -109,6 +102,11 @@ class _TitleBarState extends State<TitleBar> {
 
                 await chatController
                     .triggerPusherEvent('incoming-call', messageMap);
+
+                final message = MessageModel.fromJson(messageMap);
+
+                chatController.handleIncomingCall(message: message);
+
               }),
           const MoreOptions(),
         ],

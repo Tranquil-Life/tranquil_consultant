@@ -56,12 +56,12 @@ class DashboardController extends GetxController {
   ];
 
   var currentMeetingCount = 0.obs;
-  var clientId = 0.obs;
-  var clientName = "".obs;
-  var clientDp = "".obs;
-  var currentMeetingET = "".obs;
-  var currentMeetingST = "".obs;
   var currentMeetingId = 0.obs;
+  // var clientId = 0.obs;
+  // var clientName = "".obs;
+  // var clientDp = "".obs;
+  // var currentMeetingET = "".obs;
+  // var currentMeetingST = "".obs;
 
   var country = "".obs;
   var state = "".obs;
@@ -243,12 +243,12 @@ class DashboardController extends GetxController {
     currentIndex.value = 0;
 
     currentMeetingCount.value = 0;
-    clientId.value = 0;
-    clientName.value = "";
-    clientDp.value = "";
-    currentMeetingET.value = "";
-    currentMeetingST.value = "";
     currentMeetingId.value = 1;
+    // clientId.value = 0;
+    // clientName.value = "";
+    // clientDp.value = "";
+    // currentMeetingET.value = "";
+    // currentMeetingST.value = "";
 
     country.value = '';
     city.value = '';

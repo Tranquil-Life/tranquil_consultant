@@ -22,31 +22,8 @@ class VideoCallController extends GetxController {
 
   ChatRepoImpl repo = ChatRepoImpl();
 
-  RxSet<int> remoteIds = <int>{}.obs;
-  var agoraToken = "".obs;
   final now = DateTimeExtension.now;
   RxMap roomData = {}.obs;
-
-  Future joinAgoraCall() async {
-    await getAgoraToken();
-  }
-
-  Future getAgoraToken() async {
-    //Tell backend dev to set expiry time of token to be the duration of the
-    //meeting time left in seconds on the API
-
-    //if agora token and channelId don't exist on the firebase DB
-    //do this
-    Either either = await repo.getAgoraToken(
-        ChatController.instance.chatChannel.value,
-        DashboardController.instance.currentMeetingId.value);
-    either.fold((l) => CustomSnackBar.errorSnackBar(l.message.toString()),
-        (r) async {
-      agoraToken.value = r['data']['token'];
-
-      await navigateToCallView();
-    });
-  }
 
   Future<dynamic> createDailyRoom() async {
     final meetingsController = MeetingsController.instance;
@@ -64,7 +41,7 @@ class VideoCallController extends GetxController {
     timeLeft = timeLeft.clamp(0, maxSeconds).toInt();
 
     Either either = await repo.createDailyRoom(
-        channel: room, timeLeft: 15, chatId: chatController.chatId!.value);
+        channel: room, timeLeft: 120, chatId: chatController.chatId!.value);
 
     either.fold((l) => CustomSnackBar.errorSnackBar(l.message.toString()), (r) {
       if (r != null) {
@@ -92,8 +69,7 @@ class VideoCallController extends GetxController {
     // Never allow negative seconds
     timeLeft = timeLeft.clamp(0, maxSeconds).toInt();
 
-    Either either = await repo.generateDailyToken(
-        room: room, timeLeft: 15, userType: consultant);
+    Either either = await repo.generateDailyToken(room: room, timeLeft: 120, userType: consultant);
 
     either.fold(
       (l) => CustomSnackBar.errorSnackBar(l.message.toString()),
@@ -107,23 +83,17 @@ class VideoCallController extends GetxController {
   }
 
   Future navigateToCallView() async {
-    if (kIsWeb) {
-      DailyRoom dailyRoom = await createDailyRoom();
-      String token = await getDailyToken();
+    DailyRoom dailyRoom = await createDailyRoom();
+    String token = await getDailyToken();
 
-      Get.toNamed(
-        Routes.WEB_VIDEO_CALL,
-        parameters: {
-          'room': dailyRoom.room ?? '',
-          'roomUrl': dailyRoom.roomUrl ?? '',
-          'expiresAt': '${dailyRoom.expiresAt ?? 0}',
-          'token': token,
-        },
-      );
-    } else {
-      Get.to(const VideoCallView(
-        isLocal: true,
-      ));
-    }
+    Get.toNamed(
+      Routes.WEB_VIDEO_CALL,
+      parameters: {
+        'room': dailyRoom.room ?? '',
+        'roomUrl': dailyRoom.roomUrl ?? '',
+        'expiresAt': '${dailyRoom.expiresAt ?? 0}',
+        'token': token,
+      },
+    );
   }
 }
