@@ -1,7 +1,7 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:tl_consultant/core/global/app_bar_button.dart';
 import 'package:tl_consultant/core/global/user_avatar.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
@@ -15,8 +15,8 @@ import 'package:tl_consultant/features/chat/presentation/widgets/chat_more_optio
 import 'package:tl_consultant/features/consultation/presentation/controllers/meetings_controller.dart';
 import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
 
-import 'package:tl_consultant/core/constants/constants.dart' show myId, consultant;
-
+import 'package:tl_consultant/core/constants/constants.dart'
+    show myId, consultant;
 
 class TitleBar extends StatefulWidget {
   const TitleBar({super.key});
@@ -40,12 +40,15 @@ class _TitleBarState extends State<TitleBar> {
         children: [
           const SizedBox(width: 18),
           isSmallScreen(context) ? const BackButtonWhite() : SizedBox.shrink(),
-          isSmallScreen(context) ? const SizedBox(width: 16) : SizedBox.shrink(),
+          isSmallScreen(context)
+              ? const SizedBox(width: 16)
+              : SizedBox.shrink(),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 2),
             child: UserAvatar(
               size: isSmallScreen(context) ? 44 : 70,
-              imageUrl: meetingsController.currentMeeting.value?.client.avatarUrl,
+              imageUrl:
+                  meetingsController.currentMeeting.value?.client.avatarUrl,
               source: AvatarSource.url,
             ),
           ),
@@ -69,7 +72,9 @@ class _TitleBarState extends State<TitleBar> {
                         ? ColorPalette.yellow
                         : ColorPalette.red[300],
                     fontWeight: FontWeight.w600,
-                    fontSize: isSmallScreen(context) ? AppFonts.baseSize : AppFonts.largeSize,
+                    fontSize: isSmallScreen(context)
+                        ? AppFonts.baseSize
+                        : AppFonts.largeSize,
                   ),
                 ),
               ],
@@ -84,29 +89,53 @@ class _TitleBarState extends State<TitleBar> {
                 size: isSmallScreen(context) ? 24 : 32,
               ),
               onPressed: () async {
+                if (!videoCallController.canJoinVideoCall(
+                    currentMeetingId:
+                        meetingsController.currentMeeting.value!.id))
+                {
+                  // Block entry
+                  showDialog(
+                    context: context,
+                    builder: (_) => AlertDialog(
+                      title: const Text("Session Ended"),
+                      content: const Text(
+                        "This session has already reached the maximum allowed duration.",
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Get.back(),
+                          child: const Text("OK"),
+                        )
+                      ],
+                    ),
+                  );
+                  return;
+                }
+                else
+                {
+                  final nextId =
+                      (chatController.recentMsgEvent.value.messageId ?? 0) + 1;
 
-                final nextId = (chatController.recentMsgEvent.value.messageId ?? 0) + 1;
+                  final messageMap = <String, dynamic>{
+                    'id': nextId,
+                    'chat_id': chatController.chatId!.value,
+                    'sender_id': myId,
+                    'parent_id': null,
+                    'sender_type': consultant,
+                    'message': 'incoming call...',
+                    'message_type': 'text',
+                    'caption': null,
+                    'created_at': DateTime.now().toUtc().toIso8601String(),
+                    'updated_at': DateTime.now().toUtc().toIso8601String(),
+                  };
 
-                final messageMap = <String, dynamic>{
-                  'id': nextId,
-                  'chat_id': chatController.chatId!.value,
-                  'sender_id': myId,
-                  'parent_id': null,
-                  'sender_type': consultant,
-                  'message': 'incoming call...',
-                  'message_type': 'text',
-                  'caption': null,
-                  'created_at': DateTime.now().toUtc().toIso8601String(),
-                  'updated_at': DateTime.now().toUtc().toIso8601String(),
-                };
+                  await chatController.triggerPusherEvent(
+                      'incoming-call', messageMap);
 
-                await chatController
-                    .triggerPusherEvent('incoming-call', messageMap);
+                  final message = MessageModel.fromJson(messageMap);
 
-                final message = MessageModel.fromJson(messageMap);
-
-                chatController.handleIncomingCall(message: message);
-
+                  chatController.handleIncomingCall(message: message);
+                }
               }),
           const MoreOptions(),
         ],

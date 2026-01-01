@@ -29,7 +29,7 @@ abstract class ChatRepo<T, F extends QueryParams> extends ApiService {
 
   Future<Either<ApiError, T>> react();
 
-  Future<Either<ApiError, T>> deleteChat();
+  Future<Either<ApiError, T>> deleteMessage();
 
   Future<Either<ApiError, T>> onEnding();
 
@@ -40,6 +40,12 @@ abstract class ChatRepo<T, F extends QueryParams> extends ApiService {
   Future<Either<ApiError, T>> triggerPusherEvent(
       String channel, String eventName, Map<String, dynamic> data);
 
-  Future<Either<ApiError, T>> generateDailyToken({required String room, required int timeLeft, required String userType});
-  Future<Either<ApiError, T>> createDailyRoom({required String channel, required int timeLeft, required int chatId});
+  Future<Either<ApiError, T>> generateDailyToken(
+      {required String room, required int timeLeft, required String userType});
+
+  Future<Either<ApiError, T>> createDailyRoom(
+      {required String channel, required int timeLeft, required int chatId});
+
+  void saveCompletedVideoCall(
+      {required int meetingId, required int durationSeconds});
 }

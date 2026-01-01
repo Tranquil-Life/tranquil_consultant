@@ -13,6 +13,7 @@ import 'package:tl_consultant/app.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:tl_consultant/core/global/custom_snackbar.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
+import 'package:tl_consultant/core/utils/app_config.dart';
 import 'package:tl_consultant/core/utils/services/API/network/controllers/network_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/chat_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/message_controller.dart';
@@ -57,9 +58,6 @@ Future<void> initializeFirebase() async {
 
 GetStorage storage = GetStorage();
 
-final kWebVapidKey =
-    "BLxdS76FOWPNMjTrvZFe15VTPHbjqtrw-SybQKXVLr4YaVgNJK7X1YykxeEn0ery-wjMUunVBtou7xyPo3eDqIA";
-
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   debugPrint("🔕 Background message title: ${message.notification?.title}");
@@ -85,7 +83,7 @@ Future<void> main() async {
 
   // Web token needs VAPID key
   final token = await FirebaseMessaging.instance.getToken(
-    vapidKey: kIsWeb ? kWebVapidKey : null,
+    vapidKey: kIsWeb ? AppConfig.fcmWebVapidKey : null,
   );
   debugPrint('Firebase messaging token: $token');
 

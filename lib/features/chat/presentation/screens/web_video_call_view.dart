@@ -13,6 +13,7 @@ import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/utils/app_config.dart';
 import 'package:tl_consultant/core/utils/routes/app_pages.dart';
 import 'package:tl_consultant/features/chat/data/models/room_model.dart';
+import 'package:tl_consultant/features/chat/data/repos/chat_repo.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/chat_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/video_call_controller.dart';
 import 'package:tl_consultant/features/consultation/presentation/controllers/meetings_controller.dart';
@@ -31,9 +32,13 @@ class WebVideoCallView extends StatefulWidget {
 }
 
 class _WebVideoCallViewState extends State<WebVideoCallView> {
+  final meetingController = MeetingsController.instance;
+
   Timer? _timer;
   late final String viewType;
   late final String callUrl;
+
+  ChatRepoImpl chatRepo = ChatRepoImpl();
 
   int secondsLeft = 0;
 
@@ -54,6 +59,12 @@ class _WebVideoCallViewState extends State<WebVideoCallView> {
 
     if (next == 0) {
       _timer?.cancel();
+
+      chatRepo.saveCompletedVideoCall(
+        meetingId: meetingController.currentMeeting.value!.id,
+        durationSeconds: maxSeconds,
+      );
+
       if (mounted) _exitCall();
     }
   }

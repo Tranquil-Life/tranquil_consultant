@@ -16,6 +16,7 @@ import 'package:tl_consultant/features/consultation/presentation/controllers/mee
 import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
 import 'package:tl_consultant/features/profile/data/models/user_model.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
+import 'package:tl_consultant/main.dart';
 
 class VideoCallController extends GetxController {
   static VideoCallController get instance => Get.find<VideoCallController>();
@@ -69,7 +70,8 @@ class VideoCallController extends GetxController {
     // Never allow negative seconds
     timeLeft = timeLeft.clamp(0, maxSeconds).toInt();
 
-    Either either = await repo.generateDailyToken(room: room, timeLeft: 120, userType: consultant);
+    Either either = await repo.generateDailyToken(
+        room: room, timeLeft: 120, userType: consultant);
 
     either.fold(
       (l) => CustomSnackBar.errorSnackBar(l.message.toString()),
@@ -95,5 +97,24 @@ class VideoCallController extends GetxController {
         'token': token,
       },
     );
+  }
+
+  bool canJoinVideoCall({
+    required int currentMeetingId,
+    int maxDurationSeconds = 15 * 60,
+  }) {
+    final data = storage.read('last_complete_video_call');
+    if (data == null || data is! Map) return true;
+
+    final storedMeetingId = data['meeting_id'];
+    final storedDuration = data['duration'];
+
+    if (storedMeetingId != currentMeetingId) return true;
+
+    if (storedDuration is int && storedDuration < maxDurationSeconds) {
+      return true; // still allowed
+    }
+
+    return false;
   }
 }

@@ -12,4 +12,7 @@ class AppConfig{
   static const mapApiKey = "AIzaSyDVIeUnWdJiSLrWnI4_PaBAxYIFWd9rb7M";
   //Agora
   static const agoraAppId = 'a2782460e26a405cb9ffda0ae62e8038';
+  //FCM
+  static const fcmWebVapidKey =
+      "BLxdS76FOWPNMjTrvZFe15VTPHbjqtrw-SybQKXVLr4YaVgNJK7X1YykxeEn0ery-wjMUunVBtou7xyPo3eDqIA";
 }
