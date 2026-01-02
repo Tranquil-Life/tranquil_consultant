@@ -26,13 +26,8 @@ class _MeetingsState extends State<Meetings> {
         dashboardController.currentMeetingId.value = meeting.id;
         clientUser = meeting.client;
 
-        // dashboardController.clientId.value = client!.id!;
-        // dashboardController.clientDp.value = client!.avatarUrl;
-        // dashboardController.clientName.value = client!.displayName;
-
+        //store state of current meeting
         meetingsController.currentMeeting.value = meeting;
-        // dashboardController.currentMeetingST.value = meeting.startAt.formatDate;
-        // dashboardController.currentMeetingET.value = meeting.endAt.formatDate;
       }
 
       final meetingEnd = meeting.endAt;

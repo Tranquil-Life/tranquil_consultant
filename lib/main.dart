@@ -81,12 +81,6 @@ Future<void> main() async {
   final settings = await FirebaseMessaging.instance.requestPermission();
   debugPrint('User granted permission: ${settings.authorizationStatus}');
 
-  // Web token needs VAPID key
-  final token = await FirebaseMessaging.instance.getToken(
-    vapidKey: kIsWeb ? AppConfig.fcmWebVapidKey : null,
-  );
-  debugPrint('Firebase messaging token: $token');
-
   // Background handler (mobile only)
   if (!kIsWeb) {
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);

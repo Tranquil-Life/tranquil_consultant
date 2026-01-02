@@ -2,7 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tl_consultant/core/constants/constants.dart'
+    show myId, consultant, incomingCall;
 import 'package:tl_consultant/core/global/app_bar_button.dart';
+import 'package:tl_consultant/core/global/custom_text.dart';
 import 'package:tl_consultant/core/global/user_avatar.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/theme/fonts.dart';
@@ -91,28 +94,28 @@ class _TitleBarState extends State<TitleBar> {
               onPressed: () async {
                 if (!videoCallController.canJoinVideoCall(
                     currentMeetingId:
-                        meetingsController.currentMeeting.value!.id))
-                {
+                        meetingsController.currentMeeting.value!.id)) {
                   // Block entry
                   showDialog(
                     context: context,
                     builder: (_) => AlertDialog(
-                      title: const Text("Session Ended"),
+                      title: const Text("Video Call Ended"),
                       content: const Text(
-                        "This session has already reached the maximum allowed duration.",
+                        "This session has already reached the maximum allowed video call duration.",
                       ),
                       actions: [
                         TextButton(
                           onPressed: () => Get.back(),
-                          child: const Text("OK"),
-                        )
+                          child: CustomText(
+                              text: "OK",
+                              color: ColorPalette.green[800],
+                              weight: FontWeight.bold),
+                        ),
                       ],
                     ),
                   );
                   return;
-                }
-                else
-                {
+                } else {
                   final nextId =
                       (chatController.recentMsgEvent.value.messageId ?? 0) + 1;
 
@@ -122,7 +125,7 @@ class _TitleBarState extends State<TitleBar> {
                     'sender_id': myId,
                     'parent_id': null,
                     'sender_type': consultant,
-                    'message': 'incoming call...',
+                    'message': incomingCall,
                     'message_type': 'text',
                     'caption': null,
                     'created_at': DateTime.now().toUtc().toIso8601String(),
@@ -130,7 +133,7 @@ class _TitleBarState extends State<TitleBar> {
                   };
 
                   await chatController.triggerPusherEvent(
-                      'incoming-call', messageMap);
+                      incomingCall, messageMap);
 
                   final message = MessageModel.fromJson(messageMap);
 

@@ -112,7 +112,7 @@ class IncomingCallView extends StatelessWidget {
                             'sender_id': myId,
                             'parent_id': null,
                             'sender_type': consultant,
-                            'message': accepted,
+                            'message': acceptedCall,
                             'message_type': 'text',
                             'caption': null,
                             'created_at': DateTime.now().toUtc().toIso8601String(),
@@ -120,7 +120,7 @@ class IncomingCallView extends StatelessWidget {
                           };
 
                           await chatController.triggerPusherEvent(
-                            accepted,
+                            acceptedCall,
                             messageMap,
                           );
 
@@ -145,7 +145,7 @@ class IncomingCallView extends StatelessWidget {
                             'sender_id': myId,
                             'parent_id': null,
                             'sender_type': consultant,
-                            'message': declined,
+                            'message': declinedCall,
                             'message_type': 'text',
                             'caption': null,
                             'created_at': DateTime.now().toUtc().toIso8601String(),
@@ -153,7 +153,7 @@ class IncomingCallView extends StatelessWidget {
                           };
 
                           await chatController.triggerPusherEvent(
-                            declined,
+                            declinedCall,
                             messageMap,
                           );
 
@@ -192,7 +192,7 @@ class IncomingCallView extends StatelessWidget {
                       'sender_id': myId,
                       'parent_id': null,
                       'sender_type': consultant,
-                      'message': cancelled,
+                      'message': cancelledCall,
                       'message_type': 'text',
                       'caption': null,
                       'created_at': DateTime.now().toUtc().toIso8601String(),
@@ -200,7 +200,7 @@ class IncomingCallView extends StatelessWidget {
                     };
 
                     await chatController.triggerPusherEvent(
-                      cancelled,
+                      cancelledCall,
                       messageMap,
                     );
 
