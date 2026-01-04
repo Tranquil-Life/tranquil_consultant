@@ -176,18 +176,11 @@ class EarningsController extends GetxController {
     return double.parse(significantFigures);
   }
 
-  clearData() {
-    // balance.value = 0.00;
-    // withdrawn.value = 0.00;
-    // availableForWithdrawal.value = 0.00;
-    // pendingClearance.value = 0.00;
-  }
-
-  toggleTosAcceptance() {
+  void toggleTosAcceptance() {
     acceptedTOS.value = !acceptedTOS.value;
   }
 
-  toggleSave() {
+  void toggleSave() {
     isSaved.value = !isSaved.value;
   }
 
@@ -419,6 +412,8 @@ class EarningsController extends GetxController {
       print("withdraw earnings: error: ${l.message!}");
       CustomSnackBar.errorSnackBar(l.message!);
     }, (r) {
+      amountTEC.clear(); //clear amount to withdraw field
+
       CustomSnackBar.successSnackBar(
           body: "\$${amountTEC.text} withdrawn successfully");
     });
@@ -429,4 +424,6 @@ class EarningsController extends GetxController {
   void getStripeTransactions(){
 
   }
+
+  void clearData() {}
 }

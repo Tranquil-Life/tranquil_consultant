@@ -43,8 +43,9 @@ abstract class ConsultationEndPoints {
   static const saveSlots = '$consultant/saveSlots';
   static const deleteSlot = '$consultant/deleteSlot';
   static const rateMember = '$consultant/rateMember';
+  static const startMeeting = '$consultant/startMeeting';
 
-  static getMeetings({required int page}) =>
+  static String getMeetings({required int page}) =>
       '$consultant/myMeetings?page=$page';
 }
 

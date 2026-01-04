@@ -199,6 +199,7 @@ class _DashboardState extends State<Dashboard> {
                     if (client != null) {
                       await chatController.getChatInfo(client: client);
                       dashboardController.updateIndex(2);
+                      await meetingsController.startMeeting();
                     }else{
                       CustomSnackBar.showSnackBar(context: Get.context, message: "You have no ongoing session", backgroundColor: ColorPalette.blue);
                     }
