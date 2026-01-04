@@ -8,6 +8,7 @@ import 'package:tl_consultant/core/utils/extensions/date_time_extension.dart';
 import 'package:tl_consultant/core/utils/functions.dart';
 import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 import 'package:tl_consultant/core/utils/helpers/svg_elements.dart';
+import 'package:tl_consultant/core/utils/routes/app_pages.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/chat_controller.dart';
 import 'package:tl_consultant/features/consultation/domain/entities/client.dart';
 import 'package:tl_consultant/features/consultation/presentation/controllers/meetings_controller.dart';
@@ -33,23 +34,34 @@ class _DashboardState extends State<Dashboard> {
 
   ClientUser? client;
 
+  bool _pushedEditProfile = false;
+
+
   void profileCompletionCheck() async {
     var isEmpty = await checkForEmptyProfileInfo();
     if (isEmpty) {
-      Get.to(() => EditProfileScreen());
+      Get.toNamed(Routes.EDIT_PROFILE);
     }
   }
 
   @override
   void initState() {
-    dashboardController.getMyLocationInfoCached();
-    profileController.restoreUser();
+    super.initState();
 
-    profileCompletionCheck();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      dashboardController.getMyLocationInfoCached();
+      profileController.restoreUser();
+
+      final isEmpty = await checkForEmptyProfileInfo();
+      if (isEmpty && !_pushedEditProfile) {
+        _pushedEditProfile = true;
+        Get.toNamed(Routes.EDIT_PROFILE);
+      }
+    });
 
     setStatusBarBrightness(true);
-    super.initState();
   }
+
 
   @override
   void didChangeDependencies() {

@@ -38,8 +38,8 @@ class ProfileController extends GetxController {
   var deletingId =
       Rxn<int?>(); // Use null to indicate no qualification is being deleted
 
-  final TextEditingController firstNameTEC = TextEditingController();
-  final TextEditingController lastNameTEC = TextEditingController();
+  final TextEditingController firstNameTEC = TextEditingController(text: UserModel.fromJson(userDataStore.user).firstName.isNotEmpty ? UserModel.fromJson(userDataStore.user).firstName : "");
+  final TextEditingController lastNameTEC = TextEditingController(text: UserModel.fromJson(userDataStore.user).lastName.isNotEmpty ? UserModel.fromJson(userDataStore.user).lastName : "");
   final TextEditingController phoneTEC = TextEditingController();
   final TextEditingController countryTEC = TextEditingController();
   final TextEditingController cityTEC = TextEditingController();

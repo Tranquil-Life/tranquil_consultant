@@ -135,7 +135,7 @@ class _HomeTabState extends State<HomeTab> {
                                             var isEmpty =
                                                 await checkForEmptyProfileInfo();
                                             if (isEmpty) {
-                                              Get.to(() => EditProfileScreen());
+                                              Get.toNamed(Routes.EDIT_PROFILE);
                                             } else {
                                               Get.toNamed(Routes.EDIT_SLOTS);
                                             }

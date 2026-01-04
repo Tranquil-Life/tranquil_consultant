@@ -63,7 +63,7 @@ class DashboardController extends GetxController {
   // var currentMeetingET = "".obs;
   // var currentMeetingST = "".obs;
 
-  var country = "".obs;
+  var country = "${userDataStore.user['location']}".obs;
   var state = "".obs;
   var city = "".obs;
   var street = "".obs;

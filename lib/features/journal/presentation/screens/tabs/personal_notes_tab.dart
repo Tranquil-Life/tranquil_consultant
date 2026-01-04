@@ -5,6 +5,7 @@ import 'package:tl_consultant/core/global/custom_text.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/theme/fonts.dart';
 import 'package:tl_consultant/core/utils/functions.dart';
+import 'package:tl_consultant/core/utils/routes/app_pages.dart';
 import 'package:tl_consultant/features/journal/domain/entities/personal_note.dart';
 import 'package:tl_consultant/features/journal/presentation/controllers/notes_controller.dart';
 import 'package:tl_consultant/features/journal/presentation/screens/create_note.dart';
@@ -70,9 +71,9 @@ class _PersonalNotesTabState extends State<PersonalNotesTab> {
             onPressed: () async{
               var isEmpty = await checkForEmptyProfileInfo();
               if(isEmpty){
-                Get.to(() => EditProfileScreen());
+                Get.toNamed(Routes.EDIT_PROFILE);
               }else{
-                Get.to(const CreateNote());
+                Get.toNamed(Routes.CREATE_NOTE);// Navigate to create note screen
               }
             },
             child: const Icon(

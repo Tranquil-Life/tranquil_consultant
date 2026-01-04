@@ -59,7 +59,7 @@ class SmallScreenHeader extends StatelessWidget {
         ),
         GestureDetector(
             onTap: () {
-              Get.to(NotificationScreen());
+              Get.toNamed(Routes.ACTIVITY);
             },
             child: CustomIconButton(
                 icon: Center(

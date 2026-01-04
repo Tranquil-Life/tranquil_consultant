@@ -503,14 +503,15 @@ class ChatController extends GetxController {
     // final dashboardController = DashboardController.instance;
     final meetingsController = MeetingsController.instance;
 
-    Get.to(
-      IncomingCallView(
-          clientId: meetingsController.currentMeeting.value!.client.id!,
-          clientName:
-              meetingsController.currentMeeting.value!.client.displayName,
-          clientDp: meetingsController.currentMeeting.value!.client.avatarUrl,
-          userType: message?.senderType?.toLowerCase()),
-    );
+    print("CLIENT ID: ${meetingsController.currentMeeting.value!.client.id}");
+
+    Get.toNamed(Routes.INCOMING_CALL, arguments: {
+      "client_id": meetingsController.currentMeeting.value!.client.id!,
+      "client_name":
+          meetingsController.currentMeeting.value!.client.displayName,
+      "client_dp": meetingsController.currentMeeting.value!.client.avatarUrl,
+      "user_type": message?.senderType?.toLowerCase(),
+    });
   }
 
   @override

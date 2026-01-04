@@ -6,6 +6,7 @@ import 'package:tl_consultant/core/global/buttons.dart';
 import 'package:tl_consultant/core/global/custom_app_bar.dart';
 import 'package:tl_consultant/core/global/unfocus_bg.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
+import 'package:tl_consultant/core/utils/routes/app_pages.dart';
 import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
 import 'package:tl_consultant/features/profile/data/models/user_model.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
@@ -28,6 +29,8 @@ class WithdrawalInfoPage extends StatefulWidget {
 
 class _WithdrawalInfoPageState extends State<WithdrawalInfoPage> {
   final earningsController = EarningsController.instance;
+  final dashboardController = DashboardController.instance;
+
   NumberFormat? formatCurrency;
 
   // bool isSelected = false;
@@ -41,11 +44,11 @@ class _WithdrawalInfoPageState extends State<WithdrawalInfoPage> {
   @override
   void initState() {
     formatCurrency = NumberFormat.currency(
-        locale: DashboardController.instance.country.value.toLowerCase() ==
+        locale: dashboardController.country.value.toLowerCase() ==
                 "nigeria"
             ? "en_NG"
             : "en_US",
-        symbol: DashboardController.instance.country.value.toLowerCase() ==
+        symbol: dashboardController.country.value.toLowerCase() ==
                 "nigeria"
             ? '₦'
             : "\$");
@@ -65,6 +68,15 @@ class _WithdrawalInfoPageState extends State<WithdrawalInfoPage> {
           hideBackButton: false,
           centerTitle: false,
           title: withdrawFundsTitle,
+          onBackPressed: () async{
+            if (Get.key.currentState?.canPop() ?? false) {
+              Get.back();
+            } else {
+              Get.offAllNamed(Routes.DASHBOARD);// fallback route
+              await Future.delayed(const Duration(milliseconds: 500));
+              dashboardController.currentIndex.value = 3;
+            }
+          },
         ),
         body: Padding(
           padding: const EdgeInsets.only(left: 16, right: 16, top: 16),
