@@ -10,14 +10,25 @@ import 'dart:html' as html;
 import 'dart:js_util' as js_util;
 
 
-String _getBrowserTimeZone() {
+// String _getBrowserTimeZone() {
+//   try {
+//     final intl = js_util.getProperty(html.window, 'Intl');
+//     final dtf = js_util.callMethod(intl, 'DateTimeFormat', const []);
+//     final options = js_util.callMethod(dtf, 'resolvedOptions', const []);
+//     final tzName = js_util.getProperty(options, 'timeZone');
+//     if (tzName is String && tzName.isNotEmpty) return tzName;
+//   } catch (_) {/* ignore */}
+//   return 'UTC';
+// }
+
+String getBrowserTimeZone() {
   try {
-    final intl = js_util.getProperty(html.window, 'Intl');
+    final intl = js_util.getProperty(js_util.globalThis, 'Intl');
     final dtf = js_util.callMethod(intl, 'DateTimeFormat', const []);
     final options = js_util.callMethod(dtf, 'resolvedOptions', const []);
     final tzName = js_util.getProperty(options, 'timeZone');
     if (tzName is String && tzName.isNotEmpty) return tzName;
-  } catch (_) {/* ignore */}
+  } catch (_) {}
   return 'UTC';
 }
 
@@ -30,7 +41,7 @@ class TimeZoneUtil {
     tzdata.initializeTimeZones();
 
     final String tzId = kIsWeb
-        ? _getBrowserTimeZone()
+        ? getBrowserTimeZone()
         : await FlutterNativeTimezone.getLocalTimezone();
 
     final timeParts = utcHms.split(':');

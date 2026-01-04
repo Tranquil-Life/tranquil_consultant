@@ -2,9 +2,9 @@ import 'package:intl/intl.dart';
 
 extension DateTimeExtension on DateTime {
   static final _dateFormat = DateFormat.yMMMd();
-  static final _dateStringFormat = DateFormat('dd-MM-yyyy');
+  static final _dateStringFormat = DateFormat('MM-dd-yyyy');
   static final _timeFormat = DateFormat('hh:mma');
-  static final _dateTimeFormat = DateFormat('dd-MM-yyyy hh:mma');
+  static final _dateTimeFormat = DateFormat('MM-dd-yyyy  hh:mma');
 
   static final now = DateTime.now();
 

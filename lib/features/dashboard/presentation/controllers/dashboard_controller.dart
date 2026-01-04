@@ -224,8 +224,8 @@ class DashboardController extends GetxController {
 
   //FORCE RESET LOCATION
   Future<void> refreshLocationNow() async {
-    await storage.remove(Keys.lastLocationUpdateKey); // ✅ await remove
-    await storage.save(); // ✅ flush removal
+    await storage.remove(Keys.lastLocationUpdateKey); // await remove
+    await storage.save(); // flush removal
     await getMyLocationInfoCached();
   }
 

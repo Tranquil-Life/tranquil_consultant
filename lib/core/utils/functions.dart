@@ -156,7 +156,6 @@ Future getFileSize(String filepath, int decimals) async {
 //   };
 // }
 
-
 ///NEW
 Future<Map<String, dynamic>> getCurrLocation() async {
   // (Optional) check location services (mainly useful on mobile)
@@ -203,7 +202,6 @@ Future<Map<String, dynamic>> getCurrLocation() async {
     "placemarks": placemarks,
   };
 }
-
 
 List<TextSpan> parseNoteText(String text) {
   RegExp regExpBold = RegExp(r'\*\*(.*?)\*\*');
@@ -346,7 +344,7 @@ Future<bool> checkForEmptyProfileInfo() async {
       user.videoIntroUrl!.isEmpty ||
       profileController.qualifications.isEmpty) {
     return true;
-  }else{
+  } else {
     return false;
   }
 }
@@ -411,7 +409,8 @@ Map<String, dynamic> safeEventData(dynamic raw) {
     } else if (decoded is Map) {
       return decoded.map((k, v) => MapEntry(k.toString(), v));
     } else {
-      throw Exception("Unexpected JSON type from event.data: ${decoded.runtimeType}");
+      throw Exception(
+          "Unexpected JSON type from event.data: ${decoded.runtimeType}");
     }
   }
 
@@ -431,6 +430,26 @@ int? lastNonNullId(List<Message> list) {
   return null;
 }
 
+String? extractDateYmd(Map<String, dynamic> json) {
+// Try common keys your API might include
+  final candidates = [
+    json['date'],
+    json['meeting_date'],
+    json['scheduled_date'],
+    json['day'],
+    json['start_date'],
+    json['created_at'], // last resort (not ideal)
+  ].where((v) => v != null).map((v) => v.toString()).toList();
+
+  for (final raw in candidates) {
+// ISO or "yyyy-MM-dd ..." -> take first 10 chars
+    if (raw.length >= 10) {
+      final maybe = raw.substring(0, 10);
+      if (RegExp(r'^\d{4}-\d{2}-\d{2}$').hasMatch(maybe)) return maybe;
+    }
+  }
+  return null;
+}
 
 // Future<Uint8List> blobToBytes(html.Blob blob) async {
 //   final c = Completer<Uint8List>();

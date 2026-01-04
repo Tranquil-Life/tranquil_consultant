@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -8,16 +9,9 @@ import 'package:tl_consultant/core/global/unfocus_bg.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/utils/routes/app_pages.dart';
 import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
-import 'package:tl_consultant/features/profile/data/models/user_model.dart';
-import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 import 'package:tl_consultant/features/wallet/presentation/controllers/earnings_controller.dart';
-import 'package:tl_consultant/features/wallet/presentation/widgets/account_info_fields.dart';
-import 'package:tl_consultant/features/wallet/presentation/widgets/bank_info_fields.dart';
-import 'package:tl_consultant/features/wallet/presentation/widgets/beneficiary_info_fields.dart';
-import 'package:tl_consultant/features/wallet/presentation/widgets/business_info_fields.dart';
 import 'package:tl_consultant/features/wallet/presentation/widgets/create_payout_account_section.dart';
 import 'package:tl_consultant/features/wallet/presentation/widgets/form_fields.dart';
-import 'package:tl_consultant/features/wallet/presentation/widgets/identity_verification_fields.dart';
 import 'package:tl_consultant/features/wallet/presentation/widgets/show_current_payout_account.dart';
 
 class WithdrawalInfoPage extends StatefulWidget {
@@ -69,13 +63,19 @@ class _WithdrawalInfoPageState extends State<WithdrawalInfoPage> {
           centerTitle: false,
           title: withdrawFundsTitle,
           onBackPressed: () async{
-            if (Get.key.currentState?.canPop() ?? false) {
+            if(!kIsWeb){
               Get.back();
-            } else {
-              Get.offAllNamed(Routes.DASHBOARD);// fallback route
-              await Future.delayed(const Duration(milliseconds: 500));
-              dashboardController.currentIndex.value = 3;
+
+            }else{
+              if (Get.key.currentState?.canPop() ?? false) {
+                Get.back();
+              } else {
+                Get.offAllNamed(Routes.DASHBOARD);// fallback route
+                await Future.delayed(const Duration(milliseconds: 500));
+                dashboardController.currentIndex.value = 3;
+              }
             }
+
           },
         ),
         body: Padding(
