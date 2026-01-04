@@ -76,8 +76,6 @@ class ApiService {
 
     bool hasMultipartFile = containsMultipartFile(body);
 
-    print("request body: $body");
-    print("Has multipartfile: $hasMultipartFile");
     if (hasMultipartFile) {
       FormData form = FormData.fromMap(body);
 

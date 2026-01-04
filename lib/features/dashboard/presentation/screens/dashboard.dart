@@ -42,8 +42,7 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   void initState() {
-    //TODO: REMEMBER TO UNCOMMENT
-    dashboardController.getMyLocationInfo();
+    dashboardController.getMyLocationInfoCached();
     profileController.restoreUser();
 
     profileCompletionCheck();
@@ -66,26 +65,19 @@ class _DashboardState extends State<Dashboard> {
 
         client = meeting.client;
 
-        // dashboardController.clientId.value = client!.id!;
-        // dashboardController.clientDp.value = client!.avatarUrl;
-        // dashboardController.clientName.value = client!.displayName;
-
         meetingsController.currentMeeting.value = meeting;
-        // dashboardController.currentMeetingST.value = meeting.startAt.formatDate;
-        // dashboardController.currentMeetingET.value = meeting.endAt.formatDate;
       }
 
       //TODO: Uncomment this
       // if (meeting.endAt.isAfter(DateTimeExtension.now) &&
       //     (meeting.startAt.isBefore(DateTimeExtension.now) ||
       //         meeting.startAt == DateTimeExtension.now)) {
-      //   currentMeetingCount.value = 1;
-      //   currentMeetingId.value = meeting.id;
-      //   consultantId.value = meeting.consultant.id;
-      //   consultantDp.value = meeting.consultant.avatarUrl!;
-      //   consultantName.value = meeting.consultant.firstName;
-      //   currentMeetingST.value = meeting.startAt.formatDate;
-      //   currentMeetingET.value = meeting.endAt.formatDate;
+      // dashboardController.currentMeetingCount.value = 1;
+      // dashboardController.currentMeetingId.value = meeting.id;
+      //
+      // client = meeting.client;
+      //
+      // meetingsController.currentMeeting.value = meeting;
       // }
     }
   }
@@ -207,6 +199,7 @@ class _DashboardState extends State<Dashboard> {
                     if (client != null) {
                       await chatController.getChatInfo(client: client);
                       dashboardController.updateIndex(2);
+                      await meetingsController.startMeeting();
                     }else{
                       CustomSnackBar.showSnackBar(context: Get.context, message: "You have no ongoing session", backgroundColor: ColorPalette.blue);
                     }

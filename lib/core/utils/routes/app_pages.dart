@@ -51,14 +51,6 @@ class AppPages {
     GetPage(name: Routes.HOME_SCREEN, page: () => const HomeTab()),
     //GetPage(name: Routes.QUESTIONNAIRE, page: () => const Questionnaire()),
     GetPage(name: Routes.CHAT_SCREEN, page: () => const ChatScreen()),
-    // GetPage(name: Routes.NOTES_SCREEN, page: () => const JournalTab()),
-    GetPage(name: Routes.WALLET, page: () => WalletTab()),
-    // GetPage(name: Routes.CUSTOMIZE_CARD, page: () => const CustomizeCardScreen()),
-    GetPage(name: Routes.PROFILE, page: () => ProfileScreen()),
-    GetPage(name: Routes.EDIT_PROFILE, page: () => EditProfileScreen()),
-    GetPage(name: Routes.SETTINGS, page: () => SettingsScreen()),
-    // GetPage(name: Routes.WEB_VIDEO_CALL, page: () => WebVideoCallView()),
-
     GetPage(
       name: Routes.WEB_VIDEO_CALL,
       page: () {
@@ -87,6 +79,14 @@ class AppPages {
 
         return WebVideoCallView(dailyRoom: dailyRoom, token: token);
       },
-    )
+    ),
+    // GetPage(name: Routes.NOTES_SCREEN, page: () => const JournalTab()),
+    GetPage(name: Routes.WALLET, page: () => WalletTab()),
+    // GetPage(name: Routes.CUSTOMIZE_CARD, page: () => const CustomizeCardScreen()),
+    GetPage(name: Routes.PROFILE, page: () => ProfileScreen()),
+    GetPage(name: Routes.EDIT_PROFILE, page: () => EditProfileScreen()),
+    GetPage(name: Routes.SETTINGS, page: () => SettingsScreen()),
+
+
   ];
 }

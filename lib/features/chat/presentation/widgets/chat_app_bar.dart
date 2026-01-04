@@ -1,21 +1,25 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:tl_consultant/core/constants/constants.dart'
+    show myId, consultant, incomingCall;
 import 'package:tl_consultant/core/global/app_bar_button.dart';
+import 'package:tl_consultant/core/global/custom_text.dart';
 import 'package:tl_consultant/core/global/user_avatar.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/theme/fonts.dart';
 import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 import 'package:tl_consultant/core/utils/services/formatters.dart';
+import 'package:tl_consultant/features/chat/data/models/message_model.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/chat_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/video_call_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/widgets/chat_more_options.dart';
 import 'package:tl_consultant/features/consultation/presentation/controllers/meetings_controller.dart';
 import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
 
-import 'package:tl_consultant/core/constants/constants.dart' show myId, consultant;
-
+import 'package:tl_consultant/core/constants/constants.dart'
+    show myId, consultant;
 
 class TitleBar extends StatefulWidget {
   const TitleBar({super.key});
@@ -39,12 +43,15 @@ class _TitleBarState extends State<TitleBar> {
         children: [
           const SizedBox(width: 18),
           isSmallScreen(context) ? const BackButtonWhite() : SizedBox.shrink(),
-          isSmallScreen(context) ? const SizedBox(width: 16) : SizedBox.shrink(),
+          isSmallScreen(context)
+              ? const SizedBox(width: 16)
+              : SizedBox.shrink(),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 2),
             child: UserAvatar(
               size: isSmallScreen(context) ? 44 : 70,
-              imageUrl: meetingsController.currentMeeting.value?.client.avatarUrl,
+              imageUrl:
+                  meetingsController.currentMeeting.value?.client.avatarUrl,
               source: AvatarSource.url,
             ),
           ),
@@ -68,7 +75,9 @@ class _TitleBarState extends State<TitleBar> {
                         ? ColorPalette.yellow
                         : ColorPalette.red[300],
                     fontWeight: FontWeight.w600,
-                    fontSize: isSmallScreen(context) ? AppFonts.baseSize : AppFonts.largeSize,
+                    fontSize: isSmallScreen(context)
+                        ? AppFonts.baseSize
+                        : AppFonts.largeSize,
                   ),
                 ),
               ],
@@ -83,32 +92,53 @@ class _TitleBarState extends State<TitleBar> {
                 size: isSmallScreen(context) ? 24 : 32,
               ),
               onPressed: () async {
-                if(kIsWeb){
-                  await videoCallController.navigateToCallView();
-                }else{
-                  await videoCallController.joinAgoraCall();
+                if (!videoCallController.canJoinVideoCall(
+                    currentMeetingId:
+                        meetingsController.currentMeeting.value!.id)) {
+                  // Block entry
+                  showDialog(
+                    context: context,
+                    builder: (_) => AlertDialog(
+                      title: const Text("Video Call Ended"),
+                      content: const Text(
+                        "This session has already reached the maximum allowed video call duration.",
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Get.back(),
+                          child: CustomText(
+                              text: "OK",
+                              color: ColorPalette.green[800],
+                              weight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  );
+                  return;
+                } else {
+                  final nextId =
+                      (chatController.recentMsgEvent.value.messageId ?? 0) + 1;
+
+                  final messageMap = <String, dynamic>{
+                    'id': nextId,
+                    'chat_id': chatController.chatId!.value,
+                    'sender_id': myId,
+                    'parent_id': null,
+                    'sender_type': consultant,
+                    'message': incomingCall,
+                    'message_type': 'text',
+                    'caption': null,
+                    'created_at': DateTime.now().toUtc().toIso8601String(),
+                    'updated_at': DateTime.now().toUtc().toIso8601String(),
+                  };
+
+                  await chatController.triggerPusherEvent(
+                      incomingCall, messageMap);
+
+                  final message = MessageModel.fromJson(messageMap);
+
+                  chatController.handleIncomingCall(message: message);
                 }
-
-                await Future.delayed(Duration(seconds: 1));
-
-                final nextId = (chatController.recentMsgEvent.value.messageId ?? 0) + 1;
-
-
-                final messageMap = <String, dynamic>{
-                  'id': nextId,
-                  'chat_id': chatController.chatId!.value,
-                  'sender_id': myId,
-                  'parent_id': null,
-                  'sender_type': consultant,
-                  'message': 'incoming call...',
-                  'message_type': 'text',
-                  'caption': null,
-                  'created_at': DateTime.now().toUtc().toIso8601String(),
-                  'updated_at': DateTime.now().toUtc().toIso8601String(),
-                };
-
-                await chatController
-                    .triggerPusherEvent('incoming-call', messageMap);
               }),
           const MoreOptions(),
         ],

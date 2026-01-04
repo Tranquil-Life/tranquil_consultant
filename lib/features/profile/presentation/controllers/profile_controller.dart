@@ -32,6 +32,7 @@ class ProfileController extends GetxController {
   var profilePic = "".obs;
   var introVideo = "".obs;
 
+
   var meetingsCount = 0.obs;
   var clientsCount = 0.obs;
   var deletingId =
@@ -169,7 +170,7 @@ class ProfileController extends GetxController {
   }
 
   ///restore user info
-  restoreUser() {
+  void restoreUser() {
     profilePic.value = UserModel.fromJson(userDataStore.user).avatarUrl;
     introVideo.value = UserModel.fromJson(userDataStore.user).videoIntroUrl!;
     firstNameTEC.text = UserModel.fromJson(userDataStore.user).firstName;

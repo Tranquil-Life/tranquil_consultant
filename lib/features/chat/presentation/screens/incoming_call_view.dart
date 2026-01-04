@@ -1,8 +1,11 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/theme/tranquil_icons.dart';
 import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
+import 'package:tl_consultant/features/chat/presentation/controllers/chat_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/video_call_controller.dart';
 
 class IncomingCallView extends StatelessWidget {
@@ -11,13 +14,16 @@ class IncomingCallView extends StatelessWidget {
     required this.clientId,
     required this.clientName,
     required this.clientDp,
+    this.userType,
   });
 
   final int clientId;
   final String clientName;
   final String clientDp;
+  final String? userType;
 
   final videoCallController = VideoCallController.instance;
+  final chatController = ChatController.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -26,56 +32,193 @@ class IncomingCallView extends StatelessWidget {
         children: [
           SizedBox(
             height: displayHeight(context),
-            child: Image.network( clientDp,
+            width: displayWidth(context),
+            child: Image.network(
+              clientDp,
               fit: BoxFit.cover,
               color: Colors.black54,
               colorBlendMode: BlendMode.darken,
-              errorBuilder:
-                  (context, __, ___) => Center(
-                    child: SizedBox(
-                      width: displayWidth(context) * 0.7,
-                      child: FittedBox(
-                        fit: BoxFit.contain,
-                        child: Icon(
-                          TranquilIcons.profile,
-                          color: Colors.grey[600],
-                        ),
-                      ),
+              errorBuilder: (context, __, ___) => Center(
+                child: SizedBox(
+                  width: displayWidth(context) * 0.7,
+                  child: FittedBox(
+                    fit: BoxFit.contain,
+                    child: Icon(
+                      TranquilIcons.profile,
+                      color: Colors.grey[600],
                     ),
                   ),
-            ),
-          ),
-          Container(
-            margin: EdgeInsets.only(top: 100),
-            alignment: Alignment.topCenter,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(clientName, style: TextStyle(
-                    color: ColorPalette.white,
-                    fontSize: 32,
-                    fontWeight: FontWeight.w600
-                ),),
-                
-                Text("is calling...", style: TextStyle(color: ColorPalette.white, fontSize: 20),)
-              ],
-            )
-          ),
-
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 80),
-              child: GestureDetector(
-                onTap: () {
-                   Get.back();
-
-                  videoCallController.joinAgoraCall();
-                },
-                child: PulsingCallButton(),
+                ),
               ),
             ),
           ),
+          if (userType != consultant)
+            Container(
+                margin: EdgeInsets.only(top: 100),
+                alignment: Alignment.topCenter,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      clientName,
+                      style: TextStyle(
+                          color: ColorPalette.white,
+                          fontSize: 32,
+                          fontWeight: FontWeight.w600),
+                    ),
+                    Text(
+                      "is calling...",
+                      style: TextStyle(color: ColorPalette.white, fontSize: 20),
+                    )
+                  ],
+                ))
+          else
+            Container(
+                margin: EdgeInsets.only(top: 100),
+                alignment: Alignment.topCenter,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Calling",
+                      style: TextStyle(color: ColorPalette.white, fontSize: 20),
+                    ),
+                    Text(
+                      clientName,
+                      style: TextStyle(
+                          color: ColorPalette.white,
+                          fontSize: 32,
+                          fontWeight: FontWeight.w600),
+                    )
+                  ],
+                )),
+          if (userType != consultant)
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                  padding: const EdgeInsets.only(bottom: 80),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      GestureDetector(
+                        onTap: () async {
+                          final nextId =
+                              (chatController.recentMsgEvent.value.messageId ?? 0) +
+                                  1;
+
+                          final messageMap = <String, dynamic>{
+                            'id': nextId,
+                            'chat_id': chatController.chatId!.value,
+                            'sender_id': myId,
+                            'parent_id': null,
+                            'sender_type': consultant,
+                            'message': acceptedCall,
+                            'message_type': 'text',
+                            'caption': null,
+                            'created_at': DateTime.now().toUtc().toIso8601String(),
+                            'updated_at': DateTime.now().toUtc().toIso8601String(),
+                          };
+
+                          await chatController.triggerPusherEvent(
+                            acceptedCall,
+                            messageMap,
+                          );
+
+                          Get.back();
+
+                          await Future.delayed(Duration(seconds: 1));
+
+                          await videoCallController.navigateToCallView();
+                        },
+                        child: PulsingCallButton(),
+                      ),
+                      SizedBox(width: 24),
+                      GestureDetector(
+                        onTap: () async{
+                          final nextId =
+                              (chatController.recentMsgEvent.value.messageId ?? 0) +
+                                  1;
+
+                          final messageMap = <String, dynamic>{
+                            'id': nextId,
+                            'chat_id': chatController.chatId!.value,
+                            'sender_id': myId,
+                            'parent_id': null,
+                            'sender_type': consultant,
+                            'message': declinedCall,
+                            'message_type': 'text',
+                            'caption': null,
+                            'created_at': DateTime.now().toUtc().toIso8601String(),
+                            'updated_at': DateTime.now().toUtc().toIso8601String(),
+                          };
+
+                          await chatController.triggerPusherEvent(
+                            declinedCall,
+                            messageMap,
+                          );
+
+                          Get.back();
+
+                        },
+                        child: Container(
+                          width: 60,
+                          height: 60,
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: ColorPalette.red,
+                          ),
+                          child: const Icon(Icons.call_end,
+                              color: Colors.white, size: 30),
+                        ),
+                      ),
+                    ],
+                  )
+              ),
+            )
+          else
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 80),
+                child: GestureDetector(
+                  onTap: () async{
+                    final nextId =
+                        (chatController.recentMsgEvent.value.messageId ?? 0) +
+                            1;
+
+                    final messageMap = <String, dynamic>{
+                      'id': nextId,
+                      'chat_id': chatController.chatId!.value,
+                      'sender_id': myId,
+                      'parent_id': null,
+                      'sender_type': consultant,
+                      'message': cancelledCall,
+                      'message_type': 'text',
+                      'caption': null,
+                      'created_at': DateTime.now().toUtc().toIso8601String(),
+                      'updated_at': DateTime.now().toUtc().toIso8601String(),
+                    };
+
+                    await chatController.triggerPusherEvent(
+                      cancelledCall,
+                      messageMap,
+                    );
+
+                    Get.back();
+                  },
+                  child: Container(
+                    width: 80,
+                    height: 80,
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: ColorPalette.red,
+                    ),
+                    child: const Icon(Icons.call_end,
+                        color: Colors.white, size: 40),
+                  ),
+                ),
+              ),
+            )
         ],
       ),
     );
@@ -89,7 +232,8 @@ class PulsingCallButton extends StatefulWidget {
   State<PulsingCallButton> createState() => _PulsingCallButtonState();
 }
 
-class _PulsingCallButtonState extends State<PulsingCallButton> with SingleTickerProviderStateMixin {
+class _PulsingCallButtonState extends State<PulsingCallButton>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
 

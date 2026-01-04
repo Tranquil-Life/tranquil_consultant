@@ -22,4 +22,12 @@ class LocationRepoImpl extends LocationRepo {
             () => postReq(ProfileEndPoints.updateLocation, body: input))
         .then((value) => handleResponse(value));
   }
+
+  @override
+  Future<Either<ApiError, dynamic>> reverseGeocode(
+      {required double latitude, required double longitude}) async {
+    return await catchSocketException(() => getReq(
+            GoogleMapsEndpoints.reverseGeocode(lat: latitude, lng: longitude)))
+        .then((value) => handleResponse(value));
+  }
 }

@@ -12,6 +12,7 @@ import 'package:get/get.dart';
 import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
 import 'package:tl_consultant/core/global/custom_snackbar.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
+import 'package:tl_consultant/core/global/custom_text.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/utils/app_config.dart';
 import 'package:tl_consultant/core/utils/extensions/chat_message_extension.dart';
@@ -22,6 +23,7 @@ import 'package:tl_consultant/core/utils/routes/app_pages.dart';
 import 'package:tl_consultant/features/chat/data/models/message_model.dart';
 import 'package:tl_consultant/features/chat/data/repos/chat_repo.dart';
 import 'package:tl_consultant/features/chat/domain/entities/message.dart';
+import 'package:tl_consultant/features/chat/presentation/controllers/video_call_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/screens/incoming_call_view.dart';
 import 'package:tl_consultant/features/consultation/domain/entities/client.dart';
 import 'package:tl_consultant/features/consultation/presentation/controllers/meetings_controller.dart';
@@ -127,15 +129,13 @@ class ChatController extends GetxController {
         final data = r['data'];
         if (data is! List) return;
 
-        final newMessages = data
-            .map((e) => MessageModel.fromJson(e))
-            .toList();
+        final newMessages = data.map((e) => MessageModel.fromJson(e)).toList();
 
         if (newMessages.isEmpty) return;
 
         // ✅ pick the last NON-NULL messageId as cursor
         final lastNonNull = newMessages.lastWhere(
-              (m) => m.messageId != null,
+          (m) => m.messageId != null,
           orElse: () => newMessages.last,
         );
 
@@ -151,7 +151,6 @@ class ChatController extends GetxController {
       update();
     }
   }
-
 
   // Future loadOlderMessages() async {
   //   isLoadMoreRunning.value = true;
@@ -261,6 +260,8 @@ class ChatController extends GetxController {
   }
 
   Future initializePusher({required String channel}) async {
+    final videoCallController = VideoCallController.instance;
+
     try {
       // On web, pusher-js MUST be present
       if (kIsWeb && !hasPusherJs()) {
@@ -322,19 +323,140 @@ class ChatController extends GetxController {
 
           final message = MessageModel.fromJson(messageJson);
 
-          if (event.eventName == 'incoming-call') {
-            if (!(message.senderType?.toLowerCase() == 'consultant')) {
-              handleIncomingCall(message);
+          if (event.eventName == incomingCall) {
+            if (!(message.senderType?.toLowerCase() == consultant)) {
+              handleIncomingCall(message: message);
               // vibration stuff...
+            }
+            return;
+          }
+
+          if (event.eventName == acceptedCall) {
+            if (!(message.senderType?.toLowerCase() == consultant)) {
+              Get.back();
+
+              await Future.delayed(Duration(seconds: 1));
+
+              await videoCallController.navigateToCallView();
+            }
+            return;
+          }
+
+          if (event.eventName == declinedCall) {
+            if (!(message.senderType?.toLowerCase() == consultant)) {
+              Get.back();
+            }
+            return;
+          }
+
+          if (event.eventName == cancelledCall) {
+            if (!(message.senderType?.toLowerCase() == consultant)) {
+              Get.back();
+            }
+            return;
+          }
+
+          if (event.eventName == requestingExtension) {
+            if (!(message.senderType?.toLowerCase() == consultant)) {
+              showDialog(
+                context: Get.context!,
+                builder: (_) => AlertDialog(
+                  title: const Text("Meeting Extension Requested"),
+                  content: const Text(
+                    "I would like to extend this meeting by 15 minutes.",
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () async {
+                        //Decline extension request
+                        final nextId =
+                            (recentMsgEvent.value.messageId ?? 0) + 1;
+
+                        final messageMap = <String, dynamic>{
+                          'id': nextId,
+                          'chat_id': chatId!.value,
+                          'sender_id': myId,
+                          'parent_id': null,
+                          'sender_type': consultant,
+                          'message': declinedExtension,
+                          'message_type': 'text',
+                          'caption': null,
+                          'created_at':
+                              DateTime.now().toUtc().toIso8601String(),
+                          'updated_at':
+                              DateTime.now().toUtc().toIso8601String(),
+                        };
+
+                        await triggerPusherEvent(declinedExtension, messageMap);
+
+                        Get.back();
+                      },
+                      child:
+                          CustomText(text: "Decline", color: ColorPalette.red),
+                    ),
+                    TextButton(
+                      onPressed: () async {
+                        final nextId =
+                            (recentMsgEvent.value.messageId ?? 0) + 1;
+
+                        final messageMap = <String, dynamic>{
+                          'id': nextId,
+                          'chat_id': chatId!.value,
+                          'sender_id': myId,
+                          'parent_id': null,
+                          'sender_type': consultant,
+                          'message': acceptedExtension,
+                          'message_type': 'text',
+                          'caption': null,
+                          'created_at':
+                              DateTime.now().toUtc().toIso8601String(),
+                          'updated_at':
+                              DateTime.now().toUtc().toIso8601String(),
+                        };
+
+                        await triggerPusherEvent(acceptedExtension, messageMap);
+
+                        Get.back();
+                      },
+                      child: CustomText(
+                          text: "Accept", color: ColorPalette.green[800]),
+                    )
+                  ],
+                ),
+              );
+            }
+            return;
+          }
+
+          if (event.eventName == meetingExtended) {
+            if (!(message.senderType?.toLowerCase() == consultant)) {
+              showDialog(
+                context: Get.context!,
+                builder: (_) => AlertDialog(
+                  title: const Text("Meeting Extended"),
+                  content: const Text(
+                    "This meeting has been extended further by 15 minutes.",
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Get.back(),
+                      child: CustomText(
+                          text: "OK",
+                          color: ColorPalette.green[800],
+                          weight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+              );
             }
             return;
           }
 
           recentMsgEvent.value = message;
 
-          if (!(message.senderType?.toLowerCase() == 'consultant')) {
+          if (!(message.senderType?.toLowerCase() == consultant)) {
             await Future.delayed(const Duration(seconds: 1));
-            addMessage(message); // ✅ now this will run
+            addMessage(message);
           }
 
           debugPrint(
@@ -377,15 +499,17 @@ class ChatController extends GetxController {
     });
   }
 
-  void handleIncomingCall(MessageModel message) {
-    final dashboardController = DashboardController.instance;
+  void handleIncomingCall({MessageModel? message}) {
+    // final dashboardController = DashboardController.instance;
+    final meetingsController = MeetingsController.instance;
 
     Get.to(
       IncomingCallView(
-        clientId: dashboardController.clientId.value,
-        clientName: dashboardController.clientName.value,
-        clientDp: dashboardController.clientDp.value,
-      ),
+          clientId: meetingsController.currentMeeting.value!.client.id!,
+          clientName:
+              meetingsController.currentMeeting.value!.client.displayName,
+          clientDp: meetingsController.currentMeeting.value!.client.avatarUrl,
+          userType: message?.senderType?.toLowerCase()),
     );
   }
 

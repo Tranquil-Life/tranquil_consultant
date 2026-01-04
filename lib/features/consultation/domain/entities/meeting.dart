@@ -20,7 +20,7 @@ class Meeting {
 
   int get duration => endAt.difference(startAt).inMinutes;
 
-  setIsExpired(DateTime currentTime) {
+  void setIsExpired(DateTime currentTime) {
     log('END DATE${endAt.formattedTime}');
     log('CURRENT DATE${currentTime.formattedTime}');
     // isExpired = !isExpired;

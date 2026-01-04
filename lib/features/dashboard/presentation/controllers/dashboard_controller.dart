@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:tl_consultant/core/global/custom_snackbar.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
@@ -29,11 +30,14 @@ import 'package:tl_consultant/features/profile/presentation/controllers/profile_
 import 'package:tl_consultant/features/wallet/presentation/controllers/earnings_controller.dart';
 import 'package:tl_consultant/features/wallet/presentation/controllers/transactions_controller.dart';
 import 'package:tl_consultant/features/wallet/presentation/screens/wallet_tab.dart';
+import 'package:tl_consultant/main.dart';
 
 class DashboardController extends GetxController {
   static DashboardController get instance => Get.find<DashboardController>();
 
   final LocationRepoImpl locationRepo = LocationRepoImpl();
+
+  static const int locationUpdateIntervalMs = 24 * 60 * 60 * 1000; // 24 hours
 
   RxInt currentIndex = 0.obs;
   final List<Widget> pages = [
@@ -52,12 +56,12 @@ class DashboardController extends GetxController {
   ];
 
   var currentMeetingCount = 0.obs;
-  var clientId = 0.obs;
-  var clientName = "".obs;
-  var clientDp = "".obs;
-  var currentMeetingET = "".obs;
-  var currentMeetingST = "".obs;
   var currentMeetingId = 0.obs;
+  // var clientId = 0.obs;
+  // var clientName = "".obs;
+  // var clientDp = "".obs;
+  // var currentMeetingET = "".obs;
+  // var currentMeetingST = "".obs;
 
   var country = "".obs;
   var state = "".obs;
@@ -87,120 +91,171 @@ class DashboardController extends GetxController {
     either.fold((l) {
       print("update location: error: ${l.message!}");
     }, (r) {
-      // print("update location:  $r");
+      print("update location:  $r");
     });
   }
 
-  //TODO: REMEMBER TO UNCOMMENT
-  Future getMyLocationInfo() async {
+  Future<Map<String, String?>> reverseGeocodeViaBackend({
+    required double lat,
+    required double lng,
+  }) async {
+    final result = <String, String?>{};
+
+    final Either either =
+    await locationRepo.reverseGeocode(latitude: lat, longitude: lng);
+
+    either.fold(
+          (l) => print("Reverse geocode: error: ${l.message ?? ''}"),
+          (r) {
+        print("reverse geocode: right: $r");
+
+        // r is a Map, not Response
+        final Map<String, dynamic> map = Map<String, dynamic>.from(r);
+
+        // your API might return {data: {...}} or {...} directly
+        final inner = (map['data'] is Map)
+            ? Map<String, dynamic>.from(map['data'])
+            : map;
+
+        result['country'] = inner['country']?.toString();
+        result['state'] = inner['state']?.toString();
+      },
+    );
+
+    return result;
+  }
+
+  String _clean(String? s) => (s ?? '').trim();
+
+  String normalizeCountry(String c) {
+    final x = c.trim();
+    final lower = x.toLowerCase();
+    if (lower == 'usa' || lower == 'us' || lower.contains('united states')) return 'United States';
+    if (lower == 'uk' || lower == 'gb' || lower.contains('united kingdom')) return 'United Kingdom';
+    return x;
+  }
+
+  Future<void> getMyLocationInfo() async {
     final result = await getCurrLocation();
+    if (result["error"] == true) return;
 
-    if (result["error"] != null) {
-      // handle / show error
-      return;
-    }
+    final lat = result['latitude'] as double;
+    final lng = result['longitude'] as double;
 
-    final List<Placemark> placemarks =
-        (result['placemarks'] as List<Placemark>?) ?? const [];
+    final timeZoneHours = DateTime.now().timeZoneOffset.inMinutes / 60.0;
 
-    final Placemark? p = placemarks.isNotEmpty ? placemarks.first : null;
-
-    // Use empty string fallback instead of crashing
-    country.value = p?.country ?? "";
-    city.value = p?.locality ?? "";
-    neighborhood.value = p?.subLocality ?? "";
-    state.value = p?.administrativeArea ?? "";
-    county.value = p?.subAdministrativeArea ?? "";
-
-    final streetPart = [
-      p?.street,
-      p?.name,
-    ].whereType<String>().where((s) => s.trim().isNotEmpty).join(", ");
-
-    street.value = streetPart;
-
-    // timezone offset (this works on web too)
-    final timezoneOffset = DateTime.now().timeZoneOffset.inMilliseconds;
-    const hourInMilliSecs = 3600000;
-    final formattedTimeZone = timezoneOffset / hourInMilliSecs;
-    timezone.value = "$formattedTimeZone";
-
-    // FlutterNativeTimezone is NOT reliable on web; guard it
     String timeZoneIdentifier = "";
     try {
       timeZoneIdentifier = await FlutterNativeTimezone.getLocalTimezone();
-    } catch (_) {
-      timeZoneIdentifier = ""; // or "UTC"
+    } catch (_) {}
+
+    String locationToSend = "";
+
+    try {
+      //Using backend reverse coding
+      final geo = await reverseGeocodeViaBackend(lat: lat, lng: lng);
+
+      final c = normalizeCountry(_clean(geo['country']?.toString()));
+      final s = _clean(geo['state']?.toString());
+
+      country.value = c;
+      state.value = s;
+
+      locationToSend = [c, s].where((x) => x.isNotEmpty).join('/');
+
+      if (locationToSend.isEmpty) {
+        locationToSend = "$lat, $lng";
+      }
+    } catch (e) {
+      // Fallback: use placemark if backend/network fails
+      //TODO: Display dialog for countries and states
+
+
+      CustomSnackBar.errorSnackBar("Reverse coding failed: $e");
     }
-
-    // Build a best-effort location string
-    final parts = <String>[
-      street.value,
-      neighborhood.value,
-      city.value,
-      county.value,
-      state.value,
-      country.value,
-    ].where((s) => s.trim().isNotEmpty).toList();
-
-    final locationString = parts.isNotEmpty
-        ? parts.join(", ")
-        : "${result['latitude']}, ${result['longitude']}";
 
     await updateLocation(
-      latitude: result['latitude'],
-      longitude: result['longitude'],
-      timeZone: double.tryParse(timezone.value) ?? 0.0,
-      location: locationString,
+      latitude: lat,
+      longitude: lng,
+      timeZone: timeZoneHours,
+      location: locationToSend,
       timeZoneIdentifier: timeZoneIdentifier,
     );
+
+    print("dashboard update: country: ${country.value}\nstate: ${state.value}\nlocationToSend: $locationToSend");
   }
 
-  Future<void> getMeetings() async {
-    await MeetingsController().loadFirstMeetings();
+  int? _readInt(String key) {
+    final v = storage.read(key);
+    if (v == null) return null;
+    if (v is int) return v;
+    if (v is double) return v.toInt();
+    if (v is String) return int.tryParse(v);
+    return null;
+  }
 
-    for (var meeting in MeetingsController.instance.meetings) {
-      if (meeting.endAt.isAfter(DateTimeExtension.now) &&
-          (meeting.startAt.isBefore(DateTimeExtension.now) ||
-              meeting.startAt == DateTimeExtension.now)) {
-        currentMeetingCount.value = 1;
-        currentMeetingId.value = meeting.id;
-        clientId.value = meeting.client.id!;
-        clientDp.value = meeting.client.avatarUrl;
-        clientName.value = meeting.client.firstName;
-        currentMeetingST.value = meeting.startAt.formatDate;
-        currentMeetingET.value = meeting.endAt.formatDate;
-      }
+  Future<void> getMyLocationInfoCached() async {
+    final now = DateTime.now().millisecondsSinceEpoch;
+    final lastTs = _readInt(Keys.lastLocationUpdateKey);
+
+    print("old last timestamp: $lastTs");
+
+    // If we have a timestamp and it's still within 24h, skip
+    if (lastTs != null && (now - lastTs) < locationUpdateIntervalMs) {
+      debugPrint('Location update skipped (cached)');
+      return;
+    }
+
+    debugPrint('Running location update');
+
+    try {
+      await getMyLocationInfo(); // Update location
+
+      await storage.write(Keys.lastLocationUpdateKey, now); // ✅ await write
+      await storage.save(); // ✅ force flush (important on web)
+
+      final savedTs = _readInt(Keys.lastLocationUpdateKey);
+      print("new last timestamp: $savedTs");
+    } catch (e, s) {
+      debugPrint('Location update failed: $e');
+      debugPrintStack(stackTrace: s);
     }
   }
 
-  @override
-  void onInit() {
-    ProfileController.instance.restoreUser();
-
-    //TODO: REMEMBER TO UNCOMMENT
-    getMyLocationInfo();
-
-    super.onInit();
+  //FORCE RESET LOCATION
+  Future<void> refreshLocationNow() async {
+    await storage.remove(Keys.lastLocationUpdateKey); // ✅ await remove
+    await storage.save(); // ✅ flush removal
+    await getMyLocationInfoCached();
   }
 
-  clearData() {
+
+  // @override
+  // void onInit() {
+  //   ProfileController.instance.restoreUser();
+  //
+  //   getMyLocationInfo();
+  //
+  //   super.onInit();
+  // }
+
+  void clearData() {
     currentIndex.value = 0;
 
     currentMeetingCount.value = 0;
-    clientId.value = 0;
-    clientName.value = "";
-    clientDp.value = "";
-    currentMeetingET.value = "";
-    currentMeetingST.value = "";
     currentMeetingId.value = 1;
+    // clientId.value = 0;
+    // clientName.value = "";
+    // clientDp.value = "";
+    // currentMeetingET.value = "";
+    // currentMeetingST.value = "";
 
     country.value = '';
     city.value = '';
     timezone.value = '';
   }
 
-  clearAllData() {
+  void clearAllData() {
     AuthController().clearData();
     HomeController().clearData();
     MeetingsController().clearData();
@@ -214,7 +269,7 @@ class DashboardController extends GetxController {
     clearData();
   }
 
-  updateIndex(int index) {
+  void updateIndex(int index) {
     currentIndex.value = index;
   }
 

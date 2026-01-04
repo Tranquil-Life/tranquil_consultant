@@ -10,4 +10,7 @@ abstract class LocationRepo<T, F extends QueryParams> extends ApiService {
       required double timeZone,
       required String location,
       required String timeZoneIdentifier});
+
+  Future<Either<ApiError, dynamic>> reverseGeocode(
+      {required double latitude, required double longitude});
 }

@@ -7,10 +7,11 @@ import 'package:tl_consultant/core/constants/end_points.dart';
 import 'package:tl_consultant/core/errors/api_error.dart';
 import 'package:tl_consultant/features/chat/domain/repos/chat_repo.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
+import 'package:tl_consultant/main.dart';
 
 class ChatRepoImpl extends ChatRepo {
   @override
-  Future<Either<ApiError, dynamic>> deleteChat() {
+  Future<Either<ApiError, dynamic>> deleteMessage() {
     // TODO: implement deleteChat
     throw UnimplementedError();
   }
@@ -159,5 +160,14 @@ class ChatRepoImpl extends ChatRepo {
     );
 
     return result; // already an Either
+  }
+
+  @override
+  void saveCompletedVideoCall({required int meetingId, required int durationSeconds}) {
+    storage.write('last_complete_video_call', {
+      'duration': durationSeconds,
+      'meeting_id': meetingId,
+      'completed_at': DateTime.now().toIso8601String(),
+    });
   }
 }

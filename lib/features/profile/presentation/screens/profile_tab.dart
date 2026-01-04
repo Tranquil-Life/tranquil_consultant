@@ -41,21 +41,56 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   UserModel? client;
 
-  getMyLocationInfo() {
+  void getMyLocationInfo() {
     profileController.countryTEC.text = dashboardController.country.value;
     profileController.cityTEC.text = dashboardController.city.value;
     profileController.timeZoneTEC.text = dashboardController.timezone.value;
   }
 
+  // @override
+  // void initState() {
+  //   super.initState();
+  //
+  //   WidgetsBinding.instance.addPostFrameCallback((_) {
+  //     getMyLocationInfo();
+  //   });
+  //
+  //   client = UserModel.fromJson(userDataStore.user);
+  //   listenToController();
+  // }
+
+  Worker? _locWorker;
+
   @override
   void initState() {
     super.initState();
-    getMyLocationInfo();
     client = UserModel.fromJson(userDataStore.user);
     listenToController();
+
+    _locWorker = everAll(
+      [
+        dashboardController.country,
+        dashboardController.city,
+        dashboardController.timezone,
+      ],
+      (_) {
+        // ✅ avoid build-phase mutation
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) return;
+          getMyLocationInfo();
+        });
+      },
+    );
   }
 
-  listenToController() {
+  @override
+  void dispose() {
+    _locWorker?.dispose();
+    controller.dispose();
+    super.dispose();
+  }
+
+  void listenToController() {
     controller.addListener(() {
       setState(() {
         index = controller.index;
@@ -65,60 +100,62 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   @override
   Widget build(BuildContext context) {
-    getMyLocationInfo();
-
+    //  getMyLocationInfo(); // ❌ remove
     return UnFocusWidget(
         child: Scaffold(
-          backgroundColor: Colors.grey.shade100,
-          appBar: CustomAppBar(
-            backgroundColor: Colors.grey.shade100,
-            title: "My profile",
-            centerTitle: false,
-          ),
-          body: SingleChildScrollView(
-            child: Padding(
-              padding:
+      backgroundColor: Colors.grey.shade100,
+      appBar: CustomAppBar(
+        backgroundColor: Colors.grey.shade100,
+        title: "My profile",
+        centerTitle: false,
+        // onBackPressed: () =>
+        //     kIsWeb ? Get.offAllNamed(Routes.DASHBOARD) : Get.back(),
+          onBackPressed: () => Get.back(),
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding:
               const EdgeInsets.only(left: 24, right: 24, bottom: 24, top: 24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ProfileHead(
-                    client: client!,
-                    profileController: profileController,
-                  ),
-                  const SizedBox(height: 24),
-                  ProfileRow(profileController: profileController),
-                  const SizedBox(height: 24),
-                  PersonalInfo(client: client!),
-                  const SizedBox(height: 40),
-                  CustomTabBar(
-                    controller: controller,
-                    onTap: (i) {},
-                    label1: "My Bio",
-                    label2: "Qualifications",
-                  ),
-                  const SizedBox(height: 20),
-
-                  //Bio & Qualifications
-                  SizedBox(
-                    height: displayHeight(context) * 0.5,
-                    child: TabBarView(
-                      controller: controller,
-                      children: [
-                        BioTabView(),
-                        SingleChildScrollView(
-                          child: QualificationsTabView(
-                              profileController: profileController),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 40)
-                ],
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ProfileHead(
+                client: client!,
+                profileController: profileController,
               ),
-            ),
+              const SizedBox(height: 24),
+              ProfileRow(profileController: profileController),
+              const SizedBox(height: 24),
+              PersonalInfo(client: client!),
+              const SizedBox(height: 40),
+              CustomTabBar(
+                controller: controller,
+                onTap: (i) {},
+                label1: "My Bio",
+                label2: "Qualifications",
+              ),
+              const SizedBox(height: 20),
+
+              //Bio & Qualifications
+              SizedBox(
+                height: displayHeight(context) * 0.5,
+                child: TabBarView(
+                  controller: controller,
+                  children: [
+                    BioTabView(),
+                    SingleChildScrollView(
+                      child: QualificationsTabView(
+                          profileController: profileController),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 40)
+            ],
           ),
-        ));
+        ),
+      ),
+    ));
   }
 }
 
@@ -158,58 +195,69 @@ class _ProfileHeadState extends State<ProfileHead> {
         CircleAvatar(
           backgroundColor: ColorPalette.grey[100],
           radius: 52,
-          child: MyAvatarWidget(size: 52*2),
+          child: MyAvatarWidget(size: 52 * 2),
         ),
         const SizedBox(
           width: 8,
         ),
-        Expanded(flex: 4, child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Obx(()=>Text(
-              truncateWithEllipsis(
-                  (displayWidth(context) / 14).toInt(),
-                  "${widget.profileController.firstNameTEC.text} ${widget.profileController.lastNameTEC.text} ${containsTitle(widget.profileController.titles.join(', '))}"
-              )
-              ,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
-            ),),
-            SizedBox(
-              height: 2,
-            ),
-            Text(
-              "Clinical therapist",
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            Row(
+        Expanded(
+            flex: 4,
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(
-                  Icons.location_on_outlined,
-                  color: ColorPalette.blue.shade600,
+
+                ValueListenableBuilder<TextEditingValue>(
+                  valueListenable: widget.profileController.firstNameTEC,
+                  builder: (_, __, ___) {
+                    return Text("${widget.profileController.firstNameTEC.text} ${widget.profileController.lastNameTEC.text} ${containsTitle(widget.profileController.titles.join(', '))}");
+                  },
                 ),
-                Expanded(child: Text(
-                  truncateWithEllipsis(28, "${widget.profileController.countryTEC.text}/${widget.profileController.cityTEC.text}"),
+
+                // Obx(
+                //   () => Text(
+                //     truncateWithEllipsis((displayWidth(context) / 14).toInt(),
+                //         "${widget.profileController.firstNameTEC.text} ${widget.profileController.lastNameTEC.text} ${containsTitle(widget.profileController.titles.join(', '))}"),
+                //     style: TextStyle(
+                //       fontSize: 18,
+                //       fontWeight: FontWeight.w600,
+                //     ),
+                //   ),
+                // ),
+                SizedBox(
+                  height: 2,
+                ),
+                Text(
+                  "Clinical therapist",
                   style: TextStyle(
-                    color: ColorPalette.blue.shade600,
-                    fontSize: AppFonts.defaultSize,
+                    fontSize: 12,
                     fontWeight: FontWeight.w400,
                   ),
-                ),)
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(
+                      Icons.location_on_outlined,
+                      color: ColorPalette.blue.shade600,
+                    ),
+                    Expanded(
+                      child: Text(
+                        truncateWithEllipsis(28,
+                            "${DashboardController.instance.country.value}/${DashboardController.instance.state.value}"),
+                        style: TextStyle(
+                          color: ColorPalette.blue.shade600,
+                          fontSize: AppFonts.defaultSize,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    )
+                  ],
+                )
               ],
-            )
-
-          ],
-        )),
+            )),
         Expanded(
           child: Align(
             alignment: Alignment.topRight,
@@ -268,8 +316,8 @@ class _ProfileHeadState extends State<ProfileHead> {
         //   value: 'sign out',
         //   child: Text('Sign out'),
         // ),
-         PopupMenuItem(
-          onTap: ()=>Get.toNamed(Routes.SETTINGS),
+        PopupMenuItem(
+          onTap: () => Get.toNamed(Routes.SETTINGS),
           value: 'delete',
           child: Text('Settings'),
         ),
@@ -289,9 +337,17 @@ class ProfileRow extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(child: ProfileRowItem(title: "Sessions", figure: "${profileController.meetingsCount.value}"),),
+        Expanded(
+          child: ProfileRowItem(
+              title: "Sessions",
+              figure: "${profileController.meetingsCount.value}"),
+        ),
         SizedBox(width: 24),
-        Expanded(child: ProfileRowItem(title: "Clients", figure: "${profileController.clientsCount.value}"),)
+        Expanded(
+          child: ProfileRowItem(
+              title: "Clients",
+              figure: "${profileController.clientsCount.value}"),
+        )
       ],
     );
   }
@@ -326,7 +382,7 @@ class ProfileRowItem extends StatelessWidget {
               Divider(
                 endIndent: 32,
                 indent: 32,
-                color:Colors.grey.shade100,
+                color: Colors.grey.shade100,
               ),
               Text(
                 title,
@@ -350,7 +406,7 @@ class PersonalInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return  Row(
+    return Row(
       children: [
         SvgPicture.asset(
           height: 16,
