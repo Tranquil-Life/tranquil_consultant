@@ -63,7 +63,7 @@ class DashboardController extends GetxController {
   // var currentMeetingET = "".obs;
   // var currentMeetingST = "".obs;
 
-  var country = "".obs;
+  var country = "${userDataStore.user['location']}".obs;
   var state = "".obs;
   var city = "".obs;
   var street = "".obs;
@@ -224,8 +224,8 @@ class DashboardController extends GetxController {
 
   //FORCE RESET LOCATION
   Future<void> refreshLocationNow() async {
-    await storage.remove(Keys.lastLocationUpdateKey); // ✅ await remove
-    await storage.save(); // ✅ flush removal
+    await storage.remove(Keys.lastLocationUpdateKey); // await remove
+    await storage.save(); // flush removal
     await getMyLocationInfoCached();
   }
 

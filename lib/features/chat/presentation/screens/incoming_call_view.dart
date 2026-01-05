@@ -8,22 +8,36 @@ import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/chat_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/video_call_controller.dart';
 
-class IncomingCallView extends StatelessWidget {
-  IncomingCallView({
-    super.key,
-    required this.clientId,
-    required this.clientName,
-    required this.clientDp,
-    this.userType,
-  });
+class IncomingCallView extends StatefulWidget {
+  const IncomingCallView({super.key});
 
-  final int clientId;
-  final String clientName;
-  final String clientDp;
-  final String? userType;
+  @override
+  State<IncomingCallView> createState() => _IncomingCallViewState();
+}
 
+class _IncomingCallViewState extends State<IncomingCallView> {
   final videoCallController = VideoCallController.instance;
+
   final chatController = ChatController.instance;
+
+  var args = Get.arguments;
+
+  late final int clientId;
+  late final String clientName;
+  late final String clientDp;
+  late final String userType;
+
+  @override
+  void initState() {
+    if(args != null){
+      clientId = args['client_id'];
+      clientName = args['client_name'];
+      clientDp = args['client_dp'];
+      userType = args['user_type'];
+    }
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

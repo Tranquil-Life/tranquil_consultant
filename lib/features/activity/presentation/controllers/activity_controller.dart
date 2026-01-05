@@ -30,7 +30,7 @@ class ActivityController extends GetxController {
   // The controller for the ListView
   late ScrollController scrollController;
 
-  loadFirstNotifications() async {
+  Future<void> loadFirstNotifications() async {
     isFirstLoadRunning.value = true;
 
     Either either =
@@ -50,7 +50,7 @@ class ActivityController extends GetxController {
 
   // This function will be triggered whenever the user scroll
   // to near the bottom of the list view
-  loadMoreTransactions() async {
+  Future<void> loadMoreNotifications() async {
     if (hasNextPage.value == true &&
         isFirstLoadRunning.value == false &&
         isLoadMoreRunning.value == false &&

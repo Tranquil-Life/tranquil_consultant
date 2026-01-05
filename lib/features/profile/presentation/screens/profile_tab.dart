@@ -100,7 +100,6 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   @override
   Widget build(BuildContext context) {
-    //  getMyLocationInfo(); // ❌ remove
     return UnFocusWidget(
         child: Scaffold(
       backgroundColor: Colors.grey.shade100,
@@ -110,7 +109,13 @@ class _ProfileScreenState extends State<ProfileScreen>
         centerTitle: false,
         // onBackPressed: () =>
         //     kIsWeb ? Get.offAllNamed(Routes.DASHBOARD) : Get.back(),
-          onBackPressed: () => Get.back(),
+        onBackPressed: () {
+          if (Get.key.currentState?.canPop() ?? false) {
+            Get.back();
+          } else {
+            Get.offAllNamed(Routes.DASHBOARD);// fallback route
+          }
+        },
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -205,11 +210,11 @@ class _ProfileHeadState extends State<ProfileHead> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
                 ValueListenableBuilder<TextEditingValue>(
                   valueListenable: widget.profileController.firstNameTEC,
                   builder: (_, __, ___) {
-                    return Text("${widget.profileController.firstNameTEC.text} ${widget.profileController.lastNameTEC.text} ${containsTitle(widget.profileController.titles.join(', '))}");
+                    return Text(
+                        "${widget.profileController.firstNameTEC.text} ${widget.profileController.lastNameTEC.text} ${containsTitle(widget.profileController.titles.join(', '))}");
                   },
                 ),
 
@@ -226,13 +231,13 @@ class _ProfileHeadState extends State<ProfileHead> {
                 SizedBox(
                   height: 2,
                 ),
-                Text(
-                  "Clinical therapist",
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
+                // Text(
+                //   "Clinical therapist",
+                //   style: TextStyle(
+                //     fontSize: 12,
+                //     fontWeight: FontWeight.w400,
+                //   ),
+                // ),
                 SizedBox(
                   height: 10,
                 ),
@@ -246,7 +251,7 @@ class _ProfileHeadState extends State<ProfileHead> {
                     Expanded(
                       child: Text(
                         truncateWithEllipsis(28,
-                            "${DashboardController.instance.country.value}/${DashboardController.instance.state.value}"),
+                            "${DashboardController.instance.country.value} ${DashboardController.instance.state.value.isNotEmpty ? "/" : ""} ${DashboardController.instance.state.value}"),
                         style: TextStyle(
                           color: ColorPalette.blue.shade600,
                           fontSize: AppFonts.defaultSize,
@@ -306,7 +311,7 @@ class _ProfileHeadState extends State<ProfileHead> {
       ),
       items: [
         PopupMenuItem(
-          onTap: () => Get.to(const EditProfileScreen()),
+          onTap: () => Get.toNamed(Routes.EDIT_PROFILE),
           value: 'edit',
           child: Text('Edit profile'),
         ),

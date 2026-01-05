@@ -84,8 +84,13 @@ class _EditSlotsState extends State<EditSlots> {
         title: 'Edit Availability',
         fontFamily: AppFonts.mulishSemiBold,
         // onBackPressed: () => Get.offAllNamed(Routes.DASHBOARD),
-        onBackPressed: () => Get.back(),
-      ),
+        onBackPressed: () {
+          if (Get.key.currentState?.canPop() ?? false) {
+            Get.back();
+          } else {
+            Get.offAllNamed(Routes.DASHBOARD);// fallback route
+          }
+        },      ),
       backgroundColor: Colors.grey[200],
       body: Padding(
         padding: const EdgeInsets.fromLTRB(24, 12, 24, 16),

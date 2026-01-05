@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/global/buttons.dart';
 import 'package:tl_consultant/core/global/custom_app_bar.dart';
 import 'package:tl_consultant/core/global/custom_text.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/utils/helpers/svg_elements.dart';
+import 'package:tl_consultant/core/utils/routes/app_pages.dart';
 import 'package:tl_consultant/features/settings/presentation/widgets/section_widget.dart';
 import 'package:tl_consultant/features/settings/presentation/widgets/sign_out_dialog.dart';
 
@@ -21,6 +23,13 @@ class SettingsScreen extends StatelessWidget {
           backgroundColor: ColorPalette.scaffoldColor,
           title: "Settings",
           centerTitle: false,
+          onBackPressed: () {
+            if (Get.key.currentState?.canPop() ?? false) {
+              Get.back();
+            } else {
+              Get.offNamed(Routes.PROFILE);// fallback route
+            }
+          },
         ),
         body: SingleChildScrollView(
           child: SafeArea(

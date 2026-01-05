@@ -9,7 +9,9 @@ import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/utils/functions.dart';
 import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 import 'package:tl_consultant/core/utils/helpers/svg_elements.dart';
+import 'package:tl_consultant/core/utils/routes/app_pages.dart';
 import 'package:tl_consultant/features/auth/presentation/widgets/means_of_id_field.dart';
+import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
 import 'package:tl_consultant/features/journal/domain/entities/personal_note.dart';
 import 'package:tl_consultant/features/journal/domain/entities/shared_note/shared_note.dart';
 import 'package:tl_consultant/features/journal/presentation/controllers/notes_controller.dart';
@@ -24,6 +26,7 @@ class CreateNote extends StatefulWidget {
 
 class _CreateNoteState extends State<CreateNote> {
   final notesController = NotesController.instance;
+  final dashboardController = DashboardController.instance;
 
   String formatTextIcon = SvgElements.svgFormatTextIcon;
   String attachIconPath = SvgElements.svgAttachIcon;
@@ -78,6 +81,15 @@ class _CreateNoteState extends State<CreateNote> {
         appBar: CustomAppBar(
           centerTitle: false,
           title: sharedNote == null ? isAlreadySaved ? "Edit note" : "New note" : "View note",
+          onBackPressed: () async{
+            if (Get.key.currentState?.canPop() ?? false) {
+              Get.back();
+            } else {
+              Get.offAllNamed(Routes.DASHBOARD);// fallback route
+              await Future.delayed(const Duration(milliseconds: 500));
+              dashboardController.currentIndex.value = 1;
+            }
+          },
           actions: [
             AppBarAction(
               actionBgColor: ColorPalette.green,

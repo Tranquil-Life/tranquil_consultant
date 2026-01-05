@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tl_consultant/core/global/custom_app_bar.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
+import 'package:tl_consultant/core/utils/routes/app_pages.dart';
 import 'package:tl_consultant/features/activity/presentation/controllers/activity_controller.dart';
 import 'package:tl_consultant/features/activity/presentation/widgets/notification_card.dart';
 
@@ -24,7 +25,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
 
     activityController.scrollController = ScrollController()
-      ..addListener(() => activityController.loadMoreTransactions());
+      ..addListener(() => activityController.loadMoreNotifications());
     super.initState();
   }
 
@@ -40,13 +41,19 @@ class _NotificationScreenState extends State<NotificationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ColorPalette.scaffoldColor,
-      appBar: const CustomAppBar(title: 'Activity'),
+      appBar: CustomAppBar(title: 'Activity',
+        onBackPressed: () {
+          if (Get.key.currentState?.canPop() ?? false) {
+            Get.back();
+          } else {
+            Get.offAllNamed(Routes.DASHBOARD);// fallback route
+          }
+        },),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: GestureDetector(
             onTap: () => setState(() {}),
             child: GetBuilder<ActivityController>(
-              init: ActivityController(),
               builder: (_) => Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
