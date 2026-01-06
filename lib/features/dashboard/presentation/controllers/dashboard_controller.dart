@@ -29,11 +29,14 @@ import 'package:tl_consultant/features/profile/presentation/controllers/profile_
 import 'package:tl_consultant/features/wallet/presentation/controllers/earnings_controller.dart';
 import 'package:tl_consultant/features/wallet/presentation/controllers/transactions_controller.dart';
 import 'package:tl_consultant/features/wallet/presentation/screens/wallet_tab.dart';
+import 'package:tl_consultant/main.dart';
 
 class DashboardController extends GetxController {
   static DashboardController get instance => Get.find<DashboardController>();
 
   final LocationRepoImpl locationRepo = LocationRepoImpl();
+
+  static const int locationUpdateIntervalMs = 24 * 60 * 60 * 1000; // 24 hours
 
   RxInt currentIndex = 0.obs;
   final List<Widget> pages = [
@@ -73,10 +76,10 @@ class DashboardController extends GetxController {
 
   Future updateLocation(
       {required double latitude,
-      required double longitude,
-      required double timeZone,
-      required String location,
-      required String timeZoneIdentifier}) async {
+        required double longitude,
+        required double timeZone,
+        required String location,
+        required String timeZoneIdentifier}) async {
     Either either = await locationRepo.updateLocation(
         latitude: latitude,
         longitude: longitude,
@@ -181,51 +184,69 @@ class DashboardController extends GetxController {
     print("dashboard update: country: ${country.value}\nstate: ${state.value}\nlocationToSend: $locationToSend");
   }
 
-  Future<void> getMeetings() async {
-    await MeetingsController().loadFirstMeetings();
+  int? _readInt(String key) {
+    final v = storage.read(key);
+    if (v == null) return null;
+    if (v is int) return v;
+    if (v is double) return v.toInt();
+    if (v is String) return int.tryParse(v);
+    return null;
+  }
 
-    for (var meeting in MeetingsController.instance.meetings) {
-      if (meeting.endAt.isAfter(DateTimeExtension.now) &&
-          (meeting.startAt.isBefore(DateTimeExtension.now) ||
-              meeting.startAt == DateTimeExtension.now)) {
-        currentMeetingCount.value = 1;
-        currentMeetingId.value = meeting.id;
-        clientId.value = meeting.client.id!;
-        clientDp.value = meeting.client.avatarUrl;
-        clientName.value = meeting.client.firstName;
-        currentMeetingST.value = meeting.startAt.formatDate;
-        currentMeetingET.value = meeting.endAt.formatDate;
-      }
+
+  Future<void> getMyLocationInfoCached() async {
+    final now = DateTime.now().millisecondsSinceEpoch;
+    final lastTs = _readInt(Keys.lastLocationUpdateKey);
+
+    print("old last timestamp: $lastTs");
+
+    // If we have a timestamp and it's still within 24h, skip
+    if (lastTs != null && (now - lastTs) < locationUpdateIntervalMs) {
+      debugPrint('Location update skipped (cached)');
+      return;
     }
+
+    debugPrint('Running location update');
+
+    try {
+      await getMyLocationInfo(); // Update location
+
+      await storage.write(Keys.lastLocationUpdateKey, now); // ✅ await write
+      await storage.save(); // ✅ force flush (important on web)
+
+      final savedTs = _readInt(Keys.lastLocationUpdateKey);
+      print("new last timestamp: $savedTs");
+    } catch (e, s) {
+      debugPrint('Location update failed: $e');
+      debugPrintStack(stackTrace: s);
+    }
+
   }
 
-  @override
-  void onInit() {
-    ProfileController.instance.restoreUser();
-
-    //TODO: REMEMBER TO UNCOMMENT
-    getMyLocationInfo();
-
-    super.onInit();
+  Future<void> refreshLocationNow() async {
+    await storage.remove(Keys.lastLocationUpdateKey); // ✅ await remove
+    await storage.save(); // ✅ flush removal
+    await getMyLocationInfoCached();
   }
 
-  clearData() {
+  void clearData() {
     currentIndex.value = 0;
 
     currentMeetingCount.value = 0;
-    clientId.value = 0;
-    clientName.value = "";
-    clientDp.value = "";
-    currentMeetingET.value = "";
-    currentMeetingST.value = "";
     currentMeetingId.value = 1;
+    // clientId.value = 0;
+    // clientName.value = "";
+    // clientDp.value = "";
+    // currentMeetingET.value = "";
+    // currentMeetingST.value = "";
 
     country.value = '';
     city.value = '';
     timezone.value = '';
   }
 
-  clearAllData() {
+
+  void clearAllData() {
     AuthController().clearData();
     HomeController().clearData();
     MeetingsController().clearData();
@@ -239,7 +260,7 @@ class DashboardController extends GetxController {
     clearData();
   }
 
-  updateIndex(int index) {
+  void updateIndex(int index) {
     currentIndex.value = index;
   }
 

@@ -36,6 +36,7 @@ import 'features/wallet/presentation/controllers/transactions_controller.dart';
 
 late List<CameraDescription> cameras;
 PusherChannelsFlutter pusher = PusherChannelsFlutter.getInstance();
+GetStorage storage = GetStorage();
 
 Future<void> initializeFirebase() async {
   FirebaseApp app = await Firebase.initializeApp(

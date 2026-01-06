@@ -42,7 +42,7 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   void initState() {
-    dashboardController.getMyLocationInfo();
+    dashboardController.getMyLocationInfoCached();
     profileController.restoreUser();
 
     profileCompletionCheck();
