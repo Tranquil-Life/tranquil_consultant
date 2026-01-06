@@ -71,81 +71,61 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Init storage first
   await GetStorage.init();
 
-  // Init Firebase once
+  // Firebase
   if (kIsWeb) {
-    await initializeFirebase(); // must include correct FirebaseOptions
+    await initializeFirebase();
   } else {
     await Firebase.initializeApp();
   }
 
-  // Request permission
+  // Controllers (register ONCE)
+  void registerControllers() {
+    if (!Get.isRegistered<ProfileController>()) Get.put(ProfileController());
+    if (!Get.isRegistered<OnboardingController>()) Get.put(OnboardingController());
+    if (!Get.isRegistered<AuthController>()) Get.put(AuthController());
+    if (!Get.isRegistered<DashboardController>()) Get.put(DashboardController());
+    if (!Get.isRegistered<ActivityController>()) Get.put(ActivityController());
+    if (!Get.isRegistered<HomeController>()) Get.put(HomeController());
+    if (!Get.isRegistered<EarningsController>()) Get.put(EarningsController());
+    if (!Get.isRegistered<TransactionsController>()) Get.put(TransactionsController());
+    if (!Get.isRegistered<NotesController>()) Get.put(NotesController());
+    if (!Get.isRegistered<SettingsController>()) Get.put(SettingsController());
+    if (!Get.isRegistered<EventsController>()) Get.put(EventsController());
+    if (!Get.isRegistered<MeetingsController>()) Get.put(MeetingsController());
+    if (!Get.isRegistered<SlotController>()) Get.put(SlotController());
+    if (!Get.isRegistered<ChatController>()) Get.put(ChatController());
+    if (!Get.isRegistered<VideoCallController>()) Get.put(VideoCallController());
+    if (!Get.isRegistered<MessageController>()) Get.put(MessageController());
+    if (!Get.isRegistered<UploadController>()) Get.put(UploadController());
+    if (!Get.isRegistered<VideoRecordingController>()) Get.put(VideoRecordingController());
+    if (!Get.isRegistered<NetworkController>()) Get.put(NetworkController());
+    if (!Get.isRegistered<GrowthKitController>()) Get.put(GrowthKitController());
+  }
+
+  tz.initializeTimeZones();
+
+  // Messaging (don’t use Get.context! here)
   final settings = await FirebaseMessaging.instance.requestPermission();
   debugPrint('User granted permission: ${settings.authorizationStatus}');
 
-  // Web token needs VAPID key
   final token = await FirebaseMessaging.instance.getToken(
     vapidKey: kIsWeb ? kWebVapidKey : null,
   );
   debugPrint('Firebase messaging token: $token');
 
-
-  // Register before running the app
-  Get.put<ProfileController>(ProfileController());
-  Get.put<OnboardingController>(OnboardingController());
-  Get.put<AuthController>(AuthController());
-  Get.put<DashboardController>(DashboardController());
-  Get.put<ActivityController>(ActivityController());
-  Get.put<HomeController>(HomeController());
-  Get.put<EarningsController>(EarningsController());
-  Get.put<TransactionsController>(TransactionsController());
-  Get.put<NotesController>(NotesController());
-  Get.put<ProfileController>(ProfileController());
-  Get.put<SettingsController>(SettingsController());
-  Get.put<EventsController>(EventsController());
-
-  Get.put<NotesController>(NotesController());
-  Get.put<MeetingsController>(MeetingsController());
-  Get.put<SlotController>(SlotController());
-
-  Get.put<ChatController>(ChatController());
-  Get.put<VideoCallController>(VideoCallController());
-  Get.put<MessageController>(MessageController());
-  Get.put<UploadController>(UploadController());
-  Get.put<VideoRecordingController>(VideoRecordingController());
-  Get.put<NetworkController>(NetworkController());
-  Get.put<GrowthKitController>(GrowthKitController());
-
-  tz.initializeTimeZones(); //for timezone initialization
-
-
-  // Background handler (mobile only)
-  if (!kIsWeb) {
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  }
-
-  // Listen for messages
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    debugPrint('Foreground message: ${message.notification?.title}');
-
     final title = message.notification?.title ?? 'Tranquil Life';
     final body = message.notification?.body ?? '';
 
-    CustomSnackBar.showSnackBar(
-        context: Get.context!,
-        title: title,
-        message: body,
-        backgroundColor: ColorPalette.blue,
-        snackPosition: SnackPosition.TOP,
-        duration: const Duration(seconds: 5));
-
+    // ✅ No BuildContext needed
+    Get.snackbar(title, body, snackPosition: SnackPosition.TOP, duration: const Duration(seconds: 5));
   });
 
-
-  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-    debugPrint('Notification clicked: ${message.notification?.title}');  });
+  if (!kIsWeb) {
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  }
 
   try {
     cameras = await availableCameras()
@@ -154,22 +134,24 @@ Future<void> main() async {
     cameras = [];
   }
 
-  await SentryFlutter.init(
-        (options) {
-      options.dsn = sentryDSN;
-      options.tracesSampleRate = 1.0;
-      options.profilesSampleRate = 1.0;
-    },
-  );
+  registerControllers();
 
-  // Sentry init (make sure you use appRunner)
-  await SentryFlutter.init(
-        (options) {
-      options.dsn = sentryDSN;
-      options.tracesSampleRate = 1.0;
-      options.profilesSampleRate = 1.0;
-    },
-    appRunner: () => runApp(const App()),
-  );
+  // ✅ ONE Sentry init, always start app even if Sentry fails/blocked
+  try {
+    await SentryFlutter.init(
+          (options) {
+        options.dsn = sentryDSN;
+
+        // Strongly recommended on web (adblockers often block tracing bundle)
+        options.tracesSampleRate = kIsWeb ? 0.0 : 1.0;
+        options.profilesSampleRate = kIsWeb ? 0.0 : 1.0;
+      },
+      appRunner: () => runApp(const App()),
+    );
+  } catch (e, st) {
+    debugPrint('Sentry init failed: $e');
+    debugPrintStack(stackTrace: st);
+    runApp(const App());
+  }
 }
 
