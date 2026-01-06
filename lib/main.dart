@@ -64,7 +64,6 @@ void main() async {
     }
   }
 
-
   await Firebase.initializeApp();
 
   tz.initializeTimeZones(); //for timezone initialization
