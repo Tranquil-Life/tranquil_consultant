@@ -159,7 +159,7 @@ class MeetingsController extends GetxController {
   //   Get.back();
   // }
 
-  clearData() {
+  void clearData() {
     meetingsCount.value = 0;
     loading.value = false;
     meetings.clear();
