@@ -77,10 +77,10 @@ class DashboardController extends GetxController {
 
   Future updateLocation(
       {required double latitude,
-      required double longitude,
-      required double timeZone,
-      required String location,
-      required String timeZoneIdentifier}) async {
+        required double longitude,
+        required double timeZone,
+        required String location,
+        required String timeZoneIdentifier}) async {
     Either either = await locationRepo.updateLocation(
         latitude: latitude,
         longitude: longitude,
