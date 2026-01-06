@@ -7,23 +7,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
 import 'package:timezone/data/latest.dart' as tz;
-
-import 'package:tl_consultant/app.dart';
-
-// controllers...
-import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
-import 'package:tl_consultant/features/onboarding/presentation/controllers/onboarding_controller.dart';
-import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';
-import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
-import 'package:tl_consultant/features/activity/presentation/controllers/activity_controller.dart';
-import 'package:tl_consultant/features/home/presentation/controllers/home_controller.dart';
-import 'package:tl_consultant/features/home/presentation/controllers/event_controller.dart';
-import 'package:tl_consultant/features/settings/presentation/controllers/settings_controller.dart';
-import 'package:tl_consultant/features/wallet/presentation/controllers/earnings_controller.dart';
-import 'package:tl_consultant/features/wallet/presentation/controllers/transactions_controller.dart';
-import 'package:tl_consultant/features/journal/presentation/controllers/notes_controller.dart';
-import 'package:tl_consultant/features/consultation/presentation/controllers/meetings_controller.dart';
-import 'package:tl_consultant/features/consultation/presentation/controllers/slot_controller.dart';
+import 'package:tl_consultant/core/theme/colors.dart';
+import 'package:tl_consultant/core/utils/services/API/network/controllers/network_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/chat_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/video_call_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/message_controller.dart';
@@ -32,6 +17,22 @@ import 'package:tl_consultant/features/media/presentation/controllers/video_reco
 import 'package:tl_consultant/core/utils/services/API/network/controllers/network_controller.dart';
 import 'package:tl_consultant/features/growth_kit/presentation/controllers/growth_kit_controller.dart';
 
+import 'core/constants/constants.dart';
+import 'core/global/custom_snackbar.dart';
+import 'features/activity/presentation/controllers/activity_controller.dart';
+import 'features/auth/presentation/controllers/auth_controller.dart';
+import 'features/chat/presentation/controllers/upload_controller.dart';
+import 'features/consultation/presentation/controllers/meetings_controller.dart';
+import 'features/consultation/presentation/controllers/slot_controller.dart';
+import 'features/home/presentation/controllers/home_controller.dart';
+import 'features/journal/presentation/controllers/notes_controller.dart';
+import 'features/media/presentation/controllers/video_recording_controller.dart';
+import 'features/onboarding/presentation/controllers/onboarding_controller.dart';
+import 'features/settings/presentation/controllers/settings_controller.dart';
+import 'features/wallet/presentation/controllers/earnings_controller.dart';
+import 'features/wallet/presentation/controllers/transactions_controller.dart';
+
+late List<CameraDescription> cameras;
 PusherChannelsFlutter pusher = PusherChannelsFlutter.getInstance();
 GetStorage storage = GetStorage();
 
@@ -57,60 +58,111 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   debugPrint("🔕 Background message: ${message.messageId}");
 }
 
-Future<void> main() async {
+GetStorage storage = GetStorage();
+
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // ✅ 1) init Firebase ONCE
-  if (Firebase.apps.isEmpty) {
-    if (kIsWeb) {
-      await initializeFirebaseWeb();
-    } else {
-      await Firebase.initializeApp();
-    }
-  }
-
-  // ✅ 2) init GetStorage BEFORE any controller is created
+  // Init storage first
   await GetStorage.init();
 
-  // ✅ 3) timezone
-  tz.initializeTimeZones();
-
-  // ✅ 4) FCM: web vs mobile differences
-  if (!kIsWeb) {
-    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
-
-    final settings = await FirebaseMessaging.instance.requestPermission(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
-    debugPrint('User granted permission: ${settings.authorizationStatus}');
+  // Init Firebase once
+  if (kIsWeb) {
+    await initializeFirebase(); // must include correct FirebaseOptions
   } else {
-    // On web, permission/token flow differs; token may require vapidKey.
-    // FirebaseMessaging.instance.getToken(vapidKey: 'YOUR_WEB_PUSH_CERTIFICATE_KEY');
+    await Firebase.initializeApp();
   }
 
-  // ✅ 5) Put controllers ONCE (remove duplicates)
-  Get.put(ProfileController());
-  Get.put(OnboardingController());
-  Get.put(AuthController());
-  Get.put(DashboardController());
-  Get.put(ActivityController());
-  Get.put(HomeController());
-  Get.put(EarningsController());
-  Get.put(TransactionsController());
-  Get.put(NotesController());
-  Get.put(SettingsController());
-  Get.put(EventsController());
-  Get.put(MeetingsController());
-  Get.put(SlotController());
-  Get.put(ChatController());
-  Get.put(VideoCallController());
-  Get.put(MessageController());
-  Get.put(UploadController());
-  Get.put(VideoRecordingController());
-  Get.put(NetworkController());
-  Get.put(GrowthKitController());
+  final settings = await FirebaseMessaging.instance.requestPermission(
+    criticalAlert: true,
+    announcement: true,
+    carPlay: true,
+    providesAppNotificationSettings: true,
+  );
+
+  debugPrint('User granted permission: ${settings.authorizationStatus}');
+
+  // Background handler (mobile only)
+  if (!kIsWeb) {
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  }
+
+  // Foreground messages
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    debugPrint('Foreground message: ${message.notification?.title}');
+
+    final title = message.notification?.title ?? 'Tranquil Life';
+    final body = message.notification?.body ?? '';
+
+    CustomSnackBar.showSnackBar(
+        context: Get.context!,
+        title: title,
+        message: body,
+        backgroundColor: ColorPalette.blue,
+        snackPosition: SnackPosition.TOP,
+        duration: const Duration(seconds: 5));
+  });
+
+  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+    debugPrint('Notification clicked: ${message.notification?.title}');
+  });
+
+  // Register before running the app
+  Get.put<ProfileController>(ProfileController());
+  Get.put<OnboardingController>(OnboardingController());
+  Get.put<AuthController>(AuthController());
+  Get.put<DashboardController>(DashboardController());
+  Get.put<ActivityController>(ActivityController());
+  Get.put<HomeController>(HomeController());
+  Get.put<EarningsController>(EarningsController());
+  Get.put<TransactionsController>(TransactionsController());
+  Get.put<NotesController>(NotesController());
+  Get.put<ProfileController>(ProfileController());
+  Get.put<SettingsController>(SettingsController());
+  Get.put<EventsController>(EventsController());
+
+  Get.put<NotesController>(NotesController());
+  Get.put<MeetingsController>(MeetingsController());
+  Get.put<SlotController>(SlotController());
+
+  Get.put<ChatController>(ChatController());
+  Get.put<VideoCallController>(VideoCallController());
+  Get.put<MessageController>(MessageController());
+  Get.put<UploadController>(UploadController());
+  Get.put<VideoRecordingController>(VideoRecordingController());
+  Get.put<NetworkController>(NetworkController());
+  Get.put<GrowthKitController>(GrowthKitController());
+
+  if (!kIsWeb) {
+    tz.initializeTimeZones();
+  }
+
+  // Cameras (optional)
+  try {
+    cameras = await availableCameras()
+        .timeout(const Duration(seconds: 5), onTimeout: () => []);
+  } catch (_) {
+    cameras = [];
+  }
+
+  // await SentryFlutter.init(
+  //       (options) {
+  //     options.dsn = sentryDSN;
+  //     options.tracesSampleRate = 1.0;
+  //     options.profilesSampleRate = 1.0;
+  //   },
+  // );
+
+  // // Sentry init (make sure you use appRunner)
+  //   await SentryFlutter.init(
+  //     (options) {
+  //       options.dsn = sentryDSN;
+  //       options.tracesSampleRate = 1.0;
+  //       options.profilesSampleRate = 1.0;
+  //     },
+  //     appRunner: () => runApp(const App()),
+  //   );
 
   runApp(const App());
 }
+
