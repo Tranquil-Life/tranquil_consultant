@@ -146,7 +146,7 @@ Future<void> main() async {
       cameras = [];
     }
 
-    // ZSentry must wrap runApp in the SAME zone
+    // Sentry must wrap runApp in the SAME zone
     await SentryFlutter.init(
           (options) => options.dsn = sentryDSN,
       appRunner: () => runApp(const App()),
