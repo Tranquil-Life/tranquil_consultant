@@ -7,7 +7,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
 import 'package:timezone/data/latest.dart' as tz;
-import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/utils/services/API/network/controllers/network_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/chat_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/video_call_controller.dart';
@@ -18,7 +17,6 @@ import 'package:tl_consultant/core/utils/services/API/network/controllers/networ
 import 'package:tl_consultant/features/growth_kit/presentation/controllers/growth_kit_controller.dart';
 
 import 'core/constants/constants.dart';
-import 'core/global/custom_snackbar.dart';
 import 'features/activity/presentation/controllers/activity_controller.dart';
 import 'features/auth/presentation/controllers/auth_controller.dart';
 import 'features/chat/presentation/controllers/upload_controller.dart';
@@ -51,6 +49,7 @@ Future<void> initializeFirebaseWeb() async {
   );
 }
 
+
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // Needed on mobile background isolate:
@@ -58,20 +57,19 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   debugPrint("🔕 Background message: ${message.messageId}");
 }
 
+
 GetStorage storage = GetStorage();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // Init storage first
-  await GetStorage.init();
-
-  // Init Firebase once
-  if (kIsWeb) {
-    await initializeFirebase(); // must include correct FirebaseOptions
-  } else {
-    await Firebase.initializeApp();
+  if (Firebase.apps.isEmpty) {
+    if (kIsWeb) {
+      await initializeFirebase();
+    } else {
+      await Firebase.initializeApp();
+    }
   }
+  await Firebase.initializeApp();
 
   final settings = await FirebaseMessaging.instance.requestPermission(
     criticalAlert: true,
@@ -79,33 +77,14 @@ void main() async {
     carPlay: true,
     providesAppNotificationSettings: true,
   );
-
   debugPrint('User granted permission: ${settings.authorizationStatus}');
 
-  // Background handler (mobile only)
-  if (!kIsWeb) {
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  }
-
-  // Foreground messages
-  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    debugPrint('Foreground message: ${message.notification?.title}');
-
-    final title = message.notification?.title ?? 'Tranquil Life';
-    final body = message.notification?.body ?? '';
-
-    CustomSnackBar.showSnackBar(
-        context: Get.context!,
-        title: title,
-        message: body,
-        backgroundColor: ColorPalette.blue,
-        snackPosition: SnackPosition.TOP,
-        duration: const Duration(seconds: 5));
+  FirebaseMessaging.instance.getToken().then((String? token) {
+    debugPrint('Firebase messaging token: $token');
   });
 
-  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-    debugPrint('Notification clicked: ${message.notification?.title}');
-  });
+  // Register this first!
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   // Register before running the app
   Get.put<ProfileController>(ProfileController());
@@ -133,17 +112,30 @@ void main() async {
   Get.put<NetworkController>(NetworkController());
   Get.put<GrowthKitController>(GrowthKitController());
 
-  if (!kIsWeb) {
-    tz.initializeTimeZones();
-  }
+  // Listen for messages
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    // print('Message received: ${message.notification?.title}');
+  });
 
-  // Cameras (optional)
+  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+    // print('Notification clicked: ${message.notification?.title}');
+  });
+
+  tz.initializeTimeZones(); //for timezone initialization
+
   try {
-    cameras = await availableCameras()
-        .timeout(const Duration(seconds: 5), onTimeout: () => []);
-  } catch (_) {
+    cameras =
+    await availableCameras().timeout(Duration(seconds: 5), onTimeout: () {
+      // print('Camera detection timed out');
+      return [];
+    });
+    // print('Cameras found: ${cameras.length}');
+  } catch (e) {
+    // print('Camera init failed: $e');
     cameras = [];
   }
+
+  await GetStorage.init();
 
   // await SentryFlutter.init(
   //       (options) {
@@ -153,16 +145,5 @@ void main() async {
   //   },
   // );
 
-  // // Sentry init (make sure you use appRunner)
-  //   await SentryFlutter.init(
-  //     (options) {
-  //       options.dsn = sentryDSN;
-  //       options.tracesSampleRate = 1.0;
-  //       options.profilesSampleRate = 1.0;
-  //     },
-  //     appRunner: () => runApp(const App()),
-  //   );
-
   runApp(const App());
 }
-
