@@ -49,12 +49,6 @@ class ConsultationRepoImpl extends ConsultantRepo {
   }
 
   @override
-  Future<Either<ApiError, dynamic>> endMeeting({required int meetingId}) {
-    // TODO: implement endMeeting
-    throw UnimplementedError();
-  }
-
-  @override
   Future<Either<ApiError, dynamic>> startMeeting({required int meetingId, required String userType}) async{
     var body = {"meeting_id": meetingId, "user_type": userType};
 

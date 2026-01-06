@@ -98,8 +98,6 @@ class _DashboardState extends State<Dashboard> {
       dashboardController.currentIndex.value = 2;
     }
 
-
-
     return Obx(() {
       return Scaffold(
         appBar: isSmallScreen(context)
@@ -123,6 +121,7 @@ class _DashboardState extends State<Dashboard> {
 
                   if (client != null) {
                     await chatController.getChatInfo(client: client!);
+                    await meetingsController.startMeeting();
                   } else {
                     CustomSnackBar.showSnackBar(
                         context: Get.context,
