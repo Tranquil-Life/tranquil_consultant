@@ -1,26 +1,21 @@
 import 'dart:async';
-import 'dart:io';
-
-import 'package:camera/camera.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
-import 'package:tl_consultant/app.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/utils/services/API/network/controllers/network_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/chat_controller.dart';
-import 'package:tl_consultant/features/chat/presentation/controllers/message_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/video_call_controller.dart';
-import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
+import 'package:tl_consultant/features/chat/presentation/controllers/message_controller.dart';
+import 'package:tl_consultant/features/chat/presentation/controllers/upload_controller.dart';
+import 'package:tl_consultant/features/media/presentation/controllers/video_recording_controller.dart';
+import 'package:tl_consultant/core/utils/services/API/network/controllers/network_controller.dart';
 import 'package:tl_consultant/features/growth_kit/presentation/controllers/growth_kit_controller.dart';
-import 'package:tl_consultant/features/home/presentation/controllers/event_controller.dart';
-import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
 
 import 'core/constants/constants.dart';
 import 'core/global/custom_snackbar.dart';
@@ -39,9 +34,10 @@ import 'features/wallet/presentation/controllers/transactions_controller.dart';
 
 late List<CameraDescription> cameras;
 PusherChannelsFlutter pusher = PusherChannelsFlutter.getInstance();
+GetStorage storage = GetStorage();
 
-Future<void> initializeFirebase() async {
-  FirebaseApp app = await Firebase.initializeApp(
+Future<void> initializeFirebaseWeb() async {
+  await Firebase.initializeApp(
     options: const FirebaseOptions(
       appId: "1:16125004014:web:1a1ccb278c740a6d5f8bff",
       apiKey: "AIzaSyDvEsztETqHYAwfJx0ocpjPTZccMNDMc-k",
@@ -53,14 +49,13 @@ Future<void> initializeFirebase() async {
       authDomain: "tranquil-life-llc.firebaseapp.com",
     ),
   );
-  print('Initialized default app $app');
 }
 
 @pragma('vm:entry-point')
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  debugPrint("🔕 Background message: $message");
-  debugPrint("🔕 Background message title: ${message.notification?.title}");
-  debugPrint("🔕 Background message body: ${message.notification?.body}");
+Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  // Needed on mobile background isolate:
+  await Firebase.initializeApp();
+  debugPrint("🔕 Background message: ${message.messageId}");
 }
 
 GetStorage storage = GetStorage();
