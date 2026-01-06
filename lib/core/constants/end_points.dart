@@ -1,6 +1,5 @@
 import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/utils/app_config.dart';
-import 'package:tl_consultant/features/wallet/presentation/controllers/earnings_controller.dart';
 
 const staging = 'https://tranquil-api-staging-205081a15c84.herokuapp.com';
 const production = 'https://tranquil-api.herokuapp.com';
@@ -43,8 +42,9 @@ abstract class ConsultationEndPoints {
   static const saveSlots = '$consultant/saveSlots';
   static const deleteSlot = '$consultant/deleteSlot';
   static const rateMember = '$consultant/rateMember';
+  static const startMeeting = '$consultant/startMeeting';
 
-  static getMeetings({required int page}) =>
+  static String getMeetings({required int page}) =>
       '$consultant/myMeetings?page=$page';
 }
 
@@ -125,10 +125,10 @@ abstract class ActivityEndpoints {
 abstract class CountriesNowEndpoints {
   static String get getCountries => 'countries';
 
-  static getStates({required String country}) =>
+  static String getStates({required String country}) =>
       'countries/states/q?country=$country';
 
-  static getCities({required String country, required String state}) =>
+  static String getCities({required String country, required String state}) =>
       'countries/state/cities/q?country=$country&state=$state';
 }
 

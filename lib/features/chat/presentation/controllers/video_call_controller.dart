@@ -16,37 +16,15 @@ import 'package:tl_consultant/features/consultation/presentation/controllers/mee
 import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
 import 'package:tl_consultant/features/profile/data/models/user_model.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
+import 'package:tl_consultant/main.dart';
 
 class VideoCallController extends GetxController {
   static VideoCallController get instance => Get.find<VideoCallController>();
 
   ChatRepoImpl repo = ChatRepoImpl();
 
-  RxSet<int> remoteIds = <int>{}.obs;
-  var agoraToken = "".obs;
   final now = DateTimeExtension.now;
   RxMap roomData = {}.obs;
-
-  Future joinAgoraCall() async {
-    await getAgoraToken();
-  }
-
-  Future getAgoraToken() async {
-    //Tell backend dev to set expiry time of token to be the duration of the
-    //meeting time left in seconds on the API
-
-    //if agora token and channelId don't exist on the firebase DB
-    //do this
-    Either either = await repo.getAgoraToken(
-        ChatController.instance.chatChannel.value,
-        DashboardController.instance.currentMeetingId.value);
-    either.fold((l) => CustomSnackBar.errorSnackBar(l.message.toString()),
-        (r) async {
-      agoraToken.value = r['data']['token'];
-
-      await navigateToCallView();
-    });
-  }
 
   Future<dynamic> createDailyRoom() async {
     final meetingsController = MeetingsController.instance;
@@ -64,7 +42,7 @@ class VideoCallController extends GetxController {
     timeLeft = timeLeft.clamp(0, maxSeconds).toInt();
 
     Either either = await repo.createDailyRoom(
-        channel: room, timeLeft: 15, chatId: chatController.chatId!.value);
+        channel: room, timeLeft: 120, chatId: chatController.chatId!.value);
 
     either.fold((l) => CustomSnackBar.errorSnackBar(l.message.toString()), (r) {
       if (r != null) {
@@ -93,7 +71,7 @@ class VideoCallController extends GetxController {
     timeLeft = timeLeft.clamp(0, maxSeconds).toInt();
 
     Either either = await repo.generateDailyToken(
-        room: room, timeLeft: 15, userType: consultant);
+        room: room, timeLeft: 120, userType: consultant);
 
     either.fold(
       (l) => CustomSnackBar.errorSnackBar(l.message.toString()),
@@ -107,23 +85,36 @@ class VideoCallController extends GetxController {
   }
 
   Future navigateToCallView() async {
-    if (kIsWeb) {
-      DailyRoom dailyRoom = await createDailyRoom();
-      String token = await getDailyToken();
+    DailyRoom dailyRoom = await createDailyRoom();
+    String token = await getDailyToken();
 
-      Get.toNamed(
-        Routes.WEB_VIDEO_CALL,
-        parameters: {
-          'room': dailyRoom.room ?? '',
-          'roomUrl': dailyRoom.roomUrl ?? '',
-          'expiresAt': '${dailyRoom.expiresAt ?? 0}',
-          'token': token,
-        },
-      );
-    } else {
-      Get.to(const VideoCallView(
-        isLocal: true,
-      ));
+    Get.toNamed(
+      Routes.WEB_VIDEO_CALL,
+      parameters: {
+        'room': dailyRoom.room ?? '',
+        'roomUrl': dailyRoom.roomUrl ?? '',
+        'expiresAt': '${dailyRoom.expiresAt ?? 0}',
+        'token': token,
+      },
+    );
+  }
+
+  bool canJoinVideoCall({
+    required int currentMeetingId,
+    int maxDurationSeconds = 15 * 60,
+  }) {
+    final data = storage.read('last_complete_video_call');
+    if (data == null || data is! Map) return true;
+
+    final storedMeetingId = data['meeting_id'];
+    final storedDuration = data['duration'];
+
+    if (storedMeetingId != currentMeetingId) return true;
+
+    if (storedDuration is int && storedDuration < maxDurationSeconds) {
+      return true; // still allowed
     }
+
+    return false;
   }
 }

@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/global/custom_snackbar.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/features/consultation/data/models/meeting_model.dart';
@@ -142,8 +143,11 @@ class MeetingsController extends GetxController {
     either.fold((l){
       print(l.message!);
       CustomSnackBar.errorSnackBar(l.message!);
-    }, (r) {
+    }, (r) async{
       print("rate meeting: $r");
+
+      await loadFirstMeetings();
+
     });
   }
 
@@ -155,9 +159,30 @@ class MeetingsController extends GetxController {
   //   Get.back();
   // }
 
-  clearData() {
+  void clearData() {
     meetingsCount.value = 0;
     loading.value = false;
     meetings.clear();
+  }
+
+  Future<void> startMeeting() async {
+    loading.value = true;
+
+    Either either = await repo.startMeeting(meetingId: currentMeeting.value!.id, userType: consultant);
+
+    either.fold((l) {
+      loading.value = false;
+      debugPrint("Start meeting: error: ${l.message}");
+
+      return CustomSnackBar.showSnackBar(
+        context: Get.context!,
+        title: "Error",
+        message: l.message.toString(),
+        backgroundColor: ColorPalette.red,
+      );
+    }, (r) {
+      loading.value = false;
+      debugPrint("Start meeting: ${r['data']}");
+    });
   }
 }

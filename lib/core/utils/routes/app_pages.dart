@@ -2,6 +2,7 @@ library app_pages;
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tl_consultant/features/activity/presentation/screens/notifications.dart';
 import 'package:tl_consultant/features/auth/presentation/screens/forgot_password_page.dart';
 import 'package:tl_consultant/features/auth/presentation/screens/profile_preview_page.dart';
 import 'package:tl_consultant/features/auth/presentation/screens/register/introduce_yourself.dart';
@@ -13,16 +14,19 @@ import 'package:tl_consultant/features/auth/presentation/screens/update_password
 import 'package:tl_consultant/features/auth/presentation/screens/verify_reset_account_page.dart';
 import 'package:tl_consultant/features/chat/data/models/room_model.dart';
 import 'package:tl_consultant/features/chat/presentation/screens/chat_screen.dart';
+import 'package:tl_consultant/features/chat/presentation/screens/incoming_call_view.dart';
 import 'package:tl_consultant/features/chat/presentation/screens/web_video_call_view.dart';
 import 'package:tl_consultant/features/consultation/presentation/screens/edit_slots.dart';
 import 'package:tl_consultant/features/dashboard/presentation/screens/dashboard.dart';
 import 'package:tl_consultant/features/home/presentation/screens/home_tab.dart';
+import 'package:tl_consultant/features/journal/presentation/screens/create_note.dart';
 import 'package:tl_consultant/features/onboarding/presentation/screens/onboarding.dart';
 import 'package:tl_consultant/features/onboarding/presentation/screens/splash.dart';
 import 'package:tl_consultant/features/profile/presentation/screens/edit_profile.dart';
 import 'package:tl_consultant/features/profile/presentation/screens/profile_tab.dart';
 import 'package:tl_consultant/features/settings/presentation/screens/settings_screen.dart';
 import 'package:tl_consultant/features/wallet/presentation/screens/wallet_tab.dart';
+import 'package:tl_consultant/features/wallet/presentation/screens/withdrawal_info.dart';
 
 part 'app_routes.dart';
 
@@ -49,16 +53,10 @@ class AppPages {
     GetPage(name: Routes.DASHBOARD, page: () => const Dashboard()),
     GetPage(name: Routes.EDIT_SLOTS, page: () => EditSlots()),
     GetPage(name: Routes.HOME_SCREEN, page: () => const HomeTab()),
+    GetPage(name: Routes.ACTIVITY, page: () => NotificationScreen()),
     //GetPage(name: Routes.QUESTIONNAIRE, page: () => const Questionnaire()),
     GetPage(name: Routes.CHAT_SCREEN, page: () => const ChatScreen()),
-    // GetPage(name: Routes.NOTES_SCREEN, page: () => const JournalTab()),
-    GetPage(name: Routes.WALLET, page: () => WalletTab()),
-    // GetPage(name: Routes.CUSTOMIZE_CARD, page: () => const CustomizeCardScreen()),
-    GetPage(name: Routes.PROFILE, page: () => ProfileScreen()),
-    GetPage(name: Routes.EDIT_PROFILE, page: () => EditProfileScreen()),
-    GetPage(name: Routes.SETTINGS, page: () => SettingsScreen()),
-    // GetPage(name: Routes.WEB_VIDEO_CALL, page: () => WebVideoCallView()),
-
+    GetPage(name: Routes.INCOMING_CALL, page: () => IncomingCallView()),
     GetPage(
       name: Routes.WEB_VIDEO_CALL,
       page: () {
@@ -87,6 +85,17 @@ class AppPages {
 
         return WebVideoCallView(dailyRoom: dailyRoom, token: token);
       },
-    )
+    ),
+
+    // GetPage(name: Routes.NOTES_SCREEN, page: () => const JournalTab()),
+    GetPage(name: Routes.CREATE_NOTE, page: () => CreateNote()),
+    GetPage(name: Routes.WALLET, page: () => WalletTab()),
+    GetPage(name: Routes.WITHDRAWAL_INFO, page: () => WithdrawalInfoPage()),
+    // GetPage(name: Routes.CUSTOMIZE_CARD, page: () => const CustomizeCardScreen()),
+    GetPage(name: Routes.PROFILE, page: () => ProfileScreen()),
+    GetPage(name: Routes.EDIT_PROFILE, page: () => EditProfileScreen()),
+    GetPage(name: Routes.SETTINGS, page: () => SettingsScreen()),
+
+
   ];
 }

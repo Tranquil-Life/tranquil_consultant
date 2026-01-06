@@ -47,4 +47,13 @@ class ConsultationRepoImpl extends ConsultantRepo {
             () => postReq(ConsultationEndPoints.rateMember, body: rating.toJson()))
         .then((value) => handleResponse(value));
   }
+
+  @override
+  Future<Either<ApiError, dynamic>> startMeeting({required int meetingId, required String userType}) async{
+    var body = {"meeting_id": meetingId, "user_type": userType};
+
+    return await catchSocketException(
+            () => postReq(ConsultationEndPoints.startMeeting, body: body))
+        .then((value) => handleResponse(value));
+  }
 }

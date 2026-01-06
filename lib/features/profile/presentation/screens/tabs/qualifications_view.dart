@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/theme/fonts.dart';
+import 'package:tl_consultant/core/utils/routes/app_pages.dart';
 import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:tl_consultant/features/profile/presentation/screens/edit_profile.dart';
 
@@ -33,7 +34,7 @@ class QualificationsTabView extends StatelessWidget {
             ),
             IconButton(
               onPressed: () {
-                Get.to(const EditProfileScreen());
+                Get.toNamed(Routes.EDIT_PROFILE);
               },
               icon: const Icon(
                 Icons.edit_outlined,
@@ -87,7 +88,7 @@ class QualificationsTabView extends StatelessWidget {
             ),
             IconButton(
               onPressed: () {
-                Get.to(const EditProfileScreen());
+                Get.toNamed(Routes.EDIT_PROFILE);
               },
               icon: const Icon(
                 Icons.edit_outlined,
@@ -138,7 +139,7 @@ class QualificationsTabView extends StatelessWidget {
             ),
             IconButton(
               onPressed: () {
-                Get.to(const EditProfileScreen());
+                Get.toNamed(Routes.EDIT_PROFILE);
               },
               icon: const Icon(
                 Icons.edit_outlined,

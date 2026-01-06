@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tl_consultant/core/global/buttons.dart';
 import 'package:tl_consultant/core/global/custom_scaffold.dart';
+import 'package:tl_consultant/core/global/custom_snackbar.dart';
 import 'package:tl_consultant/core/global/custom_text.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/theme/fonts.dart';
@@ -31,7 +32,7 @@ class _SignInScreenState extends State<SignInScreen> {
   bool get criteriaMet =>
       authController.emailIsValid.value && authController.passwordIsValid.value;
 
-  _continue() async {
+  Future<void> _continue() async {
     if (criteriaMet) {
       await authController.signIn(
         authController.emailTEC.text,
@@ -103,20 +104,25 @@ class _SignInScreenState extends State<SignInScreen> {
                     )),
               ),
               Spacer(),
-              Obx(
-                () => Align(
-                  alignment: Alignment.center,
-                  child: ConstrainedBox(
-                      constraints: BoxConstraints(
-                          maxWidth: isSmallScreen(context)
-                              ? displayWidth(context)
-                              : displayWidth(context) / 1.4),
-                      child: CustomButton(
-                          onPressed: !criteriaMet ? null : _continue,
-                          text: "Sign In")),
-                ),
-              ),
+              // Obx(
+              //   () => Align(
+              //     alignment: Alignment.center,
+              //     child: ConstrainedBox(
+              //         constraints: BoxConstraints(
+              //             maxWidth: isSmallScreen(context)
+              //                 ? displayWidth(context)
+              //                 : displayWidth(context) / 1.4),
+              //         child: CustomButton(
+              //             onPressed: !criteriaMet ? null : _continue,
+              //             text: "Sign In")),
+              //   ),
+              // ),
 
+              CustomButton(
+                  onPressed: (){
+                    CustomSnackBar.successSnackBar(body: "SIGN IN", title: "Clicked" );
+                  },
+                  text: "Sign In"),
               SizedBox(height: 44),
               Align(
                 alignment: Alignment.bottomCenter,

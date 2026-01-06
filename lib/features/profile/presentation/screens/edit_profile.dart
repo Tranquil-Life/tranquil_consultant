@@ -11,6 +11,7 @@ import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/global/user_avatar.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/theme/fonts.dart';
+import 'package:tl_consultant/core/utils/routes/app_pages.dart';
 import 'package:tl_consultant/core/utils/services/media_service.dart';
 import 'package:tl_consultant/features/media/presentation/controllers/video_recording_controller.dart';
 import 'package:tl_consultant/features/profile/data/models/user_model.dart';
@@ -56,7 +57,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             title: pageTitle(),
             centerTitle: false,
             fontFamily: AppFonts.josefinSansRegular,
-            backgroundColor: Colors.white),
+            backgroundColor: Colors.white,
+          onBackPressed: () {
+            if (Get.key.currentState?.canPop() ?? false) {
+              Get.back();
+            } else {
+              Get.offNamed(Routes.PROFILE);// fallback route
+            }
+          },
+        ),
         body: Padding(
             padding: const EdgeInsets.only(left: 24, right: 24),
             child: SingleChildScrollView(

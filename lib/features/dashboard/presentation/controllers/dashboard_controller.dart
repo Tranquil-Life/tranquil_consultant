@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:tl_consultant/core/global/custom_snackbar.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
@@ -55,14 +56,14 @@ class DashboardController extends GetxController {
   ];
 
   var currentMeetingCount = 0.obs;
-  var clientId = 0.obs;
-  var clientName = "".obs;
-  var clientDp = "".obs;
-  var currentMeetingET = "".obs;
-  var currentMeetingST = "".obs;
   var currentMeetingId = 0.obs;
+  // var clientId = 0.obs;
+  // var clientName = "".obs;
+  // var clientDp = "".obs;
+  // var currentMeetingET = "".obs;
+  // var currentMeetingST = "".obs;
 
-  var country = "".obs;
+  var country = "${userDataStore.user['location']}".obs;
   var state = "".obs;
   var city = "".obs;
   var street = "".obs;
@@ -193,7 +194,6 @@ class DashboardController extends GetxController {
     return null;
   }
 
-
   Future<void> getMyLocationInfoCached() async {
     final now = DateTime.now().millisecondsSinceEpoch;
     final lastTs = _readInt(Keys.lastLocationUpdateKey);
@@ -220,14 +220,24 @@ class DashboardController extends GetxController {
       debugPrint('Location update failed: $e');
       debugPrintStack(stackTrace: s);
     }
-
   }
 
+  //FORCE RESET LOCATION
   Future<void> refreshLocationNow() async {
-    await storage.remove(Keys.lastLocationUpdateKey); // ✅ await remove
-    await storage.save(); // ✅ flush removal
+    await storage.remove(Keys.lastLocationUpdateKey); // await remove
+    await storage.save(); // flush removal
     await getMyLocationInfoCached();
   }
+
+
+  // @override
+  // void onInit() {
+  //   ProfileController.instance.restoreUser();
+  //
+  //   getMyLocationInfo();
+  //
+  //   super.onInit();
+  // }
 
   void clearData() {
     currentIndex.value = 0;
@@ -244,7 +254,6 @@ class DashboardController extends GetxController {
     city.value = '';
     timezone.value = '';
   }
-
 
   void clearAllData() {
     AuthController().clearData();

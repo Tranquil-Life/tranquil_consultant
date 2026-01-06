@@ -10,4 +10,5 @@ abstract class ConsultantRepo<T, F extends QueryParams> extends ApiService{
   Future<Either<ApiError, T>> getMeetings({required int page});
   Future<Either<ApiError, T>> deleteSlot();
   Future<Either<ApiError, T>> rateMeeting({required RatingModel rating});
+  Future<Either<ApiError, T>> startMeeting({required int meetingId, required String userType});
 }

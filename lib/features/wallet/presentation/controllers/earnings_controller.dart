@@ -12,6 +12,7 @@ import 'package:tl_consultant/core/global/custom_snackbar.dart';
 import 'package:tl_consultant/features/wallet/data/models/stripe_account_model.dart';
 import 'package:tl_consultant/features/wallet/data/repos/wallet_repo_impl.dart';
 import 'package:tl_consultant/features/wallet/domain/entities/create_stripe_account.dart';
+import 'package:tl_consultant/features/wallet/presentation/controllers/transactions_controller.dart';
 
 class EarningsController extends GetxController {
   static EarningsController get instance => Get.find();
@@ -176,18 +177,11 @@ class EarningsController extends GetxController {
     return double.parse(significantFigures);
   }
 
-  clearData() {
-    // balance.value = 0.00;
-    // withdrawn.value = 0.00;
-    // availableForWithdrawal.value = 0.00;
-    // pendingClearance.value = 0.00;
-  }
-
-  toggleTosAcceptance() {
+  void toggleTosAcceptance() {
     acceptedTOS.value = !acceptedTOS.value;
   }
 
-  toggleSave() {
+  void toggleSave() {
     isSaved.value = !isSaved.value;
   }
 
@@ -248,7 +242,7 @@ class EarningsController extends GetxController {
       if (!msg.contains('unauthenticated')) {
         switch (msg) {
           case notConnectedAccountMsg:
-            print("balance: error: $msg");
+            debugPrint("balance: error: $msg");
             break;
           default:
             CustomSnackBar.errorSnackBar("balance: error: $msg");
@@ -298,7 +292,7 @@ class EarningsController extends GetxController {
         switch (msg) {
           case notConnectedAccountMsg:
           // keep print if you prefer
-            print("lifetime volume received: error: $msg");
+            debugPrint("lifetime volume received: error: $msg");
             break;
           default:
             CustomSnackBar.errorSnackBar("lifetime volume received: error: $msg");
@@ -332,7 +326,7 @@ class EarningsController extends GetxController {
       if (!msg.contains('unauthenticated')) {
         switch (msg) {
           case notConnectedAccountMsg:
-            print("pending clearance: error: $msg");
+            debugPrint("pending clearance: error: $msg");
             break;
           default:
             CustomSnackBar.errorSnackBar("pending clearance: error: $msg");
@@ -361,7 +355,7 @@ class EarningsController extends GetxController {
       if (!msg.contains('unauthenticated')) {
         switch (msg) {
           case notConnectedAccountMsg:
-            print("amount in transit: error: $msg");
+            debugPrint("amount in transit: error: $msg");
             break;
           default:
             CustomSnackBar.errorSnackBar("amount in transit: error: $msg");
@@ -410,17 +404,24 @@ class EarningsController extends GetxController {
   }
 
   void withdrawEarnings() async {
+    final tranxController = TransactionsController.instance;
+
     var req = {
       "account_id": stripeAccountId,
       "amount": amountTEC.text,
     };
     Either either = await repo.withdrawToBankAcc(req);
     either.fold((l) {
-      print("withdraw earnings: error: ${l.message!}");
+      debugPrint("withdraw earnings: error: ${l.message!}");
       CustomSnackBar.errorSnackBar(l.message!);
-    }, (r) {
+    }, (r) async{
+      amountTEC.clear(); //clear amount to withdraw field
+
       CustomSnackBar.successSnackBar(
           body: "\$${amountTEC.text} withdrawn successfully");
+
+      await getBalance();
+      await tranxController.loadInitialStripeTranx();
     });
   }
 
@@ -429,4 +430,6 @@ class EarningsController extends GetxController {
   void getStripeTransactions(){
 
   }
+
+  void clearData() {}
 }

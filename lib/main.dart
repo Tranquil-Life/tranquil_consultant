@@ -79,11 +79,9 @@ void main() async {
   Get.put<EarningsController>(EarningsController());
   Get.put<TransactionsController>(TransactionsController());
   Get.put<NotesController>(NotesController());
-  Get.put<ProfileController>(ProfileController());
   Get.put<SettingsController>(SettingsController());
   Get.put<EventsController>(EventsController());
 
-  Get.put<NotesController>(NotesController());
   Get.put<MeetingsController>(MeetingsController());
   Get.put<SlotController>(SlotController());
 

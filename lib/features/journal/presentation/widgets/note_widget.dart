@@ -14,6 +14,7 @@ import 'package:tl_consultant/core/theme/properties.dart';
 import 'package:tl_consultant/core/utils/extensions/date_time_extension.dart';
 import 'package:tl_consultant/core/utils/functions.dart';
 import 'package:tl_consultant/core/utils/helpers/svg_elements.dart';
+import 'package:tl_consultant/core/utils/routes/app_pages.dart';
 import 'package:tl_consultant/features/journal/domain/entities/personal_note.dart';
 import 'package:tl_consultant/features/journal/domain/entities/shared_note/shared_note.dart';
 import 'package:tl_consultant/features/journal/presentation/controllers/notes_controller.dart';
@@ -300,16 +301,18 @@ class NoteBottomSheet extends StatelessWidget {
                 icon: const Icon(Icons.remove_red_eye_outlined),
                 onPressed: () async {
                   if (personalNote != null) {
-                    await Get.to(
-                      const CreateNote(),
+                    await Get.toNamed(
+                      Routes.CREATE_NOTE,
                       arguments: {'personal_note': personalNote},
                     );
                   } else {
-                    await Get.to(
-                      const CreateNote(),
+                    await Get.toNamed(
+                      Routes.CREATE_NOTE,
                       arguments: {'shared_note': sharedNote},
                     );
                   }
+
+                  Get.back();
                 },
               ),
               // const SizedBox(height: 4),

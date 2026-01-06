@@ -25,6 +25,18 @@ num? androidVersion;
 // const secureStore = FlutterSecureStorage();
 final fluttermojiFunctions = FluttermojiFunctions();
 
+//Meeting extension
+const requestingExtension = "requesting-extension";
+const acceptedExtension = "accepted-extension";
+const declinedExtension = "declined-extension";
+const meetingExtended = "meeting-extended";
+
+//video call
+const incomingCall = "incoming-call";
+const declinedCall = "declined-call";
+const acceptedCall = "accepted-call";
+const cancelledCall = "cancelled-call";
+
 //User types
 const consultant = "consultant";
 const client = "client";

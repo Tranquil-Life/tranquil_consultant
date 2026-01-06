@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:dartz/dartz.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -8,6 +9,7 @@ import 'package:tl_consultant/core/data/store.dart';
 import 'package:tl_consultant/core/global/custom_snackbar.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
+import 'package:tl_consultant/core/utils/app_config.dart';
 import 'package:tl_consultant/core/utils/routes/app_pages.dart';
 import 'package:tl_consultant/core/utils/services/app_data_store.dart';
 import 'package:tl_consultant/features/auth/data/repos/auth_repo.dart';
@@ -89,8 +91,7 @@ class AuthController extends GetxController {
         (l) => CustomSnackBar.showSnackBar(
             context: Get.context!,
             message: l.message.toString(),
-            backgroundColor: ColorPalette.red),
-        (r) async {
+            backgroundColor: ColorPalette.red), (r) async {
       Map<String, dynamic> data = r;
       userDataStore.user = data['data']['user'];
       userDataStore.qualifications =
@@ -108,6 +109,8 @@ class AuthController extends GetxController {
       registrationDataStore.fields.clear();
       await getStore.set('fields', registrationDataStore.fields);
 
+      await updateFcmToken();
+
       await Get.offAllNamed(Routes.DASHBOARD);
       emailTEC.clear();
       confirmPasswordTEC.clear();
@@ -115,38 +118,40 @@ class AuthController extends GetxController {
   }
 
   Future signIn(String email, String password) async {
-    loading.value = true;
+    emailTEC.clear();
 
-    Either either = await AuthRepoImpl().signIn(email, password);
+    // loading.value = true;
 
-    either.fold((l) {
-      return CustomSnackBar.showSnackBar(
-          context: Get.context!,
-          title: "Error",
-          message: l.message.toString(),
-          backgroundColor: ColorPalette.red);
-    }, (r) async {
-      Map<String, dynamic> data = r;
+    // Either either = await AuthRepoImpl().signIn(email, password);
+    //
+    // either.fold((l) {
+    //   return CustomSnackBar.showSnackBar(
+    //       context: Get.context!,
+    //       title: "Error",
+    //       message: l.message.toString(),
+    //       backgroundColor: ColorPalette.red);
+    // }, (r) async {
+    //   Map<String, dynamic> data = r;
+    //
+    //   if (data['error'] == false && data['data'] != null) {
+    //     userDataStore.user = data['data']['user'];
+    //     userDataStore.qualifications =
+    //         List<Map<String, dynamic>>.from(data['data']['qualifications']);
+    //     userDataStore.user['meetings_count'] = data['data']['meetings_count'];
+    //     userDataStore.user['clients_count'] = data['data']['clients_count'];
+    //
+    //     AppData.isSignedIn = true;
+    //     //
+    //     // await updateFcmToken();
+    //     //
+    //     // await Get.offAllNamed(Routes.DASHBOARD);
+    //
+    //     emailTEC.clear();
+    //     params.password = "";
+    //   }
+    // });
 
-      if (data['error'] == false && data['data'] != null) {
-        userDataStore.user = data['data']['user'];
-        userDataStore.qualifications =
-            List<Map<String, dynamic>>.from(data['data']['qualifications']);
-        userDataStore.user['meetings_count'] = data['data']['meetings_count'];
-        userDataStore.user['clients_count'] = data['data']['clients_count'];
-
-        AppData.isSignedIn = true;
-
-        await updateFcmToken();
-
-        await Get.offAllNamed(Routes.DASHBOARD);
-
-        emailTEC.clear();
-        confirmPasswordTEC.clear();
-      }
-    });
-
-    loading.value = false;
+    // loading.value = false;
   }
 
   Future resetPassword() async {
@@ -162,7 +167,7 @@ class AuthController extends GetxController {
     });
   }
 
-  getExtension(String uploadType) {
+  String getExtension(String uploadType) {
     switch (uploadType) {
       case profileImage:
         return '.png';
@@ -170,6 +175,8 @@ class AuthController extends GetxController {
         return '.wav';
       case videoIntro:
         return '.mp4';
+      default:
+        return '';
     }
   }
 
@@ -191,14 +198,25 @@ class AuthController extends GetxController {
   Future<String> generateFcmToken() async {
     String token = "";
 
-    Either either = await authRepo.generateFcmToken();
-    either.fold((l) {
-      CustomSnackBar.errorSnackBar(l.message.toString());
-      return token;
-    }, (r) {
-      token = r;
-      return token;
-    });
+    if (kIsWeb) {
+      // Web token needs VAPID key
+      final fcmToken = await FirebaseMessaging.instance.getToken(
+        vapidKey: kIsWeb ? AppConfig.fcmWebVapidKey : null,
+      );
+
+      token = fcmToken ?? "";
+
+      debugPrint('Web: Firebase messaging token: $token');
+    } else {
+      Either either = await authRepo.generateFcmToken();
+      either.fold((l) {
+        CustomSnackBar.errorSnackBar(l.message.toString());
+        return token;
+      }, (r) {
+        token = r;
+        return token;
+      });
+    }
 
     return token;
   }

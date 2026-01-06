@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
+import 'package:tl_consultant/core/utils/routes/app_pages.dart';
 import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:tl_consultant/features/profile/presentation/screens/edit_profile.dart';
 
@@ -15,7 +16,7 @@ class BioTabView extends StatelessWidget {
     final txt = profileController.bioTEC.text;
 
     return InkWell(
-      onTap: () => Get.to(const EditProfileScreen()),
+      onTap: () =>       Get.toNamed(Routes.EDIT_PROFILE),
       child: SingleChildScrollView( // optional, if bio can be long
         padding: const EdgeInsets.only(right: 8),
         child: Text(

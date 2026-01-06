@@ -8,6 +8,7 @@ import 'package:tl_consultant/core/utils/extensions/date_time_extension.dart';
 import 'package:tl_consultant/core/utils/functions.dart';
 import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 import 'package:tl_consultant/core/utils/helpers/svg_elements.dart';
+import 'package:tl_consultant/core/utils/routes/app_pages.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/chat_controller.dart';
 import 'package:tl_consultant/features/consultation/domain/entities/client.dart';
 import 'package:tl_consultant/features/consultation/presentation/controllers/meetings_controller.dart';
@@ -33,22 +34,31 @@ class _DashboardState extends State<Dashboard> {
 
   ClientUser? client;
 
+  bool _pushedEditProfile = false;
+
   void profileCompletionCheck() async {
     var isEmpty = await checkForEmptyProfileInfo();
     if (isEmpty) {
-      Get.to(() => EditProfileScreen());
+      Get.toNamed(Routes.EDIT_PROFILE);
     }
   }
 
   @override
   void initState() {
-    dashboardController.getMyLocationInfoCached();
-    profileController.restoreUser();
+    super.initState();
 
-    profileCompletionCheck();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      dashboardController.getMyLocationInfoCached();
+      profileController.restoreUser();
+
+      final isEmpty = await checkForEmptyProfileInfo();
+      if (isEmpty && !_pushedEditProfile) {
+        _pushedEditProfile = true;
+        Get.toNamed(Routes.EDIT_PROFILE);
+      }
+    });
 
     setStatusBarBrightness(true);
-    super.initState();
   }
 
   @override
@@ -67,61 +77,70 @@ class _DashboardState extends State<Dashboard> {
 
         meetingsController.currentMeeting.value = meeting;
       }
-
-      //TODO: Uncomment this
-      // if (meeting.endAt.isAfter(DateTimeExtension.now) &&
-      //     (meeting.startAt.isBefore(DateTimeExtension.now) ||
-      //         meeting.startAt == DateTimeExtension.now)) {
-      // dashboardController.currentMeetingCount.value = 1;
-      // dashboardController.currentMeetingId.value = meeting.id;
-      //
-      // client = meeting.client;
-      //
-      // meetingsController.currentMeeting.value = meeting;
-      // }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() => Scaffold(
-          appBar: isSmallScreen(context)
-              ? PreferredSize(
-                  preferredSize: Size.fromHeight(0),
-                  // Completely removes AppBar height
-                  child: CustomAppBar(
-                    backgroundColor: (!isSmallScreen(context) &&
-                            dashboardController.currentIndex.value == 0)
-                        ? ColorPalette.white
-                        : Colors.grey.shade100,
-                  ),
-                )
-              : null,
-          resizeToAvoidBottomInset: false,
-          backgroundColor: Colors.grey.shade100,
-          floatingActionButton: isSmallScreen(context)
-              ? CustomFAB(
-                  onChatTap: () async {
-                    await updateDashboardMeetingInfo();
+    final isSmall = isSmallScreen(context);
 
-                    if (client != null) {
-                      await chatController.getChatInfo(client: client!);
-                    }else{
-                      CustomSnackBar.showSnackBar(context: Get.context, message: "You have no ongoing session", backgroundColor: ColorPalette.blue);
-                    }
-                  },
-                  dbController: dashboardController,
-                )
-              : null,
-          floatingActionButtonLocation: isSmallScreen(context)
-              ? FloatingActionButtonLocation.centerDocked
-              : null,
-          bottomNavigationBar: bottomAppBar(context),
-          body: isSmallScreen(context)
-              ? dashboardController
-                  .pages[dashboardController.currentIndex.value]
-              : large(),
-        ));
+    final maxIndex = (isSmall
+            ? dashboardController.pages.length
+            : dashboardController.largePages.length) -
+        1;
+    if (dashboardController.currentIndex.value > maxIndex) {
+      dashboardController.currentIndex.value = maxIndex;
+    }
+
+    if(!isSmall && dashboardController.currentIndex.value == 2){
+      dashboardController.currentIndex.value = 3;
+    }else if(isSmall && dashboardController.currentIndex.value == 3){
+      dashboardController.currentIndex.value = 2;
+    }
+
+    return Obx(() {
+      return Scaffold(
+        appBar: isSmallScreen(context)
+            ? PreferredSize(
+                preferredSize: Size.fromHeight(0),
+                // Completely removes AppBar height
+                child: CustomAppBar(
+                  backgroundColor: (!isSmallScreen(context) &&
+                          dashboardController.currentIndex.value == 0)
+                      ? ColorPalette.white
+                      : Colors.grey.shade100,
+                ),
+              )
+            : null,
+        resizeToAvoidBottomInset: false,
+        backgroundColor: Colors.grey.shade100,
+        floatingActionButton: isSmallScreen(context)
+            ? CustomFAB(
+                onChatTap: () async {
+                  await updateDashboardMeetingInfo();
+
+                  if (client != null) {
+                    await chatController.getChatInfo(client: client!);
+                    await meetingsController.startMeeting();
+                  } else {
+                    CustomSnackBar.showSnackBar(
+                        context: Get.context,
+                        message: "You have no ongoing session",
+                        backgroundColor: ColorPalette.blue);
+                  }
+                },
+                dbController: dashboardController,
+              )
+            : null,
+        floatingActionButtonLocation: isSmallScreen(context)
+            ? FloatingActionButtonLocation.centerDocked
+            : null,
+        bottomNavigationBar: bottomAppBar(context),
+        body: isSmallScreen(context)
+            ? dashboardController.pages[dashboardController.currentIndex.value]
+            : large(),
+      );
+    });
   }
 
   BottomAppBar? bottomAppBar(BuildContext context) {
@@ -143,96 +162,98 @@ class _DashboardState extends State<Dashboard> {
     return Row(
       children: [
         Container(
-            width: 120,
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 40),
-            decoration: BoxDecoration(color: ColorPalette.white, boxShadow: [
-              BoxShadow(
-                blurRadius: 4,
-                color: Colors.black12,
-                offset: Offset(3, 0),
+          width: 120,
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 40),
+          decoration: BoxDecoration(color: ColorPalette.white, boxShadow: [
+            BoxShadow(
+              blurRadius: 4,
+              color: Colors.black12,
+              offset: Offset(3, 0),
+            ),
+          ]),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              BuildNavItem(
+                index: 0,
+                icon: dashboardController.isSelected(0)
+                    ? SvgElements.svgHomeActive
+                    : SvgElements.svgHomeInactive,
+                label: 'Home',
+                size: displaySize(context),
+                iconSize: iconSize,
+                isSelected: dashboardController.isSelected(0),
+                dashboardController: dashboardController,
+                onTap: () => dashboardController.updateIndex(0),
               ),
-            ]),
-            child:
+              SizedBox(height: 40),
+              BuildNavItem(
+                index: 1,
+                icon: dashboardController.isSelected(1)
+                    ? SvgElements.svgNotesActive
+                    : SvgElements.svgNotesInactive,
+                label: 'Notes',
+                size: displaySize(context),
+                iconSize: iconSize,
+                isSelected: dashboardController.isSelected(1),
+                dashboardController: dashboardController,
+                onTap: () => dashboardController.updateIndex(1),
+              ),
+              SizedBox(height: 40),
+              BuildNavItem(
+                index: 2,
+                icon: dashboardController.isSelected(2)
+                    ? SvgElements.svgChat
+                    : SvgElements.svgChat,
+                label: 'Chat',
+                size: displaySize(context),
+                iconSize: iconSize,
+                isSelected: dashboardController.isSelected(2),
+                dashboardController: dashboardController,
+                onTap: () async {
+                  await updateDashboardMeetingInfo();
 
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                BuildNavItem(
-                  index: 0,
-                  icon: dashboardController.isSelected(0)
-                      ? SvgElements.svgHomeActive
-                      : SvgElements.svgHomeInactive,
-                  label: 'Home',
-                  size: displaySize(context),
-                  iconSize: iconSize,
-                  isSelected: dashboardController.isSelected(0),
-                  dashboardController: dashboardController,
-                  onTap: () => dashboardController.updateIndex(0),
-                ),
-                SizedBox(height: 40),
-                BuildNavItem(
-                  index: 1,
-                  icon: dashboardController.isSelected(1)
-                      ? SvgElements.svgNotesActive
-                      : SvgElements.svgNotesInactive,
-                  label: 'Notes',
-                  size: displaySize(context),
-                  iconSize: iconSize,
-                  isSelected: dashboardController.isSelected(1),
-                  dashboardController: dashboardController,
-                  onTap: () => dashboardController.updateIndex(1),
-                ),
-                SizedBox(height: 40),
-                BuildNavItem(
-                  index: 2,
-                  icon: dashboardController.isSelected(2)
-                      ? SvgElements.svgChat
-                      : SvgElements.svgChat,
-                  label: 'Chat',
-                  size: displaySize(context),
-                  iconSize: iconSize,
-                  isSelected: dashboardController.isSelected(2),
-                  dashboardController: dashboardController,
-                  onTap: () async{
-                    await updateDashboardMeetingInfo();
-
-                    if (client != null) {
-                      await chatController.getChatInfo(client: client);
-                      dashboardController.updateIndex(2);
-                    }else{
-                      CustomSnackBar.showSnackBar(context: Get.context, message: "You have no ongoing session", backgroundColor: ColorPalette.blue);
-                    }
-                  },
-                ),
-                SizedBox(height: 40),
-                BuildNavItem(
-                  index: 3,
-                  icon: dashboardController.isSelected(3)
-                      ? SvgElements.svgWalletActive
-                      : SvgElements.svgWalletInactive,
-                  label: 'Wallet',
-                  size: displaySize(context),
-                  iconSize: iconSize,
-                  isSelected: dashboardController.isSelected(3),
-                  dashboardController: dashboardController,
-                  onTap: () => dashboardController.updateIndex(3),
-                ),
-                SizedBox(height: 40),
-                BuildNavItem(
-                  index: 4,
-                  icon: dashboardController.isSelected(4)
-                      ? SvgElements.svgMoreActive
-                      : SvgElements.svgMoreInactive,
-                  label: 'More',
-                  size: displaySize(context),
-                  iconSize: iconSize,
-                  isSelected: dashboardController.isSelected(4),
-                  dashboardController: dashboardController,
-                  onTap: () => dashboardController.updateIndex(4),
-                ),
-              ],
-            ),
-            ),
+                  if (client != null) {
+                    await chatController.getChatInfo(client: client);
+                    dashboardController.updateIndex(2);
+                    await meetingsController.startMeeting();
+                  } else {
+                    CustomSnackBar.showSnackBar(
+                        context: Get.context,
+                        message: "You have no ongoing session",
+                        backgroundColor: ColorPalette.blue);
+                  }
+                },
+              ),
+              SizedBox(height: 40),
+              BuildNavItem(
+                index: 3,
+                icon: dashboardController.isSelected(3)
+                    ? SvgElements.svgWalletActive
+                    : SvgElements.svgWalletInactive,
+                label: 'Wallet',
+                size: displaySize(context),
+                iconSize: iconSize,
+                isSelected: dashboardController.isSelected(3),
+                dashboardController: dashboardController,
+                onTap: () => dashboardController.updateIndex(3),
+              ),
+              SizedBox(height: 40),
+              BuildNavItem(
+                index: 4,
+                icon: dashboardController.isSelected(4)
+                    ? SvgElements.svgMoreActive
+                    : SvgElements.svgMoreInactive,
+                label: 'More',
+                size: displaySize(context),
+                iconSize: iconSize,
+                isSelected: dashboardController.isSelected(4),
+                dashboardController: dashboardController,
+                onTap: () => dashboardController.updateIndex(4),
+              ),
+            ],
+          ),
+        ),
         Expanded(
             child: dashboardController
                 .largePages[dashboardController.currentIndex.value])

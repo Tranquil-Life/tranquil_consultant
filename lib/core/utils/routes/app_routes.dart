@@ -12,11 +12,16 @@ abstract class Routes {
   static const SIGN_UP_1 = _Paths.SIGN_UP_1 ;
   static const SIGN_UP_2 = _Paths.SIGN_UP_2 ;
   static const HOME_SCREEN = _Paths.HOME_SCREEN ;
+  static const ACTIVITY = _Paths.ACTIVITY;
   static const DASHBOARD = _Paths.DASHBOARD ;
   static const EDIT_SLOTS =_Paths.EDIT_SLOTS ;
   static const QUESTIONNAIRE = _Paths.QUESTIONNAIRE ;
   static const CHAT_SCREEN = _Paths.CHAT_SCREEN ;
+  static const WEB_VIDEO_CALL = _Paths.WEB_VIDEO_CALL ;
+  static const INCOMING_CALL = _Paths.INCOMING_CALL ;
   static const WALLET = _Paths.WALLET;
+  static String get WITHDRAWAL_INFO => _Paths.WITHDRAWAL_INFO;
+  static const CREATE_NOTE = _Paths.CREATE_NOTE;
   static const NOTES_SCREEN = _Paths.NOTES_SCREEN ;
   static const PROFILE = _Paths.PROFILE ;
   static const EDIT_PROFILE = _Paths.EDIT_PROFILE ;
@@ -24,7 +29,8 @@ abstract class Routes {
   static const VERIFY_RESET_ACCOUNT = _Paths.VERIFY_RESET_ACCOUNT ;
   static const UPDATE_PASSWORD = _Paths.UPDATE_PASSWORD ;
   static const FORGOT_PASSWORD = _Paths.FORGOT_PASSWORD ;
-  static const WEB_VIDEO_CALL = _Paths.WEB_VIDEO_CALL ;
+
+
 }
 
 abstract class _Paths {
@@ -39,12 +45,15 @@ abstract class _Paths {
   static const SIGN_UP_1 = '/sign-up-1';
   static const SIGN_UP_2 = '/sign-up-2';
   static const HOME_SCREEN = '/home';
+  static const ACTIVITY = '/notifications';
   static const DASHBOARD = '/dashboard';
   static const EDIT_SLOTS = '/edit-slots';
   static const QUESTIONNAIRE = '/questionnaire';
   static const CHAT_SCREEN = '/chat-screen';
+  static const INCOMING_CALL = '/incoming-call';
   static const WALLET = '/wallet';
   static const NOTES_SCREEN = '/notes-screen';
+  static const CREATE_NOTE = '/create-note';
   static const PROFILE = '/profile';
   static const EDIT_PROFILE = '/edit-profile';
   static const SETTINGS = '/settings';
@@ -52,4 +61,6 @@ abstract class _Paths {
   static const UPDATE_PASSWORD = '/update-password';
   static const FORGOT_PASSWORD = '/forgot-password';
   static const WEB_VIDEO_CALL = '/web-video-call';
+  static const WITHDRAWAL_INFO = '/withdrawal-info';
+
 }
