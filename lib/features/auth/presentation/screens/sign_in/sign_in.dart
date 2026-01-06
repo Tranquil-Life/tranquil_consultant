@@ -32,7 +32,7 @@ class _SignInScreenState extends State<SignInScreen> {
   bool get criteriaMet =>
       authController.emailIsValid.value && authController.passwordIsValid.value;
 
-  _continue() async {
+  Future<void> _continue() async {
     if (criteriaMet) {
       await authController.signIn(
         authController.emailTEC.text,
