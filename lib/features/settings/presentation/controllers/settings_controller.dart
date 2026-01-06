@@ -18,7 +18,7 @@ class SettingsController extends GetxController {
 
   UserDataStore userDataStore = UserDataStore();
 
-  signOut() async {
+  Future<void> signOut() async {
     Either either = await authRepoImpl.signOut();
     either.fold((l) async{
       DashboardController().clearAllData();
@@ -28,7 +28,7 @@ class SettingsController extends GetxController {
     }, (r) async {
       DashboardController().clearAllData();
       await getStore.clearAllData();
-
+      //TODO: Test the above by signing out. => storage.erase();
       Get.offAllNamed(Routes.SIGN_IN);
     });
   }

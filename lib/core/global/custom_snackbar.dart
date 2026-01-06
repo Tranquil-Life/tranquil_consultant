@@ -7,27 +7,26 @@ import 'package:tl_consultant/core/utils/services/API/api_service.dart';
 import 'package:tl_consultant/features/settings/presentation/controllers/settings_controller.dart';
 
 class CustomSnackBar {
-  static void showSnackBar({
-    required BuildContext? context,
+  static void showSnackBar({required BuildContext? context,
     String? title,
     required String message,
     required Color backgroundColor,
-  }) {
+    SnackPosition? snackPosition = SnackPosition.BOTTOM,
+    Duration? duration = const Duration(seconds: 3)}) {
     Get.snackbar(
       title ?? "",
       message,
       borderRadius: 12,
       colorText: Colors.white,
       backgroundColor: backgroundColor,
-      snackPosition: SnackPosition.BOTTOM,
+      snackPosition: snackPosition,
       margin: const EdgeInsets.all(12),
-      duration: Duration(milliseconds: max(3000, message.length * 40)),
+      duration: duration,
       animationDuration: const Duration(milliseconds: 400),
       titleText: title != null
           ? Text(
         title,
-        style:
-        const TextStyle(fontSize: 16.5, color: ColorPalette.white),
+        style: const TextStyle(fontSize: 16.5, color: ColorPalette.white),
       )
           : const SizedBox(),
       messageText: Text(
