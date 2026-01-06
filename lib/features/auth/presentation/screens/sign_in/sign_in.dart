@@ -104,25 +104,25 @@ class _SignInScreenState extends State<SignInScreen> {
                     )),
               ),
               Spacer(),
-              // Obx(
-              //   () => Align(
-              //     alignment: Alignment.center,
-              //     child: ConstrainedBox(
-              //         constraints: BoxConstraints(
-              //             maxWidth: isSmallScreen(context)
-              //                 ? displayWidth(context)
-              //                 : displayWidth(context) / 1.4),
-              //         child: CustomButton(
-              //             onPressed: !criteriaMet ? null : _continue,
-              //             text: "Sign In")),
-              //   ),
-              // ),
+              Obx(
+                () => Align(
+                  alignment: Alignment.center,
+                  child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                          maxWidth: isSmallScreen(context)
+                              ? displayWidth(context)
+                              : displayWidth(context) / 1.4),
+                      child: CustomButton(
+                          onPressed: !criteriaMet ? null : _continue,
+                          text: "Sign In")),
+                ),
+              ),
 
-              CustomButton(
-                  onPressed: (){
-                    CustomSnackBar.successSnackBar(body: "SIGN IN", title: "Clicked" );
-                  },
-                  text: "Sign In"),
+              // CustomButton(
+              //     onPressed: (){
+              //       CustomSnackBar.successSnackBar(body: "SIGN IN", title: "Clicked" );
+              //     },
+              //     text: "Sign In"),
               SizedBox(height: 44),
               Align(
                 alignment: Alignment.bottomCenter,
