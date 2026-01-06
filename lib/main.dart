@@ -1,42 +1,45 @@
-import 'dart:async';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
+import 'dart:io';
+
+import 'package:camera/camera.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:get/get.dart';
 import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
-import 'package:timezone/data/latest.dart' as tz;
-
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:tl_consultant/app.dart';
-
-// controllers...
-import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
-import 'package:tl_consultant/features/onboarding/presentation/controllers/onboarding_controller.dart';
-import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';
-import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
-import 'package:tl_consultant/features/activity/presentation/controllers/activity_controller.dart';
-import 'package:tl_consultant/features/home/presentation/controllers/home_controller.dart';
-import 'package:tl_consultant/features/home/presentation/controllers/event_controller.dart';
-import 'package:tl_consultant/features/settings/presentation/controllers/settings_controller.dart';
-import 'package:tl_consultant/features/wallet/presentation/controllers/earnings_controller.dart';
-import 'package:tl_consultant/features/wallet/presentation/controllers/transactions_controller.dart';
-import 'package:tl_consultant/features/journal/presentation/controllers/notes_controller.dart';
-import 'package:tl_consultant/features/consultation/presentation/controllers/meetings_controller.dart';
-import 'package:tl_consultant/features/consultation/presentation/controllers/slot_controller.dart';
-import 'package:tl_consultant/features/chat/presentation/controllers/chat_controller.dart';
-import 'package:tl_consultant/features/chat/presentation/controllers/video_call_controller.dart';
-import 'package:tl_consultant/features/chat/presentation/controllers/message_controller.dart';
-import 'package:tl_consultant/features/chat/presentation/controllers/upload_controller.dart';
-import 'package:tl_consultant/features/media/presentation/controllers/video_recording_controller.dart';
+import 'package:timezone/data/latest.dart' as tz;
 import 'package:tl_consultant/core/utils/services/API/network/controllers/network_controller.dart';
+import 'package:tl_consultant/features/chat/presentation/controllers/chat_controller.dart';
+import 'package:tl_consultant/features/chat/presentation/controllers/message_controller.dart';
+import 'package:tl_consultant/features/chat/presentation/controllers/video_call_controller.dart';
+import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
 import 'package:tl_consultant/features/growth_kit/presentation/controllers/growth_kit_controller.dart';
+import 'package:tl_consultant/features/home/presentation/controllers/event_controller.dart';
+import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
 
+import 'core/constants/constants.dart';
+import 'features/activity/presentation/controllers/activity_controller.dart';
+import 'features/auth/presentation/controllers/auth_controller.dart';
+import 'features/chat/presentation/controllers/upload_controller.dart';
+import 'features/consultation/presentation/controllers/meetings_controller.dart';
+import 'features/consultation/presentation/controllers/slot_controller.dart';
+import 'features/home/presentation/controllers/home_controller.dart';
+import 'features/journal/presentation/controllers/notes_controller.dart';
+import 'features/media/presentation/controllers/video_recording_controller.dart';
+import 'features/onboarding/presentation/controllers/onboarding_controller.dart';
+import 'features/settings/presentation/controllers/settings_controller.dart';
+import 'features/wallet/presentation/controllers/earnings_controller.dart';
+import 'features/wallet/presentation/controllers/transactions_controller.dart';
+
+late List<CameraDescription> cameras;
 PusherChannelsFlutter pusher = PusherChannelsFlutter.getInstance();
 GetStorage storage = GetStorage();
 
-Future<void> initializeFirebaseWeb() async {
-  await Firebase.initializeApp(
+Future<void> initializeFirebase() async {
+  FirebaseApp app = await Firebase.initializeApp(
     options: const FirebaseOptions(
       appId: "1:16125004014:web:1a1ccb278c740a6d5f8bff",
       apiKey: "AIzaSyDvEsztETqHYAwfJx0ocpjPTZccMNDMc-k",
@@ -48,69 +51,79 @@ Future<void> initializeFirebaseWeb() async {
       authDomain: "tranquil-life-llc.firebaseapp.com",
     ),
   );
+  print('Initialized default app $app');
 }
 
-@pragma('vm:entry-point')
-Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  // Needed on mobile background isolate:
-  await Firebase.initializeApp();
-  debugPrint("🔕 Background message: ${message.messageId}");
-}
-
-Future<void> main() async {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // ✅ 1) init Firebase ONCE
   if (Firebase.apps.isEmpty) {
     if (kIsWeb) {
-      await initializeFirebaseWeb();
+      await initializeFirebase();
     } else {
       await Firebase.initializeApp();
     }
   }
 
-  // ✅ 2) init GetStorage BEFORE any controller is created
-  await GetStorage.init();
 
-  // ✅ 3) timezone
-  tz.initializeTimeZones();
+  await Firebase.initializeApp();
 
-  // ✅ 4) FCM: web vs mobile differences
-  if (!kIsWeb) {
-    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+  tz.initializeTimeZones(); //for timezone initialization
 
-    final settings = await FirebaseMessaging.instance.requestPermission(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
-    debugPrint('User granted permission: ${settings.authorizationStatus}');
-  } else {
-    // On web, permission/token flow differs; token may require vapidKey.
-    // FirebaseMessaging.instance.getToken(vapidKey: 'YOUR_WEB_PUSH_CERTIFICATE_KEY');
+  // Register before running the app
+  Get.put<ProfileController>(ProfileController());
+  Get.put<OnboardingController>(OnboardingController());
+  Get.put<AuthController>(AuthController());
+  Get.put<DashboardController>(DashboardController());
+  Get.put<ActivityController>(ActivityController());
+  Get.put<HomeController>(HomeController());
+  Get.put<EarningsController>(EarningsController());
+  Get.put<TransactionsController>(TransactionsController());
+  Get.put<NotesController>(NotesController());
+  Get.put<SettingsController>(SettingsController());
+  Get.put<EventsController>(EventsController());
+
+  Get.put<MeetingsController>(MeetingsController());
+  Get.put<SlotController>(SlotController());
+
+  Get.put<ChatController>(ChatController());
+  Get.put<VideoCallController>(VideoCallController());
+  Get.put<MessageController>(MessageController());
+  Get.put<UploadController>(UploadController());
+  Get.put<VideoRecordingController>(VideoRecordingController());
+  Get.put<NetworkController>(NetworkController());
+  Get.put<GrowthKitController>(GrowthKitController());
+
+  // Listen for messages
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    // print('Message received: ${message.notification?.title}');
+  });
+
+  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+    // print('Notification clicked: ${message.notification?.title}');
+  });
+
+  try {
+    cameras = await availableCameras()
+        .timeout(Duration(seconds: 5), onTimeout: () {
+      // print('Camera detection timed out');
+      return [];
+    });
+    // print('Cameras found: ${cameras.length}');
+  } catch (e) {
+    // print('Camera init failed: $e');
+    cameras = [];
   }
 
-  // ✅ 5) Put controllers ONCE (remove duplicates)
-  Get.put(ProfileController());
-  Get.put(OnboardingController());
-  Get.put(AuthController());
-  Get.put(DashboardController());
-  Get.put(ActivityController());
-  Get.put(HomeController());
-  Get.put(EarningsController());
-  Get.put(TransactionsController());
-  Get.put(NotesController());
-  Get.put(SettingsController());
-  Get.put(EventsController());
-  Get.put(MeetingsController());
-  Get.put(SlotController());
-  Get.put(ChatController());
-  Get.put(VideoCallController());
-  Get.put(MessageController());
-  Get.put(UploadController());
-  Get.put(VideoRecordingController());
-  Get.put(NetworkController());
-  Get.put(GrowthKitController());
+  await GetStorage.init();
+
+  await SentryFlutter.init(
+        (options) {
+      options.dsn = sentryDSN;
+      options.tracesSampleRate = 1.0;
+      options.profilesSampleRate = 1.0;
+    },
+  );
 
   runApp(const App());
 }
+
