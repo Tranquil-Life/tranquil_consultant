@@ -57,6 +57,14 @@ Future<void> initializeFirebase() async {
   print('Initialized default app $app');
 }
 
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  debugPrint("🔕 Background message: $message");
+  debugPrint("🔕 Background message title: ${message.notification?.title}");
+  debugPrint("🔕 Background message body: ${message.notification?.body}");
+}
+
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (Firebase.apps.isEmpty) {
@@ -95,6 +103,21 @@ void main() async {
   Get.put<VideoRecordingController>(VideoRecordingController());
   Get.put<NetworkController>(NetworkController());
   Get.put<GrowthKitController>(GrowthKitController());
+
+  // Request permission
+  final settings = await FirebaseMessaging.instance.requestPermission(
+    criticalAlert: true,
+    announcement: true,
+    carPlay: true,
+    providesAppNotificationSettings: true,
+  );
+  debugPrint('User granted permission: ${settings.authorizationStatus}');
+
+
+  // Background handler (mobile only)
+  if (!kIsWeb) {
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  }
 
   // Listen for messages
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
