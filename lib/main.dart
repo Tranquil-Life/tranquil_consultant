@@ -21,6 +21,7 @@ import 'package:tl_consultant/features/home/presentation/controllers/event_contr
 import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
 
 import 'core/constants/constants.dart';
+import 'core/global/custom_snackbar.dart';
 import 'features/activity/presentation/controllers/activity_controller.dart';
 import 'features/auth/presentation/controllers/auth_controller.dart';
 import 'features/chat/presentation/controllers/upload_controller.dart';
@@ -34,12 +35,12 @@ import 'features/settings/presentation/controllers/settings_controller.dart';
 import 'features/wallet/presentation/controllers/earnings_controller.dart';
 import 'features/wallet/presentation/controllers/transactions_controller.dart';
 
-late List<CameraDescription> cameras;
+late List<CameraDescription> cameras = [];
 PusherChannelsFlutter pusher = PusherChannelsFlutter.getInstance();
 GetStorage storage = GetStorage();
 
 final GlobalKey<ScaffoldMessengerState> rootMessengerKey =
-GlobalKey<ScaffoldMessengerState>();
+    GlobalKey<ScaffoldMessengerState>();
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -66,7 +67,6 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   debugPrint("🔕 Background message body: ${message.notification?.body}");
 }
 
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -87,10 +87,9 @@ void main() async {
     }
   }
 
-
   // await Firebase.initializeApp();
 
-  if(!kIsWeb){
+  if (!kIsWeb) {
     tz.initializeTimeZones();
   }
 
@@ -103,11 +102,27 @@ void main() async {
   );
   debugPrint('User granted permission: ${settings.authorizationStatus}');
 
-
   // Background handler (mobile only)
   if (!kIsWeb) {
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   }
+
+  // Listen for messages
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    debugPrint('Foreground message: ${message.notification?.title}');
+
+    final title = message.notification?.title ?? 'Tranquil Life';
+    final body = message.notification?.body ?? '';
+
+    CustomSnackBar.neutralSnackBar(
+      title: title,
+      body,
+    );
+  });
+
+  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+    print('Notification clicked: ${message.notification?.title}');
+  });
 
   // Register before running the app
   Get.put<ProfileController>(ProfileController());
@@ -133,24 +148,14 @@ void main() async {
   Get.put<NetworkController>(NetworkController());
   Get.put<GrowthKitController>(GrowthKitController());
 
-  // Listen for messages
-  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    // print('Message received: ${message.notification?.title}');
-  });
-
-  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-    // print('Notification clicked: ${message.notification?.title}');
-  });
-
-  try {
-    cameras = await availableCameras()
-        .timeout(Duration(seconds: 5), onTimeout: () {
-      // print('Camera detection timed out');
-      return [];
-    });
-    // print('Cameras found: ${cameras.length}');
-  } catch (e) {
-    // print('Camera init failed: $e');
+  if (!kIsWeb) {
+    try {
+      cameras = await availableCameras()
+          .timeout(const Duration(seconds: 5));
+    } catch (_) {
+      cameras = [];
+    }
+  } else {
     cameras = [];
   }
 
@@ -165,4 +170,3 @@ void main() async {
 
   runApp(const App());
 }
-
