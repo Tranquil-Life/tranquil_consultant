@@ -90,7 +90,24 @@ void main() async {
 
   // await Firebase.initializeApp();
 
-  tz.initializeTimeZones(); //for timezone initialization
+  if(!kIsWeb){
+    tz.initializeTimeZones();
+  }
+
+  // Request permission
+  final settings = await FirebaseMessaging.instance.requestPermission(
+    criticalAlert: true,
+    announcement: true,
+    carPlay: true,
+    providesAppNotificationSettings: true,
+  );
+  debugPrint('User granted permission: ${settings.authorizationStatus}');
+
+
+  // Background handler (mobile only)
+  if (!kIsWeb) {
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  }
 
   // Register before running the app
   Get.put<ProfileController>(ProfileController());
