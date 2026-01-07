@@ -57,11 +57,12 @@ Future<void> initializeFirebase() async {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Init Firebase once
-  if (kIsWeb) {
-    await initializeFirebase(); // must include correct FirebaseOptions
-  } else {
-    await Firebase.initializeApp();
+  if (Firebase.apps.isEmpty) {
+    if (kIsWeb) {
+      await initializeFirebase();
+    } else {
+      await Firebase.initializeApp();
+    }
   }
 
   tz.initializeTimeZones(); //for timezone initialization
