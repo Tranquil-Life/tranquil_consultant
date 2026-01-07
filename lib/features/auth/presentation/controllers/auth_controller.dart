@@ -21,6 +21,7 @@ import 'package:tl_consultant/features/profile/data/models/user_model.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_info_repo.dart';
 import 'package:tl_consultant/features/profile/domain/entities/user.dart';
+import 'package:tl_consultant/main.dart';
 
 class AuthController extends GetxController {
   static AuthController get instance => Get.find();
@@ -87,9 +88,8 @@ class AuthController extends GetxController {
         VerificationController.instance.emailVerifiedAt.value;
 
     Either either = await authRepo.register(params);
-    either.fold(
-        (l) => CustomSnackBar.errorSnackBar(
-            l.message.toString()), (r) async {
+    either.fold((l) => CustomSnackBar.errorSnackBar(l.message.toString()),
+        (r) async {
       Map<String, dynamic> data = r;
       userDataStore.user = data['data']['user'];
       userDataStore.qualifications =
@@ -121,8 +121,7 @@ class AuthController extends GetxController {
     Either either = await AuthRepoImpl().signIn(email, password);
 
     either.fold((l) {
-      return CustomSnackBar.errorSnackBar(
-        l.message.toString());
+      return CustomSnackBar.errorSnackBar(l.message.toString());
     }, (r) async {
       Map<String, dynamic> data = r;
 
@@ -139,7 +138,12 @@ class AuthController extends GetxController {
 
         CustomSnackBar.successSnackBar(body: "Done");
 
-        // await Get.offAllNamed(Routes.DASHBOARD);
+        if (kIsWeb) {
+          navigatorKey.currentState
+              ?.pushNamedAndRemoveUntil(Routes.DASHBOARD, (_) => false);
+        } else {
+          await Get.offAllNamed(Routes.DASHBOARD);
+        }
 
         emailTEC.clear();
         params.password = "";
@@ -151,9 +155,7 @@ class AuthController extends GetxController {
 
   Future resetPassword() async {
     var either = await AuthRepoImpl().resetPassword(emailTEC.text);
-    either.fold(
-        (l) => CustomSnackBar.errorSnackBar(
-            l.message.toString()), (r) {
+    either.fold((l) => CustomSnackBar.errorSnackBar(l.message.toString()), (r) {
       bool val = either.isRight();
       debugPrint(val.toString());
     });
@@ -193,7 +195,8 @@ class AuthController extends GetxController {
     try {
       if (kIsWeb) {
         final perm = await FirebaseMessaging.instance.requestPermission();
-        if (perm.authorizationStatus != AuthorizationStatus.authorized) return "";
+        if (perm.authorizationStatus != AuthorizationStatus.authorized)
+          return "";
 
         await Future.delayed(const Duration(milliseconds: 300)); // small settle
 
@@ -206,11 +209,11 @@ class AuthController extends GetxController {
       } else {
         final Either either = await authRepo.generateFcmToken();
         return either.fold(
-              (l) {
+          (l) {
             debugPrint("FCM error: ${l.message}");
             return "";
           },
-              (r) => r,
+          (r) => r,
         );
       }
     } catch (e, st) {
@@ -273,13 +276,11 @@ class AuthController extends GetxController {
     var updated = false;
     Either either =
         await authRepo.updatePassword(token: token, password: password);
-    either.fold(
-        (l) => CustomSnackBar.errorSnackBar(
-            l.message.toString()), (r) async {
+    either.fold((l) => CustomSnackBar.errorSnackBar(l.message.toString()),
+        (r) async {
       updated = true;
 
-      CustomSnackBar.successSnackBar(
-          body: "Password updated successfully");
+      CustomSnackBar.successSnackBar(body: "Password updated successfully");
     });
 
     return updated;

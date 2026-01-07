@@ -22,6 +22,7 @@ class _AppState extends State<App> {
   Widget build(BuildContext context) {
     setStatusBarBrightness(true);
     return GetMaterialApp(
+      navigatorKey: navigatorKey,
       scaffoldMessengerKey: rootMessengerKey,
       title: AppConfig.appName,
       debugShowCheckedModeBanner: false,

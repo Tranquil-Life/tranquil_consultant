@@ -1,10 +1,12 @@
 import 'package:dartz/dartz.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:tl_consultant/core/utils/routes/app_pages.dart';
 import 'package:tl_consultant/features/auth/data/repos/auth_repo.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 import 'package:tl_consultant/features/profile/domain/entities/user.dart';
+import 'package:tl_consultant/main.dart';
 
 class OnboardingController extends GetxController {
   static OnboardingController get instance => Get.find();
@@ -33,7 +35,17 @@ class OnboardingController extends GetxController {
     }, (r) async {
       userDataStore.user['email_verified_at'] = r['data']['email_verified_at'];
 
-      Get.offAllNamed(Routes.DASHBOARD);
+      if (kIsWeb) {
+        navigatorKey.currentState
+            ?.pushNamedAndRemoveUntil(Routes.DASHBOARD, (_) => false);
+
+        // Navigator.of(context).pushNamedAndRemoveUntil(
+        //   Routes.DASHBOARD,
+        //       (route) => false,
+        // );
+      } else {
+        Get.offAllNamed(Routes.DASHBOARD);
+      }
     });
   }
 }
