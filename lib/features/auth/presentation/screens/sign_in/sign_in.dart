@@ -104,45 +104,24 @@ class _SignInScreenState extends State<SignInScreen> {
                     )),
               ),
 
-              GestureDetector(
-                onTap: (){
-                  // ScaffoldMessenger.of(context).showSnackBar(
-                  //   const SnackBar(content: Text("hello")),
-                  // );
+
+              Spacer(),
 
 
-                  CustomSnackBar.showSnackBar(
-                    title: "Hi",
-                    message: "hello",
-                    backgroundColor: Colors.green,
-                  );
-
-                  print("sing in");
-                },
-                child: Text("hello", style: TextStyle(color: Colors.blue),),
+              Obx(
+                () => Align(
+                  alignment: Alignment.center,
+                  child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                          maxWidth: isSmallScreen(context)
+                              ? displayWidth(context)
+                              : displayWidth(context) / 1.4),
+                      child: CustomButton(
+                          onPressed: !criteriaMet ? null : _continue,
+                          text: "Sign In")),
+                ),
               ),
-              // Spacer(),
 
-
-              // Obx(
-              //   () => Align(
-              //     alignment: Alignment.center,
-              //     child: ConstrainedBox(
-              //         constraints: BoxConstraints(
-              //             maxWidth: isSmallScreen(context)
-              //                 ? displayWidth(context)
-              //                 : displayWidth(context) / 1.4),
-              //         child: CustomButton(
-              //             onPressed: !criteriaMet ? null : _continue,
-              //             text: "Sign In")),
-              //   ),
-              // ),
-
-              // CustomButton(
-              //     onPressed: (){
-              //       CustomSnackBar.successSnackBar(body: "SIGN IN", title: "Clicked" );
-              //     },
-              //     text: "Sign In"),
               SizedBox(height: 44),
               Align(
                 alignment: Alignment.bottomCenter,

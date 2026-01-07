@@ -296,7 +296,7 @@ class AuthController extends GetxController {
     isPasswordsMatching.value = false;
   }
 
-  clearData() {
+  void clearData() {
     emailTEC.clear();
     confirmPasswordTEC.clear();
     cvTEC.clear();
