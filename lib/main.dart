@@ -72,20 +72,20 @@ void main() async {
 
   await GetStorage.init();
 
-  // Init Firebase once
-  if (kIsWeb) {
-    await initializeFirebase(); // must include correct FirebaseOptions
-  } else {
-    await Firebase.initializeApp();
-  }
-
-  // if (Firebase.apps.isEmpty) {
-  //   if (kIsWeb) {
-  //     await initializeFirebase();
-  //   } else {
-  //     await Firebase.initializeApp();
-  //   }
+  // // Init Firebase once
+  // if (kIsWeb) {
+  //   await initializeFirebase(); // must include correct FirebaseOptions
+  // } else {
+  //   await Firebase.initializeApp();
   // }
+
+  if (Firebase.apps.isEmpty) {
+    if (kIsWeb) {
+      await initializeFirebase();
+    } else {
+      await Firebase.initializeApp();
+    }
+  }
 
 
   // await Firebase.initializeApp();
