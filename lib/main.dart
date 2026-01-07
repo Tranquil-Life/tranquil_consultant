@@ -113,6 +113,10 @@ void main() async {
   );
   debugPrint('User granted permission: ${settings.authorizationStatus}');
 
+  final token = await FirebaseMessaging.instance.getToken();
+
+  print(token);
+
 
   // Background handler (mobile only)
   if (!kIsWeb) {
