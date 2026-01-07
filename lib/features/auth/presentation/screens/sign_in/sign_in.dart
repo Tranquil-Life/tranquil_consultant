@@ -103,7 +103,16 @@ class _SignInScreenState extends State<SignInScreen> {
                       ),
                     )),
               ),
-              Spacer(),
+
+              GestureDetector(
+                onTap: (){
+                  CustomSnackBar.showSnackBar(context: context, message: "hello", backgroundColor: Colors.green);
+                },
+                child: Text("hello", style: TextStyle(color: Colors.blue),),
+              ),
+              // Spacer(),
+
+
               // Obx(
               //   () => Align(
               //     alignment: Alignment.center,
@@ -118,11 +127,11 @@ class _SignInScreenState extends State<SignInScreen> {
               //   ),
               // ),
 
-              CustomButton(
-                  onPressed: (){
-                    CustomSnackBar.successSnackBar(body: "SIGN IN", title: "Clicked" );
-                  },
-                  text: "Sign In"),
+              // CustomButton(
+              //     onPressed: (){
+              //       CustomSnackBar.successSnackBar(body: "SIGN IN", title: "Clicked" );
+              //     },
+              //     text: "Sign In"),
               SizedBox(height: 44),
               Align(
                 alignment: Alignment.bottomCenter,
