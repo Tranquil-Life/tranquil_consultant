@@ -193,13 +193,17 @@ class AuthController extends GetxController {
   Future<String> generateFcmToken() async {
     try {
       if (kIsWeb) {
-        final fcmToken = await FirebaseMessaging.instance.getToken(
+        final perm = await FirebaseMessaging.instance.requestPermission();
+        if (perm.authorizationStatus != AuthorizationStatus.authorized) return "";
+
+        await Future.delayed(const Duration(milliseconds: 300)); // small settle
+
+        final token = await FirebaseMessaging.instance.getToken(
           vapidKey: AppConfig.fcmWebVapidKey,
         );
 
-        final token = fcmToken ?? "";
         debugPrint('Web FCM token: $token');
-        return token;
+        return token ?? "";
       } else {
         final Either either = await authRepo.generateFcmToken();
         return either.fold(
