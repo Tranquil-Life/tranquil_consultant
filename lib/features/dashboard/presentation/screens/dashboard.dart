@@ -92,9 +92,9 @@ class _DashboardState extends State<Dashboard> {
       dashboardController.currentIndex.value = maxIndex;
     }
 
-    if(!isSmall && dashboardController.currentIndex.value == 2){
+    if (!isSmall && dashboardController.currentIndex.value == 2) {
       dashboardController.currentIndex.value = 3;
-    }else if(isSmall && dashboardController.currentIndex.value == 3){
+    } else if (isSmall && dashboardController.currentIndex.value == 3) {
       dashboardController.currentIndex.value = 2;
     }
 
@@ -123,10 +123,8 @@ class _DashboardState extends State<Dashboard> {
                     await chatController.getChatInfo(client: client!);
                     await meetingsController.startMeeting();
                   } else {
-                    CustomSnackBar.showSnackBar(
-                        context: Get.context,
-                        message: "You have no ongoing session",
-                        backgroundColor: ColorPalette.blue);
+                    CustomSnackBar.neutralSnackBar(
+                        "You have no ongoing session");
                   }
                 },
                 dbController: dashboardController,
@@ -218,10 +216,8 @@ class _DashboardState extends State<Dashboard> {
                     dashboardController.updateIndex(2);
                     await meetingsController.startMeeting();
                   } else {
-                    CustomSnackBar.showSnackBar(
-                        context: Get.context,
-                        message: "You have no ongoing session",
-                        backgroundColor: ColorPalette.blue);
+                    CustomSnackBar.neutralSnackBar(
+                        "You have no ongoing session");
                   }
                 },
               ),

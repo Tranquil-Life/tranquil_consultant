@@ -154,21 +154,15 @@ class VideoRecordingController extends GetxController {
 
         deleteFileFromUrl(previousUrl.value);
 
-        CustomSnackBar.showSnackBar(
-            context: Get.context!,
-            title: "Success",
-            message: "Upload successful",
-            backgroundColor: ColorPalette.green);
+        CustomSnackBar.successSnackBar(
+            body: "Upload successful");
       }
 
       // Return the download URL
       return downloadUrl;
     } catch (e) {
-      CustomSnackBar.showSnackBar(
-          context: Get.context!,
-          title: "Error",
-          message: "Error uploading file: $e",
-          backgroundColor: ColorPalette.red);
+      CustomSnackBar.errorSnackBar(
+        "Error uploading file: $e");
 
       return null;
     }

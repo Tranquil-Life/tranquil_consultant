@@ -30,7 +30,8 @@ class ExplorePerksWidget extends StatelessWidget {
             bottom: 0,
             right: 0,
             child: Container(
-                padding: EdgeInsets.symmetric(horizontal: isSmallScreen(context) ? 12 : 18),
+                padding: EdgeInsets.symmetric(
+                    horizontal: isSmallScreen(context) ? 12 : 18),
                 child: isSmallScreen(context)
                     ? Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -50,10 +51,7 @@ class ExplorePerksWidget extends StatelessWidget {
                             child: CustomButton(
                                 bgColor: ColorPalette.white,
                                 onPressed: () {
-                                  CustomSnackBar.showSnackBar(
-                                      context: Get.context,
-                                      message: "Coming soon",
-                                      backgroundColor: ColorPalette.blue);
+                                  CustomSnackBar.neutralSnackBar("Coming soon");
                                 },
                                 child: Center(
                                   child: Row(
@@ -94,10 +92,8 @@ class ExplorePerksWidget extends StatelessWidget {
                             child: CustomButton(
                                 bgColor: ColorPalette.white,
                                 onPressed: () {
-                                  CustomSnackBar.showSnackBar(
-                                      context: Get.context,
-                                      message: "Coming soon",
-                                      backgroundColor: ColorPalette.blue);
+                                  CustomSnackBar.neutralSnackBar(
+                                      "Coming soon");
                                 },
                                 child: Center(
                                   child: Row(
@@ -120,9 +116,7 @@ class ExplorePerksWidget extends StatelessWidget {
                                 )),
                           ),
                         ],
-                      )
-
-            ))
+                      )))
       ],
     );
   }

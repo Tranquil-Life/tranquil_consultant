@@ -106,11 +106,16 @@ class _SignInScreenState extends State<SignInScreen> {
 
               GestureDetector(
                 onTap: (){
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("hello")),
+                  // ScaffoldMessenger.of(context).showSnackBar(
+                  //   const SnackBar(content: Text("hello")),
+                  // );
+
+
+                  CustomSnackBar.showSnackBar(
+                    title: "Hi",
+                    message: "hello",
+                    backgroundColor: Colors.green,
                   );
-
-
 
                   print("sing in");
                 },

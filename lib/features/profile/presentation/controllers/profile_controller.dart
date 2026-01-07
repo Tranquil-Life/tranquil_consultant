@@ -123,11 +123,8 @@ class ProfileController extends GetxController {
     print("REQUEST: $request");
 
     result.fold(
-      (l) => CustomSnackBar.showSnackBar(
-          context: Get.context!,
-          title: "Error",
-          message: l.message!,
-          backgroundColor: ColorPalette.red),
+      (l) => CustomSnackBar.errorSnackBar(
+        l.message!,),
       (r) {
         editUser.value = EditUser(baseUser: UserModel.fromJson(r['user']));
         User user = UserModel.fromJson(r['user']);
@@ -135,11 +132,8 @@ class ProfileController extends GetxController {
 
         updateProfile(user, qualifications);
 
-        return CustomSnackBar.showSnackBar(
-            context: Get.context!,
-            title: "Success",
-            message: "Profile updated",
-            backgroundColor: ColorPalette.green);
+        return CustomSnackBar.successSnackBar(
+          body: "Profile updated");
       },
     );
 
@@ -219,20 +213,14 @@ class ProfileController extends GetxController {
   Future deleteQualificationFromDB(int id) async {
     Either either = await profileRepo.deleteQualification(id);
     either.fold(
-        (l) => CustomSnackBar.showSnackBar(
-            context: Get.context!,
-            title: "Error",
-            message: l.message!,
-            backgroundColor: ColorPalette.red), (r) {
-      CustomSnackBar.showSnackBar(
-          context: Get.context!,
-          title: "Success",
-          message: "Qualification deleted",
-          backgroundColor: ColorPalette.green);
+        (l) => CustomSnackBar.errorSnackBar(
+          l.message!), (r) {
+      CustomSnackBar.successSnackBar(
+          body: "Qualification deleted");
     });
   }
 
-  clearData() {
+  void clearData() {
     introVideoDuration.value = 0;
     profilePic.value = '';
     introVideo.value = '';

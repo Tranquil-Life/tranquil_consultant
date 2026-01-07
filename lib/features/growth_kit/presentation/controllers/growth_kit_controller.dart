@@ -18,10 +18,7 @@ class GrowthKitController extends GetxController {
     if (isEmpty) {
       Get.toNamed(Routes.EDIT_PROFILE);
     } else {
-      CustomSnackBar.showSnackBar(
-          context: Get.context,
-          message: "Coming soon",
-          backgroundColor: ColorPalette.blue);
+      CustomSnackBar.neutralSnackBar("Coming soon");
     }
   }
 

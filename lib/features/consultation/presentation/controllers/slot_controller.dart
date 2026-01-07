@@ -64,17 +64,11 @@ class SlotController extends GetxController {
         await repo.saveSlots(slots: listInUtc, availableDays: availableDays);
 
     if (result.isRight()) {
-      CustomSnackBar.showSnackBar(
-          context: Get.context!,
-          title: "Success",
-          message: "Saved",
-          backgroundColor: ColorPalette.green);
+      CustomSnackBar.successSnackBar(
+          body: "Saved");
     } else {
-      CustomSnackBar.showSnackBar(
-          context: Get.context!,
-          title: "Error",
-          message: "Couldn't save slots",
-          backgroundColor: ColorPalette.red);
+      CustomSnackBar.errorSnackBar(
+          "Couldn't save slots");
     }
   }
 

@@ -38,6 +38,9 @@ late List<CameraDescription> cameras;
 PusherChannelsFlutter pusher = PusherChannelsFlutter.getInstance();
 GetStorage storage = GetStorage();
 
+final GlobalKey<ScaffoldMessengerState> rootMessengerKey =
+GlobalKey<ScaffoldMessengerState>();
+
 Future<void> initializeFirebase() async {
   FirebaseApp app = await Firebase.initializeApp(
     options: const FirebaseOptions(

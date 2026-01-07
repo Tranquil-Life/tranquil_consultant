@@ -109,11 +109,6 @@ class ChatController extends GetxController {
 
     // If your API needs lastMessageId, don’t call with null
     final lastId = lastMessageId.value;
-    if (lastId == null) {
-      // Option A: don’t load older if we don’t know the cursor yet
-      return;
-      // Option B: call API without lastMessageId if supported
-    }
 
     isLoadMoreRunning.value = true;
 
@@ -200,11 +195,8 @@ class ChatController extends GetxController {
     either.fold((l) {
       loadingChatRoom.value = false;
 
-      CustomSnackBar.showSnackBar(
-          context: Get.context!,
-          title: "Error",
-          message: l.message.toString(),
-          backgroundColor: ColorPalette.red);
+      CustomSnackBar.errorSnackBar(
+          l.message.toString());
     }, (r) {
       chatInfo = r['data'];
       // chatInfo.addAll(r['data']);

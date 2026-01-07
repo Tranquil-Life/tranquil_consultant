@@ -36,10 +36,8 @@ class VerificationController extends GetxController {
       isConfirmed.value = true;
       isVerified.value = false;
 
-      CustomSnackBar.showSnackBar(
-          context: Get.context!,
-          message: l.message.toString(),
-          backgroundColor: ColorPalette.red);
+      CustomSnackBar.errorSnackBar(
+          l.message.toString());
     }, (r) {
       verificationToken.value = token;
       isConfirmed.value = true;
@@ -81,11 +79,8 @@ class VerificationController extends GetxController {
 
     Either either = await authRepo.requestResetPwdToken(email: email);
     either.fold(
-            (l) => CustomSnackBar.showSnackBar(
-            context: Get.context!,
-            title: "Error",
-            message: l.message.toString(),
-            backgroundColor: ColorPalette.red), (r) {
+            (l) => CustomSnackBar.errorSnackBar(
+            l.message.toString()), (r) {
       tokenSent = true;
     });
 
@@ -101,10 +96,8 @@ class VerificationController extends GetxController {
       isConfirmed.value = true;
       isVerified.value = false;
 
-      CustomSnackBar.showSnackBar(
-          context: Get.context!,
-          message: l.message.toString(),
-          backgroundColor: ColorPalette.red);
+      CustomSnackBar.errorSnackBar(
+          l.message.toString());
     }, (r) {
       verificationToken.value = token;
       isConfirmed.value = true;

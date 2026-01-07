@@ -88,10 +88,8 @@ class AuthController extends GetxController {
 
     Either either = await authRepo.register(params);
     either.fold(
-        (l) => CustomSnackBar.showSnackBar(
-            context: Get.context!,
-            message: l.message.toString(),
-            backgroundColor: ColorPalette.red), (r) async {
+        (l) => CustomSnackBar.errorSnackBar(
+            l.message.toString()), (r) async {
       Map<String, dynamic> data = r;
       userDataStore.user = data['data']['user'];
       userDataStore.qualifications =
@@ -157,11 +155,8 @@ class AuthController extends GetxController {
   Future resetPassword() async {
     var either = await AuthRepoImpl().resetPassword(emailTEC.text);
     either.fold(
-        (l) => CustomSnackBar.showSnackBar(
-            context: Get.context!,
-            title: "Error",
-            message: l.message.toString(),
-            backgroundColor: ColorPalette.red), (r) {
+        (l) => CustomSnackBar.errorSnackBar(
+            l.message.toString()), (r) {
       bool val = either.isRight();
       debugPrint(val.toString());
     });
@@ -275,17 +270,12 @@ class AuthController extends GetxController {
     Either either =
         await authRepo.updatePassword(token: token, password: password);
     either.fold(
-        (l) => CustomSnackBar.showSnackBar(
-            context: Get.context!,
-            title: "Error",
-            message: l.message.toString(),
-            backgroundColor: ColorPalette.red), (r) async {
+        (l) => CustomSnackBar.errorSnackBar(
+            l.message.toString()), (r) async {
       updated = true;
 
-      CustomSnackBar.showSnackBar(
-          context: Get.context!,
-          message: "Password updated successfully",
-          backgroundColor: ColorPalette.green);
+      CustomSnackBar.successSnackBar(
+          body: "Password updated successfully");
     });
 
     return updated;

@@ -261,31 +261,22 @@ Future shareFile({File? fileToShare, String? urlToShare}) async {
       if (file.existsSync()) {
         await Share.shareXFiles([XFile(file.path)]);
       } else {
-        CustomSnackBar.showSnackBar(
-          context: Get.context!,
-          title: "Error",
-          message: "File does not exist",
-          backgroundColor: ColorPalette.red,
+        CustomSnackBar.errorSnackBar(
+          "File does not exist",
         );
       }
     } else {
       if (urlToShare == null || urlToShare.isEmpty) {
-        CustomSnackBar.showSnackBar(
-          context: Get.context!,
-          title: "Error",
-          message: "URL to share is empty",
-          backgroundColor: ColorPalette.red,
+        CustomSnackBar.errorSnackBar(
+          "URL to share is empty",
         );
         return;
       }
       await Share.share(urlToShare);
     }
   } catch (e) {
-    CustomSnackBar.showSnackBar(
-      context: Get.context!,
-      title: "Error",
-      message: "Failed to share",
-      backgroundColor: ColorPalette.red,
+    CustomSnackBar.errorSnackBar(
+       "Failed to share",
     );
   }
 }

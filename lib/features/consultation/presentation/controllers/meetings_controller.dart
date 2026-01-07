@@ -54,12 +54,8 @@ class MeetingsController extends GetxController {
         if(!l.message!.contains('unauthenticated')){
           print("Load first meetings: error: ${l.message}");
 
-          return CustomSnackBar.showSnackBar(
-            context: Get.context!,
-            title: "Error",
-            message: l.message.toString(),
-            backgroundColor: ColorPalette.red,
-          );
+          return CustomSnackBar.errorSnackBar(
+            l.message.toString());
         }
 
       }, (r) async {
@@ -101,12 +97,8 @@ class MeetingsController extends GetxController {
             if(!l.message!.contains('unauthenticated')){
               print("Load more meetings: error: ${l.message}");
 
-              return CustomSnackBar.showSnackBar(
-                context: Get.context!,
-                title: "Error",
-                message: l.message.toString(),
-                backgroundColor: ColorPalette.red,
-              );
+              return CustomSnackBar.errorSnackBar(
+                l.message.toString());
             }
           }, (r) async {
         var data = r;
@@ -174,11 +166,8 @@ class MeetingsController extends GetxController {
       loading.value = false;
       debugPrint("Start meeting: error: ${l.message}");
 
-      return CustomSnackBar.showSnackBar(
-        context: Get.context!,
-        title: "Error",
-        message: l.message.toString(),
-        backgroundColor: ColorPalette.red,
+      return CustomSnackBar.errorSnackBar(
+        l.message.toString()
       );
     }, (r) {
       loading.value = false;

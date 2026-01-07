@@ -46,11 +46,8 @@ class TransactionsController extends GetxController {
     isFirstLoadRunning.value = true;
 
     result.fold(
-        (l) => CustomSnackBar.showSnackBar(
-            context: Get.context!,
-            title: "Error",
-            message: l.message.toString(),
-            backgroundColor: ColorPalette.red), (r) {
+        (l) => CustomSnackBar.errorSnackBar(
+          l.message.toString()), (r) {
       stripeTrnx.clear();
       result.map((r) => stripeTrnx.value = (r['data']['transactions'] as List)
           .map((e) => StripeTransaction.fromJson(e))
@@ -77,35 +74,27 @@ class TransactionsController extends GetxController {
 
       isLoadMoreRunning.value = false; // Hide the loading indicator
 
-      if (result.isRight()) {
-        result.map((r) {
-          // If we have new transactions, add them to the existing list
-          List<StripeTransaction> fetchedTransactions =
-              (r['data']['transactions'] as List).map((e) => StripeTransaction.fromJson(e)).toList();
+      result.fold((l)=>CustomSnackBar.errorSnackBar(
+        l.message.toString(),
+      ), (r){
+        // If we have new transactions, add them to the existing list
+        List<StripeTransaction> fetchedTransactions =
+        (r['data']['transactions'] as List).map((e) => StripeTransaction.fromJson(e)).toList();
 
-          // Check if there are transactions to add
-          if (fetchedTransactions.isNotEmpty) {
-            stripeTrnx.addAll(fetchedTransactions); // Add to the existing list
-          } else {
-            // No more data to load, set hasNextPage to false
-            hasNextPage.value = false;
-          }
-        });
-      } else {
-        // Show an error message if fetching the transactions fails
-        result.leftMap((l) => CustomSnackBar.showSnackBar(
-              context: Get.context!,
-              title: "Error",
-              message: l.message.toString(),
-              backgroundColor: ColorPalette.red,
-            ));
-      }
+        // Check if there are transactions to add
+        if (fetchedTransactions.isNotEmpty) {
+          stripeTrnx.addAll(fetchedTransactions); // Add to the existing list
+        } else {
+          // No more data to load, set hasNextPage to false
+          hasNextPage.value = false;
+        }
+      });
 
       update();
     }
   }
 
-  clearData() {
+  void clearData() {
     currPageIndex.value = 0;
     stripeTrnx.clear();
     page.value = 1;

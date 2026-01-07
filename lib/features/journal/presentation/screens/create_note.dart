@@ -46,18 +46,17 @@ class _CreateNoteState extends State<CreateNote> {
     var data = Get.arguments;
     if (data != null) {
       Map args = data as Map;
-      if(args['personal_note'] != null){
+      if (args['personal_note'] != null) {
         personalNote = args['personal_note'];
 
         notesController.titleController.text = personalNote!.heading;
         notesController.bodyController.text = personalNote!.body;
 
         isAlreadySaved = true;
-      }else if(args['shared_note'] != null){
+      } else if (args['shared_note'] != null) {
         sharedNote = args['shared_note'];
         mood = sharedNote!.note!.mood!;
         // bgColor = Color(int.parse(sharedNote!.hexColor!));
-
       }
     }
 
@@ -80,12 +79,16 @@ class _CreateNoteState extends State<CreateNote> {
         backgroundColor: Colors.grey.shade100,
         appBar: CustomAppBar(
           centerTitle: false,
-          title: sharedNote == null ? isAlreadySaved ? "Edit note" : "New note" : "View note",
-          onBackPressed: () async{
+          title: sharedNote == null
+              ? isAlreadySaved
+                  ? "Edit note"
+                  : "New note"
+              : "View note",
+          onBackPressed: () async {
             if (Get.key.currentState?.canPop() ?? false) {
               Get.back();
             } else {
-              Get.offAllNamed(Routes.DASHBOARD);// fallback route
+              Get.offAllNamed(Routes.DASHBOARD); // fallback route
               await Future.delayed(const Duration(milliseconds: 500));
               dashboardController.currentIndex.value = 1;
             }
@@ -147,69 +150,67 @@ class _CreateNoteState extends State<CreateNote> {
                               ))),
                   ],
                 ),
-
-                if(!isAlreadySaved)
-                Positioned(
-                    bottom: 50,
-                    right: 0,
-                    left: 0,
-                    child: Container(
-                      height: 64,
-                      padding: EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(8),
-                        boxShadow: const [
-                          BoxShadow(
-                              blurRadius: 3,
-                              color: Colors.black12,
-                              offset: Offset(3, 6)),
-                        ],
-                      ),
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Wrap(
-                              spacing: 20,
-                              direction: Axis.horizontal,
-                              crossAxisAlignment: WrapCrossAlignment.center,
-                              children: [
-                                GestureDetector(
-                                  onTap: () {
-                                    if (notesController
-                                            .bodyController.selection !=
-                                        null) {
-                                      openTextOptionsDialog(context);
+                if (!isAlreadySaved)
+                  Positioned(
+                      bottom: 50,
+                      right: 0,
+                      left: 0,
+                      child: Container(
+                        height: 64,
+                        padding: EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(8),
+                          boxShadow: const [
+                            BoxShadow(
+                                blurRadius: 3,
+                                color: Colors.black12,
+                                offset: Offset(3, 6)),
+                          ],
+                        ),
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Wrap(
+                                spacing: 20,
+                                direction: Axis.horizontal,
+                                crossAxisAlignment: WrapCrossAlignment.center,
+                                children: [
+                                  GestureDetector(
+                                    onTap: () {
+                                      if (notesController
+                                              .bodyController.selection !=
+                                          null) {
+                                        openTextOptionsDialog(context);
+                                      } else {
+                                        CustomSnackBar.neutralSnackBar(
+                                            title: "Highlight a text",
+                                            "highlight the text you want to format");
+                                      }
+                                    },
+                                    child: editOptionItem(formatTextIcon),
+                                  ),
+                                  editOptionItem(attachIconPath,
+                                      width: 24, color: ColorPalette.grey),
+                                  editOptionItem(micIconPath,
+                                      width: 24, color: ColorPalette.grey),
+                                ],
+                              ),
+                              SizedBox(
+                                width: 137,
+                                child: CustomButton(
+                                  onPressed: () async {
+                                    if (!isAlreadySaved) {
+                                      await notesController.createNote();
                                     } else {
-                                      CustomSnackBar.showSnackBar(
-                                          context: context,
-                                          title: "Highlight a text",
-                                          message:
-                                              "highlight the text you want to format",
-                                          backgroundColor: ColorPalette.blue);
+                                      //...update
                                     }
                                   },
-                                  child: editOptionItem(formatTextIcon),
+                                  text: "Save note",
                                 ),
-                                editOptionItem(attachIconPath, width: 24, color: ColorPalette.grey),
-                                editOptionItem(micIconPath, width: 24, color: ColorPalette.grey),
-                              ],
-                            ),
-                            SizedBox(
-                              width: 137,
-                              child: CustomButton(
-                                onPressed: () async {
-                                  if(!isAlreadySaved){
-                                    await notesController.createNote();
-                                  }else{
-                                    //...update
-                                  }
-                                },
-                                text: "Save note",
-                              ),
-                            )
-                          ]),
-                    ))
+                              )
+                            ]),
+                      ))
               ],
             )),
       ),

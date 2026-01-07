@@ -74,11 +74,8 @@ class NotesController extends GetxController with GetTickerProviderStateMixin {
         page: page.value, limit: limit.value);
     either.fold((l) {
       if (!l.message!.contains('unauthenticated')) {
-        return CustomSnackBar.showSnackBar(
-          context: Get.context!,
-          title: "Error",
-          message: l.message.toString(),
-          backgroundColor: ColorPalette.red,
+        return CustomSnackBar.errorSnackBar(
+          l.message.toString(),
         );
       }
     }, (r) {
@@ -118,11 +115,8 @@ class NotesController extends GetxController with GetTickerProviderStateMixin {
         if (!l.message!.contains('unauthenticated')) {
           print("Load more personal notes: error: ${l.message}");
 
-          return CustomSnackBar.showSnackBar(
-            context: Get.context!,
-            title: "Error",
-            message: l.message.toString(),
-            backgroundColor: ColorPalette.red,
+          return CustomSnackBar.errorSnackBar(
+            l.message.toString(),
           );
         }
       }, (r) {
@@ -157,11 +151,9 @@ class NotesController extends GetxController with GetTickerProviderStateMixin {
         await journalRepo.getSharedNotes(page: page.value, limit: limit.value);
 
     either.fold(
-        (l) => CustomSnackBar.showSnackBar(
-            context: Get.context!,
-            title: "Error",
-            message: l.message.toString(),
-            backgroundColor: ColorPalette.red), (r) {
+        (l) => CustomSnackBar.errorSnackBar(
+              l.message.toString(),
+            ), (r) {
       sharedNotesList.clear();
 
       var data = r['data'];
@@ -195,7 +187,8 @@ class NotesController extends GetxController with GetTickerProviderStateMixin {
       var result = await journalRepo.getSharedNotes(
           page: page.value, limit: limit.value);
 
-      if (result.isRight()) {
+      result.fold((l) => CustomSnackBar.errorSnackBar(l.message.toString()),
+          (r) {
         List<SharedNote> fetchedNotes = [];
 
         result.map((r) => fetchedNotes =
@@ -209,13 +202,7 @@ class NotesController extends GetxController with GetTickerProviderStateMixin {
         }
 
         isMoreSharedNotesLoading.value = false;
-      } else {
-        result.leftMap((l) => CustomSnackBar.showSnackBar(
-            context: Get.context!,
-            title: "Error",
-            message: l.message.toString(),
-            backgroundColor: ColorPalette.red));
-      }
+      });
 
       update();
     }
@@ -225,27 +212,18 @@ class NotesController extends GetxController with GetTickerProviderStateMixin {
     PersonalNote note =
         PersonalNote(heading: titleController.text, body: bodyController.text);
     Either either = await journalRepo.addNote(note: note);
-    either.fold(
-        (l) => CustomSnackBar.showSnackBar(
-            context: Get.context!,
-            title: "Error",
-            message: l.message.toString(),
-            backgroundColor: ColorPalette.red), (r) {
+    either.fold((l) => CustomSnackBar.errorSnackBar(l.message.toString()), (r) {
       var data = r as Map<String, dynamic>;
 
       personalNotesList.insert(0, PersonalNoteModel.fromJson(data['data']));
 
-      CustomSnackBar.showSnackBar(
-          context: Get.context!,
-          title: "Success",
-          message: "Added new note",
-          backgroundColor: ColorPalette.green);
+      CustomSnackBar.successSnackBar(body: "Added new note");
     });
 
     update();
   }
 
-  listenToTabController() {
+  void listenToTabController() {
     tabController.addListener(() {
       switchTab();
     });

@@ -7,6 +7,8 @@ import 'package:tl_consultant/core/utils/functions.dart';
 import 'package:tl_consultant/core/utils/routes/app_pages.dart';
 import 'package:tl_consultant/core/utils/routes/bindings/controllers_binding.dart';
 
+import 'main.dart';
+
 class App extends StatefulWidget {
   const App({super.key});
 
@@ -15,13 +17,12 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> {
-  final GlobalKey<NavigatorState> navKey = GlobalKey<NavigatorState>();
 
   @override
   Widget build(BuildContext context) {
     setStatusBarBrightness(true);
     return GetMaterialApp(
-      // navigatorKey: navKey,
+      scaffoldMessengerKey: rootMessengerKey,
       title: AppConfig.appName,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
