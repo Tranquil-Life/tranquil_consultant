@@ -137,7 +137,9 @@ class AuthController extends GetxController {
 
         await updateFcmToken();
 
-        await Get.offAllNamed(Routes.DASHBOARD);
+        CustomSnackBar.successSnackBar(body: "Done");
+
+        // await Get.offAllNamed(Routes.DASHBOARD);
 
         emailTEC.clear();
         params.password = "";
