@@ -69,16 +69,26 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  if (Firebase.apps.isEmpty) {
-    if (kIsWeb) {
-      await initializeFirebase();
-    } else {
-      await Firebase.initializeApp();
-    }
+
+  await GetStorage.init();
+
+  // Init Firebase once
+  if (kIsWeb) {
+    await initializeFirebase(); // must include correct FirebaseOptions
+  } else {
+    await Firebase.initializeApp();
   }
 
+  // if (Firebase.apps.isEmpty) {
+  //   if (kIsWeb) {
+  //     await initializeFirebase();
+  //   } else {
+  //     await Firebase.initializeApp();
+  //   }
+  // }
 
-  await Firebase.initializeApp();
+
+  // await Firebase.initializeApp();
 
   tz.initializeTimeZones(); //for timezone initialization
 
@@ -127,7 +137,6 @@ void main() async {
     cameras = [];
   }
 
-  await GetStorage.init();
 
   // await SentryFlutter.init(
   //       (options) {

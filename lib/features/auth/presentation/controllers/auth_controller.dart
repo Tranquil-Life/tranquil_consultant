@@ -136,8 +136,6 @@ class AuthController extends GetxController {
 
         await updateFcmToken();
 
-        CustomSnackBar.successSnackBar(body: "Done");
-
         if (kIsWeb) {
           navigatorKey.currentState
               ?.pushNamedAndRemoveUntil(Routes.DASHBOARD, (_) => false);
