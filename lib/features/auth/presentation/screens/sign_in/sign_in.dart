@@ -106,7 +106,9 @@ class _SignInScreenState extends State<SignInScreen> {
 
               GestureDetector(
                 onTap: (){
-                  CustomSnackBar.showSnackBar(context: context, message: "hello", backgroundColor: Colors.green);
+                  Get.snackbar("Test", "hello");
+                  print("sing in");
+                  // CustomSnackBar.showSnackBar(context: context, message: "hello", backgroundColor: Colors.green);
                 },
                 child: Text("hello", style: TextStyle(color: Colors.blue),),
               ),
