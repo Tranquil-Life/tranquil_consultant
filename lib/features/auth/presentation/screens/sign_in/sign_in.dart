@@ -13,7 +13,6 @@ import 'package:tl_consultant/features/auth/presentation/controllers/auth_contro
 import 'package:tl_consultant/features/auth/presentation/screens/register/therapist_type_screen.dart';
 import 'package:tl_consultant/features/auth/presentation/widgets/form_fields.dart';
 
-
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
 
@@ -104,9 +103,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     )),
               ),
 
-
               Spacer(),
-
 
               Obx(
                 () => Align(
