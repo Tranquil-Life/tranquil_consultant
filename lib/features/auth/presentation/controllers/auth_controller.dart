@@ -128,23 +128,23 @@ class AuthController extends GetxController {
       Map<String, dynamic> data = r;
 
       print(r);
-      //
-      // if (data['error'] == false && data['data'] != null) {
-      //   userDataStore.user = data['data']['user'];
-      //   userDataStore.qualifications =
-      //       List<Map<String, dynamic>>.from(data['data']['qualifications']);
-      //   userDataStore.user['meetings_count'] = data['data']['meetings_count'];
-      //   userDataStore.user['clients_count'] = data['data']['clients_count'];
-      //
-      //   AppData.isSignedIn = true;
-      //
-      //   await updateFcmToken();
-      //
-      //   await Get.offAllNamed(Routes.DASHBOARD);
-      //
-      //   emailTEC.clear();
-      //   params.password = "";
-      // }
+
+      if (data['error'] == false && data['data'] != null) {
+        userDataStore.user = data['data']['user'];
+        userDataStore.qualifications =
+            List<Map<String, dynamic>>.from(data['data']['qualifications']);
+        userDataStore.user['meetings_count'] = data['data']['meetings_count'];
+        userDataStore.user['clients_count'] = data['data']['clients_count'];
+
+        AppData.isSignedIn = true;
+
+        // await updateFcmToken();
+
+        await Get.offAllNamed(Routes.DASHBOARD);
+
+        emailTEC.clear();
+        params.password = "";
+      }
     });
 
     loading.value = false;
