@@ -56,13 +56,13 @@ Future<void> initializeFirebase() async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // if (Firebase.apps.isEmpty) {
-  //   if (kIsWeb) {
-  //     await initializeFirebase();
-  //   } else {
-  //     await Firebase.initializeApp();
-  //   }
-  // }
+  if (Firebase.apps.isEmpty) {
+    if (kIsWeb) {
+      await initializeFirebase();
+    } else {
+      await Firebase.initializeApp();
+    }
+  }
 
 
   await Firebase.initializeApp();
