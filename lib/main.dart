@@ -104,25 +104,6 @@ void main() async {
   Get.put<NetworkController>(NetworkController());
   Get.put<GrowthKitController>(GrowthKitController());
 
-  // Request permission
-  final settings = await FirebaseMessaging.instance.requestPermission(
-    criticalAlert: true,
-    announcement: true,
-    carPlay: true,
-    providesAppNotificationSettings: true,
-  );
-  debugPrint('User granted permission: ${settings.authorizationStatus}');
-
-  final token = await FirebaseMessaging.instance.getToken();
-
-  print(token);
-
-
-  // Background handler (mobile only)
-  if (!kIsWeb) {
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  }
-
   // Listen for messages
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
     // print('Message received: ${message.notification?.title}');
