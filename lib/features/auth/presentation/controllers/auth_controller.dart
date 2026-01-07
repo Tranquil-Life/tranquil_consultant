@@ -138,9 +138,9 @@ class AuthController extends GetxController {
 
         AppData.isSignedIn = true;
 
-        // await updateFcmToken();
+        await updateFcmToken();
 
-        await Get.offAllNamed(Routes.DASHBOARD);
+        // await Get.offAllNamed(Routes.DASHBOARD);
 
         emailTEC.clear();
         params.password = "";
@@ -191,29 +191,30 @@ class AuthController extends GetxController {
   }
 
   Future<String> generateFcmToken() async {
-    String token = "";
+    try {
+      if (kIsWeb) {
+        final fcmToken = await FirebaseMessaging.instance.getToken(
+          vapidKey: AppConfig.fcmWebVapidKey,
+        );
 
-    if (kIsWeb) {
-      // Web token needs VAPID key
-      final fcmToken = await FirebaseMessaging.instance.getToken(
-        vapidKey: kIsWeb ? AppConfig.fcmWebVapidKey : null,
-      );
-
-      token = fcmToken ?? "";
-
-      debugPrint('Web: Firebase messaging token: $token');
-    } else {
-      Either either = await authRepo.generateFcmToken();
-      either.fold((l) {
-        CustomSnackBar.errorSnackBar(l.message.toString());
+        final token = fcmToken ?? "";
+        debugPrint('Web FCM token: $token');
         return token;
-      }, (r) {
-        token = r;
-        return token;
-      });
+      } else {
+        final Either either = await authRepo.generateFcmToken();
+        return either.fold(
+              (l) {
+            debugPrint("FCM error: ${l.message}");
+            return "";
+          },
+              (r) => r,
+        );
+      }
+    } catch (e, st) {
+      debugPrint("FCM exception: $e");
+      debugPrintStack(stackTrace: st);
+      return "";
     }
-
-    return token;
   }
 
   String? signInValidation() {
