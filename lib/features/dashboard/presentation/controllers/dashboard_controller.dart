@@ -277,9 +277,15 @@ class DashboardController extends GetxController {
     clientsCount.value = UserModel.fromJson(userDataStore.user).totalClients;
 
     bio.value = UserModel.fromJson(userDataStore.user).bio;
+    print("bio: $bio");
+
+
     qualifications.value = userDataStore.qualifications
         .map((e) => Qualification.fromJson(e))
         .toList();
+
+    print("qualifications: $qualifications");
+
     modalities.value = UserModel.fromJson(userDataStore.user).specialties !=
             null
         ? List<String>.from(UserModel.fromJson(userDataStore.user).specialties!)

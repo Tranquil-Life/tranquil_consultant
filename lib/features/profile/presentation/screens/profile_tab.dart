@@ -33,7 +33,6 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen>
     with TickerProviderStateMixin {
   late TabController controller = TabController(length: 2, vsync: this);
-  final GlobalKey profileKey = GlobalKey();
   final dashboardController = DashboardController.instance;
 
   // final profileController = ProfileController.instance;
@@ -51,34 +50,31 @@ class _ProfileScreenState extends State<ProfileScreen>
   void checkVariables() {
     if (dashboardController.firstName.value.isEmpty ||
         dashboardController.lastName.value.isEmpty) {
-     dashboardController.restoreUserInfo();
+      dashboardController.restoreUserInfo();
     }
   }
 
-  Worker? _locWorker;
 
   @override
   void initState() {
     super.initState();
 
-    checkVariables();
+    // ✅ Create TabController in initState (not as a field initializer)
+    controller = TabController(length: 2, vsync: this);
 
-    listenToController();
+    // ✅ If you need index, update it safely AFTER the frame
+    controller.addListener(() {
+      if (!mounted) return;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        setState(() => index = controller.index);
+      });
+    });
 
-    // _locWorker = everAll(
-    //   [
-    //     dashboardController.country,
-    //     dashboardController.city,
-    //     dashboardController.timezone,
-    //   ],
-    //   (_) {
-    //     // ✅ avoid build-phase mutation
-    //     WidgetsBinding.instance.addPostFrameCallback((_) {
-    //       if (!mounted) return;
-    //       getMyLocationInfo();
-    //     });
-    //   },
-    // );
+    // ✅ Do not trigger reactive updates during build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      checkVariables();
+    });
   }
 
   @override
@@ -126,7 +122,9 @@ class _ProfileScreenState extends State<ProfileScreen>
               const SizedBox(height: 24),
               ProfileRow(),
               const SizedBox(height: 24),
-              PersonalInfo(therapist: therapist,),
+              PersonalInfo(
+                therapist: therapist,
+              ),
               const SizedBox(height: 40),
               CustomTabBar(
                 controller: controller,
@@ -144,8 +142,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                   children: [
                     BioTabView(),
                     SingleChildScrollView(
-                      child: QualificationsTabView(
-                          ),
+                      child: QualificationsTabView(),
                     ),
                   ],
                 ),

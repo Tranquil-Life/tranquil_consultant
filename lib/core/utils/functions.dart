@@ -299,7 +299,7 @@ List<String> getTitlesAfterComma(String input) {
 Future<bool> checkForEmptyProfileInfo() async {
   final dashboardController = DashboardController.instance;
 
-  await Future.delayed(Duration(seconds: 2));
+  await Future.delayed(Duration(milliseconds: 800));
   dashboardController.getQualifications();
   User user = UserModel.fromJson(userDataStore.user);
   if (user.firstName.isEmpty ||

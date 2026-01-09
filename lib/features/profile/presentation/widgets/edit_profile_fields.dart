@@ -47,6 +47,8 @@ class _EditProfileFieldsState extends State<EditProfileFields> {
     widget.profileController.lastNameTEC.text = dashboardController.lastName.value;
     widget.profileController.countryTEC.text = dashboardController.country.value;
     widget.profileController.stateTEC.text = dashboardController.state.value;
+    widget.profileController.bioTEC.text = dashboardController.bio.value;
+
   }
 
   @override
@@ -203,185 +205,182 @@ class _EditProfileFieldsState extends State<EditProfileFields> {
         const Text("Timezone"),
         const SizedBox(height: 8),
         timezoneField(dashboardController.timezone.value),
-        // const SizedBox(height: 20),
-        // const Text("Bio"),
-        // const SizedBox(height: 8),
-        // bioFormField(
-        //     hintBio,
-        //     // widget.profileController.editUser.value.bio,
-        //     widget.profileController),
-        // const SizedBox(height: 40),
-        // const Text("QUALIFICATIONS", key: Key('qualifications_title')),
+        const SizedBox(height: 20),
+        const Text("Bio"),
+        const SizedBox(height: 8),
+        bioFormField(
+            hintBio,
+            widget.profileController.bioTEC),
+        const SizedBox(height: 40),
+        const Text("QUALIFICATIONS", key: Key('qualifications_title')),
 
         //QUALIFICATIONS
-        // Obx(
-        //   () => ListView.builder(
-        //       shrinkWrap: true,
-        //       physics: NeverScrollableScrollPhysics(),
-        //       itemCount: widget.profileController.qualifications.length,
-        //       itemBuilder: (context, index) {
-        //         int? id = widget.profileController.qualifications[index].id;
-        //         String institution =
-        //             widget.profileController.qualifications[index].institution;
-        //         String certification = widget
-        //             .profileController.qualifications[index].certification;
-        //         String year =
-        //             widget.profileController.qualifications[index].yearAwarded;
-        //
-        //         return Column(
-        //           crossAxisAlignment: CrossAxisAlignment.start,
-        //           children: [
-        //             Padding(
-        //                 padding: EdgeInsets.only(top: 20),
-        //                 child: QualificationFields(
-        //                   profileController: widget.profileController,
-        //                   id: id,
-        //                   index: index,
-        //                   institution: institution,
-        //                   certification: certification,
-        //                   yearAwarded: year,
-        //                 )),
-        //             if (index !=
-        //                 widget.profileController.qualifications.length - 1)
-        //               Padding(
-        //                 padding: EdgeInsets.only(left: 12, bottom: 8),
-        //                 child: BrokenVerticalLine(),
-        //               )
-        //           ],
-        //         );
-        //       }),
-        // ),
-        // TextButton.icon(
-        //     style: TextButton.styleFrom(
-        //       padding: EdgeInsets.zero,
-        //       alignment: Alignment.centerLeft,
-        //     ),
-        //     icon: Icon(
-        //       Icons.add_circle_outline_sharp,
-        //       color: ColorPalette.green,
-        //     ),
-        //     onPressed: () {
-        //       checkQualifications(List<Map<String, dynamic>>.from(
-        //           userDataStore.qualifications));
-        //     },
-        //     label: Text(
-        //       "Add Qualification",
-        //       style: TextStyle(
-        //           fontSize: 14,
-        //           fontWeight: FontWeight.w400,
-        //           color: ColorPalette.green),
-        //     )),
-        // const SizedBox(height: 20),
-        // const Text("Modalities practiced"),
-        // const SizedBox(height: 8),
-        // modalities("Add your modalities", widget.profileController, () {
-        //   Get.dialog(
-        //     AlertDialog(
-        //       backgroundColor: Colors.white,
-        //       contentPadding: EdgeInsets.only(bottom: 20),
-        //       titlePadding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-        //       title: Column(
-        //         children: [
-        //           Row(
-        //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        //             children: [
-        //               Text('Modalities'),
-        //               GestureDetector(
-        //                 onTap: () {
-        //                   Get.back();
-        //                 },
-        //                 child:
-        //                     SvgPicture.asset(SvgElements.svgHexagonCloseIcon),
-        //               )
-        //             ],
-        //           ),
-        //           Divider(),
-        //           SizedBox(height: 20),
-        //           Text(
-        //             "Select the specific modalities you practice and are qualified for.\n\nNote: you can’t select more than 5",
-        //             style: TextStyle(fontSize: 14),
-        //           ),
-        //         ],
-        //       ),
-        //       content: StatefulBuilder(
-        //         builder: (context, setState) {
-        //           return SingleChildScrollView(
-        //             child: Column(
-        //               crossAxisAlignment: CrossAxisAlignment.start,
-        //               children: [
-        //                 Column(
-        //                   crossAxisAlignment: CrossAxisAlignment.start,
-        //                   mainAxisSize: MainAxisSize.min,
-        //                   children: modalityOptions.map((modality) {
-        //                     return Obx(() {
-        //                       bool isSelected = widget
-        //                           .profileController.modalities
-        //                           .contains(modality);
-        //
-        //                       void toggleSelection() {
-        //                         if (!isSelected &&
-        //                             widget.profileController.modalities
-        //                                     .length >=
-        //                                 5) {
-        //                           Get.snackbar(
-        //                             'Limit Reached',
-        //                             'You cannot select more than 5 modalities.',
-        //                             snackPosition: SnackPosition.BOTTOM,
-        //                           );
-        //                           return;
-        //                         }
-        //
-        //                         if (isSelected) {
-        //                           widget.profileController.modalities
-        //                               .remove(modality);
-        //                         } else {
-        //                           widget.profileController.modalities
-        //                               .add(modality);
-        //                         }
-        //
-        //                         setState(() {}); // Update local state
-        //
-        //                         widget.profileController.modalitiesTEC.text =
-        //                             widget.profileController.modalities
-        //                                 .join(', ');
-        //                       }
-        //
-        //                       return ListTile(
-        //                         contentPadding: EdgeInsets.all(0),
-        //                         leading: Checkbox(
-        //                           activeColor: ColorPalette.green,
-        //                           value: isSelected,
-        //                           onChanged: (value) {
-        //                             toggleSelection();
-        //                           },
-        //                         ),
-        //                         title: Text(modality,
-        //                             style: TextStyle(fontSize: 14)),
-        //                         onTap:
-        //                             toggleSelection, // Make the ListTile clickable
-        //                       );
-        //                     });
-        //                   }).toList(),
-        //                 ),
-        //               ],
-        //             ),
-        //           );
-        //         },
-        //       ),
-        //     ),
-        //   );
-        // }),
-        // const SizedBox(height: 8),
-        // Text(
-        //   "Select at least 1, and no more than 5",
-        //   style: TextStyle(
-        //     color: ColorPalette.grey.shade800,
-        //     fontSize: 10,
-        //     fontWeight: FontWeight.w400,
-        //   ),
-        // ),
-        // const SizedBox(height: 20),
-        //
+        Obx(
+          () => ListView.builder(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              itemCount: dashboardController.qualifications.length,
+              itemBuilder: (context, index) {
+                int? id = dashboardController.qualifications[index].id;
+                String institution =
+                    dashboardController.qualifications[index].institution;
+                String certification = dashboardController.qualifications[index].certification;
+                String year =
+                    dashboardController.qualifications[index].yearAwarded;
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                        padding: EdgeInsets.only(top: 20),
+                        child: QualificationFields(
+                          profileController: widget.profileController,
+                          id: id,
+                          index: index,
+                          institution: institution,
+                          certification: certification,
+                          yearAwarded: year,
+                        )),
+                    if (index !=
+                        dashboardController.qualifications.length - 1)
+                      Padding(
+                        padding: EdgeInsets.only(left: 12, bottom: 8),
+                        child: BrokenVerticalLine(),
+                      )
+                  ],
+                );
+              }),
+        ),
+        TextButton.icon(
+            style: TextButton.styleFrom(
+              padding: EdgeInsets.zero,
+              alignment: Alignment.centerLeft,
+            ),
+            icon: Icon(
+              Icons.add_circle_outline_sharp,
+              color: ColorPalette.green,
+            ),
+            onPressed: () {
+              checkQualifications(List<Map<String, dynamic>>.from(
+                  userDataStore.qualifications));
+            },
+            label: Text(
+              "Add Qualification",
+              style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  color: ColorPalette.green),
+            )),
+        const SizedBox(height: 20),
+        const Text("Modalities practiced"),
+        const SizedBox(height: 8),
+        Obx(()=>modalities("Add your modalities", dashboardController.modalities, () {
+          Get.dialog(
+            AlertDialog(
+              backgroundColor: Colors.white,
+              contentPadding: EdgeInsets.only(bottom: 20),
+              titlePadding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+              title: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Modalities'),
+                      GestureDetector(
+                        onTap: () {
+                          Get.back();
+                        },
+                        child:
+                        SvgPicture.asset(SvgElements.svgHexagonCloseIcon),
+                      )
+                    ],
+                  ),
+                  Divider(),
+                  SizedBox(height: 20),
+                  Text(
+                    "Select the specific modalities you practice and are qualified for.\n\nNote: you can’t select more than 5",
+                    style: TextStyle(fontSize: 14),
+                  ),
+                ],
+              ),
+              content: StatefulBuilder(
+                builder: (context, setState) {
+                  return SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: modalityOptions.map((modality) {
+                            return Obx(() {
+                              bool isSelected = dashboardController.modalities
+                                  .contains(modality);
+
+                              void toggleSelection() {
+                                if (!isSelected &&
+                                    dashboardController.modalities
+                                        .length >=
+                                        5) {
+                                  Get.snackbar(
+                                    'Limit Reached',
+                                    'You cannot select more than 5 modalities.',
+                                    snackPosition: SnackPosition.BOTTOM,
+                                  );
+                                  return;
+                                }
+
+                                if (isSelected) {
+                                  dashboardController.modalities
+                                      .remove(modality);
+                                } else {
+                                  dashboardController.modalities
+                                      .add(modality);
+                                }
+
+                                // setState(() {}); // Update local state
+
+                                // dashboardController.modalities =
+                                //     widget.profileController.modalities
+                                //         .join(', ');
+                              }
+
+                              return ListTile(
+                                contentPadding: EdgeInsets.all(0),
+                                leading: Checkbox(
+                                  activeColor: ColorPalette.green,
+                                  value: isSelected,
+                                  onChanged: (value) {
+                                    toggleSelection();
+                                  },
+                                ),
+                                title: Text(modality,
+                                    style: TextStyle(fontSize: 14)),
+                                onTap:
+                                toggleSelection, // Make the ListTile clickable
+                              );
+                            });
+                          }).toList(),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+          );
+        }),),
+        const SizedBox(height: 8),
+        Text(
+          "Select at least 1, and no more than 5",
+          style: TextStyle(
+            color: ColorPalette.grey.shade800,
+            fontSize: 10,
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+        const SizedBox(height: 20),
+
         // //VIDEO AND AUDIO RECORDINGS
         // IntroMediaSection(
         //     profileController: widget.profileController,
@@ -390,22 +389,22 @@ class _EditProfileFieldsState extends State<EditProfileFields> {
     );
   }
 
-  // void checkQualifications(List<Map<String, dynamic>> qualifications) {
-  //   // Check if any item is missing the `certification` key or has an empty certification
-  //   bool hasMissingOrEmptyCertification = qualifications.any((item) =>
-  //       !item.containsKey('certification') ||
-  //       (item['certification']?.isEmpty ?? true));
-  //
-  //   if (hasMissingOrEmptyCertification) {
-  //     if (kDebugMode) {
-  //       print("Please fill in the current on before adding another");
-  //     }
-  //   } else {
-  //     userDataStore.qualifications.add(<String, dynamic>{});
-  //     List<Map<String, dynamic>> updatedQualifications =
-  //         List<Map<String, dynamic>>.from(userDataStore.qualifications);
-  //
-  //     // widget.profileController.getQualifications();
-  //   }
-  // }
+  void checkQualifications(List<Map<String, dynamic>> qualifications) {
+    // Check if any item is missing the `certification` key or has an empty certification
+    bool hasMissingOrEmptyCertification = qualifications.any((item) =>
+        !item.containsKey('certification') ||
+        (item['certification']?.isEmpty ?? true));
+
+    if (hasMissingOrEmptyCertification) {
+      if (kDebugMode) {
+        print("Please fill in the current on before adding another");
+      }
+    } else {
+      userDataStore.qualifications.add(<String, dynamic>{});
+      List<Map<String, dynamic>> updatedQualifications =
+          List<Map<String, dynamic>>.from(userDataStore.qualifications);
+
+      // widget.profileController.getQualifications();
+    }
+  }
 }

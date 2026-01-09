@@ -48,7 +48,7 @@ class _DashboardState extends State<Dashboard> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await dashboardController.getMyLocationInfoCached(force: true);
+      await dashboardController.getMyLocationInfoCached(force: false);
       dashboardController.restoreUserInfo();
 
       final isEmpty = await checkForEmptyProfileInfo();

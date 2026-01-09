@@ -12,175 +12,180 @@ class QualificationsTabView extends StatelessWidget {
 
   final dashboardController = DashboardController.instance;
 
-  void removeEmptyElements(){
-    // Remove empty elements
-    dashboardController.modalities.value = dashboardController.modalities.where((element) => element.trim().isNotEmpty).toList();
-  }
 
   @override
   Widget build(BuildContext context) {
-    removeEmptyElements();
+    return Obx((){
+      // compute a cleaned list WITHOUT writing back to the controller
+      final modalities = dashboardController.modalities
+          .where((e) => e.trim().isNotEmpty)
+          .toList();
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
-              "Qualifications",
-              style: TextStyle(
-                fontSize: AppFonts.defaultSize,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            IconButton(
-              onPressed: () {
-                Get.toNamed(Routes.EDIT_PROFILE);
-              },
-              icon: const Icon(
-                Icons.edit_outlined,
-                size: 20,
-              ),
-              color: ColorPalette.green,
-            ),
-          ],
-        ),
-        // profileController.qualifications.isEmpty
-        //     ? Text(
-        //         "Add your qualifications. This will increase your chances of being consulted")
-        //     : ListView.builder(
-        //         shrinkWrap: true,
-        //         physics: NeverScrollableScrollPhysics(),
-        //         itemCount: profileController.qualifications.length,
-        //         itemBuilder: (context, index) {
-        //           int? id = profileController.qualifications[index].id;
-        //           String institution =
-        //               profileController.qualifications[index].institution;
-        //           String certification =
-        //               profileController.qualifications[index].certification;
-        //           String year =
-        //               profileController.qualifications[index].yearAwarded;
-        //
-        //           return Padding(
-        //             padding: EdgeInsets.only(bottom: 16),
-        //             child: Column(
-        //               crossAxisAlignment: CrossAxisAlignment.start,
-        //               children: [
-        //                 Text(certification),
-        //                 Text(institution),
-        //                 Text(year),
-        //               ],
-        //             ),
-        //           );
-        //         }),
-        // if (profileController.qualifications.isEmpty)
-        //   SizedBox(
-        //     height: 16,
-        //   ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
-              "Modalities",
-              style: TextStyle(
-                fontSize: AppFonts.defaultSize,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            IconButton(
-              onPressed: () {
-                Get.toNamed(Routes.EDIT_PROFILE);
-              },
-              icon: const Icon(
-                Icons.edit_outlined,
-                size: 20,
-              ),
-              color: ColorPalette.green,
-            ),
-          ],
-        ),
-        Obx((){
-          if(dashboardController.modalities.isEmpty) {
-            return Text("Add modalities you practice and are qualified for");
-          } else {
-            return Column(
-            children: dashboardController.modalities
-                .map((e) => Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Icon(
-                  Icons.stop_circle,
-                  size: 8,
-                  color: ColorPalette.grey.shade800,
+      final qualifications = dashboardController.qualifications;
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                "Qualifications",
+                style: TextStyle(
+                  fontSize: AppFonts.defaultSize,
+                  fontWeight: FontWeight.w600,
                 ),
-                SizedBox(
-                  width: 8,
+              ),
+              IconButton(
+                onPressed: () {
+                  Get.toNamed(Routes.EDIT_PROFILE);
+                },
+                icon: const Icon(
+                  Icons.edit_outlined,
+                  size: 20,
                 ),
-                Text(
-                  e,
-                  style: TextStyle(
-                    fontSize: AppFonts.defaultSize,
-                    fontWeight: FontWeight.w400,
+                color: ColorPalette.green,
+              ),
+            ],
+          ),
+          qualifications.isEmpty
+              ? Text(
+              "Add your qualifications. This will increase your chances of being consulted")
+              : ListView.builder(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              itemCount: qualifications.length,
+              itemBuilder: (context, index) {
+                int? id = qualifications[index].id;
+                String institution =
+                    qualifications[index].institution;
+                String certification =
+                    qualifications[index].certification;
+                String year =
+                    qualifications[index].yearAwarded;
+
+                return Padding(
+                  padding: EdgeInsets.only(bottom: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(certification),
+                      Text(institution),
+                      Text(year),
+                    ],
                   ),
+                );
+              }),
+          if (qualifications.isEmpty)
+            SizedBox(
+              height: 16,
+            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                "Modalities",
+                style: TextStyle(
+                  fontSize: AppFonts.defaultSize,
+                  fontWeight: FontWeight.w600,
                 ),
-              ],
-            ))
-                .toList(),
-          );
-          }
-        }),
-        SizedBox(
-          height: 16,
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
-              "Topics",
-              style: TextStyle(
-                fontSize: AppFonts.defaultSize,
-                fontWeight: FontWeight.w600,
               ),
-            ),
-            IconButton(
-              onPressed: () {
-                Get.toNamed(Routes.EDIT_PROFILE);
-              },
-              icon: const Icon(
-                Icons.edit_outlined,
-                size: 20,
+              IconButton(
+                onPressed: () {
+                  Get.toNamed(Routes.EDIT_PROFILE);
+                },
+                icon: const Icon(
+                  Icons.edit_outlined,
+                  size: 20,
+                ),
+                color: ColorPalette.green,
               ),
-              color: ColorPalette.green,
-            ),
-          ],
-        ),
-        // profileController.topics.isEmpty
-        //     ? Text("Add topics you are very familiar with")
-        //     : Column(
-        //         children: profileController.topics
-        //             .map((e) => Row(
-        //                   mainAxisAlignment: MainAxisAlignment.start,
-        //                   children: [
-        //                     Icon(
-        //                       Icons.stop_circle,
-        //                       size: 8,
-        //                     ),
-        //                     SizedBox(
-        //                       width: 8,
-        //                     ),
-        //                     Text(
-        //                       e,
-        //                       style: TextStyle(
-        //                         fontSize: AppFonts.defaultSize,
-        //                         fontWeight: FontWeight.w400,
-        //                       ),
-        //                     ),
-        //                   ],
-        //                 ))
-        //             .toList(),
-        //       )
-      ],
-    );
+            ],
+          ),
+          Obx(() {
+            if (dashboardController.modalities.isEmpty) {
+              return Text("Add modalities you practice and are qualified for");
+            } else {
+              return Column(
+                children: dashboardController.modalities
+                    .map((e) => Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Icon(
+                      Icons.stop_circle,
+                      size: 8,
+                      color: ColorPalette.grey.shade800,
+                    ),
+                    SizedBox(
+                      width: 8,
+                    ),
+                    Text(
+                      e,
+                      style: TextStyle(
+                        fontSize: AppFonts.defaultSize,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ],
+                ))
+                    .toList(),
+              );
+            }
+          }),
+
+          ///topics
+          // SizedBox(
+          //   height: 16,
+          // ),
+          // Row(
+          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //   children: [
+          //     const Text(
+          //       "Topics",
+          //       style: TextStyle(
+          //         fontSize: AppFonts.defaultSize,
+          //         fontWeight: FontWeight.w600,
+          //       ),
+          //     ),
+          //     IconButton(
+          //       onPressed: () {
+          //         Get.toNamed(Routes.EDIT_PROFILE);
+          //       },
+          //       icon: const Icon(
+          //         Icons.edit_outlined,
+          //         size: 20,
+          //       ),
+          //       color: ColorPalette.green,
+          //     ),
+          //   ],
+          // ),
+          // dashboardController.topics.isEmpty
+          //     ? Text("Add topics you are very familiar with")
+          //     : Column(
+          //         children: dashboardController.topics
+          //             .map((e) => Row(
+          //                   mainAxisAlignment: MainAxisAlignment.start,
+          //                   children: [
+          //                     Icon(
+          //                       Icons.stop_circle,
+          //                       size: 8,
+          //                     ),
+          //                     SizedBox(
+          //                       width: 8,
+          //                     ),
+          //                     Text(
+          //                       e,
+          //                       style: TextStyle(
+          //                         fontSize: AppFonts.defaultSize,
+          //                         fontWeight: FontWeight.w400,
+          //                       ),
+          //                     ),
+          //                   ],
+          //                 ))
+          //             .toList(),
+          //       )
+        ],
+      );
+    });
   }
 }

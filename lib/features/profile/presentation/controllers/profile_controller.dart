@@ -52,7 +52,7 @@ class ProfileController extends GetxController {
   var updatingProfile = false.obs;
 
   // var qualifications = <Qualification>[].obs;
-  RxList modalities = [].obs;
+  // RxList modalities = [].obs;
   RxList titles = [].obs;
   var topics = [].obs;
 
@@ -241,7 +241,7 @@ class ProfileController extends GetxController {
     updatingProfile.value = false;
 
     // qualifications.clear();
-    modalities.clear();
+    // modalities.clear();
     titles.clear();
     topics.clear();
 

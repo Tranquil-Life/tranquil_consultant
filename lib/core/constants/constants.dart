@@ -1,4 +1,5 @@
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:flutter/material.dart';
 import 'package:fluttermoji/fluttermoji.dart';
 import 'package:get/get.dart';
 import 'package:tl_consultant/core/utils/helpers/svg_elements.dart';
@@ -202,3 +203,8 @@ var settings = <String, List<Map<String, dynamic>>>{
     }
   ]
 };
+
+final GlobalKey<ScaffoldMessengerState> rootMessengerKey =
+GlobalKey<ScaffoldMessengerState>();
+
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();

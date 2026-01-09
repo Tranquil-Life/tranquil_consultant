@@ -66,9 +66,9 @@ CustomFormField stateFormField(
   );
 }
 
-CustomFormField bioFormField(String hint, ProfileController profileController) {
+CustomFormField bioFormField(String hint, TextEditingController controller) {
   return CustomFormField(
-    textEditingController: profileController.bioTEC,
+    textEditingController: controller,
     maxLines: 3,
     verContentPadding: 12,
     horContentPadding: 12,
@@ -133,9 +133,12 @@ CustomFormField yearGraduatedField(
 }
 
 CustomFormField modalities(
-    String hint, ProfileController profileController, Function()? onTap) {
+    String hint, List<String> modalities, Function()? onTap) {
+
+  final text = modalities.isNotEmpty? modalities.join(', ') : '';
+
   return CustomFormField(
-    // textEditingController: profileController.modalitiesTEC,
+    textEditingController: text.isEmpty ? null : TextEditingController(text: text),
     readOnly: true,
     hintColor: ColorPalette.grey.shade800,
     suffix: GestureDetector(
