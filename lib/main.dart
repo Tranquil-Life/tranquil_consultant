@@ -12,6 +12,7 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:tl_consultant/app.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:tl_consultant/core/utils/services/API/network/controllers/network_controller.dart';
+import 'package:tl_consultant/features/auth/presentation/controllers/verification_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/chat_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/message_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/video_call_controller.dart';
@@ -125,6 +126,7 @@ void main() async {
   Get.put<ProfileController>(ProfileController());
   Get.put<OnboardingController>(OnboardingController());
   Get.put<AuthController>(AuthController());
+  Get.put<VerificationController>(VerificationController());
   Get.put<DashboardController>(DashboardController());
   Get.put<ActivityController>(ActivityController());
   Get.put<HomeController>(HomeController());

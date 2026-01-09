@@ -59,6 +59,7 @@ class _ProfileScreenState extends State<ProfileScreen>
   void initState() {
     super.initState();
 
+    therapist = UserModel.fromJson(userDataStore.user);
     // ✅ Create TabController in initState (not as a field initializer)
     controller = TabController(length: 2, vsync: this);
 
@@ -422,16 +423,16 @@ class PersonalInfo extends StatelessWidget {
         SizedBox(
           width: 5,
         ),
-        // Text(
-        //   "Awaiting approval...",
-        //   style: TextStyle(
-        //     fontSize: AppFonts.defaultSize,
-        //     color: !therapist!.approved!
-        //         ? ColorPalette.red
-        //         : ColorPalette.grey.shade800,
-        //     fontWeight: FontWeight.w400,
-        //   ),
-        // ),
+        Text(
+          "Awaiting approval...",
+          style: TextStyle(
+            fontSize: AppFonts.defaultSize,
+            color: !therapist!.approved!
+                ? ColorPalette.red
+                : ColorPalette.grey.shade800,
+            fontWeight: FontWeight.w400,
+          ),
+        ),
       ],
     );
   }

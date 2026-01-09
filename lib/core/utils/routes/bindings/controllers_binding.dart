@@ -19,28 +19,28 @@ import 'package:tl_consultant/features/settings/presentation/controllers/setting
 import 'package:tl_consultant/features/wallet/presentation/controllers/earnings_controller.dart';
 import 'package:tl_consultant/features/wallet/presentation/controllers/transactions_controller.dart';
 
-class AllControllerBindings extends Bindings {
-  @override
-  void dependencies() {
-    Get.lazyPut(() => OnboardingController());
-    Get.lazyPut(() => AuthController());
-    Get.lazyPut(() => DashboardController());
-    Get.lazyPut(() => ActivityController());
-    Get.lazyPut(() => HomeController());
-    Get.lazyPut(() => EarningsController());
-    Get.lazyPut(() => TransactionsController());
-    Get.lazyPut(() => NotesController());
-    Get.lazyPut(() => ProfileController());
-    Get.lazyPut(() => SettingsController());
-    Get.lazyPut(() => NotesController());
-    Get.lazyPut(() => MeetingsController());
-    Get.lazyPut(() => SlotController());
-    Get.lazyPut(() => ChatController());
-    Get.lazyPut(() => VideoCallController());
-    Get.lazyPut(() => MessageController());
-    Get.lazyPut(() => UploadController());
-    Get.lazyPut(() => VideoRecordingController());
-    Get.lazyPut(() => NetworkController());
-    Get.lazyPut(() => GrowthKitController());
-  }
-}
+// class AllControllerBindings extends Bindings {
+//   @override
+//   void dependencies() {
+//     Get.lazyPut(() => OnboardingController());
+//     Get.lazyPut(() => AuthController());
+//     Get.lazyPut(() => DashboardController());
+//     Get.lazyPut(() => ActivityController());
+//     Get.lazyPut(() => HomeController());
+//     Get.lazyPut(() => EarningsController());
+//     Get.lazyPut(() => TransactionsController());
+//     Get.lazyPut(() => NotesController());
+//     Get.lazyPut(() => ProfileController());
+//     Get.lazyPut(() => SettingsController());
+//     Get.lazyPut(() => NotesController());
+//     Get.lazyPut(() => MeetingsController());
+//     Get.lazyPut(() => SlotController());
+//     Get.lazyPut(() => ChatController());
+//     Get.lazyPut(() => VideoCallController());
+//     Get.lazyPut(() => MessageController());
+//     Get.lazyPut(() => UploadController());
+//     Get.lazyPut(() => VideoRecordingController());
+//     Get.lazyPut(() => NetworkController());
+//     Get.lazyPut(() => GrowthKitController());
+//   }
+// }
