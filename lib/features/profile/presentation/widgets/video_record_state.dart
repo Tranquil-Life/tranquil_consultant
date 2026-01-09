@@ -91,12 +91,12 @@ class _VideoRecordStateState extends State<VideoRecordState> {
             ),
           ),
 
-          widget.profileController.introVideo.value!.isNotEmpty ?
-          GestureDetector(
-              onTap: () {
-                _showDeleteVideoDialog(context, widget.videoRecordingController, widget.profileController);
-              },
-              child: SvgPicture.asset("assets/images/icons/trash.svg")) : SizedBox.shrink()
+          // widget.profileController.introVideo.value!.isNotEmpty ?
+          // GestureDetector(
+          //     onTap: () {
+          //       _showDeleteVideoDialog(context, widget.videoRecordingController, widget.profileController);
+          //     },
+          //     child: SvgPicture.asset("assets/images/icons/trash.svg")) : SizedBox.shrink()
         ],
       ),
     );
@@ -183,13 +183,13 @@ void _showDeleteVideoDialog(BuildContext context, VideoRecordingController vrc, 
                       padding: const EdgeInsets.all(8.0),
                       child: CustomButton(
                         onPressed: () async{
-                          await vrc.deleteFileFromUrl(profileController.introVideo.value!);
-
-                          userDataStore.user['video_intro'] = "";
-                          await getStore.set('user', userDataStore.user);
-                          profileController.introVideo.value = "";
-
-                          Get.back();
+                          // await vrc.deleteFileFromUrl(profileController.introVideo.value!);
+                          //
+                          // userDataStore.user['video_intro'] = "";
+                          // await getStore.set('user', userDataStore.user);
+                          // profileController.introVideo.value = "";
+                          //
+                          // Get.back();
                         },
                         text: "Delete File",
                       ),

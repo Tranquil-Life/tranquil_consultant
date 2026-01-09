@@ -7,6 +7,7 @@ import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/theme/fonts.dart';
 import 'package:tl_consultant/core/utils/helpers/svg_elements.dart';
+import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
 import 'package:tl_consultant/features/media/presentation/controllers/video_recording_controller.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
@@ -28,15 +29,26 @@ class EditProfileFields extends StatefulWidget {
 }
 
 class _EditProfileFieldsState extends State<EditProfileFields> {
+  final dashboardController = DashboardController.instance;
   @override
   void initState() {
-    widget.profileController.getQualifications();
-    widget.profileController.modalitiesTEC.text =
-        widget.profileController.modalities.join(', ');
-    widget.profileController
-        .containsTitle(widget.profileController.lastNameTEC.text);
+    getInfo();
+    // widget.profileController.getQualifications();
+    // widget.profileController.modalitiesTEC.text =
+    //     widget.profileController.modalities.join(', ');
+    // widget.profileController
+    //     .containsTitle(widget.profileController.lastNameTEC.text);
 
     super.initState();
+  }
+
+  void getInfo(){
+    widget.profileController.firstNameTEC.text = dashboardController.firstName.value;
+    widget.profileController.lastNameTEC.text = dashboardController.lastName.value;
+    widget.profileController.countryTEC.text = dashboardController.country.value;
+    widget.profileController.stateTEC.text = dashboardController.state.value;
+    widget.profileController.bioTEC.text = dashboardController.bio.value;
+
   }
 
   @override
@@ -54,142 +66,151 @@ class _EditProfileFieldsState extends State<EditProfileFields> {
         const SizedBox(height: 12),
         const Text("First name"),
         const SizedBox(height: 8),
-        nameFormField(widget.profileController.editUser.value.firstName,
+        ///OLD
+        // nameFormField(widget.profileController.editUser.value.firstName,
+        //     widget.profileController.firstNameTEC),
+
+        ///NEW
+        nameFormField("Your first name",
             widget.profileController.firstNameTEC),
         const SizedBox(height: 12),
         const Text("Last name"),
         const SizedBox(height: 8),
-        nameFormField(
-          widget.profileController.editUser.value.lastName,
-          widget.profileController.lastNameTEC,
-        ),
-        const SizedBox(height: 12),
-        const Text("Title"),
-        const SizedBox(height: 8),
-        Obx(() => titleFormField(
-                widget.profileController.titles.isEmpty
-                    ? 'Optional'
-                    : widget.profileController.titles.join(', '),
-                widget.profileController, () {
-              Get.dialog(
-                AlertDialog(
-                  backgroundColor: Colors.white,
-                  contentPadding: EdgeInsets.only(bottom: 20),
-                  titlePadding:
-                      EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                  title: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('Titles'),
-                          GestureDetector(
-                            onTap: () {
-                              Get.back();
-                            },
-                            child: SvgPicture.asset(
-                                SvgElements.svgHexagonCloseIcon),
-                          )
-                        ],
-                      ),
-                      Divider(),
-                      SizedBox(height: 20),
-                      Text(
-                        "Select your title(s) if you have any.\n\nNote: you can’t select more than 5",
-                        style: TextStyle(fontSize: 14),
-                      ),
-                    ],
-                  ),
-                  content: StatefulBuilder(
-                    builder: (context, setState) {
-                      return SingleChildScrollView(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: titleOptions.map((title) {
-                            return Obx(() {
-                              bool isSelected = widget
-                                  .profileController.titles
-                                  .contains(title);
+        // nameFormField(
+        //   widget.profileController.editUser.value.lastName,
+        //   widget.profileController.lastNameTEC,
+        // ),
 
-                              void toggleSelection() {
-                                if (!isSelected &&
-                                    widget.profileController.titles
-                                        .length >=
-                                        5) {
-                                  Get.snackbar(
-                                    'Limit Reached',
-                                    'You cannot select more than 5 titles.',
-                                    snackPosition: SnackPosition.BOTTOM,
-                                  );
-                                  return;
-                                }
+        ///NEW
+        nameFormField("Your last name",
+            widget.profileController.lastNameTEC),
 
-                                if (isSelected) {
-                                  widget.profileController.titles
-                                      .remove(title);
-                                } else {
-                                  widget.profileController.titles
-                                      .add(title);
-                                }
-
-                                setState(() {}); // Update local state
-                              }
-
-                              return ListTile(
-                                contentPadding: EdgeInsets.all(0),
-                                leading: Checkbox(
-                                  activeColor: ColorPalette.green,
-                                  value: isSelected,
-                                  onChanged: (value) {
-                                    toggleSelection();
-                                  },
-                                ),
-                                title: Text(title,
-                                    style: TextStyle(fontSize: 14)),
-                                onTap:
-                                toggleSelection, // Make the ListTile clickable
-                              );
-                            });
-                          }).toList(),
-                        ),
-
-
-                        // Column(
-                        //   crossAxisAlignment: CrossAxisAlignment.start,
-                        //   children: [
-                        //
-                        //   ],
-                        // ),
-                      );
-                    },
-                  ),
-                ),
-              );
-            })),
+        // const SizedBox(height: 12),
+        // const Text("Title"),
+        // const SizedBox(height: 8),
+        // Obx(() => titleFormField(
+        //         widget.profileController.titles.isEmpty
+        //             ? 'Optional'
+        //             : widget.profileController.titles.join(', '),
+        //         widget.profileController, () {
+        //       Get.dialog(
+        //         AlertDialog(
+        //           backgroundColor: Colors.white,
+        //           contentPadding: EdgeInsets.only(bottom: 20),
+        //           titlePadding:
+        //               EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+        //           title: Column(
+        //             children: [
+        //               Row(
+        //                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        //                 children: [
+        //                   Text('Titles'),
+        //                   GestureDetector(
+        //                     onTap: () {
+        //                       Get.back();
+        //                     },
+        //                     child: SvgPicture.asset(
+        //                         SvgElements.svgHexagonCloseIcon),
+        //                   )
+        //                 ],
+        //               ),
+        //               Divider(),
+        //               SizedBox(height: 20),
+        //               Text(
+        //                 "Select your title(s) if you have any.\n\nNote: you can’t select more than 5",
+        //                 style: TextStyle(fontSize: 14),
+        //               ),
+        //             ],
+        //           ),
+        //           content: StatefulBuilder(
+        //             builder: (context, setState) {
+        //               return SingleChildScrollView(
+        //                 child: Column(
+        //                   crossAxisAlignment: CrossAxisAlignment.start,
+        //                   mainAxisSize: MainAxisSize.min,
+        //                   children: titleOptions.map((title) {
+        //                     return Obx(() {
+        //                       bool isSelected = widget
+        //                           .profileController.titles
+        //                           .contains(title);
+        //
+        //                       void toggleSelection() {
+        //                         if (!isSelected &&
+        //                             widget.profileController.titles
+        //                                 .length >=
+        //                                 5) {
+        //                           Get.snackbar(
+        //                             'Limit Reached',
+        //                             'You cannot select more than 5 titles.',
+        //                             snackPosition: SnackPosition.BOTTOM,
+        //                           );
+        //                           return;
+        //                         }
+        //
+        //                         if (isSelected) {
+        //                           widget.profileController.titles
+        //                               .remove(title);
+        //                         } else {
+        //                           widget.profileController.titles
+        //                               .add(title);
+        //                         }
+        //
+        //                         setState(() {}); // Update local state
+        //                       }
+        //
+        //                       return ListTile(
+        //                         contentPadding: EdgeInsets.all(0),
+        //                         leading: Checkbox(
+        //                           activeColor: ColorPalette.green,
+        //                           value: isSelected,
+        //                           onChanged: (value) {
+        //                             toggleSelection();
+        //                           },
+        //                         ),
+        //                         title: Text(title,
+        //                             style: TextStyle(fontSize: 14)),
+        //                         onTap:
+        //                         toggleSelection, // Make the ListTile clickable
+        //                       );
+        //                     });
+        //                   }).toList(),
+        //                 ),
+        //
+        //
+        //                 // Column(
+        //                 //   crossAxisAlignment: CrossAxisAlignment.start,
+        //                 //   children: [
+        //                 //
+        //                 //   ],
+        //                 // ),
+        //               );
+        //             },
+        //           ),
+        //         ),
+        //       );
+        //     })),
         const SizedBox(height: 25),
         const Text("LOCATION"),
         const SizedBox(height: 20),
         const Text("Country"),
         const SizedBox(height: 8),
-        countryFormField(widget.profileController.editUser.value.location,
-            widget.profileController),
+        countryFormField("Your country",
+            widget.profileController.countryTEC),
         const SizedBox(height: 12),
-        const Text("City"),
+        const Text("State"),
         const SizedBox(height: 8),
-        cityFormField(widget.profileController.editUser.value.location,
-            widget.profileController),
+        stateFormField("Your state",
+            widget.profileController.stateTEC),
         const SizedBox(height: 12),
         const Text("Timezone"),
         const SizedBox(height: 8),
-        timezoneField(widget.profileController),
+        timezoneField(dashboardController.timezone.value),
         const SizedBox(height: 20),
         const Text("Bio"),
         const SizedBox(height: 8),
         bioFormField(
             hintBio,
-            // widget.profileController.editUser.value.bio,
-            widget.profileController),
+            widget.profileController.bioTEC),
         const SizedBox(height: 40),
         const Text("QUALIFICATIONS", key: Key('qualifications_title')),
 
@@ -198,15 +219,14 @@ class _EditProfileFieldsState extends State<EditProfileFields> {
           () => ListView.builder(
               shrinkWrap: true,
               physics: NeverScrollableScrollPhysics(),
-              itemCount: widget.profileController.qualifications.length,
+              itemCount: dashboardController.qualifications.length,
               itemBuilder: (context, index) {
-                int? id = widget.profileController.qualifications[index].id;
+                int? id = dashboardController.qualifications[index].id;
                 String institution =
-                    widget.profileController.qualifications[index].institution;
-                String certification = widget
-                    .profileController.qualifications[index].certification;
+                    dashboardController.qualifications[index].institution;
+                String certification = dashboardController.qualifications[index].certification;
                 String year =
-                    widget.profileController.qualifications[index].yearAwarded;
+                    dashboardController.qualifications[index].yearAwarded;
 
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -222,7 +242,7 @@ class _EditProfileFieldsState extends State<EditProfileFields> {
                           yearAwarded: year,
                         )),
                     if (index !=
-                        widget.profileController.qualifications.length - 1)
+                        dashboardController.qualifications.length - 1)
                       Padding(
                         padding: EdgeInsets.only(left: 12, bottom: 8),
                         child: BrokenVerticalLine(),
@@ -254,7 +274,7 @@ class _EditProfileFieldsState extends State<EditProfileFields> {
         const SizedBox(height: 20),
         const Text("Modalities practiced"),
         const SizedBox(height: 8),
-        modalities("Add your modalities", widget.profileController, () {
+        Obx(()=>modalities("Add your modalities", dashboardController.modalities, () {
           Get.dialog(
             AlertDialog(
               backgroundColor: Colors.white,
@@ -271,7 +291,7 @@ class _EditProfileFieldsState extends State<EditProfileFields> {
                           Get.back();
                         },
                         child:
-                            SvgPicture.asset(SvgElements.svgHexagonCloseIcon),
+                        SvgPicture.asset(SvgElements.svgHexagonCloseIcon),
                       )
                     ],
                   ),
@@ -294,14 +314,13 @@ class _EditProfileFieldsState extends State<EditProfileFields> {
                           mainAxisSize: MainAxisSize.min,
                           children: modalityOptions.map((modality) {
                             return Obx(() {
-                              bool isSelected = widget
-                                  .profileController.modalities
+                              bool isSelected = dashboardController.modalities
                                   .contains(modality);
 
                               void toggleSelection() {
                                 if (!isSelected &&
-                                    widget.profileController.modalities
-                                            .length >=
+                                    dashboardController.modalities
+                                        .length >=
                                         5) {
                                   Get.snackbar(
                                     'Limit Reached',
@@ -312,18 +331,18 @@ class _EditProfileFieldsState extends State<EditProfileFields> {
                                 }
 
                                 if (isSelected) {
-                                  widget.profileController.modalities
+                                  dashboardController.modalities
                                       .remove(modality);
                                 } else {
-                                  widget.profileController.modalities
+                                  dashboardController.modalities
                                       .add(modality);
                                 }
 
-                                setState(() {}); // Update local state
+                                // setState(() {}); // Update local state
 
-                                widget.profileController.modalitiesTEC.text =
-                                    widget.profileController.modalities
-                                        .join(', ');
+                                // dashboardController.modalities =
+                                //     widget.profileController.modalities
+                                //         .join(', ');
                               }
 
                               return ListTile(
@@ -338,7 +357,7 @@ class _EditProfileFieldsState extends State<EditProfileFields> {
                                 title: Text(modality,
                                     style: TextStyle(fontSize: 14)),
                                 onTap:
-                                    toggleSelection, // Make the ListTile clickable
+                                toggleSelection, // Make the ListTile clickable
                               );
                             });
                           }).toList(),
@@ -350,7 +369,7 @@ class _EditProfileFieldsState extends State<EditProfileFields> {
               ),
             ),
           );
-        }),
+        }),),
         const SizedBox(height: 8),
         Text(
           "Select at least 1, and no more than 5",
@@ -385,7 +404,7 @@ class _EditProfileFieldsState extends State<EditProfileFields> {
       List<Map<String, dynamic>> updatedQualifications =
           List<Map<String, dynamic>>.from(userDataStore.qualifications);
 
-      widget.profileController.getQualifications();
+      dashboardController.getQualifications();
     }
   }
 }

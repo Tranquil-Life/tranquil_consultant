@@ -19,12 +19,15 @@ class UserModel extends User{
     // required super.usesBitmoji,
     super.birthDate,
     super.bio,
+    super.approved,
     // super.gender,
     // super.staffId,
     // super.companyName,
     super.totalMeetings,
     super.totalClients,
-    super.stripeAccountId
+    super.stripeAccountId,
+    super.location,
+    super.timezone
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) =>

@@ -68,10 +68,8 @@ class _HomeTabState extends State<HomeTab> {
                           children: [
                             isSmallScreen(context)
                                 ? SmallScreenHeader(
-                                    profileController: profileController,
                                     activityController: activityController)
                                 : LargeScreenHeader(
-                                    profileController: profileController,
                                     activityController: activityController),
                             const SizedBox(height: 45),
                             Padding(

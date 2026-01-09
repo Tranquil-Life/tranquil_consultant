@@ -13,6 +13,7 @@ import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/theme/fonts.dart';
 import 'package:tl_consultant/core/utils/routes/app_pages.dart';
 import 'package:tl_consultant/core/utils/services/media_service.dart';
+import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
 import 'package:tl_consultant/features/media/presentation/controllers/video_recording_controller.dart';
 import 'package:tl_consultant/features/profile/data/models/user_model.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
@@ -30,21 +31,37 @@ class EditProfileScreen extends StatefulWidget {
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
   final profileController = ProfileController.instance;
+  final dashboardController = DashboardController.instance;
   final videoRecordingController = VideoRecordingController.instance;
 
   final editProfileKey = GlobalKey();
 
   String pageTitle() {
     User user = UserModel.fromJson(userDataStore.user);
-    if (user.firstName.isEmpty ||
-        user.bio.isEmpty ||
-        user.specialties!.isEmpty ||
-        user.videoIntroUrl!.isEmpty ||
-        profileController.qualifications.isEmpty) {
-      return "Complete your profile";
-    } else {
-      return "Edit your profile";
+    // if (user.firstName.isEmpty ||
+    //     user.bio.isEmpty ||
+    //     user.specialties!.isEmpty ||
+    //     user.videoIntroUrl!.isEmpty ||
+    //     profileController.qualifications.isEmpty) {
+    //   return "Complete your profile";
+    // } else {
+    //   return "Edit your profile";
+    // }
+
+    return "Complete your profile";
+  }
+
+  void checkVariables() {
+    if (dashboardController.firstName.value.isEmpty ||
+        dashboardController.lastName.value.isEmpty) {
+      dashboardController.restoreUserInfo();
     }
+  }
+
+  @override
+  void initState() {
+    checkVariables();
+    super.initState();
   }
 
   @override

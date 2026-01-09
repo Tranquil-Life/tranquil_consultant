@@ -7,6 +7,7 @@ import 'package:tl_consultant/core/utils/functions.dart';
 import 'package:tl_consultant/core/utils/routes/app_pages.dart';
 import 'package:tl_consultant/core/utils/routes/bindings/controllers_binding.dart';
 
+import 'core/constants/constants.dart';
 import 'main.dart';
 
 class App extends StatefulWidget {

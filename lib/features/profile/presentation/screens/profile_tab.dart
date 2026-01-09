@@ -33,59 +33,54 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen>
     with TickerProviderStateMixin {
   late TabController controller = TabController(length: 2, vsync: this);
-  final GlobalKey profileKey = GlobalKey();
   final dashboardController = DashboardController.instance;
-  final profileController = ProfileController.instance;
+
+  // final profileController = ProfileController.instance;
 
   int index = 0;
 
-  UserModel? client;
+  UserModel? therapist;
 
-  void getMyLocationInfo() {
-    profileController.countryTEC.text = dashboardController.country.value;
-    profileController.cityTEC.text = dashboardController.city.value;
-    profileController.timeZoneTEC.text = dashboardController.timezone.value;
-  }
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //
-  //   WidgetsBinding.instance.addPostFrameCallback((_) {
-  //     getMyLocationInfo();
-  //   });
-  //
-  //   client = UserModel.fromJson(userDataStore.user);
-  //   listenToController();
+  // void getMyLocationInfo() {
+  //   profileController.countryTEC.text = dashboardController.country.value;
+  //   profileController.cityTEC.text = dashboardController.city.value;
+  //   profileController.timeZoneTEC.text = dashboardController.timezone.value;
   // }
 
-  Worker? _locWorker;
+  void checkVariables() {
+    if (dashboardController.firstName.value.isEmpty ||
+        dashboardController.lastName.value.isEmpty) {
+      dashboardController.restoreUserInfo();
+    }
+  }
+
 
   @override
   void initState() {
     super.initState();
-    client = UserModel.fromJson(userDataStore.user);
-    listenToController();
 
-    _locWorker = everAll(
-      [
-        dashboardController.country,
-        dashboardController.city,
-        dashboardController.timezone,
-      ],
-      (_) {
-        // ✅ avoid build-phase mutation
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (!mounted) return;
-          getMyLocationInfo();
-        });
-      },
-    );
+    therapist = UserModel.fromJson(userDataStore.user);
+    // ✅ Create TabController in initState (not as a field initializer)
+    controller = TabController(length: 2, vsync: this);
+
+    // ✅ If you need index, update it safely AFTER the frame
+    controller.addListener(() {
+      if (!mounted) return;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        setState(() => index = controller.index);
+      });
+    });
+
+    // ✅ Do not trigger reactive updates during build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      checkVariables();
+    });
   }
 
   @override
   void dispose() {
-    _locWorker?.dispose();
+    // _locWorker?.dispose();
     controller.dispose();
     super.dispose();
   }
@@ -113,7 +108,7 @@ class _ProfileScreenState extends State<ProfileScreen>
           if (Get.key.currentState?.canPop() ?? false) {
             Get.back();
           } else {
-            Get.offAllNamed(Routes.DASHBOARD);// fallback route
+            Get.offNamed(Routes.DASHBOARD); // fallback route
           }
         },
       ),
@@ -124,14 +119,13 @@ class _ProfileScreenState extends State<ProfileScreen>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ProfileHead(
-                client: client!,
-                profileController: profileController,
+              ProfileHead(),
+              const SizedBox(height: 24),
+              ProfileRow(),
+              const SizedBox(height: 24),
+              PersonalInfo(
+                therapist: therapist,
               ),
-              const SizedBox(height: 24),
-              ProfileRow(profileController: profileController),
-              const SizedBox(height: 24),
-              PersonalInfo(client: client!),
               const SizedBox(height: 40),
               CustomTabBar(
                 controller: controller,
@@ -149,8 +143,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                   children: [
                     BioTabView(),
                     SingleChildScrollView(
-                      child: QualificationsTabView(
-                          profileController: profileController),
+                      child: QualificationsTabView(),
                     ),
                   ],
                 ),
@@ -165,33 +158,33 @@ class _ProfileScreenState extends State<ProfileScreen>
 }
 
 class ProfileHead extends StatefulWidget {
-  const ProfileHead(
-      {super.key, required this.client, required this.profileController});
+  const ProfileHead({super.key});
 
-  final UserModel client;
-  final ProfileController profileController;
+  // final ProfileController profileController;
 
   @override
   State<ProfileHead> createState() => _ProfileHeadState();
 }
 
 class _ProfileHeadState extends State<ProfileHead> {
+  final dashboardController = DashboardController.instance;
+
   final GlobalKey actionKey = GlobalKey();
 
-  String containsTitle(String lastName) {
-    var exists = false;
-    for (var e in titleOptions) {
-      if (lastName.contains(e)) {
-        exists = true;
-      }
-    }
-
-    if (exists) {
-      return "${widget.profileController.lastNameTEC.text}, ${widget.profileController.titles.join(',')}";
-    } else {
-      return widget.profileController.lastNameTEC.text.split(',').first;
-    }
-  }
+  // String containsTitle(String lastName) {
+  //   var exists = false;
+  //   for (var e in titleOptions) {
+  //     if (lastName.contains(e)) {
+  //       exists = true;
+  //     }
+  //   }
+  //
+  //   if (exists) {
+  //     return "${widget.profileController.lastNameTEC.text}, ${widget.profileController.titles.join(',')}";
+  //   } else {
+  //     return widget.profileController.lastNameTEC.text.split(',').first;
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -210,13 +203,13 @@ class _ProfileHeadState extends State<ProfileHead> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ValueListenableBuilder<TextEditingValue>(
-                  valueListenable: widget.profileController.firstNameTEC,
-                  builder: (_, __, ___) {
-                    return Text(
-                        "${widget.profileController.firstNameTEC.text} ${widget.profileController.lastNameTEC.text} ${containsTitle(widget.profileController.titles.join(', '))}");
-                  },
-                ),
+                // ValueListenableBuilder<TextEditingValue>(
+                //   valueListenable: widget.profileController.firstNameTEC,
+                //   builder: (_, __, ___) {
+                //     return Text(
+                //         "${widget.profileController.firstNameTEC.text} ${widget.profileController.lastNameTEC.text}");
+                //   },
+                // ),
 
                 // Obx(
                 //   () => Text(
@@ -228,6 +221,17 @@ class _ProfileHeadState extends State<ProfileHead> {
                 //     ),
                 //   ),
                 // ),
+
+                Obx(
+                  () => Text(
+                    truncateWithEllipsis((displayWidth(context) / 14).toInt(),
+                        "${dashboardController.firstName.value} ${dashboardController.lastName.value}"),
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
                 SizedBox(
                   height: 2,
                 ),
@@ -248,17 +252,20 @@ class _ProfileHeadState extends State<ProfileHead> {
                       Icons.location_on_outlined,
                       color: ColorPalette.blue.shade600,
                     ),
-                    Expanded(
-                      child: Text(
-                        truncateWithEllipsis(28,
-                            "${DashboardController.instance.country.value} ${DashboardController.instance.state.value.isNotEmpty ? "/" : ""} ${DashboardController.instance.state.value}"),
-                        style: TextStyle(
-                          color: ColorPalette.blue.shade600,
-                          fontSize: AppFonts.defaultSize,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                    )
+                    Obx(() => Expanded(
+                          child: Text(
+                            truncateWithEllipsis(
+                                28,
+                                "${dashboardController.country.value} "
+                                "${dashboardController.state.value.isNotEmpty ? "/" : ""} "
+                                "${dashboardController.state.value}"),
+                            style: TextStyle(
+                              color: ColorPalette.blue.shade600,
+                              fontSize: AppFonts.defaultSize,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ))
                   ],
                 )
               ],
@@ -315,12 +322,6 @@ class _ProfileHeadState extends State<ProfileHead> {
           value: 'edit',
           child: Text('Edit profile'),
         ),
-        // PopupMenuItem(
-        //   onTap: () => showDialog(
-        //       context: context, builder: (context) => SignOutDialog()),
-        //   value: 'sign out',
-        //   child: Text('Sign out'),
-        // ),
         PopupMenuItem(
           onTap: () => Get.toNamed(Routes.SETTINGS),
           value: 'delete',
@@ -332,9 +333,9 @@ class _ProfileHeadState extends State<ProfileHead> {
 }
 
 class ProfileRow extends StatelessWidget {
-  const ProfileRow({super.key, required this.profileController});
+  ProfileRow({super.key});
 
-  final ProfileController profileController;
+  final dashboardController = DashboardController.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -345,13 +346,13 @@ class ProfileRow extends StatelessWidget {
         Expanded(
           child: ProfileRowItem(
               title: "Sessions",
-              figure: "${profileController.meetingsCount.value}"),
+              figure: "${dashboardController.meetingsCount.value}"),
         ),
         SizedBox(width: 24),
         Expanded(
           child: ProfileRowItem(
               title: "Clients",
-              figure: "${profileController.clientsCount.value}"),
+              figure: "${dashboardController.clientsCount.value}"),
         )
       ],
     );
@@ -405,9 +406,9 @@ class ProfileRowItem extends StatelessWidget {
 }
 
 class PersonalInfo extends StatelessWidget {
-  const PersonalInfo({super.key, required this.client});
+  const PersonalInfo({super.key, this.therapist});
 
-  final UserModel client;
+  final UserModel? therapist;
 
   @override
   Widget build(BuildContext context) {
@@ -426,7 +427,7 @@ class PersonalInfo extends StatelessWidget {
           "Awaiting approval...",
           style: TextStyle(
             fontSize: AppFonts.defaultSize,
-            color: client.emailVerifiedAt == null
+            color: !therapist!.approved!
                 ? ColorPalette.red
                 : ColorPalette.grey.shade800,
             fontWeight: FontWeight.w400,

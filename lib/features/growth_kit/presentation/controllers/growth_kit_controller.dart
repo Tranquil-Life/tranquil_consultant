@@ -14,12 +14,12 @@ class GrowthKitController extends GetxController {
   static GrowthKitController get instance => Get.find();
 
   Future<void> onTap() async {
-    var isEmpty = await checkForEmptyProfileInfo();
-    if (isEmpty) {
-      Get.toNamed(Routes.EDIT_PROFILE);
-    } else {
-      CustomSnackBar.neutralSnackBar("Coming soon");
-    }
+    // var isEmpty = await checkForEmptyProfileInfo();
+    // if (isEmpty) {
+    //   Get.toNamed(Routes.EDIT_PROFILE);
+    // } else {
+    //   CustomSnackBar.neutralSnackBar("Coming soon");
+    // }
   }
 
   var resources = <GrowthResource>[];

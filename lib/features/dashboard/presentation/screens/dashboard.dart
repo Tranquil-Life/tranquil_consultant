@@ -48,8 +48,8 @@ class _DashboardState extends State<Dashboard> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      dashboardController.getMyLocationInfoCached();
-      profileController.restoreUser();
+      await dashboardController.getMyLocationInfoCached(force: false);
+      dashboardController.restoreUserInfo();
 
       final isEmpty = await checkForEmptyProfileInfo();
       if (isEmpty && !_pushedEditProfile) {
@@ -68,17 +68,33 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Future<void> updateDashboardMeetingInfo() async {
-    for (var meeting in meetingsController.meetings) {
-      if (meeting.id == 1) {
+    await Future.delayed(const Duration(milliseconds: 800));
+
+    final now = DateTimeExtension.now;
+
+    // reset first (important)
+    dashboardController.currentMeetingCount.value = 0;
+    dashboardController.currentMeetingId.value = 0;
+    meetingsController.currentMeeting.value = null;
+
+    for (final meeting in meetingsController.meetings) {
+      meeting.setIsExpired(now);
+
+      final isOngoing =
+          !meeting.isExpired &&
+              (meeting.startAt.isBefore(now) || meeting.startAt.isAtSameMomentAs(now)) &&
+              (meeting.endAt.isAfter(now) || meeting.endAt.isAtSameMomentAs(now));
+
+      if (isOngoing) {
         dashboardController.currentMeetingCount.value = 1;
         dashboardController.currentMeetingId.value = meeting.id;
-
         client = meeting.client;
-
         meetingsController.currentMeeting.value = meeting;
+        break; // stop after finding the current meeting
       }
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
