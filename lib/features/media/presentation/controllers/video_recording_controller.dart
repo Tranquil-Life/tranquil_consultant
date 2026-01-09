@@ -27,7 +27,7 @@ class VideoRecordingController extends GetxController {
 
   late VideoPlayerController videoPlayerController;
 
-  initializeVideoPlayer(dynamic profileController) async {
+  Future<void> initializeVideoPlayer(dynamic profileController) async {
     videoPlayerController = VideoPlayerController.networkUrl(
         Uri.parse(profileController.introVideo.value!));
     // Wait for the controller to initialize
@@ -180,7 +180,6 @@ class VideoRecordingController extends GetxController {
   }
 
   Future<void> deleteFileFromUrl(String fileUrl) async {
-    var profileController = ProfileController.instance;
     try {
       // Extract the path from the URL
       String decodedUrl = Uri.decodeFull(fileUrl.split('?')[0]);

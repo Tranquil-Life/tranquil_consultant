@@ -11,6 +11,7 @@ UserModel _$UserModelFromJson(Map<String, dynamic> json) => UserModel(
   avatarUrl: json['avatar_url'] ?? '',
   birthDate: json['birth_date'],
   bio: json['bio'] ?? '',
+  approved: json['approved'] == 0 ? false : true,
   videoIntroUrl: json['video_intro'] ?? '',
   specialties: json['specialties'] ?? [],
   totalMeetings: json['meetings_count'] ?? 0,

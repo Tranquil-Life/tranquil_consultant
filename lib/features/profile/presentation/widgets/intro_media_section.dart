@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/theme/fonts.dart';
+import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
 import 'package:tl_consultant/features/media/presentation/controllers/video_recording_controller.dart';
 import 'package:tl_consultant/features/media/presentation/screens/video_record_page.dart';
 import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
@@ -10,13 +11,14 @@ import 'package:tl_consultant/features/profile/presentation/widgets/video_player
 import 'package:tl_consultant/features/profile/presentation/widgets/video_record_state.dart';
 
 class IntroMediaSection extends StatelessWidget {
-  const IntroMediaSection(
+  IntroMediaSection(
       {super.key,
       required this.profileController,
       required this.videoRecordingController});
 
   final ProfileController profileController;
   final VideoRecordingController videoRecordingController;
+  final dashboardController = DashboardController.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -30,32 +32,32 @@ class IntroMediaSection extends StatelessWidget {
             fontWeight: FontWeight.w400,
           ),
         ),
-        // profileController.introVideo.value!.isEmpty
-        //     ? GestureDetector(
-        //   child: NoVideoRecordState(),
-        //   onTap: () {
-        //     videoRecordingController.resetUploadVars();
-        //
-        //     Get.to(() => const VideoRecordingPage());
-        //   },
-        // )
-        //     : GestureDetector(
-        //   onTap: () {
-        //     if (profileController.introVideo.value!.isNotEmpty) {
-        //       showDialog(
-        //           context: context,
-        //           builder: (_) {
-        //             return AlertDialog(
-        //               content: VideoPlayerWidget(
-        //                   videoUrl: profileController.introVideo.value!),
-        //             );
-        //           });
-        //     }
-        //   },
-        //   child: VideoRecordState(
-        //       profileController: profileController,
-        //       videoRecordingController: videoRecordingController),
-        // ),
+        dashboardController.videoIntro.value.isEmpty
+            ? GestureDetector(
+          child: NoVideoRecordState(),
+          onTap: () {
+            videoRecordingController.resetUploadVars();
+
+            Get.to(() => const VideoRecordingPage());
+          },
+        )
+            : GestureDetector(
+          onTap: () {
+            if (dashboardController.videoIntro.value.isNotEmpty) {
+              showDialog(
+                  context: context,
+                  builder: (_) {
+                    return AlertDialog(
+                      content: VideoPlayerWidget(
+                          videoUrl: dashboardController.videoIntro.value),
+                    );
+                  });
+            }
+          },
+          child: VideoRecordState(
+              profileController: profileController,
+              videoRecordingController: videoRecordingController),
+        ),
         TextButton(
             style: TextButton.styleFrom(
               padding: EdgeInsets.zero,

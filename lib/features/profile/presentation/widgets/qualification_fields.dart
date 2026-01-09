@@ -85,7 +85,7 @@ class QualificationFields extends StatelessWidget {
                ? Text("Deleting...", style: TextStyle(color: ColorPalette.red))
                : GestureDetector(
              onTap: () {
-               // profileController.deleteQualification(id, index);
+               profileController.deleteQualification(id, index);
              },
              child: Padding(
                  padding: EdgeInsets.only(right: 8),

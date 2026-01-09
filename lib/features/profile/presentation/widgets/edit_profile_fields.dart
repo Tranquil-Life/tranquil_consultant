@@ -381,10 +381,10 @@ class _EditProfileFieldsState extends State<EditProfileFields> {
         ),
         const SizedBox(height: 20),
 
-        // //VIDEO AND AUDIO RECORDINGS
-        // IntroMediaSection(
-        //     profileController: widget.profileController,
-        //     videoRecordingController: widget.videoRecordingController),
+        //VIDEO AND AUDIO RECORDINGS
+        IntroMediaSection(
+            profileController: widget.profileController,
+            videoRecordingController: widget.videoRecordingController),
       ],
     );
   }
@@ -404,7 +404,7 @@ class _EditProfileFieldsState extends State<EditProfileFields> {
       List<Map<String, dynamic>> updatedQualifications =
           List<Map<String, dynamic>>.from(userDataStore.qualifications);
 
-      // widget.profileController.getQualifications();
+      dashboardController.getQualifications();
     }
   }
 }

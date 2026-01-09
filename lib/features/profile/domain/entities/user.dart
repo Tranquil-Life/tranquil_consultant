@@ -28,9 +28,11 @@ class User {
   @JsonKey(name: 'avatar_url')
   final String avatarUrl;
   @JsonKey(name: 'location')
-  final String location;
+  final String? location;
   @JsonKey(name: 'bio')
   final String bio;
+
+  final bool? approved;
 
   final String? timezone;
   final List? specialties;
@@ -50,6 +52,7 @@ class User {
     this.lastName = "",
     this.phoneNumber = "",
     this.bio = "",
+    this.approved,
     this.specialties,
     this.authToken,
     this.usesBitmoji,
@@ -59,7 +62,7 @@ class User {
     this.companyName,
     this.avatarUrl = '',
     this.videoIntroUrl,
-    this.location = "",
+    this.location,
     this.timezone,
     this.totalMeetings = 0,
     this.totalClients = 0,
@@ -71,4 +74,4 @@ class User {
   Map<String, dynamic> toJson() => _$UserToJson(this);
 }
 
-isVerifiedFromJson(dynamic jsonValue) => jsonValue != null;
+bool isVerifiedFromJson(dynamic jsonValue) => jsonValue != null;

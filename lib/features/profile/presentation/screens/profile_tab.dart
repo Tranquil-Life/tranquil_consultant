@@ -422,16 +422,16 @@ class PersonalInfo extends StatelessWidget {
         SizedBox(
           width: 5,
         ),
-        Text(
-          "Awaiting approval...",
-          style: TextStyle(
-            fontSize: AppFonts.defaultSize,
-            color: therapist?.emailVerifiedAt == null
-                ? ColorPalette.red
-                : ColorPalette.grey.shade800,
-            fontWeight: FontWeight.w400,
-          ),
-        ),
+        // Text(
+        //   "Awaiting approval...",
+        //   style: TextStyle(
+        //     fontSize: AppFonts.defaultSize,
+        //     color: !therapist!.approved!
+        //         ? ColorPalette.red
+        //         : ColorPalette.grey.shade800,
+        //     fontWeight: FontWeight.w400,
+        //   ),
+        // ),
       ],
     );
   }

@@ -253,13 +253,14 @@ class DashboardController extends GetxController {
   }
 
   void restoreUserInfo() {
+    profilePic.value = UserModel.fromJson(userDataStore.user).avatarUrl;
     firstName.value = UserModel.fromJson(userDataStore.user).firstName;
     lastName.value = UserModel.fromJson(userDataStore.user).lastName;
     // title.value = UserModel.fromJson(userDataStore.user).title;
     timezone.value = UserModel.fromJson(userDataStore.user).timezone ?? "";
     final location = UserModel.fromJson(userDataStore.user).location;
 
-    if (location.contains('/')) {
+    if (location!.contains('/')) {
       final parts = location.split('/');
 
       country.value = parts[0].trim();
@@ -320,6 +321,7 @@ class DashboardController extends GetxController {
 
     return qualifications;
   }
+
 
   void clearData() {
     currentIndex.value = 0;

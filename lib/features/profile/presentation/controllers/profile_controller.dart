@@ -8,6 +8,7 @@ import 'package:tl_consultant/core/global/custom_snackbar.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/utils/functions.dart';
+import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
 import 'package:tl_consultant/features/profile/data/models/user_model.dart';
 import 'package:tl_consultant/features/profile/data/repos/profile_repo.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
@@ -43,10 +44,12 @@ class ProfileController extends GetxController {
   final TextEditingController countryTEC = TextEditingController();
   final TextEditingController stateTEC = TextEditingController();
   final TextEditingController bioTEC = TextEditingController();
+
   // final TextEditingController timeZoneTEC = TextEditingController();
   final TextEditingController certificationTEC = TextEditingController();
   final TextEditingController institutionTEC = TextEditingController();
   final TextEditingController yearGraduatedTEC = TextEditingController();
+
   // final TextEditingController modalitiesTEC = TextEditingController();
 
   var updatingProfile = false.obs;
@@ -94,74 +97,74 @@ class ProfileController extends GetxController {
   //   }
   // }
 
-  // Future updateUser() async {
-  //   updatingProfile.value = true;
-  //   // containsTitle(lastNameTEC.text);
-  //
-  //   User user = User(
-  //       firstName: firstNameTEC.text,
-  //       // lastName: titles.isEmpty
-  //       //     ? lastNameTEC.text
-  //       //     : "${lastNameTEC.text}, ${titles.join(', ')}",
-  //       lastName: lastNameTEC.text,
-  //       avatarUrl: profilePic.value,
-  //       phoneNumber: phoneTEC.text,
-  //       location: "${cityTEC.text}/${countryTEC.text}",
-  //       timezone: timeZoneTEC.text,
-  //       bio: bioTEC.text,
-  //       videoIntroUrl: introVideo.value,
-  //       specialties: modalities);
-  //
-  //   var request = <String, dynamic>{};
-  //   var qualificationReq = {'qualifications': userDataStore.qualifications};
-  //
-  //   request.addAll(user.toJson());
-  //   request.addAll(qualificationReq);
-  //
-  //   final result = await profileRepo.updateProfile(request);
-  //
-  //   print("REQUEST: $request");
-  //
-  //   result.fold(
-  //     (l) => CustomSnackBar.errorSnackBar(
-  //       l.message!,),
-  //     (r) {
-  //       editUser.value = EditUser(baseUser: UserModel.fromJson(r['user']));
-  //       User user = UserModel.fromJson(r['user']);
-  //       var qualifications = r['qualifications'] ?? [];
-  //
-  //       updateProfile(user, qualifications);
-  //
-  //       return CustomSnackBar.successSnackBar(
-  //         body: "Profile updated");
-  //     },
-  //   );
-  //
-  //   updatingProfile.value = false;
-  // }
+  Future updateUser() async {
+    final dashboardController = DashboardController.instance;
+    final introVideo = dashboardController.videoIntro.value;
+    final modalities = dashboardController.modalities;
+    updatingProfile.value = true;
 
-  // void updateProfile(User user, List qualifications) {
-  //   userDataStore.user['avatar_url'] = user.avatarUrl;
-  //   userDataStore.user['f_name'] = user.firstName;
-  //   userDataStore.user['l_name'] = user.lastName;
-  //   userDataStore.user['phone'] = user.phoneNumber;
-  //   userDataStore.user['birth_date'] = user.birthDate;
-  //   userDataStore.user['gender'] = user.gender;
-  //   userDataStore.user['staff_id'] = user.staffId;
-  //   userDataStore.user['company_name'] = user.companyName;
-  //   userDataStore.user['bio'] = user.bio;
-  //   userDataStore.user['video_intro'] = user.videoIntroUrl!;
-  //   userDataStore.user['specialties'] = user.specialties;
-  //   // userDataStore.user['is_verified'] = user.isVerified;
-  //
-  //   userDataStore.user = userDataStore.user;
-  //   if (qualifications.isNotEmpty) {
-  //     userDataStore.qualifications =
-  //         List<Map<String, dynamic>>.from(qualifications);
-  //
-  //     getQualifications();
-  //   }
-  // }
+    User user = User(
+        firstName: firstNameTEC.text,
+        lastName: lastNameTEC.text,
+        avatarUrl: dashboardController.profilePic.value,
+        phoneNumber: phoneTEC.text,
+        bio: bioTEC.text,
+        videoIntroUrl: introVideo,
+        specialties: modalities);
+
+    var request = <String, dynamic>{};
+    var qualificationReq = {'qualifications': userDataStore.qualifications};
+
+    request.addAll(user.toJson());
+    request.addAll(qualificationReq);
+
+    final result = await profileRepo.updateProfile(request);
+
+    print("REQUEST: $request");
+
+    result.fold(
+      (l) => CustomSnackBar.errorSnackBar(
+        l.message!,
+      ),
+      (r) {
+        editUser.value = EditUser(baseUser: UserModel.fromJson(r['user']));
+        User user = UserModel.fromJson(r['user']);
+        var qualifications = r['qualifications'] ?? [];
+
+        updateProfile(user, qualifications, dashboardController);
+
+        return CustomSnackBar.successSnackBar(body: "Profile updated");
+      },
+    );
+
+    updatingProfile.value = false;
+  }
+
+  void updateProfile(
+      User user, List qualifications, DashboardController dashboardController) {
+    userDataStore.user['avatar_url'] = user.avatarUrl;
+    userDataStore.user['f_name'] = user.firstName;
+    userDataStore.user['l_name'] = user.lastName;
+    userDataStore.user['phone'] = user.phoneNumber;
+    userDataStore.user['birth_date'] = user.birthDate;
+    userDataStore.user['gender'] = user.gender;
+    userDataStore.user['staff_id'] = user.staffId;
+    userDataStore.user['company_name'] = user.companyName;
+    userDataStore.user['bio'] = user.bio;
+    userDataStore.user['video_intro'] = user.videoIntroUrl!;
+    userDataStore.user['specialties'] = user.specialties;
+    // userDataStore.user['is_verified'] = user.isVerified;
+
+    userDataStore.user = userDataStore.user;
+    if (qualifications.isNotEmpty) {
+      userDataStore.qualifications =
+          List<Map<String, dynamic>>.from(qualifications);
+
+      dashboardController.getQualifications();
+    }
+
+    dashboardController.restoreUserInfo();
+  }
 
   ///restore user info
   // void restoreUser() {
@@ -196,27 +199,26 @@ class ProfileController extends GetxController {
   //   // editUser.value = EditUser(baseUser: UserModel.fromJson(userDataStore.user));
   // }
 
-  // void deleteQualification(int? id, int index) async {
-  //   deletingId.value = id!; // Set the current deleting ID
-  //   Future.delayed(Duration(seconds: 2), () {
-  //     //remove from the userDataStore
-  //     userDataStore.qualifications.removeAt(index);
-  //     //remove from the DB
-  //     deleteQualificationFromDB(id);
-  //
-  //     deletingId.value = null; // Reset after deletion
-  //
-  //     getQualifications();
-  //   });
-  // }
+  void deleteQualification(int? id, int index) async {
+    final dashboardController = DashboardController.instance;
+
+    deletingId.value = id!; // Set the current deleting ID
+    Future.delayed(Duration(seconds: 2), () {
+      //remove from the userDataStore
+      userDataStore.qualifications.removeAt(index);
+      //remove from the DB
+      deleteQualificationFromDB(id);
+
+      deletingId.value = null; // Reset after deletion
+
+      dashboardController.getQualifications();
+    });
+  }
 
   Future deleteQualificationFromDB(int id) async {
     Either either = await profileRepo.deleteQualification(id);
-    either.fold(
-        (l) => CustomSnackBar.errorSnackBar(
-          l.message!), (r) {
-      CustomSnackBar.successSnackBar(
-          body: "Qualification deleted");
+    either.fold((l) => CustomSnackBar.errorSnackBar(l.message!), (r) {
+      CustomSnackBar.successSnackBar(body: "Qualification deleted");
     });
   }
 
@@ -249,11 +251,11 @@ class ProfileController extends GetxController {
     getStore.set(Keys.user, userDataStore.user);
   }
 
-  // @override
-  // void onInit() {
-  //   // getQualifications();
-  //   // titles.value = getTitlesAfterComma(lastNameTEC.text);
-  //
-  //   super.onInit();
-  // }
+// @override
+// void onInit() {
+//   // getQualifications();
+//   // titles.value = getTitlesAfterComma(lastNameTEC.text);
+//
+//   super.onInit();
+// }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tl_consultant/core/global/custom_text.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/theme/fonts.dart';
 import 'package:tl_consultant/core/utils/routes/app_pages.dart';
@@ -102,36 +103,34 @@ class QualificationsTabView extends StatelessWidget {
               ),
             ],
           ),
-          Obx(() {
-            if (dashboardController.modalities.isEmpty) {
-              return Text("Add modalities you practice and are qualified for");
-            } else {
-              return Column(
-                children: dashboardController.modalities
-                    .map((e) => Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Icon(
-                      Icons.stop_circle,
-                      size: 8,
-                      color: ColorPalette.grey.shade800,
+          if (modalities.isEmpty)
+            CustomText(text: "Add modalities you practice and are qualified for", color: ColorPalette.grey[800],)
+          else
+            Column(
+              children: dashboardController.modalities
+                  .map((e) => Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Icon(
+                    Icons.stop_circle,
+                    size: 8,
+                    color: ColorPalette.grey.shade800,
+                  ),
+                  SizedBox(
+                    width: 8,
+                  ),
+                  Text(
+                    e,
+                    style: TextStyle(
+                      fontSize: AppFonts.defaultSize,
+                      fontWeight: FontWeight.w400,
                     ),
-                    SizedBox(
-                      width: 8,
-                    ),
-                    Text(
-                      e,
-                      style: TextStyle(
-                        fontSize: AppFonts.defaultSize,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                  ],
-                ))
-                    .toList(),
-              );
-            }
-          }),
+                  ),
+                ],
+              ))
+                  .toList(),
+            )
+
 
           ///topics
           // SizedBox(

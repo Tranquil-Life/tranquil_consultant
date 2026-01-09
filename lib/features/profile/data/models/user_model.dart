@@ -19,6 +19,7 @@ class UserModel extends User{
     // required super.usesBitmoji,
     super.birthDate,
     super.bio,
+    super.approved,
     // super.gender,
     // super.staffId,
     // super.companyName,

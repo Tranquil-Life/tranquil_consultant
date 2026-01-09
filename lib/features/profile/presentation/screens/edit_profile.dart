@@ -103,59 +103,59 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     videoRecordingController: videoRecordingController,
                   ),
 
-                  // SizedBox(
-                  //   height: 30,
-                  // ),
-                  // Row(
-                  //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  //   children: [
-                  //     Expanded(
-                  //       child: GestureDetector(
-                  //         onTap: () {
-                  //           _showDiscardChangesDialog(context);
-                  //         },
-                  //         child: Container(
-                  //           height: 44,
-                  //           decoration: BoxDecoration(
-                  //             borderRadius: BorderRadius.circular(8.0),
-                  //             border: Border.all(
-                  //               width: 1,
-                  //               color: ColorPalette.green,
-                  //             ),
-                  //           ),
-                  //           alignment: Alignment.center,
-                  //           child: Text(
-                  //             "Cancel",
-                  //             style: TextStyle(
-                  //               fontSize: 16,
-                  //               fontWeight: FontWeight.w400,
-                  //               color: ColorPalette.green,
-                  //             ),
-                  //           ),
-                  //         ),
-                  //       ),
-                  //     ),
-                  //     SizedBox(
-                  //       width: 20,
-                  //     ),
-                  //     Expanded(
-                  //       child: CustomButton(
-                  //         onPressed: () {
-                  //           // profileController.updateUser();
-                  //         },
-                  //         child: const Text(
-                  //           'Save Changes',
-                  //           style: TextStyle(
-                  //               color: Colors.white,
-                  //               fontSize: AppFonts.defaultSize),
-                  //         ),
-                  //       ),
-                  //     ),
-                  //   ],
-                  // ),
-                  // SizedBox(
-                  //   height: 40,
-                  // ),
+                  SizedBox(
+                    height: 30,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            _showDiscardChangesDialog(context);
+                          },
+                          child: Container(
+                            height: 44,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8.0),
+                              border: Border.all(
+                                width: 1,
+                                color: ColorPalette.green,
+                              ),
+                            ),
+                            alignment: Alignment.center,
+                            child: Text(
+                              "Cancel",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w400,
+                                color: ColorPalette.green,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 20,
+                      ),
+                      Expanded(
+                        child: CustomButton(
+                          onPressed: () {
+                            profileController.updateUser();
+                          },
+                          child: const Text(
+                            'Save Changes',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: AppFonts.defaultSize),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 40,
+                  ),
                 ],
               ),
             )),
