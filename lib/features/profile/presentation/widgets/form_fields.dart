@@ -31,12 +31,12 @@ CustomFormField titleFormField(
 }
 
 CustomFormField countryFormField(
-    String hint, ProfileController profileController) {
+    String hint, TextEditingController controller) {
   // final dropdownControllerCountry =
   //     DropdownController(initialValue: "United Kingdom");
   return CustomFormField(
     readOnly: true,
-    textEditingController: profileController.countryTEC,
+    textEditingController: controller,
     // suffix: DropdownWidget(
     //   options: ["United Kingdom", "Nigeria", "Denmark"],
     //   controller: dropdownControllerCountry,
@@ -48,12 +48,12 @@ CustomFormField countryFormField(
   );
 }
 
-CustomFormField cityFormField(
-    String hint, ProfileController profileController) {
+CustomFormField stateFormField(
+    String hint, TextEditingController controller) {
   // final dropdownControllerCity = DropdownController(initialValue: "London");
   return CustomFormField(
     readOnly: true,
-    textEditingController: profileController.cityTEC,
+    textEditingController: controller,
 
     // suffix: DropdownWidget(
     //   options: ["London", "Abuja", "Accra"],
@@ -92,9 +92,9 @@ CustomFormField nameOfCertification(
   );
 }
 
-CustomFormField timezoneField(ProfileController profileController) {
+CustomFormField timezoneField(String value) {
   return CustomFormField(
-    textEditingController: profileController.timeZoneTEC,
+    textEditingController: TextEditingController(text: value),
     verContentPadding: 12,
     horContentPadding: 12,
   );
@@ -135,7 +135,7 @@ CustomFormField yearGraduatedField(
 CustomFormField modalities(
     String hint, ProfileController profileController, Function()? onTap) {
   return CustomFormField(
-    textEditingController: profileController.modalitiesTEC,
+    // textEditingController: profileController.modalitiesTEC,
     readOnly: true,
     hintColor: ColorPalette.grey.shade800,
     suffix: GestureDetector(

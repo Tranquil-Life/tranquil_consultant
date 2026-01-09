@@ -9,6 +9,7 @@ import 'package:tl_consultant/core/global/pulsing_widget.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/theme/tranquil_icons.dart';
+import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
 import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
 
 import 'dart:io';
@@ -18,34 +19,39 @@ import 'package:firebase_storage/firebase_storage.dart';
 
 enum AvatarSource { file, url, bitmojiUrl }
 
-
 class UserAvatar extends StatelessWidget {
   const UserAvatar({
     super.key,
     this.size = 48,
-    this.imageUrl,        // full http(s) URL (optional; legacy)
-    this.storagePath,     // Firebase Storage path (recommended)
-    this.source,          // file/url/bitmojiUrl (ignored if storagePath provided)
+    this.imageUrl, // full http(s) URL (optional; legacy)
+    this.storagePath, // Firebase Storage path (recommended)
+    this.source, // file/url/bitmojiUrl (ignored if storagePath provided)
     this.decoration,
-    this.filePath,        // local file path if using AvatarSource.file
+    this.filePath, // local file path if using AvatarSource.file
   });
 
   final double size;
-  final String? imageUrl;       // ex: https://firebasestorage.googleapis.com/...
-  final String? storagePath;    // ex: profile_image/user123.jpg
-  final String? filePath;       // ex: /data/user/0/.../cache/avatar.jpg
+  final String? imageUrl; // ex: https://firebasestorage.googleapis.com/...
+  final String? storagePath; // ex: profile_image/user123.jpg
+  final String? filePath; // ex: /data/user/0/.../cache/avatar.jpg
   final AvatarSource? source;
   final BoxDecoration? decoration;
 
   static const Widget _placeHolder = Center(
     child: Padding(
       padding: EdgeInsets.all(12),
-      child: FittedBox(fit: BoxFit.contain, child: Icon(Icons.person, color: ColorPalette.grey,)),
+      child: FittedBox(
+          fit: BoxFit.contain,
+          child: Icon(
+            Icons.person,
+            color: ColorPalette.grey,
+          )),
     ),
   );
 
   // Show placeholder until first decoded frame arrives
-  Widget _frameBuilder(BuildContext _, Widget child, int? frame, bool wasSync) =>
+  Widget _frameBuilder(
+          BuildContext _, Widget child, int? frame, bool wasSync) =>
       frame == null ? _placeHolder : child;
 
   // Show placeholder while bytes are loading (network only)
@@ -53,10 +59,14 @@ class UserAvatar extends StatelessWidget {
       prog == null ? child : _placeHolder;
 
   // Fallback UI on errors
-  Widget _errorBuilder(BuildContext _, Object __, StackTrace? ___) =>
-      Padding(
+  Widget _errorBuilder(BuildContext _, Object __, StackTrace? ___) => Padding(
         padding: EdgeInsets.all(8),
-        child: FittedBox(fit: BoxFit.contain, child: Icon(Icons.person_outline, color: ColorPalette.grey,)),
+        child: FittedBox(
+            fit: BoxFit.contain,
+            child: Icon(
+              Icons.person_outline,
+              color: ColorPalette.grey,
+            )),
       );
 
   // ---- Helpers --------------------------------------------------------------
@@ -132,7 +142,8 @@ class UserAvatar extends StatelessWidget {
 
   Widget _buildFromSvgString(String svg) {
     try {
-      return SvgPicture.string(svg, fit: BoxFit.cover, placeholderBuilder: (_) => _placeHolder);
+      return SvgPicture.string(svg,
+          fit: BoxFit.cover, placeholderBuilder: (_) => _placeHolder);
     } catch (_) {
       return _placeHolder;
     }
@@ -156,7 +167,8 @@ class UserAvatar extends StatelessWidget {
           break;
         default:
           final val = (imageUrl ?? '').trim();
-          content = val.startsWith('http') ? _buildNetworkChecked(val) : _placeHolder;
+          content =
+              val.startsWith('http') ? _buildNetworkChecked(val) : _placeHolder;
       }
     }
 
@@ -170,10 +182,8 @@ class UserAvatar extends StatelessWidget {
   }
 }
 
-
-
 class MyAvatarWidget extends StatelessWidget {
-  const MyAvatarWidget({
+  MyAvatarWidget({
     super.key,
     required this.size,
     this.decoration,
@@ -182,12 +192,14 @@ class MyAvatarWidget extends StatelessWidget {
   final double size;
   final BoxDecoration? decoration;
 
+  final dashboardController = DashboardController.instance;
+
   @override
   Widget build(BuildContext context) {
-    final profileController = ProfileController.instance;
+    // final profileController = ProfileController.instance;
 
     return Obx(() {
-      final value = profileController.profilePic.value.trim();
+      final value = dashboardController.profilePic.value.trim();
 
       // Heuristic: if it starts with http(s), treat as full URL; else assume storage path.
       final isUrl = value.startsWith('http://') || value.startsWith('https://');
@@ -196,7 +208,8 @@ class MyAvatarWidget extends StatelessWidget {
         size: size,
         decoration: decoration,
         imageUrl: isUrl ? value : null,
-        storagePath: isUrl ? null : value, // preferred path usage
+        storagePath: isUrl ? null : value,
+        // preferred path usage
         source: isUrl ? AvatarSource.url : null,
       );
     });

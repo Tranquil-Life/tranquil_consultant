@@ -57,19 +57,26 @@ class DashboardController extends GetxController {
 
   var currentMeetingCount = 0.obs;
   var currentMeetingId = 0.obs;
-  // var clientId = 0.obs;
-  // var clientName = "".obs;
-  // var clientDp = "".obs;
-  // var currentMeetingET = "".obs;
-  // var currentMeetingST = "".obs;
 
-  var country = "${userDataStore.user['location']}".obs;
+  var country = "".obs;
   var state = "".obs;
   var city = "".obs;
   var street = "".obs;
-  var neighborhood = "".obs;
-  var county = "".obs;
   var timezone = "".obs;
+
+  var profilePic = "".obs;
+  var firstName = "".obs;
+  var lastName = "".obs;
+  var title = "".obs;
+  var bio = "".obs;
+  RxList<Qualification> qualifications = <Qualification>[].obs;
+  var modalities = <String>[].obs;
+
+  var videoIntro = "".obs;
+  var audioIntro = "".obs;
+
+  var meetingsCount = 0.obs;
+  var clientsCount = 0.obs;
 
   Future<void> onTap(int index) async {
     currentIndex.value = index;
@@ -77,10 +84,10 @@ class DashboardController extends GetxController {
 
   Future updateLocation(
       {required double latitude,
-        required double longitude,
-        required double timeZone,
-        required String location,
-        required String timeZoneIdentifier}) async {
+      required double longitude,
+      required double timeZone,
+      required String location,
+      required String timeZoneIdentifier}) async {
     Either either = await locationRepo.updateLocation(
         latitude: latitude,
         longitude: longitude,
@@ -102,20 +109,19 @@ class DashboardController extends GetxController {
     final result = <String, String?>{};
 
     final Either either =
-    await locationRepo.reverseGeocode(latitude: lat, longitude: lng);
+        await locationRepo.reverseGeocode(latitude: lat, longitude: lng);
 
     either.fold(
-          (l) => print("Reverse geocode: error: ${l.message ?? ''}"),
-          (r) {
+      (l) => print("Reverse geocode: error: ${l.message ?? ''}"),
+      (r) {
         print("reverse geocode: right: $r");
 
         // r is a Map, not Response
         final Map<String, dynamic> map = Map<String, dynamic>.from(r);
 
         // your API might return {data: {...}} or {...} directly
-        final inner = (map['data'] is Map)
-            ? Map<String, dynamic>.from(map['data'])
-            : map;
+        final inner =
+            (map['data'] is Map) ? Map<String, dynamic>.from(map['data']) : map;
 
         result['country'] = inner['country']?.toString();
         result['state'] = inner['state']?.toString();
@@ -130,8 +136,12 @@ class DashboardController extends GetxController {
   String normalizeCountry(String c) {
     final x = c.trim();
     final lower = x.toLowerCase();
-    if (lower == 'usa' || lower == 'us' || lower.contains('united states')) return 'United States';
-    if (lower == 'uk' || lower == 'gb' || lower.contains('united kingdom')) return 'United Kingdom';
+    if (lower == 'usa' || lower == 'us' || lower.contains('united states')) {
+      return 'United States';
+    }
+    if (lower == 'uk' || lower == 'gb' || lower.contains('united kingdom')) {
+      return 'United Kingdom';
+    }
     return x;
   }
 
@@ -143,6 +153,9 @@ class DashboardController extends GetxController {
     final lng = result['longitude'] as double;
 
     final timeZoneHours = DateTime.now().timeZoneOffset.inMinutes / 60.0;
+    final timeZone = timeZoneHours.toStringAsFixed(2);
+
+    timezone.value = timeZone;
 
     String timeZoneIdentifier = "";
     try {
@@ -170,11 +183,10 @@ class DashboardController extends GetxController {
       // Fallback: use placemark if backend/network fails
       //TODO: Display dialog for countries and states
 
-
       CustomSnackBar.errorSnackBar("Reverse coding failed: $e");
     }
 
-    await updateLocation(
+    final res = await updateLocation(
       latitude: lat,
       longitude: lng,
       timeZone: timeZoneHours,
@@ -182,7 +194,23 @@ class DashboardController extends GetxController {
       timeZoneIdentifier: timeZoneIdentifier,
     );
 
-    print("dashboard update: country: ${country.value}\nstate: ${state.value}\nlocationToSend: $locationToSend");
+    // Update local cached user immediately
+    if (res != null && res["error"] == false) {
+      final updatedLocation = res["data"]?["location"]?.toString() ?? "";
+
+      if (updatedLocation.isNotEmpty) {
+        // update in-memory user map
+        final user = Map<String, dynamic>.from(userDataStore.user);
+        user["location"] = updatedLocation;
+        user['time_zone'] = timeZone;
+        userDataStore.user = user;
+
+        // persist it
+        await storage.write(Keys.user, user);
+        await storage.save();
+      }
+    }
+
   }
 
   int? _readInt(String key) {
@@ -194,14 +222,13 @@ class DashboardController extends GetxController {
     return null;
   }
 
-  Future<void> getMyLocationInfoCached() async {
+  Future<void> getMyLocationInfoCached({bool force = false}) async {
     final now = DateTime.now().millisecondsSinceEpoch;
     final lastTs = _readInt(Keys.lastLocationUpdateKey);
 
     print("old last timestamp: $lastTs");
 
-    // If we have a timestamp and it's still within 24h, skip
-    if (lastTs != null && (now - lastTs) < locationUpdateIntervalMs) {
+    if (!force && lastTs != null && (now - lastTs) < locationUpdateIntervalMs) {
       debugPrint('Location update skipped (cached)');
       return;
     }
@@ -209,13 +236,9 @@ class DashboardController extends GetxController {
     debugPrint('Running location update');
 
     try {
-      await getMyLocationInfo(); // Update location
-
-      await storage.write(Keys.lastLocationUpdateKey, now); // ✅ await write
-      await storage.save(); // ✅ force flush (important on web)
-
-      final savedTs = _readInt(Keys.lastLocationUpdateKey);
-      print("new last timestamp: $savedTs");
+      await getMyLocationInfo();
+      await storage.write(Keys.lastLocationUpdateKey, now);
+      await storage.save();
     } catch (e, s) {
       debugPrint('Location update failed: $e');
       debugPrintStack(stackTrace: s);
@@ -224,20 +247,73 @@ class DashboardController extends GetxController {
 
   //FORCE RESET LOCATION
   Future<void> refreshLocationNow() async {
-    await storage.remove(Keys.lastLocationUpdateKey); // await remove
+    await storage.remove(Keys.lastLocationUpdateKey);
     await storage.save(); // flush removal
     await getMyLocationInfoCached();
   }
 
+  void restoreUserInfo() {
+    firstName.value = UserModel.fromJson(userDataStore.user).firstName;
+    lastName.value = UserModel.fromJson(userDataStore.user).lastName;
+    // title.value = UserModel.fromJson(userDataStore.user).title;
+    timezone.value = UserModel.fromJson(userDataStore.user).timezone ?? "";
+    final location = UserModel.fromJson(userDataStore.user).location;
 
-  // @override
-  // void onInit() {
-  //   ProfileController.instance.restoreUser();
-  //
-  //   getMyLocationInfo();
-  //
-  //   super.onInit();
-  // }
+    if (location.contains('/')) {
+      final parts = location.split('/');
+
+      country.value = parts[0].trim();
+      state.value = parts.length > 1 ? parts[1].trim() : '';
+    } else {
+      // fallback if format is unexpected
+      country.value = location;
+      state.value = '';
+    }
+
+    print("time zone: ${timezone.value}");
+    print("Restored location: country=${country.value}, state=${state.value}");
+
+    meetingsCount.value = UserModel.fromJson(userDataStore.user).totalMeetings;
+    clientsCount.value = UserModel.fromJson(userDataStore.user).totalClients;
+
+    bio.value = UserModel.fromJson(userDataStore.user).bio;
+    qualifications.value = userDataStore.qualifications
+        .map((e) => Qualification.fromJson(e))
+        .toList();
+    modalities.value = UserModel.fromJson(userDataStore.user).specialties !=
+            null
+        ? List<String>.from(UserModel.fromJson(userDataStore.user).specialties!)
+        : [];
+
+    print("modalities: $modalities");
+    videoIntro.value =
+        UserModel.fromJson(userDataStore.user).videoIntroUrl ?? "";
+  }
+
+  List<Qualification> getQualifications() {
+    qualifications.clear();
+
+    if (userDataStore.qualifications.isNotEmpty) {
+      int lastId = userDataStore.qualifications
+          .where((item) => item.containsKey('id'))
+          .fold<int>(
+              0,
+              (previousValue, item) => item['id'] > previousValue
+                  ? item['id'] as int
+                  : previousValue);
+
+      for (var item in userDataStore.qualifications) {
+        if (!item.containsKey('id') || item['id'] == null) {
+          lastId += 1; // Increment lastId for new entries
+          item['id'] = lastId;
+        }
+
+        qualifications.add(Qualification.fromJson(item));
+      }
+    }
+
+    return qualifications;
+  }
 
   void clearData() {
     currentIndex.value = 0;
@@ -276,4 +352,6 @@ class DashboardController extends GetxController {
   bool isSelected(int index) {
     return currentIndex.value == index;
   }
+
+
 }

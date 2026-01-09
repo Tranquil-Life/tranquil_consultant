@@ -42,7 +42,6 @@ class User {
   final int totalClients;
   final String? stripeAccountId;
 
-
   User({
     this.id,
     this.email,
@@ -64,7 +63,7 @@ class User {
     this.timezone,
     this.totalMeetings = 0,
     this.totalClients = 0,
-    this.stripeAccountId
+    this.stripeAccountId,
   });
 
 

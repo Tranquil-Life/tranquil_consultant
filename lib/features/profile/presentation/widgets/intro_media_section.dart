@@ -30,32 +30,32 @@ class IntroMediaSection extends StatelessWidget {
             fontWeight: FontWeight.w400,
           ),
         ),
-        profileController.introVideo.value!.isEmpty
-            ? GestureDetector(
-          child: NoVideoRecordState(),
-          onTap: () {
-            videoRecordingController.resetUploadVars();
-
-            Get.to(() => const VideoRecordingPage());
-          },
-        )
-            : GestureDetector(
-          onTap: () {
-            if (profileController.introVideo.value!.isNotEmpty) {
-              showDialog(
-                  context: context,
-                  builder: (_) {
-                    return AlertDialog(
-                      content: VideoPlayerWidget(
-                          videoUrl: profileController.introVideo.value!),
-                    );
-                  });
-            }
-          },
-          child: VideoRecordState(
-              profileController: profileController,
-              videoRecordingController: videoRecordingController),
-        ),
+        // profileController.introVideo.value!.isEmpty
+        //     ? GestureDetector(
+        //   child: NoVideoRecordState(),
+        //   onTap: () {
+        //     videoRecordingController.resetUploadVars();
+        //
+        //     Get.to(() => const VideoRecordingPage());
+        //   },
+        // )
+        //     : GestureDetector(
+        //   onTap: () {
+        //     if (profileController.introVideo.value!.isNotEmpty) {
+        //       showDialog(
+        //           context: context,
+        //           builder: (_) {
+        //             return AlertDialog(
+        //               content: VideoPlayerWidget(
+        //                   videoUrl: profileController.introVideo.value!),
+        //             );
+        //           });
+        //     }
+        //   },
+        //   child: VideoRecordState(
+        //       profileController: profileController,
+        //       videoRecordingController: videoRecordingController),
+        // ),
         TextButton(
             style: TextButton.styleFrom(
               padding: EdgeInsets.zero,

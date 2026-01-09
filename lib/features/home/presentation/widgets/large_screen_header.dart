@@ -10,19 +10,19 @@ import 'package:tl_consultant/core/utils/functions.dart';
 import 'package:tl_consultant/core/utils/routes/app_pages.dart';
 import 'package:tl_consultant/features/activity/presentation/controllers/activity_controller.dart';
 import 'package:tl_consultant/features/activity/presentation/screens/notifications.dart';
+import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
 import 'package:tl_consultant/features/home/presentation/widgets/count_indicator.dart';
 import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
 
 import '../../../../core/utils/helpers/svg_elements.dart';
 
 class LargeScreenHeader extends StatelessWidget {
-  const LargeScreenHeader(
+  LargeScreenHeader(
       {super.key,
-      required this.profileController,
       required this.activityController});
 
-  final ProfileController profileController;
   final ActivityController activityController;
+  final dashboardController = DashboardController.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -73,13 +73,13 @@ class LargeScreenHeader extends StatelessWidget {
                     color: ColorPalette.black2,
                     fontFamily: AppFonts.mulishRegular,
                   ),
-                  CustomText(
-                    text: profileController.firstNameTEC.text,
+                  Obx(()=>CustomText(
+                    text: dashboardController.firstName.value,
                     size: AppFonts.largeSize+2,
                     // size: 24,
                     color: ColorPalette.black2,
                     fontFamily: AppFonts.mulishSemiBold,
-                  )
+                  ))
                 ],
               )
             ],

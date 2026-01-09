@@ -15,7 +15,9 @@ UserModel _$UserModelFromJson(Map<String, dynamic> json) => UserModel(
   specialties: json['specialties'] ?? [],
   totalMeetings: json['meetings_count'] ?? 0,
   totalClients: json['clients_count'] ?? 0,
-  stripeAccountId: json['stripe_account_id'] ?? null
+  stripeAccountId: json['stripe_account_id'] ?? null,
+  location: json['location'] ?? '',
+  timezone: json['time_zone']?.toString() ?? '',
   // gender: json['gender'] as String ?? '',
   // staffId: json['staff_id'] as String ?? '',
   // companyName: json['company_name'] as String?,
