@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_timezone/flutter_native_timezone.dart';
@@ -361,5 +362,37 @@ class DashboardController extends GetxController {
     return currentIndex.value == index;
   }
 
+
+  @override
+  void onReady() {
+    super.onReady();
+    maybeRequestNotifications();
+  }
+
+
+  Future<void> maybeRequestNotifications() async {
+    try {
+      if (kIsWeb) {
+        final settings = await FirebaseMessaging.instance.requestPermission();
+        debugPrint("Web notif permission: ${settings.authorizationStatus}");
+
+        // Only if you actually need web push:
+        // final token = await FirebaseMessaging.instance.getToken(
+        //   vapidKey: "YOUR_VAPID_KEY",
+        // );
+        // debugPrint("FCM token: $token");
+      } else {
+        await FirebaseMessaging.instance.requestPermission(
+          criticalAlert: true,
+          announcement: true,
+          carPlay: true,
+          providesAppNotificationSettings: true,
+        );
+      }
+    } catch (e, st) {
+      debugPrint("Notif permission failed: $e");
+      debugPrint("$st");
+    }
+  }
 
 }
