@@ -23,6 +23,8 @@ class LargeScreenHeader extends StatelessWidget {
 
   final ActivityController activityController;
   final dashboardController = DashboardController.instance;
+  static const double _radius = 28;
+  static const double _diameter = _radius * 2;
 
   @override
   Widget build(BuildContext context) {
@@ -52,13 +54,16 @@ class LargeScreenHeader extends StatelessWidget {
                 alignment: Alignment.centerLeft,
                 child: GestureDetector(
                   onTap: () => Get.toNamed(Routes.PROFILE),
-                  child: CircleAvatar(
-                    backgroundColor: ColorPalette.grey[100],
-                    radius: 28,
-                    child: UserAvatar(size: 52 * 2),
-                    // radius: 38,
-                    // child: MyAvatarWidget(size: 52 * 2),
-                  ),
+                  child: Obx(()=>Container(
+                    width: _diameter,
+                    height: _diameter,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: ColorPalette.grey[100],
+                    ),
+                    clipBehavior: Clip.hardEdge,
+                    child: UserAvatar(size: _diameter, imageUrl: dashboardController.profilePic.value),
+                  )),
                 ),
               ),
               SizedBox(width: 12),

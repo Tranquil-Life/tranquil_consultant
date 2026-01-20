@@ -21,6 +21,9 @@ class SmallScreenHeader extends StatelessWidget {
   final ActivityController activityController;
   final dashboardController = DashboardController.instance;
 
+  static const double _radius = 24;
+  static const double _diameter = _radius * 2;
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -29,14 +32,16 @@ class SmallScreenHeader extends StatelessWidget {
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            GestureDetector(
-              onTap: () => Get.toNamed(Routes.PROFILE),
-              child: CircleAvatar(
-                backgroundColor: ColorPalette.grey[100],
-                radius: 24,
-                child: UserAvatar(size: 52 * 2),
+            Obx(()=>Container(
+              width: _diameter,
+              height: _diameter,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: ColorPalette.grey[100],
               ),
-            ),
+              clipBehavior: Clip.hardEdge,
+              child: UserAvatar(size: _diameter, imageUrl: dashboardController.profilePic.value),
+            )),
             SizedBox(width: 12),
             Column(
               crossAxisAlignment:

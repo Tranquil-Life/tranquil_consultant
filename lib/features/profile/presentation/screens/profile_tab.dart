@@ -171,6 +171,9 @@ class _ProfileHeadState extends State<ProfileHead> {
 
   final GlobalKey actionKey = GlobalKey();
 
+  static const double _radius = 52;
+  static const double _diameter = _radius * 2;
+
   // String containsTitle(String lastName) {
   //   var exists = false;
   //   for (var e in titleOptions) {
@@ -190,11 +193,16 @@ class _ProfileHeadState extends State<ProfileHead> {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        CircleAvatar(
-          backgroundColor: ColorPalette.grey[100],
-          radius: 52,
-          child: UserAvatar(size: 52 * 2),
-        ),
+        Obx(()=>Container(
+          width: _diameter,
+          height: _diameter,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: ColorPalette.grey[100],
+          ),
+          clipBehavior: Clip.hardEdge,
+          child: UserAvatar(size: _diameter, imageUrl: dashboardController.profilePic.value),
+        )),
         const SizedBox(
           width: 8,
         ),
