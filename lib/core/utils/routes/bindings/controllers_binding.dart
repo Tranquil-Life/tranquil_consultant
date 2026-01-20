@@ -12,7 +12,6 @@ import 'package:tl_consultant/features/dashboard/presentation/controllers/dashbo
 import 'package:tl_consultant/features/growth_kit/presentation/controllers/growth_kit_controller.dart';
 import 'package:tl_consultant/features/home/presentation/controllers/home_controller.dart';
 import 'package:tl_consultant/features/journal/presentation/controllers/notes_controller.dart';
-import 'package:tl_consultant/features/media/presentation/controllers/video_recording_controller.dart';
 import 'package:tl_consultant/features/onboarding/presentation/controllers/onboarding_controller.dart';
 import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:tl_consultant/features/settings/presentation/controllers/settings_controller.dart';

@@ -22,7 +22,7 @@ import 'package:tl_consultant/features/home/presentation/controllers/home_contro
 import 'package:tl_consultant/features/home/presentation/screens/home_tab.dart';
 import 'package:tl_consultant/features/journal/presentation/controllers/notes_controller.dart';
 import 'package:tl_consultant/features/journal/presentation/screens/journal_tab.dart';
-import 'package:tl_consultant/features/media/presentation/controllers/video_recording_controller.dart';
+import 'package:tl_consultant/features/media/presentation/controllers/media_controller.dart';
 import 'package:tl_consultant/features/profile/data/models/user_model.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 import 'package:tl_consultant/features/profile/domain/entities/qualification.dart';
@@ -349,7 +349,7 @@ class DashboardController extends GetxController {
     ActivityController().clearData();
     EarningsController().clearData();
     TransactionsController().clearData();
-    VideoRecordingController().clearData();
+    MediaController().clearData();
     NotesController().clearData();
     clearData();
   }

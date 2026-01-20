@@ -34,7 +34,7 @@ class SmallScreenHeader extends StatelessWidget {
               child: CircleAvatar(
                 backgroundColor: ColorPalette.grey[100],
                 radius: 24,
-                child: MyAvatarWidget(size: 52 * 2),
+                child: UserAvatar(size: 52 * 2),
               ),
             ),
             SizedBox(width: 12),

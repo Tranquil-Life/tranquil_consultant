@@ -5,22 +5,18 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tl_consultant/core/data/store.dart';
 import 'package:tl_consultant/core/global/custom_snackbar.dart';
-import 'package:tl_consultant/core/constants/constants.dart';
-import 'package:tl_consultant/core/theme/colors.dart';
-import 'package:tl_consultant/core/utils/functions.dart';
 import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
+import 'package:tl_consultant/features/media/presentation/controllers/media_controller.dart';
 import 'package:tl_consultant/features/profile/data/models/user_model.dart';
 import 'package:tl_consultant/features/profile/data/repos/profile_repo.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 import 'package:tl_consultant/features/profile/domain/entities/edit_user.dart';
-import 'package:tl_consultant/features/profile/domain/entities/qualification.dart';
 import 'package:tl_consultant/features/profile/domain/entities/user.dart';
-import 'package:video_player/video_player.dart';
 
 class ProfileController extends GetxController {
   static ProfileController get instance => Get.find<ProfileController>();
 
-  late VideoPlayerController videoPlayerController;
+  late MediaController mediaController;
 
   Rx<EditUser> editUser = EditUser().obs;
 
@@ -222,6 +218,25 @@ class ProfileController extends GetxController {
     });
   }
 
+  Future<void> updateProfilePicture() async {
+    final dashboardController = DashboardController.instance;
+
+    final bytes = await MediaController.pickImageBytesWeb();
+    if (bytes == null) return;
+
+
+    final url = await MediaController.uploadImage(
+      bytes: bytes,
+      folder: 'profile_image',
+    );
+
+    print('Uploaded URL: $url');
+
+    dashboardController.profilePic.value = "$url";
+    userDataStore.user['avatar_url'] = "$url";
+    userDataStore.user = userDataStore.user;
+  }
+
   void clearData() {
     introVideoDuration.value = 0;
     // profilePic.value = '';
@@ -250,6 +265,8 @@ class ProfileController extends GetxController {
     userDataStore.user.clear();
     getStore.set(Keys.user, userDataStore.user);
   }
+
+
 
 // @override
 // void onInit() {

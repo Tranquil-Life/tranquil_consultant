@@ -234,9 +234,7 @@ class NoteWidget extends StatelessWidget {
                                 child: Center(
                                   child: UserAvatar(
                                     imageUrl: sharedNote!.client!.avatarUrl,
-                                    source: sharedNote!.client!.usesBitmoji!
-                                        ? AvatarSource.bitmojiUrl
-                                        : AvatarSource.url,
+                                    source: AvatarSource.url,
                                   ),
                                 )),
                             SizedBox(width: 4),

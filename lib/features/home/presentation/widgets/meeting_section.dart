@@ -18,42 +18,38 @@ class _MeetingsState extends State<Meetings> {
   final now = DateTime.now();
 
   Future<void> updateDashboardMeetingInfo() async {
-    await Future.delayed(const Duration(seconds: 1));
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final now = DateTimeExtension.now;
 
-    final now = DateTimeExtension.now;
+      dashboardController.currentMeetingCount.value = 0;
+      dashboardController.currentMeetingId.value = 0;
+      meetingsController.currentMeeting.value = null;
 
-    // reset first (important)
-    dashboardController.currentMeetingCount.value = 0;
-    dashboardController.currentMeetingId.value = 0;
-    meetingsController.currentMeeting.value = null;
+      for (final meeting in meetingsController.meetings) {
+        final isOngoing =
+            meeting.startAt.isBefore(now) && meeting.endAt.isAfter(now);
 
-    for (final meeting in meetingsController.meetings) {
-      meeting.setIsExpired(now);
-
-      final isOngoing =
-          !meeting.isExpired &&
-              (meeting.startAt.isBefore(now) || meeting.startAt.isAtSameMomentAs(now)) &&
-              (meeting.endAt.isAfter(now) || meeting.endAt.isAtSameMomentAs(now));
-
-      if (isOngoing) {
-        dashboardController.currentMeetingCount.value = 1;
-        dashboardController.currentMeetingId.value = meeting.id;
-        clientUser = meeting.client;
-        meetingsController.currentMeeting.value = meeting;
-        break; // stop after finding the current meeting
+        if (isOngoing) {
+          dashboardController.currentMeetingCount.value = 1;
+          dashboardController.currentMeetingId.value = meeting.id;
+          clientUser = meeting.client;
+          meetingsController.currentMeeting.value = meeting;
+          break;
+        }
       }
-    }
+    });
   }
 
   @override
   void initState() {
+    super.initState();
+
     meetingsController.scrollController = ScrollController();
 
-    meetingsController.loadFirstMeetings().then((_) {
-      updateDashboardMeetingInfo();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await meetingsController.loadFirstMeetings();
+      await updateDashboardMeetingInfo();
     });
-
-    super.initState();
   }
 
   Future handleRefresh() async {
@@ -95,19 +91,23 @@ class _MeetingsState extends State<Meetings> {
                         itemCount: meetingsController.meetings.length,
                         padding: EdgeInsets.zero,
                         itemBuilder: (_, index) {
+                          final meeting = meetingsController.meetings[index];
+                          final now = _timeNotifier.value;
+                          final isExpired = meeting.endAt.isBefore(now);
+
                           return isSmallScreen(context)
                               ? MeetingTileSmall(
-                            meeting: meetingsController.meetings[index]
-                              ..setIsExpired(_timeNotifier.value),
-                            lastItem: index ==
-                                meetingsController.meetings.length - 1,
-                          )
+                                  meeting: meeting,
+                                  now: _timeNotifier.value,
+                                  lastItem: index ==
+                                      meetingsController.meetings.length - 1,
+                                )
                               : MeetingTileRegular(
-                            meeting: meetingsController.meetings[index]
-                              ..setIsExpired(_timeNotifier.value),
-                            lastItem: index ==
-                                meetingsController.meetings.length - 1,
-                          );
+                                  meeting: meeting,
+                                  now: _timeNotifier.value,
+                                  lastItem: index ==
+                                      meetingsController.meetings.length - 1,
+                                );
                         },
                       ),
                     ),

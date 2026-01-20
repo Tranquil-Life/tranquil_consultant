@@ -55,7 +55,7 @@ class LargeScreenHeader extends StatelessWidget {
                   child: CircleAvatar(
                     backgroundColor: ColorPalette.grey[100],
                     radius: 28,
-                    child: MyAvatarWidget(size: 52 * 2),
+                    child: UserAvatar(size: 52 * 2),
                     // radius: 38,
                     // child: MyAvatarWidget(size: 52 * 2),
                   ),
