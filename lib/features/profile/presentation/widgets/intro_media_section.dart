@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/theme/fonts.dart';
 import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
-import 'package:tl_consultant/features/media/presentation/controllers/video_recording_controller.dart';
+import 'package:tl_consultant/features/media/presentation/controllers/media_controller.dart';
 import 'package:tl_consultant/features/media/presentation/screens/video_record_page.dart';
 import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:tl_consultant/features/profile/presentation/widgets/no_video_record_state.dart';
@@ -14,10 +14,10 @@ class IntroMediaSection extends StatelessWidget {
   IntroMediaSection(
       {super.key,
       required this.profileController,
-      required this.videoRecordingController});
+      required this.mediaController});
 
   final ProfileController profileController;
-  final VideoRecordingController videoRecordingController;
+  final MediaController mediaController;
   final dashboardController = DashboardController.instance;
 
   @override
@@ -36,7 +36,7 @@ class IntroMediaSection extends StatelessWidget {
             ? GestureDetector(
           child: NoVideoRecordState(),
           onTap: () {
-            videoRecordingController.resetUploadVars();
+            mediaController.resetUploadVars();
 
             Get.to(() => const VideoRecordingPage());
           },
@@ -56,7 +56,7 @@ class IntroMediaSection extends StatelessWidget {
           },
           child: VideoRecordState(
               profileController: profileController,
-              videoRecordingController: videoRecordingController),
+              mediaController: mediaController),
         ),
         TextButton(
             style: TextButton.styleFrom(
@@ -64,7 +64,7 @@ class IntroMediaSection extends StatelessWidget {
               alignment: Alignment.centerLeft,
             ),
             onPressed: () {
-              videoRecordingController.resetUploadVars();
+              mediaController.resetUploadVars();
 
               Get.to(() => const VideoRecordingPage());
             },

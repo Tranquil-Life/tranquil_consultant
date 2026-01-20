@@ -8,7 +8,6 @@ import 'package:tl_consultant/features/auth/data/repos/reg_data_store.dart';
 import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
 import 'package:tl_consultant/features/journal/presentation/controllers/notes_controller.dart';
-import 'package:tl_consultant/features/media/presentation/controllers/video_recording_controller.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 import 'package:tl_consultant/main.dart';
 

@@ -8,7 +8,7 @@ import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/theme/fonts.dart';
 import 'package:tl_consultant/core/utils/helpers/svg_elements.dart';
 import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
-import 'package:tl_consultant/features/media/presentation/controllers/video_recording_controller.dart';
+import 'package:tl_consultant/features/media/presentation/controllers/media_controller.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:tl_consultant/features/profile/presentation/widgets/form_fields.dart';
@@ -19,10 +19,10 @@ class EditProfileFields extends StatefulWidget {
   const EditProfileFields(
       {super.key,
       required this.profileController,
-      required this.videoRecordingController});
+      required this.mediaController});
 
   final ProfileController profileController;
-  final VideoRecordingController videoRecordingController;
+  final MediaController mediaController;
 
   @override
   State<EditProfileFields> createState() => _EditProfileFieldsState();
@@ -384,7 +384,7 @@ class _EditProfileFieldsState extends State<EditProfileFields> {
         //VIDEO AND AUDIO RECORDINGS
         IntroMediaSection(
             profileController: widget.profileController,
-            videoRecordingController: widget.videoRecordingController),
+            mediaController: widget.mediaController),
       ],
     );
   }

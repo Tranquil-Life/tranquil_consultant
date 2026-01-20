@@ -45,38 +45,32 @@ class MeetingsController extends GetxController {
   Future loadFirstMeetings() async {
     if (userDataStore.user['timezone_identifier'] == null) {
       print("null");
-    } else {
-      isFirstLoadRunning.value = true;
+      return;
+    }
 
-      Either either = await repo.getMeetings(page: page.value);
+    isFirstLoadRunning.value = true;
+    try {
+      final Either either = await repo.getMeetings(page: page.value);
 
-      either.fold((l) {
-        if(!l.message!.contains('unauthenticated')){
+      await either.fold((l) async {
+        if (!l.message!.contains('unauthenticated')) {
           print("Load first meetings: error: ${l.message}");
-
-          return CustomSnackBar.errorSnackBar(
-            l.message.toString());
+          CustomSnackBar.errorSnackBar(l.message.toString());
         }
-
       }, (r) async {
-        var data = r;
+        final data = r;
 
         if (data['error'] == false && data['data'] != null) {
-          meetings.clear(); // Clear existing meetings
-          for (var element in data['data']) {
-            Meeting meeting = await MeetingModel.fromJsonWithTimeZone(element);
+          meetings.clear();
+          for (final element in data['data']) {
+            final meeting = await MeetingModel.fromJsonWithTimeZone(element);
             meetings.add(meeting);
           }
 
-          if (meetings.isNotEmpty) {
-            lastMessageId.value = meetings[meetings.length - 1].id;
-          } else {
-            isFirstLoadRunning.value = false;
-          }
+          lastMessageId.value = meetings.isNotEmpty ? meetings.last.id : 0;
         }
       });
-
-      update(); // Notify listeners that the meetings list has changed
+    } finally {
       isFirstLoadRunning.value = false;
     }
   }

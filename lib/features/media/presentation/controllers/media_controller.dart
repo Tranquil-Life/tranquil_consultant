@@ -15,8 +15,8 @@ import 'package:tl_consultant/features/profile/domain/entities/user.dart';
 import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:video_player/video_player.dart';
 
-class VideoRecordingController extends GetxController {
-  static VideoRecordingController get instance => Get.find();
+class MediaController extends GetxController {
+  static MediaController get instance => Get.find();
 
   MediaRepoImpl mediaRepo = MediaRepoImpl();
 
@@ -168,7 +168,7 @@ class VideoRecordingController extends GetxController {
     }
   }
 
-  getExtension(String uploadType) {
+  String getExtension(String uploadType) {
     switch (uploadType) {
       case profileImage:
         return '.png';
@@ -176,6 +176,8 @@ class VideoRecordingController extends GetxController {
         return '.wav';
       case videoIntro:
         return '.mp4';
+      default:
+        return '';
     }
   }
 

@@ -16,7 +16,7 @@ import 'package:tl_consultant/features/auth/presentation/controllers/auth_contro
 import 'package:tl_consultant/features/auth/presentation/screens/profile_preview_page.dart';
 import 'package:tl_consultant/features/auth/presentation/widgets/picture_upload_option.dart';
 import 'package:tl_consultant/features/auth/presentation/widgets/video_record_option.dart';
-import 'package:tl_consultant/features/media/presentation/controllers/video_recording_controller.dart';
+import 'package:tl_consultant/features/media/presentation/controllers/media_controller.dart';
 import 'package:tl_consultant/features/media/presentation/screens/video_record_page.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 import 'package:tl_consultant/features/profile/presentation/widgets/video_player.dart';
@@ -30,7 +30,7 @@ class IntroduceYourselfPage extends StatefulWidget {
 
 class _IntroduceYourselfPageState extends State<IntroduceYourselfPage> {
   final authController = AuthController.instance;
-  final videoRecordingController =VideoRecordingController.instance;
+  final mediaController = MediaController.instance;
 
   var selectedOption = '';
 
@@ -82,7 +82,7 @@ class _IntroduceYourselfPageState extends State<IntroduceYourselfPage> {
                       selectedOption = video;
                     });
 
-                    videoRecordingController.resetUploadVars();
+                    mediaController.resetUploadVars();
 
                     await Future.delayed(Duration(seconds: 1));
                     Get.to(() => const VideoRecordingPage());
@@ -126,7 +126,7 @@ class _IntroduceYourselfPageState extends State<IntroduceYourselfPage> {
                     File? file =
                         await MediaService.selectImage(ImageSource.gallery);
                     // await profileController.uploadVideo(File(video.path));
-                    await videoRecordingController.uploadFile(
+                    await mediaController.uploadFile(
                         file!, profileImage, authController);
                   },
                 ),

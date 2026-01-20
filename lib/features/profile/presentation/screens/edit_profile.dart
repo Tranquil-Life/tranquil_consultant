@@ -14,7 +14,7 @@ import 'package:tl_consultant/core/theme/fonts.dart';
 import 'package:tl_consultant/core/utils/routes/app_pages.dart';
 import 'package:tl_consultant/core/utils/services/media_service.dart';
 import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
-import 'package:tl_consultant/features/media/presentation/controllers/video_recording_controller.dart';
+import 'package:tl_consultant/features/media/presentation/controllers/media_controller.dart';
 import 'package:tl_consultant/features/profile/data/models/user_model.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 import 'package:tl_consultant/features/profile/domain/entities/user.dart';
@@ -32,7 +32,7 @@ class EditProfileScreen extends StatefulWidget {
 class _EditProfileScreenState extends State<EditProfileScreen> {
   final profileController = ProfileController.instance;
   final dashboardController = DashboardController.instance;
-  final videoRecordingController = VideoRecordingController.instance;
+  final mediaController = MediaController.instance;
 
   final editProfileKey = GlobalKey();
 
@@ -100,7 +100,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   //Edit profile fields
                   EditProfileFields(
                     profileController: profileController,
-                    videoRecordingController: videoRecordingController,
+                    mediaController: mediaController,
                   ),
 
                   SizedBox(
@@ -267,7 +267,7 @@ class EditProfileHead extends StatefulWidget {
 class _EditProfileHeadState extends State<EditProfileHead> {
   final profileController = ProfileController.instance;
   final earningsController = EarningsController.instance;
-  final videoRecordingController = VideoRecordingController.instance;
+  final mediaController = MediaController.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -297,7 +297,7 @@ class _EditProfileHeadState extends State<EditProfileHead> {
                 File? file =
                     await MediaService.selectImage(ImageSource.gallery);
                 // await profileController.uploadVideo(File(video.path));
-                await videoRecordingController.uploadFile(file!, profileImage, profileController);
+                await mediaController.uploadFile(file!, profileImage, profileController);
               },
               child: const Text(
                 'Edit profile picture',

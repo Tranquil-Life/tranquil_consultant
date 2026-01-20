@@ -19,6 +19,7 @@ import 'package:tl_consultant/features/chat/presentation/controllers/video_call_
 import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
 import 'package:tl_consultant/features/growth_kit/presentation/controllers/growth_kit_controller.dart';
 import 'package:tl_consultant/features/home/presentation/controllers/event_controller.dart';
+import 'package:tl_consultant/features/media/presentation/controllers/media_controller.dart';
 import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
 
 import 'core/constants/constants.dart';
@@ -30,7 +31,6 @@ import 'features/consultation/presentation/controllers/meetings_controller.dart'
 import 'features/consultation/presentation/controllers/slot_controller.dart';
 import 'features/home/presentation/controllers/home_controller.dart';
 import 'features/journal/presentation/controllers/notes_controller.dart';
-import 'features/media/presentation/controllers/video_recording_controller.dart';
 import 'features/onboarding/presentation/controllers/onboarding_controller.dart';
 import 'features/settings/presentation/controllers/settings_controller.dart';
 import 'features/wallet/presentation/controllers/earnings_controller.dart';
@@ -105,7 +105,7 @@ void main() async {
   Get.put<VideoCallController>(VideoCallController());
   Get.put<MessageController>(MessageController());
   Get.put<UploadController>(UploadController());
-  Get.put<VideoRecordingController>(VideoRecordingController());
+  Get.put<MediaController>(MediaController());
   Get.put<NetworkController>(NetworkController());
   Get.put<GrowthKitController>(GrowthKitController());
 
