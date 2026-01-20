@@ -14,6 +14,8 @@ import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 import 'package:tl_consultant/features/profile/domain/entities/user.dart';
 import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:video_player/video_player.dart';
+import 'dart:html' as html;
+import 'dart:typed_data';
 
 class MediaController extends GetxController {
   static MediaController get instance => Get.find();
@@ -36,6 +38,7 @@ class MediaController extends GetxController {
     profileController.introVideoDuration.value =
         videoPlayerController.value.duration.inSeconds;
   }
+
 
   Future<String?> uploadFile(
       File uploadFile, String uploadType, dynamic controller) async {
@@ -194,6 +197,58 @@ class MediaController extends GetxController {
     } catch (e) {
       print("Error deleting file: $e");
     }
+  }
+
+  /// Picks an image (web) and uploads to Firebase Storage.
+  /// Returns the download URL.
+  static Future<Uint8List?> pickImageBytesWeb() async {
+    final uploadInput = html.FileUploadInputElement()
+      ..accept = 'image/*';
+    uploadInput.click();
+
+    await uploadInput.onChange.first;
+
+    final file = uploadInput.files?.first;
+
+    if (file == null) return null;
+
+    final reader = html.FileReader();
+    reader.readAsArrayBuffer(file);
+    await reader.onLoadEnd.first;
+
+    print("FILE: ${reader.onLoadEnd.first}");
+
+
+    return reader.result as Uint8List;
+  }
+
+  static Future<String?> uploadImage({
+    required Uint8List bytes,
+    required String folder,
+    String extension = 'jpg',
+  }) async {
+    final user = UserModel.fromJson(userDataStore.user);
+    final fileName = "${user.id}_${DateTime.now().millisecondsSinceEpoch}.$extension";
+
+    print("file name: $fileName");
+
+
+    final ref = FirebaseStorage.instance.ref('$folder/$fileName');
+
+    print("reference: $ref");
+
+    final task = ref.putData(
+      bytes,
+      SettableMetadata(contentType: "image/jpeg"),
+    );
+
+    final snap = await task;
+
+    print("Upload state: ${snap.state}"); // should be TaskState.success
+
+    final downloadUrl = await ref.getDownloadURL();
+    print("download url: $downloadUrl");
+    return downloadUrl;
   }
 
   resetUploadVars() {

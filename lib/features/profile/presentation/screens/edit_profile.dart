@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
@@ -71,15 +72,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         key: editProfileKey,
         backgroundColor: ColorPalette.scaffoldColor,
         appBar: CustomAppBar(
-            title: pageTitle(),
-            centerTitle: false,
-            fontFamily: AppFonts.josefinSansRegular,
-            backgroundColor: Colors.white,
+          title: pageTitle(),
+          centerTitle: false,
+          fontFamily: AppFonts.josefinSansRegular,
+          backgroundColor: Colors.white,
           onBackPressed: () {
             if (Get.key.currentState?.canPop() ?? false) {
               Get.back();
             } else {
-              Get.offNamed(Routes.PROFILE);// fallback route
+              Get.offNamed(Routes.PROFILE); // fallback route
             }
           },
         ),
@@ -266,43 +267,79 @@ class EditProfileHead extends StatefulWidget {
 
 class _EditProfileHeadState extends State<EditProfileHead> {
   final profileController = ProfileController.instance;
-  final earningsController = EarningsController.instance;
   final mediaController = MediaController.instance;
+
+  static const double _radius = 60;
+  static const double _diameter = _radius * 2;
 
   @override
   Widget build(BuildContext context) {
+    final url =
+        "https://firebasestorage.googleapis.com/v0/b/tranquil-life-llc.appspot.com/o/profile_image%2F1_1768927695513.jpg?alt=media&token=e5f165b8-058d-4673-a467-c43dc6e2a95d";
     return Center(
       child: Column(
         children: [
-          CircleAvatar(
-            backgroundColor: ColorPalette.grey[100],
-            radius: 60,
-            child: MyAvatarWidget(size: 52 * 2),
+          /*Container(
+            width: _diameter,
+            height: _diameter,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: ColorPalette.grey[100],
+            ),
+            clipBehavior: Clip.hardEdge,
+            child: Image.network("https://firebasestorage.googleapis.com/v0/b/tranquil-life-llc.appspot.com/o/profile_image%2F1_1768927695513.jpg?alt=media&token=e5f165b8-058d-4673-a467-c43dc6e2a95d"),
+            // child: UserAvatar(size: _diameter, imageUrl: DashboardController.instance.profilePic.value,),
+          ),*/
+          Text(url),
+
+          ClipOval(
+            child: Image.network(
+              url,
+              width: 64,
+              height: 64,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stack) {
+                debugPrint("Image load error: $error");
+                return const Icon(
+                  Icons.person,
+                  size: 32,
+                  color: Colors.white,
+                );
+              },
+            ),
           ),
-          // Obx(
-          //   () => CircleAvatar(
-          //     backgroundImage: profileController.profilePic.value.isEmpty
-          //         ? AssetImage("assets/images/profile/therapist.png")
-          //         : NetworkImage(profileController.profilePic.value),
-          //     radius: 60,
-          //   ),
-          // ),
-          const SizedBox(
-            height: 14,
-          ),
+          const SizedBox(height: 14),
           SizedBox(
             width: 200,
             child: CustomButton(
               onPressed: () async {
-                File? file =
-                    await MediaService.selectImage(ImageSource.gallery);
-                // await profileController.uploadVideo(File(video.path));
-                await mediaController.uploadFile(file!, profileImage, profileController);
+                try {
+                  if (kIsWeb) {
+                    print(
+                        "profile picture: ${DashboardController.instance.profilePic.value}");
+                    // await profileController.updateProfilePicture();
+                  } else {
+                    final file =
+                        await MediaService.selectImage(ImageSource.gallery);
+                    if (file == null) return;
+
+                    await mediaController.uploadFile(
+                      file,
+                      profileImage,
+                      profileController,
+                    );
+                  }
+                } catch (e, st) {
+                  debugPrint("Update profile picture error: $e");
+                  debugPrint("$st");
+                }
               },
               child: const Text(
                 'Edit profile picture',
                 style: TextStyle(
-                    color: ColorPalette.white, fontSize: AppFonts.baseSize),
+                  color: ColorPalette.white,
+                  fontSize: AppFonts.baseSize,
+                ),
               ),
             ),
           ),

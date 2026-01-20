@@ -193,7 +193,7 @@ class _ProfileHeadState extends State<ProfileHead> {
         CircleAvatar(
           backgroundColor: ColorPalette.grey[100],
           radius: 52,
-          child: MyAvatarWidget(size: 52 * 2),
+          child: UserAvatar(size: 52 * 2),
         ),
         const SizedBox(
           width: 8,

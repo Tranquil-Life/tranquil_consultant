@@ -2,7 +2,7 @@
   {
     "origin": [
       "http://localhost:*",
-      "https://ce-commons-portal.netlify.app",
+      "https://tl-pro.netlify.app",
       "https://*.netlify.app"
     ],
     "method": [
