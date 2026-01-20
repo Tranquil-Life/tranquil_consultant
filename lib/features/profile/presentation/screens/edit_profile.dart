@@ -279,7 +279,7 @@ class _EditProfileHeadState extends State<EditProfileHead> {
     return Center(
       child: Column(
         children: [
-          /*Container(
+          Obx(()=>Container(
             width: _diameter,
             height: _diameter,
             decoration: BoxDecoration(
@@ -287,27 +287,26 @@ class _EditProfileHeadState extends State<EditProfileHead> {
               color: ColorPalette.grey[100],
             ),
             clipBehavior: Clip.hardEdge,
-            child: Image.network("https://firebasestorage.googleapis.com/v0/b/tranquil-life-llc.appspot.com/o/profile_image%2F1_1768927695513.jpg?alt=media&token=e5f165b8-058d-4673-a467-c43dc6e2a95d"),
-            // child: UserAvatar(size: _diameter, imageUrl: DashboardController.instance.profilePic.value,),
-          ),*/
-          Text(url),
-
-          ClipOval(
-            child: Image.network(
-              url,
-              width: 64,
-              height: 64,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stack) {
-                debugPrint("Image load error: $error");
-                return const Icon(
-                  Icons.person,
-                  size: 32,
-                  color: Colors.white,
-                );
-              },
-            ),
-          ),
+            child: UserAvatar(size: _diameter, imageUrl: DashboardController.instance.profilePic.value),
+          )),
+          // Text(url),
+          //
+          // ClipOval(
+          //   child: Image.network(
+          //     url,
+          //     width: 64,
+          //     height: 64,
+          //     fit: BoxFit.cover,
+          //     errorBuilder: (context, error, stack) {
+          //       debugPrint("Image load error: $error");
+          //       return const Icon(
+          //         Icons.person,
+          //         size: 32,
+          //         color: Colors.white,
+          //       );
+          //     },
+          //   ),
+          // ),
           const SizedBox(height: 14),
           SizedBox(
             width: 200,
@@ -315,9 +314,7 @@ class _EditProfileHeadState extends State<EditProfileHead> {
               onPressed: () async {
                 try {
                   if (kIsWeb) {
-                    print(
-                        "profile picture: ${DashboardController.instance.profilePic.value}");
-                    // await profileController.updateProfilePicture();
+                    await profileController.updateProfilePicture();
                   } else {
                     final file =
                         await MediaService.selectImage(ImageSource.gallery);
