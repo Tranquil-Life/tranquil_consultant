@@ -40,24 +40,6 @@ late List<CameraDescription> cameras = [];
 PusherChannelsFlutter pusher = PusherChannelsFlutter.getInstance();
 GetStorage storage = GetStorage();
 
-
-
-Future<void> initializeFirebase() async {
-  FirebaseApp app = await Firebase.initializeApp(
-    options: const FirebaseOptions(
-      appId: "1:16125004014:web:1a1ccb278c740a6d5f8bff",
-      apiKey: "AIzaSyDvEsztETqHYAwfJx0ocpjPTZccMNDMc-k",
-      projectId: 'tranquil-life-llc',
-      messagingSenderId: '16125004014',
-      databaseURL: "https://tranquil-life-llc-default-rtdb.firebaseio.com",
-      measurementId: "G-ZRTEN0GQKV",
-      storageBucket: "tranquil-life-llc.appspot.com",
-      authDomain: "tranquil-life-llc.firebaseapp.com",
-    ),
-  );
-  print('Initialized default app $app');
-}
-
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   debugPrint("🔕 Background message: $message");
@@ -68,40 +50,19 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await GetStorage.init();
-
-  // // Init Firebase once
-  // if (kIsWeb) {
-  //   await initializeFirebase(); // must include correct FirebaseOptions
-  // } else {
-  //   await Firebase.initializeApp();
-  // }
-
-  if (Firebase.apps.isEmpty) {
-    if (kIsWeb) {
-      await initializeFirebase();
-    } else {
-      await Firebase.initializeApp();
-    }
+  try {
+    await Firebase.initializeApp();
+    print('Firebase initialized');
+  } catch (e) {
+    print('Firebase init failed: $e');
   }
 
-  // await Firebase.initializeApp();
+  await GetStorage.init();
 
   if (!kIsWeb) {
     tz.initializeTimeZones();
-  }
 
-  // Request permission
-  final settings = await FirebaseMessaging.instance.requestPermission(
-    criticalAlert: true,
-    announcement: true,
-    carPlay: true,
-    providesAppNotificationSettings: true,
-  );
-  debugPrint('User granted permission: ${settings.authorizationStatus}');
-
-  // Background handler (mobile only)
-  if (!kIsWeb) {
+    // Background handler (mobile only)
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   }
 
@@ -119,8 +80,9 @@ void main() async {
   });
 
   FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-    print('Notification clicked: ${message.notification?.title}');
+    debugPrint('Notification clicked: ${message.notification?.title}');
   });
+
 
   // Register before running the app
   Get.put<ProfileController>(ProfileController());
@@ -149,8 +111,7 @@ void main() async {
 
   if (!kIsWeb) {
     try {
-      cameras = await availableCameras()
-          .timeout(const Duration(seconds: 5));
+      cameras = await availableCameras().timeout(const Duration(seconds: 5));
     } catch (_) {
       cameras = [];
     }
@@ -158,10 +119,9 @@ void main() async {
     cameras = [];
   }
 
-
   // await SentryFlutter.init(
   //       (options) {
-  //     options.dsn = sentryDSN;
+  //     options.dsn = OtherConstants.sentryDSN;
   //     options.tracesSampleRate = 1.0;
   //     options.profilesSampleRate = 1.0;
   //   },
