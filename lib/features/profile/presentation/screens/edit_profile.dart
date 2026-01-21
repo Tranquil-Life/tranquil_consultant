@@ -289,24 +289,7 @@ class _EditProfileHeadState extends State<EditProfileHead> {
             clipBehavior: Clip.hardEdge,
             child: UserAvatar(size: _diameter, imageUrl: DashboardController.instance.profilePic.value),
           )),
-          // Text(url),
-          //
-          // ClipOval(
-          //   child: Image.network(
-          //     url,
-          //     width: 64,
-          //     height: 64,
-          //     fit: BoxFit.cover,
-          //     errorBuilder: (context, error, stack) {
-          //       debugPrint("Image load error: $error");
-          //       return const Icon(
-          //         Icons.person,
-          //         size: 32,
-          //         color: Colors.white,
-          //       );
-          //     },
-          //   ),
-          // ),
+
           const SizedBox(height: 14),
           SizedBox(
             width: 200,

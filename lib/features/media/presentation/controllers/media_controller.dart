@@ -1,14 +1,18 @@
 import 'dart:io';
 
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_webrtc/flutter_webrtc.dart' as webrtc;
 import 'package:get/get.dart';
 import 'package:tl_consultant/core/data/store.dart';
 import 'package:tl_consultant/core/global/custom_snackbar.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/features/auth/data/repos/reg_data_store.dart';
+import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
 import 'package:tl_consultant/features/media/data/media_repo.dart';
+import 'package:tl_consultant/features/media/presentation/screens/web_video_recording_page.dart';
 import 'package:tl_consultant/features/profile/data/models/user_model.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 import 'package:tl_consultant/features/profile/domain/entities/user.dart';
@@ -22,6 +26,10 @@ class MediaController extends GetxController {
 
   MediaRepoImpl mediaRepo = MediaRepoImpl();
 
+  webrtc.MediaStream? stream;
+  webrtc.MediaRecorder? recorder;
+  final List<Uint8List> chunks = [];
+
   RxDouble uploadProgress = 0.0.obs;
   var uploading = false.obs;
   var compressing = false.obs;
@@ -29,16 +37,15 @@ class MediaController extends GetxController {
 
   late VideoPlayerController videoPlayerController;
 
-  Future<void> initializeVideoPlayer(dynamic profileController) async {
+  Future<void> initializeVideoPlayer() async {
     videoPlayerController = VideoPlayerController.networkUrl(
-        Uri.parse(profileController.introVideo.value!));
+        Uri.parse(DashboardController.instance.videoIntro.value));
     // Wait for the controller to initialize
     await videoPlayerController.initialize();
 
-    profileController.introVideoDuration.value =
+    ProfileController.instance.introVideoDuration.value =
         videoPlayerController.value.duration.inSeconds;
   }
-
 
   Future<String?> uploadFile(
       File uploadFile, String uploadType, dynamic controller) async {
@@ -144,7 +151,7 @@ class MediaController extends GetxController {
         //locate and delete previous recording from storage before uploading new one
         deleteFileFromUrl(previousUrl.value);
 
-        await initializeVideoPlayer(controller);
+        await initializeVideoPlayer();
       } else if (uploadType == profileImage) {
         controller.profilePic.value = downloadUrl;
         userDataStore.user[avatarUrl] = downloadUrl;
@@ -157,15 +164,13 @@ class MediaController extends GetxController {
 
         deleteFileFromUrl(previousUrl.value);
 
-        CustomSnackBar.successSnackBar(
-            body: "Upload successful");
+        CustomSnackBar.successSnackBar(body: "Upload successful");
       }
 
       // Return the download URL
       return downloadUrl;
     } catch (e) {
-      CustomSnackBar.errorSnackBar(
-        "Error uploading file: $e");
+      CustomSnackBar.errorSnackBar("Error uploading file: $e");
 
       return null;
     }
@@ -202,8 +207,7 @@ class MediaController extends GetxController {
   /// Picks an image (web) and uploads to Firebase Storage.
   /// Returns the download URL.
   static Future<Uint8List?> pickImageBytesWeb() async {
-    final uploadInput = html.FileUploadInputElement()
-      ..accept = 'image/*';
+    final uploadInput = html.FileUploadInputElement()..accept = 'image/*';
     uploadInput.click();
 
     await uploadInput.onChange.first;
@@ -218,7 +222,6 @@ class MediaController extends GetxController {
 
     print("FILE: ${reader.onLoadEnd.first}");
 
-
     return reader.result as Uint8List;
   }
 
@@ -228,10 +231,10 @@ class MediaController extends GetxController {
     String extension = 'jpg',
   }) async {
     final user = UserModel.fromJson(userDataStore.user);
-    final fileName = "${user.id}_${DateTime.now().millisecondsSinceEpoch}.$extension";
+    final fileName =
+        "${user.id}_${DateTime.now().millisecondsSinceEpoch}.$extension";
 
     print("file name: $fileName");
-
 
     final ref = FirebaseStorage.instance.ref('$folder/$fileName');
 
@@ -251,13 +254,140 @@ class MediaController extends GetxController {
     return downloadUrl;
   }
 
-  resetUploadVars() {
+  // Inside your main page's button or function
+  void recordAndDownload(BuildContext context) async {
+    // 1. Capture the navigator before the async gap
+    final navigator = Navigator.of(context);
+
+    final Uint8List? videoBytes = await navigator.push(
+      MaterialPageRoute(
+        builder: (_) => const WebVideoRecordingPage(maxDuration: Duration(seconds: 60)),
+      ),
+    );
+
+    // 2. IMPORTANT: Check if the user navigated away while recording
+    if (!context.mounted) return;
+
+    if (videoBytes != null && videoBytes.isNotEmpty) {
+      // Reset progress
+      uploadProgress.value = 0.0;
+
+      User user = UserModel.fromJson(userDataStore.user);
+      String path = videoIntro;
+      String fileName = "intro_video_${DateTime.now().millisecondsSinceEpoch}.webm";
+      Reference reference = FirebaseStorage.instance.ref('$path/${user.id}_$fileName');
+
+      // 3. Start the upload task
+      UploadTask uploadTask = reference.putData(
+        videoBytes,
+        SettableMetadata(contentType: "video/webm"),
+      );
+
+      // Monitor progress
+      final progressSubscription = uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
+        uploadProgress.value = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+      });
+
+      // 4. Show the dialog
+      // Use a try-finally block to ensure the dialog closes even if the upload fails
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext dialogContext) {
+          return AlertDialog(
+            title: const Text('Uploading Video Intro'),
+            content: Obx(() => Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                LinearProgressIndicator(
+                  value: uploadProgress.value / 100,
+                  backgroundColor: Colors.grey[300],
+                  valueColor: const AlwaysStoppedAnimation<Color>(Colors.green),
+                ),
+                const SizedBox(height: 20),
+                Text('${uploadProgress.value.toStringAsFixed(2)}% uploaded'),
+              ],
+            )),
+          );
+        },
+      );
+
+      try {
+        // 5. Wait for the upload to complete
+        TaskSnapshot taskSnapshot = await uploadTask;
+        final String downloadUrl = await taskSnapshot.ref.getDownloadURL();
+
+        // 6. Update data
+        DashboardController.instance.videoIntro.value = downloadUrl;
+        userDataStore.user[videoIntro] = downloadUrl;
+
+      } catch (e) {
+        debugPrint("Upload failed: $e");
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Upload failed. Please try again.")),
+        );
+      } finally {
+        // 7. ALWAYS close the dialog and cancel listener
+        progressSubscription.cancel();
+        if (context.mounted) {
+          // This pops the dialog specifically
+          navigator.pop();
+        }
+      }
+      DashboardController.instance.restoreUserInfo();
+      //GPT I want to get the new duration
+      await initializeVideoPlayer();
+    }
+  }
+
+  // Future<void> startVideoRecording() async {
+  //   chunks.clear();
+  //
+  //   stream = await webrtc.navigator.mediaDevices.getUserMedia({
+  //     'audio': true,
+  //     'video': {'facingMode': 'user'},
+  //   });
+  //
+  //   recorder = webrtc.MediaRecorder();
+  //   recorder!.startWeb(
+  //     stream!,
+  //     mimeType: 'video/webm', // keep simple; vp8/vp9 may fail on some browsers
+  //     timeSlice: 1000, // chunk every 1s
+  //     onDataChunk: (dynamic data, bool isLast) {
+  //       final bytes = _toBytes(data);
+  //       if (bytes != null && bytes.isNotEmpty) chunks.add(bytes);
+  //       return null;
+  //     },
+  //   );
+  // }
+  //
+  // Uint8List? _toBytes(dynamic data) {
+  //   if (data is Uint8List) return data;
+  //   if (data is List<int>) return Uint8List.fromList(data);
+  //   return null;
+  // }
+  //
+  // Future<Uint8List> stopVideoRecording() async {
+  //   await recorder?.stop();
+  //   stream?.getTracks().forEach((t) => t.stop());
+  //
+  //   final total = chunks.fold<int>(0, (s, b) => s + b.length);
+  //   final out = Uint8List(total);
+  //   var offset = 0;
+  //   for (final c in chunks) {
+  //     out.setRange(offset, offset + c.length, c);
+  //     offset += c.length;
+  //   }
+  //   return out;
+  // }
+
+  void resetUploadVars() {
     uploadProgress.value = 0.0;
     uploading.value = false;
     compressing.value = false;
   }
 
-  clearData() {
+  void clearData() {
     uploadProgress.value = 0.0;
     uploading.value = false;
     compressing.value = false;

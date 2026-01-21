@@ -25,7 +25,7 @@ class VideoRecordState extends StatefulWidget {
 class _VideoRecordStateState extends State<VideoRecordState> {
   @override
   void initState() {
-    widget.mediaController.initializeVideoPlayer(widget.profileController);
+    widget.mediaController.initializeVideoPlayer();
     super.initState();
   }
 

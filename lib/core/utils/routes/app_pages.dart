@@ -20,6 +20,7 @@ import 'package:tl_consultant/features/consultation/presentation/screens/edit_sl
 import 'package:tl_consultant/features/dashboard/presentation/screens/dashboard.dart';
 import 'package:tl_consultant/features/home/presentation/screens/home_tab.dart';
 import 'package:tl_consultant/features/journal/presentation/screens/create_note.dart';
+import 'package:tl_consultant/features/media/presentation/screens/web_video_recording_page.dart';
 import 'package:tl_consultant/features/onboarding/presentation/screens/onboarding.dart';
 import 'package:tl_consultant/features/onboarding/presentation/screens/splash.dart';
 import 'package:tl_consultant/features/profile/presentation/screens/edit_profile.dart';
@@ -95,7 +96,10 @@ class AppPages {
     GetPage(name: Routes.PROFILE, page: () => ProfileScreen()),
     GetPage(name: Routes.EDIT_PROFILE, page: () => EditProfileScreen()),
     GetPage(name: Routes.SETTINGS, page: () => SettingsScreen()),
-
+    GetPage(
+      name: Routes.WEB_RECORD,
+      page: () => const WebVideoRecordingPage(maxDuration: Duration()),
+    ),
 
   ];
 }
