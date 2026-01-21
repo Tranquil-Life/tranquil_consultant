@@ -10,19 +10,21 @@ import 'package:tl_consultant/core/utils/functions.dart';
 import 'package:tl_consultant/core/utils/routes/app_pages.dart';
 import 'package:tl_consultant/features/activity/presentation/controllers/activity_controller.dart';
 import 'package:tl_consultant/features/activity/presentation/screens/notifications.dart';
+import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
 import 'package:tl_consultant/features/home/presentation/widgets/count_indicator.dart';
 import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
 
 import '../../../../core/utils/helpers/svg_elements.dart';
 
 class LargeScreenHeader extends StatelessWidget {
-  const LargeScreenHeader(
+  LargeScreenHeader(
       {super.key,
-      required this.profileController,
       required this.activityController});
 
-  final ProfileController profileController;
   final ActivityController activityController;
+  final dashboardController = DashboardController.instance;
+  static const double _radius = 28;
+  static const double _diameter = _radius * 2;
 
   @override
   Widget build(BuildContext context) {
@@ -52,13 +54,16 @@ class LargeScreenHeader extends StatelessWidget {
                 alignment: Alignment.centerLeft,
                 child: GestureDetector(
                   onTap: () => Get.toNamed(Routes.PROFILE),
-                  child: CircleAvatar(
-                    backgroundColor: ColorPalette.grey[100],
-                    radius: 28,
-                    child: MyAvatarWidget(size: 52 * 2),
-                    // radius: 38,
-                    // child: MyAvatarWidget(size: 52 * 2),
-                  ),
+                  child: Obx(()=>Container(
+                    width: _diameter,
+                    height: _diameter,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: ColorPalette.grey[100],
+                    ),
+                    clipBehavior: Clip.hardEdge,
+                    child: UserAvatar(size: _diameter, imageUrl: dashboardController.profilePic.value),
+                  )),
                 ),
               ),
               SizedBox(width: 12),
@@ -73,13 +78,13 @@ class LargeScreenHeader extends StatelessWidget {
                     color: ColorPalette.black2,
                     fontFamily: AppFonts.mulishRegular,
                   ),
-                  CustomText(
-                    text: profileController.firstNameTEC.text,
+                  Obx(()=>CustomText(
+                    text: dashboardController.firstName.value,
                     size: AppFonts.largeSize+2,
                     // size: 24,
                     color: ColorPalette.black2,
                     fontFamily: AppFonts.mulishSemiBold,
-                  )
+                  ))
                 ],
               )
             ],

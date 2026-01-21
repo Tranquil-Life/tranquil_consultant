@@ -97,8 +97,9 @@ class AuthController extends GetxController {
       userDataStore.user['meetings_count'] = data['data']['meetings_count'];
       userDataStore.user['clients_count'] = data['data']['clients_count'];
 
-      AppData.isSignedIn = true;
       User user = UserModel.fromJson(userDataStore.user);
+
+      AppData.isSignedIn = true;
 
       if (kDebugMode) {
         print(user.toJson());
@@ -107,11 +108,17 @@ class AuthController extends GetxController {
       registrationDataStore.fields.clear();
       await getStore.set('fields', registrationDataStore.fields);
 
-      await updateFcmToken();
+      await updateFcmToken(); //Update FCM token
 
-      await Get.offAllNamed(Routes.DASHBOARD);
+      if (kIsWeb) {
+        navigatorKey.currentState
+            ?.pushNamedAndRemoveUntil(Routes.DASHBOARD, (_) => false);
+      } else {
+        await Get.offAllNamed(Routes.DASHBOARD);
+      }
+
       emailTEC.clear();
-      confirmPasswordTEC.clear();
+      params.password = "";
     });
   }
 
@@ -131,6 +138,11 @@ class AuthController extends GetxController {
             List<Map<String, dynamic>>.from(data['data']['qualifications']);
         userDataStore.user['meetings_count'] = data['data']['meetings_count'];
         userDataStore.user['clients_count'] = data['data']['clients_count'];
+
+        User user = UserModel.fromJson(userDataStore.user);
+        if (kDebugMode) {
+          print(user.toJson());
+        }
 
         AppData.isSignedIn = true;
 

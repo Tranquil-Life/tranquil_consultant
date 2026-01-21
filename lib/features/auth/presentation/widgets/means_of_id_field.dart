@@ -5,7 +5,7 @@ import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/theme/fonts.dart';
 import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:tl_consultant/features/auth/presentation/widgets/form_fields.dart';
-import 'package:tl_consultant/features/media/presentation/controllers/video_recording_controller.dart';
+import 'package:tl_consultant/features/media/presentation/controllers/media_controller.dart';
 
 class MeansOfIdField extends StatefulWidget {
   const MeansOfIdField({super.key});
@@ -16,7 +16,7 @@ class MeansOfIdField extends StatefulWidget {
 
 class _MeansOfIdFieldState extends State<MeansOfIdField> {
   final authController = AuthController.instance;
-  final videoRecordingController = VideoRecordingController.instance;
+  final mediaController = MediaController.instance;
 
   String dLicense = "Driver’s License";
   String passport = "Passport";
@@ -108,7 +108,7 @@ class _MeansOfIdFieldState extends State<MeansOfIdField> {
                 )
 
             ).whenComplete((){
-              videoRecordingController.uploading.value = false;
+              mediaController.uploading.value = false;
               // videoRecordingController.uploadUrl.value = "";
               // authController.identityTEC.text = authController.params.identityUrl;
             });

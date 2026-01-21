@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
@@ -13,7 +14,8 @@ import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/theme/fonts.dart';
 import 'package:tl_consultant/core/utils/routes/app_pages.dart';
 import 'package:tl_consultant/core/utils/services/media_service.dart';
-import 'package:tl_consultant/features/media/presentation/controllers/video_recording_controller.dart';
+import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
+import 'package:tl_consultant/features/media/presentation/controllers/media_controller.dart';
 import 'package:tl_consultant/features/profile/data/models/user_model.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 import 'package:tl_consultant/features/profile/domain/entities/user.dart';
@@ -30,21 +32,37 @@ class EditProfileScreen extends StatefulWidget {
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
   final profileController = ProfileController.instance;
-  final videoRecordingController = VideoRecordingController.instance;
+  final dashboardController = DashboardController.instance;
+  final mediaController = MediaController.instance;
 
   final editProfileKey = GlobalKey();
 
   String pageTitle() {
     User user = UserModel.fromJson(userDataStore.user);
-    if (user.firstName.isEmpty ||
-        user.bio.isEmpty ||
-        user.specialties!.isEmpty ||
-        user.videoIntroUrl!.isEmpty ||
-        profileController.qualifications.isEmpty) {
-      return "Complete your profile";
-    } else {
-      return "Edit your profile";
+    // if (user.firstName.isEmpty ||
+    //     user.bio.isEmpty ||
+    //     user.specialties!.isEmpty ||
+    //     user.videoIntroUrl!.isEmpty ||
+    //     profileController.qualifications.isEmpty) {
+    //   return "Complete your profile";
+    // } else {
+    //   return "Edit your profile";
+    // }
+
+    return "Complete your profile";
+  }
+
+  void checkVariables() {
+    if (dashboardController.firstName.value.isEmpty ||
+        dashboardController.lastName.value.isEmpty) {
+      dashboardController.restoreUserInfo();
     }
+  }
+
+  @override
+  void initState() {
+    checkVariables();
+    super.initState();
   }
 
   @override
@@ -54,15 +72,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         key: editProfileKey,
         backgroundColor: ColorPalette.scaffoldColor,
         appBar: CustomAppBar(
-            title: pageTitle(),
-            centerTitle: false,
-            fontFamily: AppFonts.josefinSansRegular,
-            backgroundColor: Colors.white,
+          title: pageTitle(),
+          centerTitle: false,
+          fontFamily: AppFonts.josefinSansRegular,
+          backgroundColor: Colors.white,
           onBackPressed: () {
             if (Get.key.currentState?.canPop() ?? false) {
               Get.back();
             } else {
-              Get.offNamed(Routes.PROFILE);// fallback route
+              Get.offNamed(Routes.PROFILE); // fallback route
             }
           },
         ),
@@ -83,7 +101,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   //Edit profile fields
                   EditProfileFields(
                     profileController: profileController,
-                    videoRecordingController: videoRecordingController,
+                    mediaController: mediaController,
                   ),
 
                   SizedBox(
@@ -249,43 +267,59 @@ class EditProfileHead extends StatefulWidget {
 
 class _EditProfileHeadState extends State<EditProfileHead> {
   final profileController = ProfileController.instance;
-  final earningsController = EarningsController.instance;
-  final videoRecordingController = VideoRecordingController.instance;
+  final mediaController = MediaController.instance;
+
+  static const double _radius = 60;
+  static const double _diameter = _radius * 2;
 
   @override
   Widget build(BuildContext context) {
+    final url =
+        "https://firebasestorage.googleapis.com/v0/b/tranquil-life-llc.appspot.com/o/profile_image%2F1_1768927695513.jpg?alt=media&token=e5f165b8-058d-4673-a467-c43dc6e2a95d";
     return Center(
       child: Column(
         children: [
-          CircleAvatar(
-            backgroundColor: ColorPalette.grey[100],
-            radius: 60,
-            child: MyAvatarWidget(size: 52 * 2),
-          ),
-          // Obx(
-          //   () => CircleAvatar(
-          //     backgroundImage: profileController.profilePic.value.isEmpty
-          //         ? AssetImage("assets/images/profile/therapist.png")
-          //         : NetworkImage(profileController.profilePic.value),
-          //     radius: 60,
-          //   ),
-          // ),
-          const SizedBox(
-            height: 14,
-          ),
+          Obx(()=>Container(
+            width: _diameter,
+            height: _diameter,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: ColorPalette.grey[100],
+            ),
+            clipBehavior: Clip.hardEdge,
+            child: UserAvatar(size: _diameter, imageUrl: DashboardController.instance.profilePic.value),
+          )),
+
+          const SizedBox(height: 14),
           SizedBox(
             width: 200,
             child: CustomButton(
               onPressed: () async {
-                File? file =
-                    await MediaService.selectImage(ImageSource.gallery);
-                // await profileController.uploadVideo(File(video.path));
-                await videoRecordingController.uploadFile(file!, profileImage, profileController);
+                try {
+                  if (kIsWeb) {
+                    await profileController.updateProfilePicture();
+                  } else {
+                    final file =
+                        await MediaService.selectImage(ImageSource.gallery);
+                    if (file == null) return;
+
+                    await mediaController.uploadFile(
+                      file,
+                      profileImage,
+                      profileController,
+                    );
+                  }
+                } catch (e, st) {
+                  debugPrint("Update profile picture error: $e");
+                  debugPrint("$st");
+                }
               },
               child: const Text(
                 'Edit profile picture',
                 style: TextStyle(
-                    color: ColorPalette.white, fontSize: AppFonts.baseSize),
+                  color: ColorPalette.white,
+                  fontSize: AppFonts.baseSize,
+                ),
               ),
             ),
           ),

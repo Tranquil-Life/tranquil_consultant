@@ -18,51 +18,38 @@ class _MeetingsState extends State<Meetings> {
   final now = DateTime.now();
 
   Future<void> updateDashboardMeetingInfo() async {
-    await Future.delayed(Duration(seconds: 1));
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final now = DateTimeExtension.now;
 
-    for (var meeting in meetingsController.meetings) {
-      if (meeting.id == 1) {
-        dashboardController.currentMeetingCount.value = 1;
-        dashboardController.currentMeetingId.value = meeting.id;
-        clientUser = meeting.client;
+      dashboardController.currentMeetingCount.value = 0;
+      dashboardController.currentMeetingId.value = 0;
+      meetingsController.currentMeeting.value = null;
 
-        //store state of current meeting
-        meetingsController.currentMeeting.value = meeting;
+      for (final meeting in meetingsController.meetings) {
+        final isOngoing =
+            meeting.startAt.isBefore(now) && meeting.endAt.isAfter(now);
+
+        if (isOngoing) {
+          dashboardController.currentMeetingCount.value = 1;
+          dashboardController.currentMeetingId.value = meeting.id;
+          clientUser = meeting.client;
+          meetingsController.currentMeeting.value = meeting;
+          break;
+        }
       }
-
-      final meetingEnd = meeting.endAt;
-      // Difference (will be negative if meetingEnd is in the future)
-      final difference = now.difference(meetingEnd);
-
-      if (meeting.ratedByClient) {
-        //TODO: if the meeting payment status != paid, call transfer endpoint
-      } else if (!meeting.ratedByClient &&
-          meeting.ratedByTherapist &&
-          (!difference.isNegative && difference.inHours >= 48)) {}
-
-      // if (meeting.endAt.isAfter(DateTimeExtension.now) &&
-      //     (meeting.startAt.isBefore(DateTimeExtension.now) ||
-      //         meeting.startAt == DateTimeExtension.now)) {
-      //   dashboardController.currentMeetingCount.value = 1;
-      //   dashboardController.currentMeetingId.value = meeting.id;
-      //   dashboardController.clientId.value = meeting.client.id;
-      //   dashboardController.clientDp.value = meeting.client.avatarUrl!;
-      //   dashboardController.clientName.value = meeting.client.firstName;
-      //   dashboardController.currentMeetingST.value = meeting.startAt.formatDate;
-      //   dashboardController.currentMeetingET.value = meeting.endAt.formatDate;
-      // }
-    }
+    });
   }
 
   @override
   void initState() {
+    super.initState();
+
     meetingsController.scrollController = ScrollController();
 
-    meetingsController.loadFirstMeetings().then((_) {
-      updateDashboardMeetingInfo();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await meetingsController.loadFirstMeetings();
+      await updateDashboardMeetingInfo();
     });
-
-    super.initState();
   }
 
   Future handleRefresh() async {
@@ -104,16 +91,20 @@ class _MeetingsState extends State<Meetings> {
                         itemCount: meetingsController.meetings.length,
                         padding: EdgeInsets.zero,
                         itemBuilder: (_, index) {
+                          final meeting = meetingsController.meetings[index];
+                          final now = _timeNotifier.value;
+                          final isExpired = meeting.endAt.isBefore(now);
+
                           return isSmallScreen(context)
                               ? MeetingTileSmall(
-                                  meeting: meetingsController.meetings[index]
-                                    ..setIsExpired(_timeNotifier.value),
+                                  meeting: meeting,
+                                  now: _timeNotifier.value,
                                   lastItem: index ==
                                       meetingsController.meetings.length - 1,
                                 )
                               : MeetingTileRegular(
-                                  meeting: meetingsController.meetings[index]
-                                    ..setIsExpired(_timeNotifier.value),
+                                  meeting: meeting,
+                                  now: _timeNotifier.value,
                                   lastItem: index ==
                                       meetingsController.meetings.length - 1,
                                 );
@@ -121,30 +112,6 @@ class _MeetingsState extends State<Meetings> {
                       ),
                     ),
                   );
-                  // return Scrollbar(
-                  //   controller: meetingsController.scrollController,
-                  //   child: RefreshIndicator(
-                  //     color: ColorPalette.green,
-                  //     onRefresh: () async => await handleRefresh(),
-                  //     child: Padding(
-                  //       padding: const EdgeInsets.only(right: 10),
-                  //       child: ListView.builder(
-                  //         controller: meetingsController.scrollController,
-                  //         physics: const AlwaysScrollableScrollPhysics(),
-                  //         itemCount: meetingsController.meetings.length,
-                  //         padding: EdgeInsets.zero,
-                  //         itemBuilder: (_, index) {
-                  //           return MeetingTile(
-                  //             meeting: meetingsController.meetings[index]
-                  //               ..setIsExpired(_timeNotifier.value),
-                  //             lastItem: index ==
-                  //                 meetingsController.meetings.length - 1,
-                  //           );
-                  //         },
-                  //       ),
-                  //     ),
-                  //   ),
-                  // );
                 }
               }),
             ),

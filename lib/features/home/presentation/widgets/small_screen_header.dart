@@ -11,14 +11,18 @@ import 'package:tl_consultant/core/utils/helpers/svg_elements.dart';
 import 'package:tl_consultant/core/utils/routes/app_pages.dart';
 import 'package:tl_consultant/features/activity/presentation/controllers/activity_controller.dart';
 import 'package:tl_consultant/features/activity/presentation/screens/notifications.dart';
+import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
 import 'package:tl_consultant/features/home/presentation/widgets/count_indicator.dart';
 import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
 
 class SmallScreenHeader extends StatelessWidget {
-  const SmallScreenHeader({super.key, required this.profileController, required this.activityController});
+  SmallScreenHeader({super.key, required this.activityController});
 
-  final ProfileController profileController;
   final ActivityController activityController;
+  final dashboardController = DashboardController.instance;
+
+  static const double _radius = 24;
+  static const double _diameter = _radius * 2;
 
   @override
   Widget build(BuildContext context) {
@@ -28,14 +32,16 @@ class SmallScreenHeader extends StatelessWidget {
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            GestureDetector(
-              onTap: () => Get.toNamed(Routes.PROFILE),
-              child: CircleAvatar(
-                backgroundColor: ColorPalette.grey[100],
-                radius: 24,
-                child: MyAvatarWidget(size: 52 * 2),
+            Obx(()=>Container(
+              width: _diameter,
+              height: _diameter,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: ColorPalette.grey[100],
               ),
-            ),
+              clipBehavior: Clip.hardEdge,
+              child: UserAvatar(size: _diameter, imageUrl: dashboardController.profilePic.value),
+            )),
             SizedBox(width: 12),
             Column(
               crossAxisAlignment:
@@ -43,16 +49,17 @@ class SmallScreenHeader extends StatelessWidget {
               children: [
                 CustomText(
                   text: getGreeting(),
-                  size: 18,
+                  size: AppFonts.largeSize,
                   color: ColorPalette.black2,
                   fontFamily: AppFonts.mulishRegular,
                 ),
-                CustomText(
-                  text: profileController.firstNameTEC.text,
-                  size: 20,
+                Obx(()=>CustomText(
+                  text: dashboardController.firstName.value,
+                  size: AppFonts.largeSize+2,
+                  // size: 24,
                   color: ColorPalette.black2,
-                  fontFamily: AppFonts.mulishRegular,
-                )
+                  fontFamily: AppFonts.mulishSemiBold,
+                ))
               ],
             )
           ],

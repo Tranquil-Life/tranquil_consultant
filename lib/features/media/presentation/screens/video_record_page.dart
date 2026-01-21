@@ -14,7 +14,7 @@ import 'package:tl_consultant/core/utils/helpers/svg_elements.dart';
 import 'package:tl_consultant/core/utils/routes/app_pages.dart';
 import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:tl_consultant/features/auth/presentation/widgets/means_of_id_field.dart';
-import 'package:tl_consultant/features/media/presentation/controllers/video_recording_controller.dart';
+import 'package:tl_consultant/features/media/presentation/controllers/media_controller.dart';
 import 'package:tl_consultant/features/profile/data/models/user_model.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
@@ -29,7 +29,7 @@ class VideoRecordingPage extends StatefulWidget {
 
 class _VideoRecordingPageState extends State<VideoRecordingPage>
     with SingleTickerProviderStateMixin {
-  final videoRecordingController = VideoRecordingController.instance;
+  final mediaController = MediaController.instance;
   final profileController = ProfileController.instance;
   final authController = AuthController.instance;
 
@@ -53,7 +53,7 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
   void initState() {
     previousRoute = Get.previousRoute;
 
-    videoRecordingController.uploadProgress.value = 0.0;
+    mediaController.uploadProgress.value = 0.0;
     initAnimation();
     initCamera();
 
@@ -319,7 +319,7 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
                                           await Future.delayed(
                                               Duration(seconds: 1));
 
-                                          videoRecordingController
+                                          mediaController
                                               .resetUploadVars();
 
                                           Get.to(
@@ -342,13 +342,13 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
                                             : () async {
                                                 if (previousRoute ==
                                                     Routes.INTRODUCE_YOURSELF) {
-                                                  await videoRecordingController
+                                                  await mediaController
                                                       .uploadFile(
                                                           File(video.path),
                                                           videoIntro,
                                                           authController);
                                                 } else {
-                                                  await videoRecordingController
+                                                  await mediaController
                                                       .uploadFile(
                                                           File(video.path),
                                                           videoIntro,
@@ -491,13 +491,13 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
   //TODO: Specify the upload route using the intial naviagation route
 
   String uploadTextState() {
-    if (videoRecordingController.compressing.value) {
+    if (mediaController.compressing.value) {
       return compressingVideoMsg;
-    } else if ((videoRecordingController.uploadProgress.value > 0.0 &&
-            videoRecordingController.uploadProgress.value < 100.0) ||
-        videoRecordingController.uploading.value) {
-      return "$uploadingVideoMsg: ${videoRecordingController.uploadProgress.value.toStringAsFixed(2)}%";
-    } else if (videoRecordingController.uploadProgress.value.toInt() == 100) {
+    } else if ((mediaController.uploadProgress.value > 0.0 &&
+            mediaController.uploadProgress.value < 100.0) ||
+        mediaController.uploading.value) {
+      return "$uploadingVideoMsg: ${mediaController.uploadProgress.value.toStringAsFixed(2)}%";
+    } else if (mediaController.uploadProgress.value.toInt() == 100) {
       return successfulUploadMsg;
     } else {
       return "Save video and upload";

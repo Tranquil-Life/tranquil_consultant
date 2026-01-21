@@ -1,24 +1,27 @@
 part of 'package:tl_consultant/features/home/presentation/screens/home_tab.dart';
 
 class MeetingTileSmall extends StatelessWidget {
-  MeetingTileSmall({super.key, required this.meeting, required this.lastItem});
+  const MeetingTileSmall({
+    super.key,
+    required this.meeting,
+    required this.lastItem,
+    required this.now,
+  });
 
   final Meeting meeting;
   final bool lastItem;
-
-  final meetingsController = MeetingsController.instance;
+  final DateTime now;
 
   @override
   Widget build(BuildContext context) {
-    final dateFormat = DateFormat('yyyy-MM-dd HH:mm'); // Customize the format
-    final formattedDate =
-        DateFormat('EEE, \ndd/MM/yyyy').format(meeting.startAt);
+    final isExpired = meeting.endAt.isBefore(now); // or your exact rule
+
     final startTime = DateFormat('HH:mm').format(meeting.startAt);
     final endTime = DateFormat('HH:mm').format(meeting.endAt);
     final duration = meeting.endAt.difference(meeting.startAt);
-    final hours = duration.inHours;
     final minutes = duration.inMinutes;
     final timeRange = "$startTime - $endTime";
+    final formattedDate = DateFormat('EEE, dd/MM/yyyy').format(meeting.startAt);
 
     return Column(
       children: [
@@ -53,7 +56,7 @@ class MeetingTileSmall extends StatelessWidget {
                           fontFamily: AppFonts.mulishSemiBold,
                         ),
                       ),
-                      if (meeting.isExpired)
+                      if (isExpired)
                         Text(
                           "Expired ($timeRange)",
                           style: TextStyle(color: ColorPalette.red),
@@ -121,7 +124,7 @@ class MeetingTileSmall extends StatelessWidget {
 
                     if (!meeting.ratedByClient &&
                         !meeting.ratedByTherapist &&
-                        meeting.isExpired)
+                        isExpired)
                       Row(
                         children: List.generate(
                           5,
@@ -131,7 +134,7 @@ class MeetingTileSmall extends StatelessWidget {
                                 context: context,
                                 builder: (_) => RateConsultationDialog(
                                     selectedRating: index + 1,
-                                    meetingsController: meetingsController,
+                                    meetingsController: MeetingsController.instance,
                                     meeting: meeting),
                               );
                             },
@@ -141,7 +144,7 @@ class MeetingTileSmall extends StatelessWidget {
                         ),
                       ),
 
-                    if (!meeting.isExpired)
+                    if (!isExpired)
                       Row(
                         children: [
                           SvgPicture.asset(

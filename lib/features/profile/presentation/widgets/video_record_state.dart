@@ -7,15 +7,15 @@ import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/theme/fonts.dart';
 import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 import 'package:tl_consultant/core/utils/helpers/svg_elements.dart';
-import 'package:tl_consultant/features/media/presentation/controllers/video_recording_controller.dart';
+import 'package:tl_consultant/features/media/presentation/controllers/media_controller.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
 
 class VideoRecordState extends StatefulWidget {
-  const VideoRecordState({super.key, required this.profileController, required this.videoRecordingController});
+  const VideoRecordState({super.key, required this.profileController, required this.mediaController});
 
   final ProfileController profileController;
-  final VideoRecordingController videoRecordingController;
+  final MediaController mediaController;
 
 
   @override
@@ -25,7 +25,7 @@ class VideoRecordState extends StatefulWidget {
 class _VideoRecordStateState extends State<VideoRecordState> {
   @override
   void initState() {
-    widget.videoRecordingController.initializeVideoPlayer(widget.profileController);
+    widget.mediaController.initializeVideoPlayer();
     super.initState();
   }
 
@@ -91,19 +91,19 @@ class _VideoRecordStateState extends State<VideoRecordState> {
             ),
           ),
 
-          widget.profileController.introVideo.value!.isNotEmpty ?
-          GestureDetector(
-              onTap: () {
-                _showDeleteVideoDialog(context, widget.videoRecordingController, widget.profileController);
-              },
-              child: SvgPicture.asset("assets/images/icons/trash.svg")) : SizedBox.shrink()
+          // widget.profileController.introVideo.value!.isNotEmpty ?
+          // GestureDetector(
+          //     onTap: () {
+          //       _showDeleteVideoDialog(context, widget.videoRecordingController, widget.profileController);
+          //     },
+          //     child: SvgPicture.asset("assets/images/icons/trash.svg")) : SizedBox.shrink()
         ],
       ),
     );
   }
 }
 
-void _showDeleteVideoDialog(BuildContext context, VideoRecordingController vrc, ProfileController profileController) {
+void _showDeleteVideoDialog(BuildContext context, MediaController mediaController, ProfileController profileController) {
   showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -183,13 +183,13 @@ void _showDeleteVideoDialog(BuildContext context, VideoRecordingController vrc, 
                       padding: const EdgeInsets.all(8.0),
                       child: CustomButton(
                         onPressed: () async{
-                          await vrc.deleteFileFromUrl(profileController.introVideo.value!);
-
-                          userDataStore.user['video_intro'] = "";
-                          await getStore.set('user', userDataStore.user);
-                          profileController.introVideo.value = "";
-
-                          Get.back();
+                          // await mediaController.deleteFileFromUrl(profileController.introVideo.value!);
+                          //
+                          // userDataStore.user['video_intro'] = "";
+                          // await getStore.set('user', userDataStore.user);
+                          // profileController.introVideo.value = "";
+                          //
+                          // Get.back();
                         },
                         text: "Delete File",
                       ),
