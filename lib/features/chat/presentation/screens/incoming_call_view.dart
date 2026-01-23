@@ -133,16 +133,17 @@ class _IncomingCallViewState extends State<IncomingCallView> {
                             'updated_at': DateTime.now().toUtc().toIso8601String(),
                           };
 
-                          await chatController.triggerPusherEvent(
-                            acceptedCall,
-                            messageMap,
-                          );
-
                           Get.back();
 
-                          await Future.delayed(Duration(seconds: 1));
+                          final dailyRoom = await videoCallController.navigateToCallView(message: messageMap);
 
-                          await videoCallController.navigateToCallView();
+                          if(dailyRoom != null){
+                            await chatController.triggerPusherEvent(
+                              acceptedCall,
+                              messageMap,
+                            );
+                          }
+
                         },
                         child: PulsingCallButton(),
                       ),

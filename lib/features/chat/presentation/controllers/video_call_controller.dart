@@ -84,37 +84,45 @@ class VideoCallController extends GetxController {
     return token;
   }
 
-  Future navigateToCallView() async {
-    DailyRoom dailyRoom = await createDailyRoom();
+  Future navigateToCallView({required Map<String, dynamic> message}) async {
+    DailyRoom? dailyRoom = await createDailyRoom();
+
     String token = await getDailyToken();
 
-    Get.toNamed(
-      Routes.WEB_VIDEO_CALL,
-      parameters: {
-        'room': dailyRoom.room ?? '',
-        'roomUrl': dailyRoom.roomUrl ?? '',
-        'expiresAt': '${dailyRoom.expiresAt ?? 0}',
-        'token': token,
-      },
-    );
+    if(dailyRoom != null){
+      Get.toNamed(
+        Routes.WEB_VIDEO_CALL,
+        parameters: {
+          'room': dailyRoom.room ?? '',
+          'roomUrl': dailyRoom.roomUrl ?? '',
+          'expiresAt': '${dailyRoom.expiresAt ?? 0}',
+          'token': token,
+        },
+      );
+    }
+
+    return dailyRoom;
   }
 
   bool canJoinVideoCall({
     required int currentMeetingId,
     int maxDurationSeconds = 15 * 60,
   }) {
-    final data = storage.read('last_complete_video_call');
-    if (data == null || data is! Map) return true;
+    //TODO: implement logic to prevent re-joining after max duration
+    // final data = storage.read('last_complete_video_call');
+    // if (data == null || data is! Map) return true;
+    //
+    // final storedMeetingId = data['meeting_id'];
+    // final storedDuration = data['duration'];
+    //
+    // if (storedMeetingId != currentMeetingId) return true;
+    //
+    // if (storedDuration is int && storedDuration < maxDurationSeconds) {
+    //   return true; // still allowed
+    // }
+    //
+    // return false;
 
-    final storedMeetingId = data['meeting_id'];
-    final storedDuration = data['duration'];
-
-    if (storedMeetingId != currentMeetingId) return true;
-
-    if (storedDuration is int && storedDuration < maxDurationSeconds) {
-      return true; // still allowed
-    }
-
-    return false;
+    return true;
   }
 }

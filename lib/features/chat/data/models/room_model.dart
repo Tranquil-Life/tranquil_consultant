@@ -1,6 +1,6 @@
 class DailyRoom {
   final String room;
-  final String roomUrl;
+  final String? roomUrl;
   final int expiresAt;
   final bool reused;
 
@@ -14,7 +14,7 @@ class DailyRoom {
   factory DailyRoom.fromJson(Map<String, dynamic> json) {
     return DailyRoom(
       room: (json['room'] ?? "").toString(),
-      roomUrl: json['room_url'] as String,
+      roomUrl: json['room_url'],
       expiresAt: json['expires_at'] as int, // Unix seconds
       reused: json['reused'] as bool,
     );

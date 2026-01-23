@@ -78,20 +78,29 @@ class _DashboardState extends State<Dashboard> {
     meetingsController.currentMeeting.value = null;
 
     for (final meeting in meetingsController.meetings) {
-      meeting.setIsExpired(now);
+      // meeting.setIsExpired(now);
+      //
+      // final isOngoing =
+      //     !meeting.isExpired &&
+      //         (meeting.startAt.isBefore(now) || meeting.startAt.isAtSameMomentAs(now)) &&
+      //         (meeting.endAt.isAfter(now) || meeting.endAt.isAtSameMomentAs(now));
+      //
+      // if (isOngoing) {
+      //   dashboardController.currentMeetingCount.value = 1;
+      //   dashboardController.currentMeetingId.value = meeting.id;
+      //   client = meeting.client;
+      //   meetingsController.currentMeeting.value = meeting;
+      //   break; // stop after finding the current meeting
+      // }
 
-      final isOngoing =
-          !meeting.isExpired &&
-              (meeting.startAt.isBefore(now) || meeting.startAt.isAtSameMomentAs(now)) &&
-              (meeting.endAt.isAfter(now) || meeting.endAt.isAtSameMomentAs(now));
-
-      if (isOngoing) {
+      //TODO: Temporary fix for testing purposes
+      if (meeting.id == 1) {
         dashboardController.currentMeetingCount.value = 1;
         dashboardController.currentMeetingId.value = meeting.id;
         client = meeting.client;
         meetingsController.currentMeeting.value = meeting;
-        break; // stop after finding the current meeting
       }
+
     }
   }
 
@@ -135,13 +144,18 @@ class _DashboardState extends State<Dashboard> {
                 onChatTap: () async {
                   await updateDashboardMeetingInfo();
 
-                  if (client != null) {
-                    await chatController.getChatInfo(client: client!);
-                    await meetingsController.startMeeting();
-                  } else {
-                    CustomSnackBar.neutralSnackBar(
-                        "You have no ongoing session");
-                  }
+                  // if (client != null) {
+                  //   await chatController.getChatInfo(client: client!);
+                  //   await meetingsController.startMeeting();
+                  // } else {
+                  //   CustomSnackBar.neutralSnackBar(
+                  //       "You have no ongoing session");
+                  // }
+
+                  //TODO: Uncomment this after testing
+                  ///the below code is for testing purposes only
+                  await chatController.getChatInfo(client: client!);
+                  await meetingsController.startMeeting();
                 },
                 dbController: dashboardController,
               )

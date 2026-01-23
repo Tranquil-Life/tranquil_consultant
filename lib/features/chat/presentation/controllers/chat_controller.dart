@@ -327,13 +327,10 @@ class ChatController extends GetxController {
             if (!(message.senderType?.toLowerCase() == consultant)) {
               Get.back();
 
-              await Future.delayed(Duration(seconds: 1));
-
-              await videoCallController.navigateToCallView();
+              await videoCallController.navigateToCallView(message: messageJson);
             }
             return;
           }
-
           if (event.eventName == declinedCall) {
             if (!(message.senderType?.toLowerCase() == consultant)) {
               Get.back();
