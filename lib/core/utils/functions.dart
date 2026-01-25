@@ -333,7 +333,10 @@ List<String> generateTimeSlots({
   while (currentTime.hour <= endHour) {
     final hour = currentTime.hour.toString().padLeft(2, '0');
     final minute = currentTime.minute.toString().padLeft(2, '0');
-    slots.add('$hour:$minute');
+
+    // Add :00 at the end to match "HH:mm:ss"
+    slots.add('$hour:$minute:00');
+
     currentTime = currentTime.replacing(hour: currentTime.hour + 1);
   }
 

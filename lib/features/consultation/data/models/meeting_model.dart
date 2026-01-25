@@ -25,8 +25,8 @@ class MeetingModel extends Meeting {
   static bool _isTimeOnly(String s) =>
       RegExp(r'^\d{2}:\d{2}(:\d{2})?$').hasMatch(s.trim());
 
-
-  static Future<MeetingModel> fromJsonWithTimeZone(Map<String, dynamic> json) async {
+  static Future<MeetingModel> fromJsonWithTimeZone(
+      Map<String, dynamic> json) async {
     final startRaw = json['start_at'].toString().trim();
     final endRaw = json['end_at'].toString().trim();
     bool ratedByClient = false;
@@ -48,22 +48,25 @@ class MeetingModel extends Meeting {
         ? await TimeZoneUtil.convertToLocal(dateYmd: dateYmd!, utcHms: endRaw)
         : DateTime.parse(endRaw).toLocal();
 
-    if(json['rating'] != null){
+    //Added 1 hour to fix timezone issue from backend
+    // final patchedStartAt = localStartAt.add(const Duration(hours: 1));
+    // final patchedEndAt = localEndAt.add(const Duration(hours: 1));
+
+    if (json['rating'] != null) {
       ratedByClient = json['rating']['rating_by_member'] == null ? false : true;
-      ratedByTherapist = json['rating']['rating_by_consultant'] == null ? false : true;
+      ratedByTherapist =
+          json['rating']['rating_by_consultant'] == null ? false : true;
     }
 
     return MeetingModel(
-      id: json['id'],
-      client: ClientModel.fromJson(json['client']),
-      startAt: localStartAt,
-      endAt: localEndAt,
+        id: json['id'],
+        client: ClientModel.fromJson(json['client']),
+        startAt: localStartAt,
+        endAt: localEndAt,
         rescheduled: json['rescheduled'] ?? false,
         status: json['status'] ?? "",
         participants: json['participants'] ?? [],
         ratedByClient: ratedByClient,
-        ratedByTherapist: ratedByTherapist
-    );
+        ratedByTherapist: ratedByTherapist);
   }
-
 }

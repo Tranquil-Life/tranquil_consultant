@@ -150,7 +150,7 @@ class _EditSlotsState extends State<EditSlots> {
                           onTap: () => toggleSelection(slot),
                           child: Center(
                             child: Text(
-                              slot,
+                              slot.substring(0, 5),
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
