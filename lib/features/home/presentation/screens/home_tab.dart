@@ -220,16 +220,3 @@ class _HomeTabState extends State<HomeTab> {
     );
   }
 }
-
-// class _BG extends StatelessWidget {
-//   const _BG({Key? key}) : super(key: key);
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return FractionallySizedBox(
-//       heightFactor: 0.42,
-//       alignment: Alignment.topCenter,
-//       child: Container(color: ColorPalette.scaffoldColor),
-//     );
-//   }
-// }

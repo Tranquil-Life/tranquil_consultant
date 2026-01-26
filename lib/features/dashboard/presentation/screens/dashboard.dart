@@ -92,6 +92,15 @@ class _DashboardState extends State<Dashboard> {
         meetingsController.currentMeeting.value = meeting;
         break; // stop after finding the current meeting
       }
+
+      //TODO: Temporary fix for testing purposes
+      // if (meeting.id == 1) {
+      //   dashboardController.currentMeetingCount.value = 1;
+      //   dashboardController.currentMeetingId.value = meeting.id;
+      //   client = meeting.client;
+      //   meetingsController.currentMeeting.value = meeting;
+      // }
+
     }
   }
 
@@ -142,6 +151,11 @@ class _DashboardState extends State<Dashboard> {
                     CustomSnackBar.neutralSnackBar(
                         "You have no ongoing session");
                   }
+
+                  //TODO: Uncomment this after testing
+                  ///the below code is for testing purposes only
+                  // await chatController.getChatInfo(client: client!);
+                  // await meetingsController.startMeeting();
                 },
                 dbController: dashboardController,
               )

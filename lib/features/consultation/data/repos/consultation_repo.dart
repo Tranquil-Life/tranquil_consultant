@@ -20,8 +20,14 @@ class ConsultationRepoImpl extends ConsultantRepo {
 
   @override
   Future<Either<ApiError, dynamic>> saveSlots(
-      {List? slots, List? availableDays}) async {
-    var body = {"available_time": slots, "available_days": availableDays};
+      {required List? slots,
+      required List? availableDays,
+      required String tzIdentifier}) async {
+    var body = {
+      "available_time": slots,
+      "available_days": availableDays,
+      "timezone_identifier": tzIdentifier
+    };
 
     return await catchSocketException(
             () => postReq(ConsultationEndPoints.saveSlots, body: body))
@@ -42,14 +48,16 @@ class ConsultationRepoImpl extends ConsultantRepo {
   }
 
   @override
-  Future<Either<ApiError, dynamic>> rateMeeting({required RatingModel rating}) async{
-    return await catchSocketException(
-            () => postReq(ConsultationEndPoints.rateMember, body: rating.toJson()))
+  Future<Either<ApiError, dynamic>> rateMeeting(
+      {required RatingModel rating}) async {
+    return await catchSocketException(() =>
+            postReq(ConsultationEndPoints.rateMember, body: rating.toJson()))
         .then((value) => handleResponse(value));
   }
 
   @override
-  Future<Either<ApiError, dynamic>> startMeeting({required int meetingId, required String userType}) async{
+  Future<Either<ApiError, dynamic>> startMeeting(
+      {required int meetingId, required String userType}) async {
     var body = {"meeting_id": meetingId, "user_type": userType};
 
     return await catchSocketException(

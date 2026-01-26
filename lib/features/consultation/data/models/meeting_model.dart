@@ -25,8 +25,8 @@ class MeetingModel extends Meeting {
   static bool _isTimeOnly(String s) =>
       RegExp(r'^\d{2}:\d{2}(:\d{2})?$').hasMatch(s.trim());
 
-
-  static Future<MeetingModel> fromJsonWithTimeZone(Map<String, dynamic> json) async {
+  static Future<MeetingModel> fromJsonWithTimeZone(
+      Map<String, dynamic> json) async {
     final startRaw = json['start_at'].toString().trim();
     final endRaw = json['end_at'].toString().trim();
     bool ratedByClient = false;
@@ -40,30 +40,52 @@ class MeetingModel extends Meeting {
       );
     }
 
-    final localStartAt = _isTimeOnly(startRaw)
-        ? await TimeZoneUtil.convertToLocal(dateYmd: dateYmd!, utcHms: startRaw)
-        : DateTime.parse(startRaw).toLocal();
+    // Helper to force UTC parsing if the string doesn't have a timezone indicator
+    DateTime parseAsUtc(String raw) {
+      // If it's already ISO (has T and Z), parse it.
+      // Otherwise, swap space for T and add Z to tell Dart this is UTC.
+      String formatted = raw;
+      if (!raw.contains('Z') && !raw.contains('+')) {
+        formatted = "${raw.replaceAll(' ', 'T')}Z";
+      }
+      return DateTime.parse(formatted).toLocal();
+    }
 
-    final localEndAt = _isTimeOnly(endRaw)
-        ? await TimeZoneUtil.convertToLocal(dateYmd: dateYmd!, utcHms: endRaw)
-        : DateTime.parse(endRaw).toLocal();
+    final localStartAt =
+    _isTimeOnly(startRaw)
+        ? await TimeZoneUtil.convertToLocal(
+      dateYmd: dateYmd!,
+      utcHms: startRaw,
+    )
+        : parseAsUtc(startRaw);
 
-    if(json['rating'] != null){
+    final localEndAt =
+    _isTimeOnly(endRaw)
+        ? await TimeZoneUtil.convertToLocal(
+      dateYmd: dateYmd!,
+      utcHms: endRaw,
+    )
+        : parseAsUtc(endRaw);
+
+    // NOTE: Manual "patches" (+1 hour) are removed.
+    // .toLocal() handles the shift based on the phone's timezone automatically.
+
+
+    if (json['rating'] != null) {
       ratedByClient = json['rating']['rating_by_member'] == null ? false : true;
-      ratedByTherapist = json['rating']['rating_by_consultant'] == null ? false : true;
+      ratedByTherapist =
+          json['rating']['rating_by_consultant'] == null ? false : true;
     }
 
     return MeetingModel(
-      id: json['id'],
-      client: ClientModel.fromJson(json['client']),
-      startAt: localStartAt,
-      endAt: localEndAt,
+        id: json['id'],
+        client: ClientModel.fromJson(json['client']),
+        startAt: localStartAt,
+        endAt: localEndAt,
         rescheduled: json['rescheduled'] ?? false,
         status: json['status'] ?? "",
         participants: json['participants'] ?? [],
         ratedByClient: ratedByClient,
-        ratedByTherapist: ratedByTherapist
-    );
+        ratedByTherapist: ratedByTherapist);
   }
-
 }
