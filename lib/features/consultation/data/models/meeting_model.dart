@@ -40,17 +40,36 @@ class MeetingModel extends Meeting {
       );
     }
 
-    final localStartAt = _isTimeOnly(startRaw)
-        ? await TimeZoneUtil.convertToLocal(dateYmd: dateYmd!, utcHms: startRaw)
-        : DateTime.parse(startRaw).toLocal();
+    // Helper to force UTC parsing if the string doesn't have a timezone indicator
+    DateTime parseAsUtc(String raw) {
+      // If it's already ISO (has T and Z), parse it.
+      // Otherwise, swap space for T and add Z to tell Dart this is UTC.
+      String formatted = raw;
+      if (!raw.contains('Z') && !raw.contains('+')) {
+        formatted = "${raw.replaceAll(' ', 'T')}Z";
+      }
+      return DateTime.parse(formatted).toLocal();
+    }
 
-    final localEndAt = _isTimeOnly(endRaw)
-        ? await TimeZoneUtil.convertToLocal(dateYmd: dateYmd!, utcHms: endRaw)
-        : DateTime.parse(endRaw).toLocal();
+    final localStartAt =
+    _isTimeOnly(startRaw)
+        ? await TimeZoneUtil.convertToLocal(
+      dateYmd: dateYmd!,
+      utcHms: startRaw,
+    )
+        : parseAsUtc(startRaw);
 
-    //Added 1 hour to fix timezone issue from backend
-    // final patchedStartAt = localStartAt.add(const Duration(hours: 1));
-    // final patchedEndAt = localEndAt.add(const Duration(hours: 1));
+    final localEndAt =
+    _isTimeOnly(endRaw)
+        ? await TimeZoneUtil.convertToLocal(
+      dateYmd: dateYmd!,
+      utcHms: endRaw,
+    )
+        : parseAsUtc(endRaw);
+
+    // NOTE: Manual "patches" (+1 hour) are removed.
+    // .toLocal() handles the shift based on the phone's timezone automatically.
+
 
     if (json['rating'] != null) {
       ratedByClient = json['rating']['rating_by_member'] == null ? false : true;

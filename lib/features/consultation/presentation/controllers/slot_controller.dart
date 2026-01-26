@@ -1,4 +1,6 @@
 import 'package:dartz/dartz.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:tl_consultant/core/global/custom_snackbar.dart';
@@ -83,16 +85,18 @@ class SlotController extends GetxController {
   // }
 
   Future saveSlots({List? availableDays}) async {
-    var result =
-        await repo.saveSlots(slots: timeSlots, availableDays: availableDays);
+    final timeZoneIdentifier = await FlutterNativeTimezone.getLocalTimezone();
 
-    if (result.isRight()) {
-      print("Added Slots: $timeSlots");
+    Either either = await repo.saveSlots(
+        slots: timeSlots,
+        availableDays: availableDays,
+        tzIdentifier: timeZoneIdentifier);
 
+    either.fold((l) => CustomSnackBar.errorSnackBar("Couldn't save slots"),
+        (r) {
+      debugPrint("Saved Slots: $r");
       CustomSnackBar.successSnackBar(body: "Saved");
-    } else {
-      CustomSnackBar.errorSnackBar("Couldn't save slots");
-    }
+    });
   }
 
   Future getAllSlots() async {
