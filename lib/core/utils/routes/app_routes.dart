@@ -11,7 +11,7 @@ abstract class Routes {
   static const SIGN_UP_0 = _Paths.SIGN_UP_0 ;
   static const SIGN_UP_1 = _Paths.SIGN_UP_1 ;
   static const SIGN_UP_2 = _Paths.SIGN_UP_2 ;
-  static const SIGN_UP_3 = _Paths.SIGN_UP_3 ;
+  static const DOCUSIGN = _Paths.DOCUSIGN ;
   static const HOME_SCREEN = _Paths.HOME_SCREEN ;
   static const ACTIVITY = _Paths.ACTIVITY;
   static const DASHBOARD = _Paths.DASHBOARD ;
@@ -44,7 +44,7 @@ abstract class _Paths {
   static const SIGN_UP_0 = '/sign-up-0';
   static const SIGN_UP_1 = '/sign-up-1';
   static const SIGN_UP_2 = '/sign-up-2';
-  static const SIGN_UP_3 = '/sign-up-3';
+  static const DOCUSIGN = '/docusign';
   static const HOME_SCREEN = '/home';
   static const ACTIVITY = '/notifications';
   static const DASHBOARD = '/dashboard';
