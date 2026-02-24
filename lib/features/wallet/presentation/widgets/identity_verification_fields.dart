@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
@@ -26,8 +27,8 @@ class IdentityVerificationFields extends StatefulWidget {
 
 class _IdentityVerificationFieldsState
     extends State<IdentityVerificationFields> {
-  File? front;
-  File? back;
+  XFile? front;
+  XFile? back;
 
   bool? isPassport;
 

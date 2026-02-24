@@ -183,6 +183,19 @@ class DashboardController extends GetxController {
     } catch (e) {
       // Fallback: use placemark if backend/network fails
       //TODO: Display dialog for countries and states
+      // showDialog(
+      //     context: Get.context!,
+      //     builder: (_) => AlertDialog(
+      //           title: Text("Location Error"),
+      //           content: Text(
+      //               "Failed to determine your location. Please select your country and state manually."),
+      //           actions: [
+      //             TextButton(
+      //               onPressed: () => Get.back(),
+      //               child: Text("OK"),
+      //             ),
+      //           ],
+      //         ));
 
       CustomSnackBar.errorSnackBar("Reverse coding failed: $e");
     }
@@ -211,7 +224,6 @@ class DashboardController extends GetxController {
         await storage.save();
       }
     }
-
   }
 
   int? _readInt(String key) {
@@ -281,7 +293,6 @@ class DashboardController extends GetxController {
     bio.value = UserModel.fromJson(userDataStore.user).bio;
     print("bio: $bio");
 
-
     qualifications.value = userDataStore.qualifications
         .map((e) => Qualification.fromJson(e))
         .toList();
@@ -323,7 +334,6 @@ class DashboardController extends GetxController {
     return qualifications;
   }
 
-
   void clearData() {
     currentIndex.value = 0;
 
@@ -362,13 +372,11 @@ class DashboardController extends GetxController {
     return currentIndex.value == index;
   }
 
-
   @override
   void onReady() {
     super.onReady();
     maybeRequestNotifications();
   }
-
 
   Future<void> maybeRequestNotifications() async {
     try {
@@ -394,5 +402,4 @@ class DashboardController extends GetxController {
       debugPrint("$st");
     }
   }
-
 }

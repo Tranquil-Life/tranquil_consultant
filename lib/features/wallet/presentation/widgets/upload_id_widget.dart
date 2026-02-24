@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
@@ -10,14 +11,15 @@ import 'package:tl_consultant/features/wallet/presentation/controllers/earnings_
 
 class UploadIdWidget extends StatelessWidget {
   final EarningsController earningsController;
-  File? front;
-  File? back;
-  bool? isPassport;
   final Function()? onChangeType;
   final Function()? onSnapFrontOfID;
   final Function()? onSnapBackOfID;
 
-  UploadIdWidget(
+  final XFile? front;
+  final XFile? back;
+  final bool? isPassport;
+
+  const UploadIdWidget(
       {super.key,
       required this.earningsController,
       this.front,
@@ -67,7 +69,7 @@ class UploadIdWidget extends StatelessWidget {
                             Text("Front")
                           ],
                         ))
-                    : Image.file(front!),
+                    : Image.file(front != null ? File(front!.path) : File("")),
               ),
             )),
             SizedBox(width: 8),
@@ -96,7 +98,7 @@ class UploadIdWidget extends StatelessWidget {
                             Text("Back")
                           ],
                         ))
-                    : Image.file(back!),
+                    : Image.file(back != null ? File(back!.path) : File("")),
               ),
             )),
           ],

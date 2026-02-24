@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
@@ -11,7 +12,7 @@ abstract class MediaService {
   static final _imagePicker = ImagePicker();
   static final _imageCropper = ImageCropper();
 
-  static Future<File?> openCamera([
+  static Future<XFile?> openCamera([
     ImageSource source = ImageSource.camera,
   ]) async {
     final XFile? capturedFile = await _imagePicker.pickImage(
@@ -21,10 +22,10 @@ abstract class MediaService {
       maxWidth: 720,
     );
     if (capturedFile == null) return null;
-    return _cropImage(File(capturedFile.path));
+    return await _cropImage(capturedFile);
   }
 
-  static Future<File?> selectImage([
+  static Future<XFile?> selectImage([
     ImageSource source = ImageSource.gallery,
   ]) async {
     final XFile? pickedFile = await _imagePicker.pickImage(
@@ -33,13 +34,17 @@ abstract class MediaService {
       maxHeight: 720,
       maxWidth: 720,
     );
+
     if (pickedFile == null) return null;
-    return _cropImage(File(pickedFile.path));
+
+    // If you use a cropper, it must support XFile or return one.
+    // For now, let's return the pickedFile directly to fix the crash.
+    return pickedFile;
   }
 
-  static Future<File?> selectAudio() => _selectFile(type: FileType.audio);
+  static Future<XFile?> selectAudio() => _selectFile(type: FileType.audio);
 
-  static Future<File?> selectDocument(
+  static Future<XFile?> selectDocument(
           {List<String>? allowedExtensions, String? uploadTpe}) =>
       _selectFile(
           type: FileType.any,
@@ -72,7 +77,7 @@ abstract class MediaService {
   //   return File(data);
   // }
 
-  static Future<File?> _selectFile({
+  static Future<XFile?> _selectFile({
     FileType type = FileType.any,
     List<String>? allowedExtensions,
     String? uploadType,
@@ -87,16 +92,25 @@ abstract class MediaService {
       // AuthController.instance.uploadCv(file: File(result.files.first.path!));
     }
 
-    return File(result.files.first.path!);
+    return XFile(result.files.first.path!);
   }
 
-  static Future<File?> _cropImage(File file) async {
+  static Future<XFile?> _cropImage(XFile xFile) async {
+    if (kIsWeb) {
+      // image_cropper 5.x+ has basic web support, but it requires a
+      // different setup. If not configured, just return the original.
+      return xFile;
+    }
+
+    // On Mobile, we can safely use the File path
     var croppedFile = await _imageCropper.cropImage(
-        sourcePath: file.path, compressQuality: 75);
+        sourcePath: xFile.path,
+        compressQuality: 75
+    );
+
     if (croppedFile == null) return null;
 
-    //TODO: UNcomment
-    // AuthController.instance.uploadID(file: File(croppedFile.path));
-    return File(croppedFile.path);
+    // Convert CroppedFile back to XFile for the rest of your app
+    return XFile(croppedFile.path);
   }
 }
