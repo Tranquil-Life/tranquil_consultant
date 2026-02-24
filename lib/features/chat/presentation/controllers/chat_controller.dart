@@ -181,26 +181,55 @@ class ChatController extends GetxController {
   Future<Map<String, dynamic>> getChatInfo({ClientUser? client}) async {
     final meetingsController = MeetingsController.instance;
 
-    // print(client?.toJson());
     if (client != null) rxClient.value = client;
 
+    // --- START: THE FIX ---
+
+    // 1. Safely get the current meeting from the controller.
+    final currentMeeting = meetingsController.currentMeeting.value;
+
+    // 2. Check if the meeting is null. If it is, we cannot proceed.
+    if (currentMeeting == null) {
+      // Log the error for debugging.
+      print("Error: getChatInfo was called but currentMeeting is null.");
+
+
+      // Stop the loading indicator and exit the function.
+      loadingChatRoom.value = false;
+      return {}; // Return an empty map as the function expects a Future<Map>
+    }
+
+    // 3. Now that we know 'currentMeeting' is not null, we can safely access its properties.
+    //    It's also good practice to check nested properties if they can be null.
+    final clientId = currentMeeting.client.id;
+    final meetingId = currentMeeting.id;
+
+    // 4. Check if the nested properties are also valid before making the API call.
+    if (clientId == null) {
+      print("Error: The current meeting is missing a client ID or a meeting ID.");
+      CustomSnackBar.errorSnackBar("Meeting data is incomplete.");
+      loadingChatRoom.value = false;
+      return {};
+    }
+
+    // --- END: THE FIX ---
+
     loadingChatRoom.value = true;
+
+    // 5. Use the safe variables in your repository call.
     Either either = await repo.getChatInfo(
-        consultantId: userDataStore.user['id'],
-        clientId: meetingsController.currentMeeting.value!.client.id!,
-        meetingId: meetingsController.currentMeeting.value!.id);
+      consultantId: userDataStore.user['id'],
+      clientId: clientId,
+      meetingId: meetingId,
+    );
 
     var chatInfo = <String, dynamic>{};
 
     either.fold((l) {
       loadingChatRoom.value = false;
-
-      CustomSnackBar.errorSnackBar(
-          l.message.toString());
+      CustomSnackBar.errorSnackBar(l.message.toString());
     }, (r) {
       chatInfo = r['data'];
-      // chatInfo.addAll(r['data']);
-
       chatId ??= RxInt(0);
       chatId!.value = chatInfo['id'];
       chatChannel.value = chatInfo['channel'];
@@ -211,8 +240,8 @@ class ChatController extends GetxController {
         Routes.CHAT_SCREEN,
         arguments: <String, dynamic>{
           "chat_id": chatId?.value,
-          "client": client,
-          "channel": chatChannel.value
+          "client": client ?? currentMeeting.client, // Pass the client from the meeting if available
+          "channel": chatChannel.value,
         },
       );
     }
@@ -225,6 +254,53 @@ class ChatController extends GetxController {
 
     return chatInfo;
   }
+  // Future<Map<String, dynamic>> getChatInfo({ClientUser? client}) async {
+  //   final meetingsController = MeetingsController.instance;
+  //
+  //   // print(client?.toJson());
+  //   if (client != null) rxClient.value = client;
+  //
+  //   loadingChatRoom.value = true;
+  //   Either either = await repo.getChatInfo(
+  //       consultantId: userDataStore.user['id'],
+  //       clientId: meetingsController.currentMeeting.value!.client.id!, //DartError: Unexpected null value. Fix this
+  //       meetingId: meetingsController.currentMeeting.value!.id);
+  //
+  //   var chatInfo = <String, dynamic>{};
+  //
+  //   either.fold((l) {
+  //     loadingChatRoom.value = false;
+  //
+  //     CustomSnackBar.errorSnackBar(
+  //         l.message.toString());
+  //   }, (r) {
+  //     chatInfo = r['data'];
+  //     // chatInfo.addAll(r['data']);
+  //
+  //     chatId ??= RxInt(0);
+  //     chatId!.value = chatInfo['id'];
+  //     chatChannel.value = chatInfo['channel'];
+  //   });
+  //
+  //   if (isSmallScreen(Get.context!)) {
+  //     Get.toNamed(
+  //       Routes.CHAT_SCREEN,
+  //       arguments: <String, dynamic>{
+  //         "chat_id": chatId?.value,
+  //         "client": client,
+  //         "channel": chatChannel.value
+  //       },
+  //     );
+  //   }
+  //
+  //   await Future.delayed(const Duration(seconds: 1));
+  //
+  //   loadRecentMessages();
+  //
+  //   loadingChatRoom.value = false;
+  //
+  //   return chatInfo;
+  // }
 
   void setVoiceFile(File file) {
     audioFile = file;

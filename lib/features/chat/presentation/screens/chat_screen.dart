@@ -224,9 +224,11 @@ class _ChatScreenState extends State<ChatScreen> {
 
     // initial data
 
-    chatController.getChatInfo();
-    chatController.loadRecentMessages();
-    chatController.initializePusher(channel: chatController.chatChannel.value);
+
+    //TODO: Uncomment if it doesn't work in the home screen
+    // chatController.getChatInfo();
+    // chatController.loadRecentMessages();
+    // chatController.initializePusher(channel: chatController.chatChannel.value);
 
     // load older when user scrolls to top (with reverse: true)
     _scroll.addListener(() {

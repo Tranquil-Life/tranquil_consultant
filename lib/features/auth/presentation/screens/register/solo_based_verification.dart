@@ -184,7 +184,9 @@ class _SoloBasedVerificationState extends State<SoloBasedVerification> {
                   if (verificationState() == true)
                     CustomButton(
                         onPressed: () {
-                          Get.toNamed(Routes.INTRODUCE_YOURSELF);
+                          // Get.toNamed(Routes.INTRODUCE_YOURSELF);
+
+                          Get.toNamed(Routes.SIGN_UP_3);
                         },
                         text: "Proceed to account creation"),
                   SizedBox(height: 40),

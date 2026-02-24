@@ -155,6 +155,8 @@ class ChatRepoImpl extends ChatRepo {
       "user_type": userType,
     };
 
+    print("Generate daily token input: $input");
+
     final result = await catchSocketException(
           () => postReq(ChatEndPoints.generateDailyToken, body: input),
     );

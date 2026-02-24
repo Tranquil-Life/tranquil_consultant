@@ -296,6 +296,21 @@ class AuthController extends GetxController {
     return updated;
   }
 
+
+  Future<String> getDocusignUrl() async {
+    String? url;
+    String name = "${params.firstName} ${params.lastName}".trim();
+
+    Either either =
+        await authRepo.getDocusignUrl(email: emailTEC.text, name: name);
+    either.fold((l) => CustomSnackBar.errorSnackBar(l.message.toString()),
+        (r) async {
+      url = r['url'];
+    });
+
+    return url ?? "";
+  }
+
   bool get isAllPwdCriteriaMet =>
       isLengthValid.value &&
       hasSpecialChar.value &&

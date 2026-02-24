@@ -44,7 +44,6 @@ class MeetingsController extends GetxController {
 
   Future loadFirstMeetings() async {
     if (userDataStore.user['timezone_identifier'] == null) {
-      print("null");
       return;
     }
 
