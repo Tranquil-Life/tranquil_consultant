@@ -140,6 +140,14 @@ class AuthRepoImpl extends AuthRepo {
         .then((value) => handleResponse(value));
   }
 
+  @override
+  Future<Either<ApiError, dynamic>> getDocusignUrl({required String email, required String name}) async{
+    var request = {"email": email, 'name': name};
+
+    return await catchSocketException(()=>postReq(AuthEndPoints.getDocusignUrl, body: request))
+        .then((value) => handleResponse(value));
+  }
+
 
 
 }

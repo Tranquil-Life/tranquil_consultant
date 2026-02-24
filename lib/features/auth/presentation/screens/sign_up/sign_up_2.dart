@@ -5,6 +5,7 @@ import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:tl_consultant/core/global/buttons.dart';
+import 'package:tl_consultant/core/utils/routes/app_pages.dart';
 import 'package:tl_consultant/core/utils/services/location_service.dart';
 import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:tl_consultant/features/auth/presentation/widgets/bg.dart';
@@ -14,7 +15,7 @@ import 'package:tl_consultant/features/auth/presentation/widgets/modals/aoe_bott
 import 'package:tl_consultant/features/auth/presentation/widgets/modals/years_of_experience_sheet.dart';
 
 class SignUpScreen2 extends StatefulWidget {
-  const SignUpScreen2({Key? key}) : super(key: key);
+  const SignUpScreen2({super.key});
 
   @override
   State<SignUpScreen2> createState() => _SignUpScreen2State();
@@ -162,10 +163,10 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
                   const SizedBox(height: 32),
 
                   CustomButton(
-                      text: 'Done',
+                      text: 'Next',
                       onPressed: (){
                         if (_formKey.currentState!.validate()) {
-                          authController.signUp();
+                          Get.toNamed(Routes.SIGN_UP_3);
                         }
                       })
                 ],

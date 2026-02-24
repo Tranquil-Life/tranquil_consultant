@@ -135,8 +135,10 @@ CustomFormField confirmPwdField(AuthController authController){
 //First name
 CustomFormField firstNameField(){
   return CustomFormField(
+    verContentPadding: 11.5,
+    horContentPadding: 12,
     hint: 'First Name',
-    // initialValue: AuthController.instance.params.firstName,
+    initialValue: AuthController.instance.params.firstName,
     textInputType: TextInputType.name,
     textInputAction: TextInputAction.next,
     textCapitalization: TextCapitalization.words,
@@ -146,15 +148,17 @@ CustomFormField firstNameField(){
       }
       return null;
     },
-    // onChanged: (text)=> AuthController.instance.params.firstName = text,
+    onChanged: (text)=> AuthController.instance.params.firstName = text,
   );
 }
 
 //last name
 CustomFormField lastNameField(){
   return CustomFormField(
+    verContentPadding: 11.5,
+    horContentPadding: 12,
     hint: 'Last Name',
-    // initialValue: AuthController.instance.params.lastName,
+    initialValue: AuthController.instance.params.lastName,
     textInputType: TextInputType.name,
     textInputAction: TextInputAction.next,
     textCapitalization: TextCapitalization.words,
@@ -164,7 +168,7 @@ CustomFormField lastNameField(){
       }
       return null;
     },
-    // onChanged: (text)=> AuthController.instance.params.lastName = text,
+    onChanged: (text)=> AuthController.instance.params.lastName = text,
   );
 }
 

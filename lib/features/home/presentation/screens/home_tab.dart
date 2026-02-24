@@ -15,6 +15,7 @@ import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 import 'package:tl_consultant/core/utils/helpers/svg_elements.dart';
 import 'package:tl_consultant/core/utils/routes/app_pages.dart';
 import 'package:tl_consultant/features/activity/presentation/controllers/activity_controller.dart';
+import 'package:tl_consultant/features/chat/presentation/controllers/chat_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/widgets/dialogs/rate_consultation_dialog.dart';
 import 'package:tl_consultant/features/consultation/domain/entities/client.dart';
 import 'package:tl_consultant/features/consultation/domain/entities/meeting.dart';
@@ -46,6 +47,16 @@ class _HomeTabState extends State<HomeTab> {
   final profileController = ProfileController.instance;
   final activityController = ActivityController();
   final meetingsController = MeetingsController.instance;
+  final chatController = ChatController.instance;
+
+  @override
+  void initState() {
+    super.initState();
+
+    chatController.getChatInfo();
+    chatController.loadRecentMessages();
+    chatController.initializePusher(channel: chatController.chatChannel.value);
+  }
 
   @override
   Widget build(BuildContext context) {

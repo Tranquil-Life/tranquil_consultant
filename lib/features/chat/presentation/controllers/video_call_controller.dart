@@ -34,15 +34,19 @@ class VideoCallController extends GetxController {
     var data = <String, dynamic>{};
 
     // Duration between now and meeting end
-    int timeLeft = meetingsController.currentMeeting.value!.endAt
-        .difference(now)
-        .inSeconds;
-    const int maxSeconds = 35 * 60; // 2100 seconds
+    int timeLeft =
+        // meetingsController.currentMeeting.value!.endAt
+
+        ///for testing
+        now.add(Duration(minutes: 45)).difference(now).inSeconds;
+    const int maxSeconds = 15 * 60; // 900 seconds
     // Never allow negative seconds
     timeLeft = timeLeft.clamp(0, maxSeconds).toInt();
 
     Either either = await repo.createDailyRoom(
-        channel: room, timeLeft: 120, chatId: chatController.chatId!.value);
+        channel: room,
+        timeLeft: timeLeft,
+        chatId: chatController.chatId!.value);
 
     either.fold((l) => CustomSnackBar.errorSnackBar(l.message.toString()), (r) {
       if (r != null) {
@@ -63,15 +67,17 @@ class VideoCallController extends GetxController {
     var token = "";
 
     // Duration between now and meeting end
-    int timeLeft = meetingsController.currentMeeting.value!.endAt
-        .difference(now)
-        .inSeconds;
-    const int maxSeconds = 35 * 60; // 2100 seconds
+    int timeLeft =
+        // meetingsController.currentMeeting.value!.endAt
+
+        ///for testing
+        now.add(Duration(minutes: 45)).difference(now).inSeconds;
+    const int maxSeconds = 15 * 60; // 900 seconds
     // Never allow negative seconds
     timeLeft = timeLeft.clamp(0, maxSeconds).toInt();
 
     Either either = await repo.generateDailyToken(
-        room: room, timeLeft: 120, userType: consultant);
+        room: room, timeLeft: timeLeft, userType: consultant);
 
     either.fold(
       (l) => CustomSnackBar.errorSnackBar(l.message.toString()),
@@ -89,7 +95,7 @@ class VideoCallController extends GetxController {
 
     String token = await getDailyToken();
 
-    if(dailyRoom != null){
+    if (dailyRoom != null) {
       Get.toNamed(
         Routes.WEB_VIDEO_CALL,
         parameters: {
@@ -106,7 +112,7 @@ class VideoCallController extends GetxController {
 
   bool canJoinVideoCall({
     required int currentMeetingId,
-    int maxDurationSeconds = 15 * 60,
+    int maxDurationSeconds = 15 * 60, //how many minutes is this?
   }) {
     //TODO: implement logic to prevent re-joining after max duration
     // final data = storage.read('last_complete_video_call');

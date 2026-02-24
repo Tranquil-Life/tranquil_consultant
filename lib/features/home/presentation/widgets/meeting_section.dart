@@ -48,13 +48,13 @@ class _MeetingsState extends State<Meetings> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await meetingsController.loadFirstMeetings();
-      await updateDashboardMeetingInfo();
+      // await updateDashboardMeetingInfo();
     });
   }
 
   Future handleRefresh() async {
     await meetingsController.loadFirstMeetings().then((_) {
-      updateDashboardMeetingInfo();
+      // updateDashboardMeetingInfo();
     });
   }
 

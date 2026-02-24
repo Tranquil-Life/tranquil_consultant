@@ -18,4 +18,6 @@ abstract class AuthRepo<T, F extends QueryParams> extends ApiService {
   Future<Either<ApiError, dynamic>> requestResetPwdToken({required String email});
   Future<Either<ApiError, dynamic>> verifyResetToken(String token);
   Future<Either<ApiError, dynamic>> updatePassword({required String token, required String password});
+  Future<Either<ApiError, dynamic>> getDocusignUrl({required String email, required String name});
+
 }

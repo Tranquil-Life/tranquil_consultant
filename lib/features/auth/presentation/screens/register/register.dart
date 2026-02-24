@@ -7,6 +7,7 @@ import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/theme/fonts.dart';
 import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
+import 'package:tl_consultant/core/utils/routes/app_pages.dart';
 import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:tl_consultant/features/auth/presentation/controllers/verification_controller.dart';
 import 'package:tl_consultant/features/auth/presentation/screens/register/agency_based_verification.dart';
@@ -96,7 +97,9 @@ class _RegisterState extends State<Register> {
                                     email: authController.emailTEC.text);
 
                             if (sent) {
-                              Get.to(SoloBasedVerification());
+                              Get.toNamed(Routes.SIGN_UP_1);
+
+                              // Get.to(SoloBasedVerification());
                             }
                           } else {
                             Get.to(AgencyBasedVerification());

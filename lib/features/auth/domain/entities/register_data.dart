@@ -11,8 +11,8 @@ class RegisterData extends QueryParams {
   String pictureUrl = '';
   String therapistKind = '';
   String emailVerifiedAt = "";
-  // String firstName = '';
-  // String lastName = '';
+  String firstName = '';
+  String lastName = '';
   // String birthDate = '';
   // String cvUrl='';
   // String identityUrl = '';

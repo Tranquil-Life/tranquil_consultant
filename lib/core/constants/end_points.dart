@@ -26,6 +26,9 @@ abstract class AuthEndPoints {
   static const requestResetPwdToken = '$consultant/requestPasswordReset';
   static const verifyResetToken = '$consultant/verifyPasswordResetToken';
   static const updatePassword = '$consultant/resetPassword';
+
+  //Get docusign
+  static const getDocusignUrl = '$consultant/agreements/{applicationId}/signing-url';
 }
 
 abstract class ProfileEndPoints {
