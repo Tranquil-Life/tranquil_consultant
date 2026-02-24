@@ -166,7 +166,7 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
                       text: 'Next',
                       onPressed: (){
                         if (_formKey.currentState!.validate()) {
-                          Get.toNamed(Routes.SIGN_UP_3);
+                          Get.toNamed(Routes.DOCUSIGN);
                         }
                       })
                 ],

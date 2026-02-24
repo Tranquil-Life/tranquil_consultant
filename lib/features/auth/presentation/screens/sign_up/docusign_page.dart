@@ -4,14 +4,14 @@ import 'package:web/web.dart' as web;
 import 'package:flutter/material.dart';
 import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';
 
-class SignUpScreen3 extends StatefulWidget {
-  const SignUpScreen3({super.key});
+class DocusignPage extends StatefulWidget {
+  const DocusignPage({super.key});
 
   @override
-  State<SignUpScreen3> createState() => _SignUpScreen3State();
+  State<DocusignPage> createState() => _DocusignPageState();
 }
 
-class _SignUpScreen3State extends State<SignUpScreen3> {
+class _DocusignPageState extends State<DocusignPage> {
   final authController = AuthController.instance;
   final String viewType = 'docusign-iframe-${DateTime.now().millisecondsSinceEpoch}'; // Unique ID
   late Future<String> _urlFuture;

@@ -186,7 +186,7 @@ class _SoloBasedVerificationState extends State<SoloBasedVerification> {
                         onPressed: () {
                           // Get.toNamed(Routes.INTRODUCE_YOURSELF);
 
-                          Get.toNamed(Routes.SIGN_UP_3);
+                          Get.toNamed(Routes.DOCUSIGN);
                         },
                         text: "Proceed to account creation"),
                   SizedBox(height: 40),

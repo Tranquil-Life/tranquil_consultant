@@ -7,10 +7,10 @@ import 'package:tl_consultant/features/auth/presentation/screens/forgot_password
 import 'package:tl_consultant/features/auth/presentation/screens/profile_preview_page.dart';
 import 'package:tl_consultant/features/auth/presentation/screens/register/introduce_yourself.dart';
 import 'package:tl_consultant/features/auth/presentation/screens/sign_in/sign_in.dart';
+import 'package:tl_consultant/features/auth/presentation/screens/sign_up/docusign_page.dart';
 import 'package:tl_consultant/features/auth/presentation/screens/sign_up/sign_up_0.dart';
 import 'package:tl_consultant/features/auth/presentation/screens/sign_up/sign_up_1.dart';
 import 'package:tl_consultant/features/auth/presentation/screens/sign_up/sign_up_2.dart';
-import 'package:tl_consultant/features/auth/presentation/screens/sign_up/sign_up_3.dart';
 import 'package:tl_consultant/features/auth/presentation/screens/update_password_page.dart';
 import 'package:tl_consultant/features/auth/presentation/screens/verify_reset_account_page.dart';
 import 'package:tl_consultant/features/chat/data/models/room_model.dart';
@@ -43,7 +43,7 @@ class AppPages {
     GetPage(name: Routes.SIGN_UP_0, page: () => SignUpScreen0()),
     GetPage(name: Routes.SIGN_UP_1, page: () => SignUpScreen1()),
     GetPage(name: Routes.SIGN_UP_2, page: () => SignUpScreen2()),
-    GetPage(name: Routes.SIGN_UP_3, page: () => SignUpScreen3()),
+    GetPage(name: Routes.DOCUSIGN, page: () => DocusignPage()),
     GetPage(name: Routes.SIGN_IN, page: () => SignInScreen()),
     GetPage(
         name: Routes.INTRODUCE_YOURSELF, page: () => IntroduceYourselfPage()),
