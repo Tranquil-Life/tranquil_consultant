@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/global/custom_app_bar.dart';
 import 'package:tl_consultant/core/global/custom_fab.dart';
 import 'package:tl_consultant/core/global/custom_snackbar.dart';
@@ -46,6 +47,8 @@ class _DashboardState extends State<Dashboard> {
   @override
   void initState() {
     super.initState();
+
+    print("stripe_account_id: 3: $stripeAccountId");
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await dashboardController.getMyLocationInfoCached(force: false);

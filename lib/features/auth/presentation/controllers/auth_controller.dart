@@ -141,7 +141,10 @@ class AuthController extends GetxController {
 
         User user = UserModel.fromJson(userDataStore.user);
         if (kDebugMode) {
-          print(user.toJson());
+          // print(user.toJson());
+          print("stripe_account_id: 1: ${user.stripeAccountId!}");
+          print("stripe_account_id: 2: $stripeAccountId");
+
         }
 
         AppData.isSignedIn = true;
