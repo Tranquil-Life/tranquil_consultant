@@ -48,8 +48,6 @@ class _DashboardState extends State<Dashboard> {
   void initState() {
     super.initState();
 
-    print("stripe_account_id: 3: $stripeAccountId");
-
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await dashboardController.getMyLocationInfoCached(force: false);
       dashboardController.restoreUserInfo();

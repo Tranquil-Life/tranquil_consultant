@@ -147,8 +147,12 @@ class DashboardController extends GetxController {
   }
 
   Future<void> getMyLocationInfo() async {
+    print("Getting location info...");
     final result = await getCurrLocation();
+    print("Location result: $result");
+
     if (result["error"] == true) return;
+
 
     final lat = result['latitude'] as double;
     final lng = result['longitude'] as double;

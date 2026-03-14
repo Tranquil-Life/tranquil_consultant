@@ -168,6 +168,8 @@ Future<Map<String, dynamic>> getCurrLocation() async {
     placemarks = const [];
   }
 
+  print("Got location: ${position.latitude}, ${position.longitude}");
+
   return {
     "latitude": position.latitude,
     "longitude": position.longitude,
