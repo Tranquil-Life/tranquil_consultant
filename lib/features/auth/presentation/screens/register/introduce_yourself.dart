@@ -55,7 +55,7 @@ class _IntroduceYourselfPageState extends State<IntroduceYourselfPage> {
       body: Padding(
           padding: EdgeInsets.only(left: 24, right: 24, top: 24),
           child: SingleChildScrollView(
-            child: Column(
+            child: Obx(()=>Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
@@ -123,11 +123,15 @@ class _IntroduceYourselfPageState extends State<IntroduceYourselfPage> {
                     });
 
                     await Future.delayed(Duration(seconds: 1));
-                    File? file =
-                        await MediaService.selectImage(ImageSource.gallery);
-                    // await profileController.uploadVideo(File(video.path));
-                    await mediaController.uploadFile(
-                        file!, profileImage, authController);
+                    XFile? file = await MediaService.selectImage(ImageSource.gallery);
+
+                    if (file != null) {
+                      await mediaController.uploadFile(
+                          file, // Now matches the XFile parameter type
+                          profileImage,
+                          authController
+                      );
+                    }
                   },
                 ),
                 if (authController.profilePic.value.isNotEmpty)
@@ -162,7 +166,7 @@ class _IntroduceYourselfPageState extends State<IntroduceYourselfPage> {
                               context: context,
                               builder: (_) {
                                 return AlertDialog(
-                                  backgroundColor: Colors.white,
+                                    backgroundColor: Colors.white,
                                     content: Text(
                                         "This is what the clients see when they view your profile"));
                               });
@@ -174,11 +178,14 @@ class _IntroduceYourselfPageState extends State<IntroduceYourselfPage> {
                   height: displayHeight(context) / 10,
                 ),
                 Obx(() => CustomButton(
-                    onPressed: (authController.profilePic.value.isEmpty)
+                    onPressed: (authController.profilePic.value.isEmpty &&
+                        authController.introVideo.value.isEmpty)
                         ? null
                         : () {
-                            authController.signUp();
-                          },
+                      Get.toNamed(Routes.DOCUSIGN);
+
+                      // authController.signUp();
+                    },
                     text: "Complete sign up")),
                 SizedBox(
                   height: 40,
@@ -209,7 +216,7 @@ class _IntroduceYourselfPageState extends State<IntroduceYourselfPage> {
                   ),
                 ),
               ],
-            ),
+            )),
           )),
     );
   }

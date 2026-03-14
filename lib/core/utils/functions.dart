@@ -129,7 +129,6 @@ Future getFileSize(String filepath, int decimals) async {
   }
 }
 
-
 Future<Map<String, dynamic>> getCurrLocation() async {
   // (Optional) check location services (mainly useful on mobile)
   final serviceEnabled = await Geolocator.isLocationServiceEnabled();
@@ -168,6 +167,8 @@ Future<Map<String, dynamic>> getCurrLocation() async {
     // Keep placemarks empty; still return lat/lng
     placemarks = const [];
   }
+
+  print("Got location: ${position.latitude}, ${position.longitude}");
 
   return {
     "latitude": position.latitude,
@@ -249,7 +250,7 @@ Future shareFile({File? fileToShare, String? urlToShare}) async {
     }
   } catch (e) {
     CustomSnackBar.errorSnackBar(
-       "Failed to share",
+      "Failed to share",
     );
   }
 }
@@ -258,21 +259,32 @@ Future<Map<String, dynamic>> convertFilesToMultipart(
     Map<String, dynamic> data) async {
   Map<String, dynamic> newData = Map<String, dynamic>.from(data);
 
-  // Iterate over the map and check for keys with File values
   for (String key in newData.keys) {
-    if (newData[key] is File) {
-      File file = newData[key] as File;
+    var value = newData[key];
 
-      // Replace the file with a MultipartFile
+    if (value == null) continue;
+
+    // 1. Handle Web (Unit8List bytes)
+    if (kIsWeb && value is Uint8List) {
+      newData[key] = dio.MultipartFile.fromBytes(
+        value,
+        filename: '$key.jpg', // Browsers need a filename
+        contentType: MediaType('image', 'jpeg'),
+      );
+    }
+    // 2. Handle Mobile (dart:io File)
+    else if (!kIsWeb && value is File) {
       newData[key] = await dio.MultipartFile.fromFile(
-        file.path,
-        filename: basename(file.path), // Extract filename from path
+        value.path,
+        filename: basename(value.path),
       );
     }
   }
 
   return newData;
 }
+
+
 
 String truncateWithEllipsis(int maxLength, String text) {
   return (text.length <= maxLength)
@@ -299,18 +311,43 @@ List<String> getTitlesAfterComma(String input) {
 Future<bool> checkForEmptyProfileInfo() async {
   final dashboardController = DashboardController.instance;
 
-  await Future.delayed(Duration(milliseconds: 800));
-  dashboardController.getQualifications();
+  await Future.delayed(const Duration(milliseconds: 800));
+  await dashboardController.getQualifications();
+
   User user = UserModel.fromJson(userDataStore.user);
-  if (user.firstName.isEmpty ||
-      user.bio.isEmpty ||
-      user.specialties!.isEmpty ||
-      user.videoIntroUrl!.isEmpty ||
-      dashboardController.qualifications.isEmpty) {
-    return true;
-  } else {
-    return false;
+
+  List<String> emptyFields = [];
+
+  if (user.firstName.isEmpty) {
+    emptyFields.add("firstName");
   }
+
+  if (user.bio.isEmpty) {
+    emptyFields.add("bio");
+  }
+
+  if (user.specialties == null || user.specialties!.isEmpty) {
+    emptyFields.add("specialties");
+  }
+
+  if (user.videoIntroUrl == null || user.videoIntroUrl!.isEmpty) {
+    emptyFields.add("videoIntroUrl");
+  }
+
+  if (dashboardController.qualifications.isEmpty) {
+    emptyFields.add("qualifications");
+  }
+
+  if (emptyFields.isNotEmpty) {
+    debugPrint("Empty profile fields: ${emptyFields.join(', ')}");
+    CustomSnackBar.neutralSnackBar(
+        "Your ${emptyFields.length > 1 ? emptyFields.join(', ') : emptyFields} "
+        "field${emptyFields.length > 1 ? "s" : ""} ${emptyFields.length > 1 ? "are" : "is"} "
+        "empty, please fill it out to proceed.");
+    return true;
+  }
+
+  return false;
 }
 
 String twoDigits(int n) {
@@ -417,6 +454,8 @@ String? extractDateYmd(Map<String, dynamic> json) {
   }
   return null;
 }
+
+
 
 // Future<Uint8List> blobToBytes(html.Blob blob) async {
 //   final c = Completer<Uint8List>();

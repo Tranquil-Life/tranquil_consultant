@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/global/custom_app_bar.dart';
 import 'package:tl_consultant/core/global/custom_fab.dart';
 import 'package:tl_consultant/core/global/custom_snackbar.dart';
@@ -78,28 +79,28 @@ class _DashboardState extends State<Dashboard> {
     meetingsController.currentMeeting.value = null;
 
     for (final meeting in meetingsController.meetings) {
-      // meeting.setIsExpired(now);
-      //
-      // final isOngoing =
-      //     !meeting.isExpired &&
-      //         (meeting.startAt.isBefore(now) || meeting.startAt.isAtSameMomentAs(now)) &&
-      //         (meeting.endAt.isAfter(now) || meeting.endAt.isAtSameMomentAs(now));
-      //
-      // if (isOngoing) {
-      //   dashboardController.currentMeetingCount.value = 1;
-      //   dashboardController.currentMeetingId.value = meeting.id;
-      //   client = meeting.client;
-      //   meetingsController.currentMeeting.value = meeting;
-      //   break; // stop after finding the current meeting
-      // }
+      meeting.setIsExpired(now);
 
-      //TODO: Temporary fix for testing purposes
-      if (meeting.id == 5) {
+      final isOngoing =
+          !meeting.isExpired &&
+              (meeting.startAt.isBefore(now) || meeting.startAt.isAtSameMomentAs(now)) &&
+              (meeting.endAt.isAfter(now) || meeting.endAt.isAtSameMomentAs(now));
+
+      if (isOngoing) {
         dashboardController.currentMeetingCount.value = 1;
         dashboardController.currentMeetingId.value = meeting.id;
         client = meeting.client;
         meetingsController.currentMeeting.value = meeting;
+        break; // stop after finding the current meeting
       }
+
+      //TODO: Temporary fix for testing purposes
+      // if (meeting.id == 5) {
+      //   dashboardController.currentMeetingCount.value = 1;
+      //   dashboardController.currentMeetingId.value = meeting.id;
+      //   client = meeting.client;
+      //   meetingsController.currentMeeting.value = meeting;
+      // }
 
     }
   }
@@ -152,7 +153,6 @@ class _DashboardState extends State<Dashboard> {
                         "You have no ongoing session");
                   }
 
-                  //TODO: Uncomment this after testing
                   ///the below code is for testing purposes only
                   // await chatController.getChatInfo(client: client!);
                   // await meetingsController.startMeeting();
@@ -166,8 +166,7 @@ class _DashboardState extends State<Dashboard> {
         bottomNavigationBar: bottomAppBar(context),
         body: isSmallScreen(context)
             ? dashboardController.pages[dashboardController.currentIndex.value]
-            : large(),
-      );
+            : large(),      );
     });
   }
 
@@ -188,17 +187,21 @@ class _DashboardState extends State<Dashboard> {
   Widget large() {
     final iconSize = 0.0;
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
           width: 120,
           padding: EdgeInsets.symmetric(horizontal: 16, vertical: 40),
-          decoration: BoxDecoration(color: ColorPalette.white, boxShadow: [
-            BoxShadow(
-              blurRadius: 4,
-              color: Colors.black12,
-              offset: Offset(3, 0),
-            ),
-          ]),
+          decoration: BoxDecoration(
+            color: ColorPalette.white,
+            boxShadow: [
+              BoxShadow(
+                blurRadius: 4,
+                color: Colors.black12,
+                offset: Offset(3, 0),
+              ),
+            ],
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -242,19 +245,19 @@ class _DashboardState extends State<Dashboard> {
                   await updateDashboardMeetingInfo();
 
                   //TODO: Remember to uncomment for production
-                  // if (client != null) {
-                  //   await chatController.getChatInfo(client: client);
-                  //   dashboardController.updateIndex(2);
-                  //   await meetingsController.startMeeting();
-                  // } else {
-                  //   CustomSnackBar.neutralSnackBar(
-                  //       "You have no ongoing session");
-                  // }
+                  if (client != null) {
+                    await chatController.getChatInfo(client: client);
+                    dashboardController.updateIndex(2);
+                    await meetingsController.startMeeting();
+                  } else {
+                    CustomSnackBar.neutralSnackBar(
+                        "You have no ongoing session");
+                  }
 
                   //TODO: The below code is for testing purposes only
-                  await chatController.getChatInfo(client: client);
-                  dashboardController.updateIndex(2);
-                  await meetingsController.startMeeting();
+                  // await chatController.getChatInfo(client: client);
+                  // dashboardController.updateIndex(2);
+                  // await meetingsController.startMeeting();
                 },
               ),
               SizedBox(height: 40),
@@ -287,9 +290,114 @@ class _DashboardState extends State<Dashboard> {
           ),
         ),
         Expanded(
-            child: dashboardController
-                .largePages[dashboardController.currentIndex.value])
+          child: dashboardController
+              .largePages[dashboardController.currentIndex.value],
+        ),
       ],
     );
+    // return Row(
+    //   children: [
+    //     Container(
+    //       width: 120,
+    //       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 40),
+    //       decoration: BoxDecoration(color: ColorPalette.white, boxShadow: [
+    //         BoxShadow(
+    //           blurRadius: 4,
+    //           color: Colors.black12,
+    //           offset: Offset(3, 0),
+    //         ),
+    //       ]),
+    //       child: Column(
+    //         crossAxisAlignment: CrossAxisAlignment.start,
+    //         children: [
+    //           BuildNavItem(
+    //             index: 0,
+    //             icon: dashboardController.isSelected(0)
+    //                 ? SvgElements.svgHomeActive
+    //                 : SvgElements.svgHomeInactive,
+    //             label: 'Home',
+    //             size: displaySize(context),
+    //             iconSize: iconSize,
+    //             isSelected: dashboardController.isSelected(0),
+    //             dashboardController: dashboardController,
+    //             onTap: () => dashboardController.updateIndex(0),
+    //           ),
+    //           SizedBox(height: 40),
+    //           BuildNavItem(
+    //             index: 1,
+    //             icon: dashboardController.isSelected(1)
+    //                 ? SvgElements.svgNotesActive
+    //                 : SvgElements.svgNotesInactive,
+    //             label: 'Notes',
+    //             size: displaySize(context),
+    //             iconSize: iconSize,
+    //             isSelected: dashboardController.isSelected(1),
+    //             dashboardController: dashboardController,
+    //             onTap: () => dashboardController.updateIndex(1),
+    //           ),
+    //           SizedBox(height: 40),
+    //           BuildNavItem(
+    //             index: 2,
+    //             icon: dashboardController.isSelected(2)
+    //                 ? SvgElements.svgChat
+    //                 : SvgElements.svgChat,
+    //             label: 'Chat',
+    //             size: displaySize(context),
+    //             iconSize: iconSize,
+    //             isSelected: dashboardController.isSelected(2),
+    //             dashboardController: dashboardController,
+    //             onTap: () async {
+    //               await updateDashboardMeetingInfo();
+    //
+    //               //TODO: Remember to uncomment for production
+    //               if (client != null) {
+    //                 await chatController.getChatInfo(client: client);
+    //                 dashboardController.updateIndex(2);
+    //                 await meetingsController.startMeeting();
+    //               } else {
+    //                 CustomSnackBar.neutralSnackBar(
+    //                     "You have no ongoing session");
+    //               }
+    //
+    //               //TODO: The below code is for testing purposes only
+    //               // await chatController.getChatInfo(client: client);
+    //               // dashboardController.updateIndex(2);
+    //               // await meetingsController.startMeeting();
+    //             },
+    //           ),
+    //           SizedBox(height: 40),
+    //           BuildNavItem(
+    //             index: 3,
+    //             icon: dashboardController.isSelected(3)
+    //                 ? SvgElements.svgWalletActive
+    //                 : SvgElements.svgWalletInactive,
+    //             label: 'Wallet',
+    //             size: displaySize(context),
+    //             iconSize: iconSize,
+    //             isSelected: dashboardController.isSelected(3),
+    //             dashboardController: dashboardController,
+    //             onTap: () => dashboardController.updateIndex(3),
+    //           ),
+    //           SizedBox(height: 40),
+    //           BuildNavItem(
+    //             index: 4,
+    //             icon: dashboardController.isSelected(4)
+    //                 ? SvgElements.svgMoreActive
+    //                 : SvgElements.svgMoreInactive,
+    //             label: 'More',
+    //             size: displaySize(context),
+    //             iconSize: iconSize,
+    //             isSelected: dashboardController.isSelected(4),
+    //             dashboardController: dashboardController,
+    //             onTap: () => dashboardController.updateIndex(4),
+    //           ),
+    //         ],
+    //       ),
+    //     ),
+    //     Expanded(
+    //         child: dashboardController
+    //             .largePages[dashboardController.currentIndex.value])
+    //   ],
+    // );
   }
 }

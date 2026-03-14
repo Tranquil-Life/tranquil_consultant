@@ -35,7 +35,7 @@ class _SoloBasedVerificationState extends State<SoloBasedVerification> {
     super.initState();
   }
 
-  startTimer() {
+  void startTimer() {
     timer = Timer.periodic(Duration(seconds: 1), (timer) {
       setState(() {
         if (countdownSeconds > 0) {
@@ -184,9 +184,7 @@ class _SoloBasedVerificationState extends State<SoloBasedVerification> {
                   if (verificationState() == true)
                     CustomButton(
                         onPressed: () {
-                          // Get.toNamed(Routes.INTRODUCE_YOURSELF);
-
-                          Get.toNamed(Routes.DOCUSIGN);
+                          Get.toNamed(Routes.INTRODUCE_YOURSELF);
                         },
                         text: "Proceed to account creation"),
                   SizedBox(height: 40),
@@ -223,7 +221,7 @@ class _SoloBasedVerificationState extends State<SoloBasedVerification> {
     );
   }
 
-  verificationState() {
+  bool? verificationState() {
     if (verificationController.isConfirmed.value &&
         verificationController.isVerified.value) {
       return true;

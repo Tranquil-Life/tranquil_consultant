@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
@@ -10,7 +11,7 @@ import 'package:tl_consultant/core/utils/services/media_service.dart';
 import 'package:tl_consultant/features/wallet/presentation/controllers/earnings_controller.dart';
 
 class UploadPassportWidget extends StatelessWidget {
-  UploadPassportWidget(
+  const UploadPassportWidget(
       {super.key,
       required this.earningsController,
       this.front,
@@ -18,9 +19,9 @@ class UploadPassportWidget extends StatelessWidget {
       this.isPassport, this.onChangeType, this.onSnapFrontOfID});
 
   final EarningsController earningsController;
-  File? front;
-  File? back;
-  bool? isPassport;
+  final XFile? front;
+  final XFile? back;
+  final bool? isPassport;
   final Function()? onChangeType;
   final Function()? onSnapFrontOfID;
 
@@ -60,7 +61,7 @@ class UploadPassportWidget extends StatelessWidget {
                         Text("Front")
                       ],
                     ))
-                : Image.file(front!),
+                : Image.file(front != null ? File(front!.path) : File("")),
           ),
         ),
         SizedBox(height: 12),

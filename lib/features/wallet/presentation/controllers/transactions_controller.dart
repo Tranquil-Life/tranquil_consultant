@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/global/custom_snackbar.dart';
+import 'package:tl_consultant/core/global/custom_text.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
+import 'package:tl_consultant/core/utils/functions.dart';
+import 'package:tl_consultant/core/utils/routes/app_pages.dart';
 import 'package:tl_consultant/features/profile/data/models/user_model.dart';
 import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 import 'package:tl_consultant/features/wallet/data/repos/wallet_repo_impl.dart';
@@ -40,22 +44,52 @@ class TransactionsController extends GetxController {
   late ScrollController scrollController;
 
   Future loadInitialStripeTranx() async {
-    var result = await walletRepo.getStripeTransactions(
-        startingAfter: startingAfter?.value,
-        accountId: "${UserModel.fromJson(userDataStore.user).stripeAccountId}");
-    isFirstLoadRunning.value = true;
+    if (stripeAccountId == null) {
+      showDialog(
+          context: Get.context!,
+          builder: (_) {
+            return AlertDialog(
+              backgroundColor: Colors.white,
+              title: Text("No Stripe Account"),
+              content: Text(
+                  "You need to create a Stripe account to receive payments. Please create your Stripe account to proceed."),
+              actions: [
+                TextButton(onPressed: ()=>Get.back(), child: CustomText(text: "Cancel", color: ColorPalette.red)),
+                TextButton(
+                    onPressed: () async{
+                      Get.back();
 
-    result.fold(
-        (l) => CustomSnackBar.errorSnackBar(
-          l.message.toString()), (r) {
-      stripeTrnx.clear();
-      result.map((r) => stripeTrnx.value = (r['data']['transactions'] as List)
-          .map((e) => StripeTransaction.fromJson(e))
-          .toList());
-    });
+                      var isEmpty = await checkForEmptyProfileInfo();
+                      if (isEmpty) {
+                        Get.toNamed(Routes.EDIT_PROFILE);
+                      } else {
+                        Get.toNamed(Routes.WITHDRAWAL_INFO);
+                      }
+                    },
+                    child: CustomText(text: "Create", color: ColorPalette.green))
+              ],
+            );
+          });
+    } else {
+      var result = await walletRepo.getStripeTransactions(
+          startingAfter: startingAfter?.value,
+          accountId:
+              "${UserModel.fromJson(userDataStore.user).stripeAccountId}");
+      isFirstLoadRunning.value = true;
 
-    update();
-    isFirstLoadRunning.value = false;
+      result.fold((l) {
+        print(l.message);
+        CustomSnackBar.errorSnackBar(l.message.toString());
+      }, (r) {
+        stripeTrnx.clear();
+        result.map((r) => stripeTrnx.value = (r['data']['transactions'] as List)
+            .map((e) => StripeTransaction.fromJson(e))
+            .toList());
+      });
+
+      update();
+      isFirstLoadRunning.value = false;
+    }
   }
 
   Future loadMoreStripeTranx() async {
@@ -74,12 +108,15 @@ class TransactionsController extends GetxController {
 
       isLoadMoreRunning.value = false; // Hide the loading indicator
 
-      result.fold((l)=>CustomSnackBar.errorSnackBar(
-        l.message.toString(),
-      ), (r){
+      result.fold(
+          (l) => CustomSnackBar.errorSnackBar(
+                l.message.toString(),
+              ), (r) {
         // If we have new transactions, add them to the existing list
         List<StripeTransaction> fetchedTransactions =
-        (r['data']['transactions'] as List).map((e) => StripeTransaction.fromJson(e)).toList();
+            (r['data']['transactions'] as List)
+                .map((e) => StripeTransaction.fromJson(e))
+                .toList();
 
         // Check if there are transactions to add
         if (fetchedTransactions.isNotEmpty) {

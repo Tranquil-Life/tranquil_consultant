@@ -72,7 +72,7 @@ class _ProfileScreenState extends State<ProfileScreen>
       });
     });
 
-    // ✅ Do not trigger reactive updates during build
+    // Do not trigger reactive updates during build
     WidgetsBinding.instance.addPostFrameCallback((_) {
       checkVariables();
     });
@@ -123,6 +123,8 @@ class _ProfileScreenState extends State<ProfileScreen>
               const SizedBox(height: 24),
               ProfileRow(),
               const SizedBox(height: 24),
+
+              therapist!.approved! ? SizedBox.shrink() :
               PersonalInfo(
                 therapist: therapist,
               ),

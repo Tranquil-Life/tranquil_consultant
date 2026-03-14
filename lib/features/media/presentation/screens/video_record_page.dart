@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:camera/camera.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -34,7 +34,7 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
   final authController = AuthController.instance;
 
   late CameraController _cameraController;
-  late VideoPlayerController _videoPlayerController;
+  VideoPlayerController? _videoPlayerController;
   late AnimationController animationController;
   late Animation<double> _animation;
   Future<void>? _videoPlayerFuture;
@@ -64,7 +64,7 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
   void dispose() {
     _cameraController.dispose();
     animationController.dispose();
-    _videoPlayerController.dispose();
+    _videoPlayerController?.dispose();
 
     super.dispose();
   }
@@ -88,29 +88,44 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
 
   /// Video Recording related functions
   ///
-  initCamera() async {
+  Future<void> initCamera() async {
     final cameras = await availableCameras();
-    final front = cameras.firstWhere(
-        (camera) => camera.lensDirection == CameraLensDirection.front);
-    _cameraController =
-        CameraController(front, ResolutionPreset.max, enableAudio: true);
+
+    if (cameras.isEmpty) {
+      print("No cameras found");
+      return;
+    }
+
+    CameraController? tempController;
+
+    try {
+      // We define 'selectedCamera' here to avoid confusion
+      final selectedCamera = cameras.firstWhere(
+        (camera) => camera.lensDirection == CameraLensDirection.front,
+        orElse: () => cameras.first,
+      );
+
+      tempController = CameraController(selectedCamera, ResolutionPreset.max,
+          enableAudio: true);
+    } catch (e) {
+      tempController = CameraController(cameras.first, ResolutionPreset.max,
+          enableAudio: true);
+    }
+
+    _cameraController = tempController;
+
+    // REMOVE THE OLD LINE HERE - It was using the undefined 'front' variable
+    // _cameraController = CameraController(front, ...);
+
     await _cameraController.initialize().then((_) {
-      if (!mounted) {
-        return;
-      }
+      if (!mounted) return;
       setState(() {});
     }).catchError((Object e) {
       if (e is CameraException) {
-        switch (e.code) {
-          case 'CameraAccessDenied':
-            // Handle access errors here.
-            break;
-          default:
-            // Handle other errors here.
-            break;
-        }
+        // Handle errors...
       }
     });
+
     setState(() => _isLoading = false);
   }
 
@@ -129,7 +144,6 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
 
     if (isRecording) {
       video = await _cameraController.stopVideoRecording(); // Returns an XFile
-      File videoFile = File(video.path);
       setState(() => isRecording = false);
 
       animationController.reset();
@@ -137,39 +151,78 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
 
       setupVideoPlayer();
 
-      print('Video saved at: ${videoFile.path}');
+      print('Video saved at: ${video.path}');
     }
   }
 
   Future stopRecording() async {
     if (isRecording) {
-      video = await _cameraController.stopVideoRecording(); // Returns an XFile
-      File videoFile = File(video.path); // Convert XFile to File
+      video = await _cameraController.stopVideoRecording();
 
       setState(() => isRecording = false);
-
       animationController.reset();
       inVideoPlayerState = true;
 
+      // Logic for Video Player initialization
       setupVideoPlayer();
 
-      print('Video saved at: ${videoFile.path}');
+      // Safe Printing for both platforms
+      if (kIsWeb) {
+        debugPrint('Web Blob URL: ${video.path}');
+      } else {
+        // ONLY use File() here because we know we are on Mobile
+        File videoFile = File(video.path);
+        debugPrint('Mobile File Path: ${videoFile.path}');
+      }
     }
   }
 
   /// Video Player related functions
-  ///
-  Future initVideoPlayer() async {
-    _videoPlayerController = VideoPlayerController.file(File(video.path))
-      ..addListener(() {
+  ///Old
+  // Future initVideoPlayer() async {
+  //   _videoPlayerController = VideoPlayerController.file(File(video.path))
+  //     ..addListener(() {
+  //       setState(() {
+  //         _currentPosition =
+  //             _videoPlayerController!.value.position.inMilliseconds.toDouble();
+  //       });
+  //     });
+  //   await _videoPlayerController?.initialize();
+  //   await _videoPlayerController?.setLooping(true);
+  //   await _videoPlayerController?.play();
+  // }
+
+  ///NEW
+  Future<void> initVideoPlayer() async {
+    // 1. Create the controller instance first
+    if (_videoPlayerController != null) {
+      await _videoPlayerController!.dispose();
+      _videoPlayerController = null;
+    }
+
+    if (kIsWeb) {
+      _videoPlayerController = VideoPlayerController.networkUrl(
+        Uri.parse(video.path),
+      );
+    } else {
+      _videoPlayerController = VideoPlayerController.file(File(video.path));
+    }
+
+    // 3. Add listeners BEFORE initializing
+    _videoPlayerController!.addListener(() {
+      if (mounted) {
+        // Always check mounted in async calls
         setState(() {
           _currentPosition =
-              _videoPlayerController.value.position.inMilliseconds.toDouble();
+              _videoPlayerController!.value.position.inMilliseconds.toDouble();
         });
-      });
-    await _videoPlayerController.initialize();
-    await _videoPlayerController.setLooping(true);
-    await _videoPlayerController.play();
+      }
+    });
+
+    // 4. Initialize and Play
+    await _videoPlayerController!.initialize();
+    await _videoPlayerController!.setLooping(true);
+    await _videoPlayerController!.play();
   }
 
   void setupVideoPlayer() {
@@ -179,11 +232,11 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
   }
 
   Future pauseVideoPlayer() async {
-    _videoPlayerController.pause();
+    _videoPlayerController?.pause();
   }
 
   Future playVideoPlayer() async {
-    _videoPlayerController.play();
+    _videoPlayerController?.play();
   }
 
   @override
@@ -202,270 +255,333 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
             : Stack(
                 clipBehavior: Clip.none,
                 children: [
-                  Column(
-                    children: [
-                      if (inVideoPlayerState)
-                        Column(
-                          children: [
-                            SizedBox(
-                                height: 500,
-                                width: displayWidth(context),
-                                child: FutureBuilder(
-                                  future: _videoPlayerFuture,
-                                  builder: (context, state) {
-                                    if (state.connectionState ==
-                                        ConnectionState.waiting) {
-                                      return const Center(
-                                          child: CircularProgressIndicator());
-                                    } else {
-                                      return VideoPlayer(
-                                          _videoPlayerController);
-                                    }
-                                  },
-                                )),
-                            Slider(
-                              value: _currentPosition,
-                              max: _videoPlayerController
-                                  .value.duration.inMilliseconds
-                                  .toDouble(),
-                              min: 0.0,
-                              onChanged: (value) {
-                                setState(() {
-                                  _currentPosition = value;
-                                });
-                                _videoPlayerController.seekTo(
-                                    Duration(milliseconds: value.toInt()));
-                              },
-                              activeColor: Colors.green,
-                              inactiveColor: Colors.green.shade100,
-                            ),
-                            Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 24),
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(formatDuration(_currentPosition)),
-                                        Text(formatDuration(
-                                            _videoPlayerController
-                                                .value.duration.inMilliseconds
-                                                .toDouble()))
-                                      ],
-                                    ),
+                  SingleChildScrollView(
+                    child: Column(
+                      children: [
 
-                                    SizedBox(height: 24),
-                                    // Playback Controls
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
+                        if (inVideoPlayerState)
+                          FutureBuilder(
+                            future: _videoPlayerFuture,
+                            builder: (context, state) {
+                              // Check 1: Is the future even created yet?
+                              if (_videoPlayerFuture == null) {
+                                return SizedBox(
+                                  height: 500,
+                                  width: displayWidth(context),
+                                  child: Center(
+                                      child: CircularProgressIndicator(
+                                          color: Colors.green)),
+                                );
+                              }
+
+                              // Check 2: Is it still loading or did it error?
+                              if (state.connectionState ==
+                                  ConnectionState.waiting) {
+                                return const SizedBox(
+                                  height: 500,
+                                  child: Center(
+                                      child: CircularProgressIndicator(
+                                          color: Colors.green)),
+                                );
+                              } else if (state.hasError) {
+                                return SizedBox(
+                                  height: 500,
+                                  child: Center(
+                                      child: Text("Error: ${state.error}")),
+                                );
+                              }
+
+                              // Check 3: Is the controller actually ready?
+                              if (_videoPlayerController == null ||
+                                  !_videoPlayerController!
+                                      .value.isInitialized) {
+                                return const SizedBox(
+                                  height: 500,
+                                  child: Center(
+                                      child: CircularProgressIndicator(
+                                          color: Colors.red)),
+                                );
+                              }
+
+                              // SUCCESS: Show the player and controls
+                              return Column(
+                                children: [
+                                  SizedBox(
+                                    height: 500,
+                                    width: displayWidth(context),
+                                    child: VideoPlayer(_videoPlayerController!),
+                                  ),
+                                  Slider(
+                                    value: _currentPosition,
+                                    max: _videoPlayerController!
+                                        .value.duration.inMilliseconds
+                                        .toDouble(),
+                                    min: 0.0,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        _currentPosition = value;
+                                      });
+                                      _videoPlayerController?.seekTo(Duration(
+                                          milliseconds: value.toInt()));
+                                    },
+                                    activeColor: Colors.green,
+                                    inactiveColor: Colors.green.shade100,
+                                  ),
+
+                                  Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 24),
+                                    child: Column(
                                       children: [
-                                        SvgPicture.asset(
-                                          SvgElements.svgDownloadIcon,
-                                          height: 30,
-                                          width: 30,
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(formatDuration(
+                                                _currentPosition)),
+                                            Text(formatDuration(
+                                                _videoPlayerController!.value
+                                                    .duration.inMilliseconds
+                                                    .toDouble()))
+                                          ],
                                         ),
-                                        Container(
-                                          height: 60,
-                                          width: 60,
-                                          decoration: BoxDecoration(
-                                            color: ColorPalette.green.shade100,
-                                            borderRadius:
-                                                BorderRadius.circular(100),
-                                          ),
-                                          child: Center(
-                                              child: GestureDetector(
-                                            onTap: () => setState(() {
-                                              if (_videoPlayerController
-                                                  .value.isPlaying) {
-                                                _videoPlayerController.pause();
-                                              } else {
-                                                _videoPlayerController.play();
-                                              }
-                                            }),
-                                            child: Container(
-                                              padding: EdgeInsets.all(14),
-                                              child: _videoPlayerController
-                                                      .value.isPlaying
-                                                  ? SvgPicture.asset(
-                                                      SvgElements.svgPauseIcon)
-                                                  : SvgPicture.asset(
-                                                      SvgElements.svgPlayIcon),
+
+                                        SizedBox(height: 24),
+                                        // Playback Controls
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            SvgPicture.asset(
+                                              SvgElements.svgDownloadIcon,
+                                              height: 30,
+                                              width: 30,
                                             ),
-                                          )),
+                                            Container(
+                                              height: 60,
+                                              width: 60,
+                                              decoration: BoxDecoration(
+                                                color:
+                                                    ColorPalette.green.shade100,
+                                                borderRadius:
+                                                    BorderRadius.circular(100),
+                                              ),
+                                              child: Center(
+                                                child: GestureDetector(
+                                                  onTap: () => setState(() {
+                                                    if (_videoPlayerController!
+                                                        .value.isPlaying) {
+                                                      _videoPlayerController
+                                                          ?.pause();
+                                                    } else {
+                                                      _videoPlayerController
+                                                          ?.play();
+                                                    }
+                                                  }),
+                                                  child: Container(
+                                                    padding: EdgeInsets.all(14),
+                                                    child: _videoPlayerController!
+                                                            .value.isPlaying
+                                                        ? SvgPicture.asset(
+                                                            SvgElements
+                                                                .svgPauseIcon)
+                                                        : SvgPicture.asset(
+                                                            SvgElements
+                                                                .svgPlayIcon),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+
+                                            GestureDetector(
+                                              onTap: () {
+                                                shareFile(
+                                                    fileToShare:
+                                                    File(video.path));
+                                              },
+                                              child: SvgPicture.asset(
+                                                SvgElements.svgShareIcon,
+                                                color: ColorPalette.grey[800],
+                                                height: 24,
+                                                width: 24,
+                                              ),
+                                            )
+                                          ],
                                         ),
-                                        GestureDetector(
-                                          onTap: () {
-                                            shareFile(
-                                                fileToShare: File(video.path));
-                                          },
-                                          child: SvgPicture.asset(
-                                            SvgElements.svgShareIcon,
-                                            color: ColorPalette.grey[800],
-                                            height: 24,
-                                            width: 24,
-                                          ),
-                                        )
-                                      ],
-                                    ),
 
-                                    SizedBox(height: 40),
+                                        SizedBox(height: 40),
 
-                                    CustomButton(
-                                        onPressed: () async {
-                                          Get.back();
+                                        CustomButton(
+                                            onPressed: () async {
+                                              Get.back();
 
-                                          await Future.delayed(
-                                              Duration(seconds: 1));
+                                              await Future.delayed(
+                                                  Duration(seconds: 1));
 
-                                          mediaController
-                                              .resetUploadVars();
+                                              mediaController.resetUploadVars();
 
-                                          Get.to(
-                                              () => const VideoRecordingPage());
-                                        },
-                                        text: "Retake video",
-                                        textColor: ColorPalette.green,
-                                        showBorder: true,
-                                        bgColor: ColorPalette.white),
-                                    SizedBox(height: 20),
+                                              Get.to(() =>
+                                              const VideoRecordingPage());
+                                            },
+                                            text: "Retake video",
+                                            textColor: ColorPalette.green,
+                                            showBorder: true,
+                                            bgColor: ColorPalette.white),
+                                        SizedBox(height: 20),
 
-                                    Obx(() => CustomButton(
-                                        onPressed: (uploadTextState() ==
-                                                    successfulUploadMsg ||
+                                        Obx(() => CustomButton(
+                                            onPressed: (uploadTextState() ==
+                                                successfulUploadMsg ||
                                                 uploadTextState() ==
                                                     compressingVideoMsg ||
                                                 uploadTextState().contains(
                                                     uploadingVideoMsg))
-                                            ? null
-                                            : () async {
-                                                if (previousRoute ==
-                                                    Routes.INTRODUCE_YOURSELF) {
-                                                  await mediaController
-                                                      .uploadFile(
-                                                          File(video.path),
-                                                          videoIntro,
-                                                          authController);
-                                                } else {
-                                                  await mediaController
-                                                      .uploadFile(
-                                                          File(video.path),
-                                                          videoIntro,
-                                                          profileController);
-                                                }
-                                              },
-                                        textColor: uploadTextState() ==
-                                                    successfulUploadMsg ||
+                                                ? null
+                                                : () async {
+                                              if (previousRoute ==
+                                                  Routes
+                                                      .INTRODUCE_YOURSELF) {
+                                                await mediaController
+                                                    .uploadFile(
+                                                    video,
+                                                    videoIntro,
+                                                    authController);
+                                              } else {
+                                                await mediaController
+                                                    .uploadFile(
+                                                    video,
+                                                    videoIntro,
+                                                    profileController);
+                                              }
+                                            },
+                                            textColor: uploadTextState() ==
+                                                successfulUploadMsg ||
                                                 uploadTextState() ==
                                                     compressingVideoMsg ||
-                                                uploadTextState()
-                                                    .contains(uploadingVideoMsg)
-                                            ? ColorPalette.green
-                                            : ColorPalette.white,
-                                        text: uploadTextState()))
-                                  ],
-                                )),
-                          ],
-                        )
-                      else
-                        CameraPreview(_cameraController),
-                      SizedBox(height: 24),
-                      if (!inVideoPlayerState)
-                        //The recorder controller icons
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            // Container(
-                            //   height: 40,
-                            //   width: 40,
-                            //   padding: EdgeInsets.all(12),
-                            //   decoration: BoxDecoration(
-                            //       border: Border.all(
-                            //           width: 1, color: ColorPalette.green),
-                            //       borderRadius: BorderRadius.circular(100)),
-                            //   child:
-                            //       SvgPicture.asset(SvgElements.svgPlayIcon),
-                            // ),
-                            Expanded(child: Container()),
-                            Expanded(
-                              flex: 3,
-                              child: GestureDetector(
-                                onTap: () {
-                                  startRecording();
-                                },
-                                child: Stack(
-                                  alignment: Alignment.center,
-                                  // Align both widgets perfectly at the center
-                                  children: [
-                                    // Base Container - the circle with a border
-                                    Container(
-                                      height: 60,
-                                      width: 60,
-                                      decoration: BoxDecoration(
-                                        border: Border.all(
-                                            width: 6,
-                                            color: Colors.green.shade200),
-                                        borderRadius:
-                                            BorderRadius.circular(100),
-                                      ),
-                                      child: Center(
-                                        child: Container(
-                                          padding: EdgeInsets.all(14),
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(100),
-                                            color: ColorPalette.green,
-                                          ),
-                                          height: 32,
-                                          width: 32,
-                                        ),
-                                      ),
+                                                uploadTextState().contains(
+                                                    uploadingVideoMsg)
+                                                ? ColorPalette.green
+                                                : ColorPalette.white,
+                                            text: uploadTextState()))
+                                      ],
                                     ),
-
-                                    // Circular Progress Indicator
-                                    if (isRecording)
-                                      SizedBox(
-                                        height: 54, // Match the container size
-                                        width: 54,
-                                        child: CircularProgressIndicator(
-                                          value: _animation.value,
-                                          strokeWidth: 4,
-                                          valueColor:
-                                              AlwaysStoppedAnimation<Color>(
-                                                  Colors.green),
+                                  )
+                                ],
+                              );
+                            },
+                          )
+                        else
+                          if(isLargeScreen(context))
+                             Container(
+                              height: 600,
+                              width: displayWidth(context),
+                              child: CameraPreview(_cameraController),
+                            )
+                          else
+                             Container(
+                              height: 300,
+                              width: displayWidth(context),
+                              child: CameraPreview(_cameraController),
+                            ),
+                          // CameraPreview(_cameraController),
+                        SizedBox(height: 24),
+                        if (!inVideoPlayerState)
+                          //The recorder controller icons
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              // Container(
+                              //   height: 40,
+                              //   width: 40,
+                              //   padding: EdgeInsets.all(12),
+                              //   decoration: BoxDecoration(
+                              //       border: Border.all(
+                              //           width: 1, color: ColorPalette.green),
+                              //       borderRadius: BorderRadius.circular(100)),
+                              //   child:
+                              //       SvgPicture.asset(SvgElements.svgPlayIcon),
+                              // ),
+                              Expanded(child: Container()),
+                              Expanded(
+                                flex: 3,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    startRecording();
+                                  },
+                                  child: Stack(
+                                    alignment: Alignment.center,
+                                    // Align both widgets perfectly at the center
+                                    children: [
+                                      // Base Container - the circle with a border
+                                      Container(
+                                        height: 60,
+                                        width: 60,
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                              width: 6,
+                                              color: Colors.green.shade200),
+                                          borderRadius:
+                                              BorderRadius.circular(100),
+                                        ),
+                                        child: Center(
+                                          child: Container(
+                                            padding: EdgeInsets.all(14),
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(100),
+                                              color: ColorPalette.green,
+                                            ),
+                                            height: 32,
+                                            width: 32,
+                                          ),
                                         ),
                                       ),
-                                  ],
-                                ),
-                              ),
-                            ),
 
-                            Expanded(
-                                flex: 1,
-                                child: GestureDetector(
-                                  onTap: () => stopRecording(),
-                                  child: Wrap(
-                                    children: [
-                                      Container(
-                                        height: 40,
-                                        width: 40,
-                                        padding: EdgeInsets.all(12),
-                                        decoration: BoxDecoration(
-                                            border: Border.all(
-                                                width: 1,
-                                                color: ColorPalette.green),
-                                            borderRadius:
-                                                BorderRadius.circular(100)),
-                                        child: SvgPicture.asset(
-                                            SvgElements.svgStopIcon),
-                                      )
+                                      // Circular Progress Indicator
+                                      if (isRecording)
+                                        SizedBox(
+                                          height:
+                                              54, // Match the container size
+                                          width: 54,
+                                          child: CircularProgressIndicator(
+                                            value: _animation.value,
+                                            strokeWidth: 4,
+                                            valueColor:
+                                                AlwaysStoppedAnimation<Color>(
+                                                    Colors.green),
+                                          ),
+                                        ),
                                     ],
                                   ),
-                                ))
-                          ],
-                        )
-                    ],
+                                ),
+                              ),
+
+                              Expanded(
+                                  flex: 1,
+                                  child: GestureDetector(
+                                    onTap: () => stopRecording(),
+                                    child: Wrap(
+                                      children: [
+                                        Container(
+                                          height: 40,
+                                          width: 40,
+                                          padding: EdgeInsets.all(12),
+                                          decoration: BoxDecoration(
+                                              border: Border.all(
+                                                  width: 1,
+                                                  color: ColorPalette.green),
+                                              borderRadius:
+                                                  BorderRadius.circular(100)),
+                                          child: SvgPicture.asset(
+                                              SvgElements.svgStopIcon),
+                                        )
+                                      ],
+                                    ),
+                                  ))
+                            ],
+                          )
+                      ],
+                    ),
                   ),
                   Positioned(
                       top: 40,

@@ -4,7 +4,7 @@ import 'package:tl_consultant/core/utils/app_config.dart';
 const staging = 'https://tranquil-api-staging-205081a15c84.herokuapp.com';
 const production = 'https://tranquil-api.herokuapp.com';
 const exchangeHost = "https://v6.exchangerate-api.com/v6";
-const baseUrl = '$staging/api/';
+const baseUrl = '$production/api/'; //Currently in production, change to staging if needed
 const countriesNowBaseUrl = "https://countriesnow.space/api/v0.1/";
 const mapPlacesBaseUrl =
     "https://maps.googleapis.com/maps/api/place/textsearch/json";

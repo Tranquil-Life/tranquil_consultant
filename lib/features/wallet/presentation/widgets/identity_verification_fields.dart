@@ -1,5 +1,7 @@
 import 'dart:io';
+import 'dart:typed_data';
 
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
@@ -26,8 +28,8 @@ class IdentityVerificationFields extends StatefulWidget {
 
 class _IdentityVerificationFieldsState
     extends State<IdentityVerificationFields> {
-  File? front;
-  File? back;
+  XFile? front;
+  XFile? back;
 
   bool? isPassport;
 
@@ -103,77 +105,146 @@ class _IdentityVerificationFieldsState
 
                 setState(() {});
               }),
-
         if (isPassport == false && front == null && back == null)
+
+          ///nEW uPLOAD ID Widget for non-passport types, since we need to support single-sided uploads
           UploadIdWidget(
             earningsController: widget.earningsController,
-            front: front,
+            front: front, // Still passing for mobile/path logic if needed
             back: back,
             isPassport: isPassport,
             onSnapFrontOfID: () async {
-              front = await MediaService.openCamera();
+              final XFile? picked = await MediaService.openCamera();
+              if (picked != null) {
+                // 1. Get raw bytes
+                final bytes = await picked.readAsBytes();
 
-              if (front != null) {
-                widget.earningsController.frontIdPath.value = front!.path;
+                print("Front ID bytes length: ${bytes.length}"); // Debug log
+
+                // 2. Manually decode to bypass the browser's ImageDecoder bug
+                final decoded = await decodeImageFromList(bytes);
+
+                print("Decoded image dimensions: ${decoded.width}x${decoded.height}"); // Debug log
+
+                // 3. Store both in the controller
+                widget.earningsController.decodedFrontImage.value = decoded;
+                widget.earningsController.frontIdBytes.value = bytes;
+
+                print("Front ID bytes stored in controller: ${widget.earningsController.frontIdBytes.value != null}"); // Debug log
+                print("Decoded image stored in controller: ${widget.earningsController.decodedFrontImage.value != null}"); // Debug log
+
+                // Trigger local setState if you're using 'front' variable locally
+                setState(() { front = picked; });
+
+                print("Front ID path: ${picked.path}"); // Debug log
               }
-
-              setState(() {});
             },
             onSnapBackOfID: () async {
-              back = await MediaService.openCamera();
+              final XFile? picked = await MediaService.openCamera();
+              if (picked != null) {
+                // 1. Get raw bytes
+                final bytes = await picked.readAsBytes();
 
-              if (back != null) {
-                widget.earningsController.backIdPath.value = back!.path;
+                print("Back ID bytes length: ${bytes.length}"); // Debug log
+
+                // 2. Manually decode to bypass the browser's ImageDecoder bug
+                final decoded = await decodeImageFromList(bytes);
+
+                print("Decoded image dimensions: ${decoded.width}x${decoded.height}"); // Debug log
+
+                // 3. Store both in the controller
+                widget.earningsController.decodedBackImage.value = decoded;
+                widget.earningsController.backIdBytes.value = bytes;
+
+                print("Back ID bytes stored in controller: ${widget.earningsController.backIdBytes.value != null}"); // Debug log
+                print("Decoded image stored in controller: ${widget.earningsController.decodedBackImage.value != null}"); // Debug log
+
+                // Trigger local setState if you're using 'front' variable locally
+                setState(() { back = picked; });
+
+                print("Back ID path: ${picked.path}"); // Debug log
               }
-
-              setState(() {});
             },
             onChangeType: () {
-              if (isPassport != null) {
-                isPassport = true;
-              }
-
-              front = null;
-              back = null;
-
-              setState(() {});
+              setState(() {
+                isPassport = !(isPassport ?? false);
+                front = null;
+                back = null;
+                // Clear controller data too
+                widget.earningsController.frontIdBytes.value = null;
+                widget.earningsController.backIdBytes.value = null;
+              });
             },
           ),
         if (isPassport == false && (front != null || back != null))
           UploadIdWidget(
             earningsController: widget.earningsController,
-            front: front,
+            front: front, // Still passing for mobile/path logic if needed
             back: back,
             isPassport: isPassport,
             onSnapFrontOfID: () async {
-              front = await MediaService.openCamera();
+              final XFile? picked = await MediaService.openCamera();
+              if (picked != null) {
+                // 1. Get raw bytes
+                final bytes = await picked.readAsBytes();
 
-              if (front != null) {
-                widget.earningsController.frontIdPath.value = front!.path;
+                print("Front ID bytes length: ${bytes.length}"); // Debug log
+
+                // 2. Manually decode to bypass the browser's ImageDecoder bug
+                final decoded = await decodeImageFromList(bytes);
+
+                print("Decoded image dimensions: ${decoded.width}x${decoded.height}"); // Debug log
+
+                // 3. Store both in the controller
+                widget.earningsController.decodedFrontImage.value = decoded;
+                widget.earningsController.frontIdBytes.value = bytes;
+
+                print("Front ID bytes stored in controller: ${widget.earningsController.frontIdBytes.value != null}"); // Debug log
+                print("Decoded image stored in controller: ${widget.earningsController.decodedFrontImage.value != null}"); // Debug log
+
+                // Trigger local setState if you're using 'front' variable locally
+                setState(() { front = picked; });
+
+                print("Front ID path: ${picked.path}"); // Debug log
               }
-
-              setState(() {});
             },
             onSnapBackOfID: () async {
-              back = await MediaService.openCamera();
+              final XFile? picked = await MediaService.openCamera();
+              if (picked != null) {
+                // 1. Get raw bytes
+                final bytes = await picked.readAsBytes();
 
-              if (back != null) {
-                widget.earningsController.backIdPath.value = back!.path;
+                print("Back ID bytes length: ${bytes.length}"); // Debug log
+
+                // 2. Manually decode to bypass the browser's ImageDecoder bug
+                final decoded = await decodeImageFromList(bytes);
+
+                print("Decoded image dimensions: ${decoded.width}x${decoded.height}"); // Debug log
+
+                // 3. Store both in the controller
+                widget.earningsController.decodedBackImage.value = decoded;
+                widget.earningsController.backIdBytes.value = bytes;
+
+                print("Back ID bytes stored in controller: ${widget.earningsController.backIdBytes.value != null}"); // Debug log
+                print("Decoded image stored in controller: ${widget.earningsController.decodedBackImage.value != null}"); // Debug log
+
+                // Trigger local setState if you're using 'front' variable locally
+                setState(() { back = picked; });
+
+                print("Back ID path: ${picked.path}"); // Debug log
               }
-
-              setState(() {});
             },
             onChangeType: () {
-              if (isPassport != null) {
-                isPassport = true;
-              }
-
-              front = null;
-              back = null;
-
-              setState(() {});
+              setState(() {
+                isPassport = !(isPassport ?? false);
+                front = null;
+                back = null;
+                // Clear controller data too
+                widget.earningsController.frontIdBytes.value = null;
+                widget.earningsController.backIdBytes.value = null;
+              });
             },
-          )
+          ),
       ],
     );
   }

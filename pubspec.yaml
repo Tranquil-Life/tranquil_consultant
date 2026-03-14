@@ -108,7 +108,6 @@ dependencies:
   win32: ^5.15.0
   dio: ^5.9.0
 
-
 dev_dependencies:
   flutter_test:
     sdk: flutter

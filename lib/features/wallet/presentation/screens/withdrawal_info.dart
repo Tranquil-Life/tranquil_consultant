@@ -119,6 +119,7 @@ class _WithdrawalInfoPageState extends State<WithdrawalInfoPage> {
                 CustomButton(
                     onPressed: () {
                       earningsController.createStripePayout();
+                      setState(() {});
                     },
                     text: "Create payout account")
                 else

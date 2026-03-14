@@ -34,6 +34,8 @@ class _SignInScreenState extends State<SignInScreen> {
   Future<void> _continue() async {
     if (criteriaMet) {
       await authController.signIn(
+        // "barry@gmail.com",
+        // "password1@"
         authController.emailTEC.text,
         authController.params.password,
       );

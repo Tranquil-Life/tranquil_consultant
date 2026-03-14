@@ -1,14 +1,12 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tl_consultant/core/theme/properties.dart';
 import 'package:tl_consultant/core/utils/services/media_service.dart';
 
 class AttachmentSheet extends StatelessWidget {
-  const AttachmentSheet({Key? key}) : super(key: key);
+  const AttachmentSheet({super.key});
 
-  void _handleUpload(File? file) async {}
+  void _handleUpload(XFile? file) async {}
 
   @override
   Widget build(BuildContext context) {

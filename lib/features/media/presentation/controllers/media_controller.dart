@@ -1,6 +1,8 @@
 import 'dart:io';
 
+import 'package:camera/camera.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart' as webrtc;
@@ -48,7 +50,11 @@ class MediaController extends GetxController {
   }
 
   Future<String?> uploadFile(
-      File uploadFile, String uploadType, dynamic controller) async {
+      XFile uploadFile, String uploadType, dynamic controller) async {
+
+    //Error uploading: PlatformException(MEDIA_ERR_SRC_NOT_SUPPORTED, MEDIA_ELEMENT_ERROR: Empty src attribute, The video has been found to be unsuitable (missing or in a format not supported by your browser)., null)
+
+    debugPrint("Before uploading: ${uploadFile.path}, size: ${await uploadFile.length()} bytes");
     User user = UserModel.fromJson(userDataStore.user);
 
     if (uploadType == videoIntro) {
@@ -59,9 +65,9 @@ class MediaController extends GetxController {
 
     resetUploadVars();
 
+    // 1. Get file size platform-agnostically
     final int fileSizeInBytes = await uploadFile.length();
-    final double fileSizeInKB = fileSizeInBytes / 1024;
-    final double fileSizeInMB = fileSizeInKB / 1024;
+    final double fileSizeInMB = fileSizeInBytes / (1024 * 1024);
 
     try {
       // Define the storage path and image name
@@ -70,72 +76,74 @@ class MediaController extends GetxController {
           "${uploadFile.path.split('/').last}_${DateTime.now().millisecondsSinceEpoch}"; // Example image name
 
       // Compress the file if it's an image
-      File? compressedFile;
+      // File? compressedFile;
 
-      if (uploadFile.path.endsWith('.jpg') ||
-          uploadFile.path.endsWith('.jpeg') ||
-          uploadFile.path.endsWith('.png')) {
-        //TODO: Compress image
-        compressedFile = uploadFile;
-      } else if (uploadFile.path.endsWith('.mp4') ||
-          uploadFile.path.endsWith('.mov') ||
-          uploadFile.path.endsWith('.avi')) {
-        compressing.value = true;
-        // Compress video
-        compressedFile = await mediaRepo.compressVideo(uploadFile);
+      // 2. Handle Compression (Skip video compression on Web for now)
+      dynamic fileToUpload;
+
+      if (kIsWeb) {
+        fileToUpload = uploadFile;
       } else {
-        // If not an image or video, skip compression
-        compressedFile = uploadFile;
+        // Mobile: Keep your existing compression logic
+        if (uploadFile.path.endsWith('.jpg') ||
+            uploadFile.path.endsWith('.jpeg') ||
+            uploadFile.path.endsWith('.png')) {
+          fileToUpload = uploadFile;
+        } else if (uploadFile.path.endsWith('.mp4') ||
+            uploadFile.path.endsWith('.mov') ||
+            uploadFile.path.endsWith('.avi')) {
+          compressing.value = true;
+          // You might need to adjust your mediaRepo to accept XFile or use File(uploadFile.path)
+          fileToUpload = await mediaRepo.compressVideo(File(uploadFile.path));
+
+          // if (fileToUpload == null) {
+          //   print("Error compressing file");
+          //   return null;
+          // } else {
+          //   final int afterCompressionSizeInBytes = await fileToUpload.length();
+          //   final double afterCompressionSizeInKB =
+          //       afterCompressionSizeInBytes / 1024;
+          //   final double afterCompressionSizeInMB = afterCompressionSizeInKB / 1024;
+          //
+          //   // print('File size after compression: $afterCompressionSizeInMB MB');
+          // }
+
+          compressing.value = false;
+        } else {
+          fileToUpload = uploadFile;
+        }
       }
-
-      if (compressedFile == null) {
-        print("Error compressing file");
-        return null;
-      } else {
-        final int afterCompressionSizeInBytes = await compressedFile.length();
-        final double afterCompressionSizeInKB =
-            afterCompressionSizeInBytes / 1024;
-        final double afterCompressionSizeInMB = afterCompressionSizeInKB / 1024;
-
-        // print('File size after compression: $afterCompressionSizeInMB MB');
-      }
-
-      compressing.value = false;
 
       uploading.value = true;
 
-      // Get the system temp directory to save the file
-      final Directory systemTempDir = Directory.systemTemp;
-
-      // Load the image data from the assets
-      final byteData = await rootBundle.load(
-          compressedFile.path); // Assuming `imgFile.path` is the image path
-
-      // Create a new file from the temp directory with a unique name
-      final file =
-          File('${systemTempDir.path}/$fileName${getExtension(uploadType)}');
-
-      // Write the byte data into the file
-      await file.writeAsBytes(byteData.buffer
-          .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
-
+      // 3. Web-Safe Firebase Upload
       Reference reference =
           FirebaseStorage.instance.ref('$path/${user.id}_$fileName');
-      // Start the file upload and listen to the progress
-      UploadTask uploadTask = reference.putFile(file);
+      UploadTask uploadTask;
 
-      // Monitor the upload progress
+      if (kIsWeb) {
+        Uint8List fileBytes = await uploadFile.readAsBytes();
+
+        debugPrint("File bytes length: ${fileBytes.lengthInBytes}, size: ${fileBytes.lengthInBytes / (1024 * 1024)} MB");
+
+        SettableMetadata metadata = SettableMetadata(contentType: 'video/mp4');
+        uploadTask = reference.putData(fileBytes, metadata);
+      } else {
+        File file =
+            fileToUpload is XFile ? File(fileToUpload.path) : fileToUpload;
+        uploadTask = reference.putFile(file);
+      }
+
+      // Monitor progress
       uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
-        // Calculate progress percentage
         uploadProgress.value =
             (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
       });
 
-      // Wait for the upload to complete
       TaskSnapshot taskSnapshot = await uploadTask;
-
-      // Get the download URL of the uploaded file
       final String downloadUrl = await taskSnapshot.ref.getDownloadURL();
+
+      debugPrint("Download URL: $downloadUrl");
 
       if (uploadType == videoIntro) {
         controller.introVideo.value = downloadUrl;
@@ -149,7 +157,7 @@ class MediaController extends GetxController {
         Get.back();
 
         //locate and delete previous recording from storage before uploading new one
-        deleteFileFromUrl(previousUrl.value);
+        if(!kIsWeb) deleteFileFromUrl(previousUrl.value);
 
         await initializeVideoPlayer();
       } else if (uploadType == profileImage) {
@@ -170,8 +178,8 @@ class MediaController extends GetxController {
       // Return the download URL
       return downloadUrl;
     } catch (e) {
-      CustomSnackBar.errorSnackBar("Error uploading file: $e");
-
+      debugPrint("Error uploading: $e");
+      // CustomSnackBar.errorSnackBar("Error uploading file: $e");
       return null;
     }
   }
@@ -261,7 +269,8 @@ class MediaController extends GetxController {
 
     final Uint8List? videoBytes = await navigator.push(
       MaterialPageRoute(
-        builder: (_) => const WebVideoRecordingPage(maxDuration: Duration(seconds: 60)),
+        builder: (_) =>
+            const WebVideoRecordingPage(maxDuration: Duration(seconds: 60)),
       ),
     );
 
@@ -274,8 +283,10 @@ class MediaController extends GetxController {
 
       User user = UserModel.fromJson(userDataStore.user);
       String path = videoIntro;
-      String fileName = "intro_video_${DateTime.now().millisecondsSinceEpoch}.webm";
-      Reference reference = FirebaseStorage.instance.ref('$path/${user.id}_$fileName');
+      String fileName =
+          "intro_video_${DateTime.now().millisecondsSinceEpoch}.webm";
+      Reference reference =
+          FirebaseStorage.instance.ref('$path/${user.id}_$fileName');
 
       // 3. Start the upload task
       UploadTask uploadTask = reference.putData(
@@ -284,8 +295,10 @@ class MediaController extends GetxController {
       );
 
       // Monitor progress
-      final progressSubscription = uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
-        uploadProgress.value = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+      final progressSubscription =
+          uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
+        uploadProgress.value =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
       });
 
       // 4. Show the dialog
@@ -297,17 +310,19 @@ class MediaController extends GetxController {
           return AlertDialog(
             title: const Text('Uploading Video Intro'),
             content: Obx(() => Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                LinearProgressIndicator(
-                  value: uploadProgress.value / 100,
-                  backgroundColor: Colors.grey[300],
-                  valueColor: const AlwaysStoppedAnimation<Color>(Colors.green),
-                ),
-                const SizedBox(height: 20),
-                Text('${uploadProgress.value.toStringAsFixed(2)}% uploaded'),
-              ],
-            )),
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    LinearProgressIndicator(
+                      value: uploadProgress.value / 100,
+                      backgroundColor: Colors.grey[300],
+                      valueColor:
+                          const AlwaysStoppedAnimation<Color>(Colors.green),
+                    ),
+                    const SizedBox(height: 20),
+                    Text(
+                        '${uploadProgress.value.toStringAsFixed(2)}% uploaded'),
+                  ],
+                )),
           );
         },
       );
@@ -320,7 +335,6 @@ class MediaController extends GetxController {
         // 6. Update data
         DashboardController.instance.videoIntro.value = downloadUrl;
         userDataStore.user[videoIntro] = downloadUrl;
-
       } catch (e) {
         debugPrint("Upload failed: $e");
         ScaffoldMessenger.of(context).showSnackBar(
