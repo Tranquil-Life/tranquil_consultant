@@ -11,7 +11,7 @@ import 'package:tl_consultant/core/utils/services/media_service.dart';
 import 'package:tl_consultant/features/wallet/presentation/controllers/earnings_controller.dart';
 
 class UploadPassportWidget extends StatelessWidget {
-  UploadPassportWidget(
+  const UploadPassportWidget(
       {super.key,
       required this.earningsController,
       this.front,
@@ -19,9 +19,9 @@ class UploadPassportWidget extends StatelessWidget {
       this.isPassport, this.onChangeType, this.onSnapFrontOfID});
 
   final EarningsController earningsController;
-  XFile? front;
-  XFile? back;
-  bool? isPassport;
+  final XFile? front;
+  final XFile? back;
+  final bool? isPassport;
   final Function()? onChangeType;
   final Function()? onSnapFrontOfID;
 

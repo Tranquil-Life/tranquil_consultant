@@ -22,8 +22,8 @@ class CreateStripeAccount extends QueryParams{
   final String? routingNumber;
   final String? holderName;
   final String? ssn;
-  final File? frontOfID;
-  final File? backOfID;
+  final dynamic frontOfID;
+  final dynamic backOfID;
   final bool? acceptedTOS;
 
   CreateStripeAccount(

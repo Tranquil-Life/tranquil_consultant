@@ -64,7 +64,7 @@ class CreatePayoutAccountSection extends StatelessWidget {
               onChanged: (value) {
                 if(!earningsController.isSaved.value && stripeAccountId != null){
                   earningsController.createStripePayout();
-                }else if(!earningsController.isSaved.value && stripeAccountId != null){
+                } else if(!earningsController.isSaved.value && stripeAccountId != null){
                   earningsController.updateStripePayout();
                 }
                 earningsController.toggleSave();

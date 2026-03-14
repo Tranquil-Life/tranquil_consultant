@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
+import 'package:get/get.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
@@ -12,17 +13,45 @@ abstract class MediaService {
   static final _imagePicker = ImagePicker();
   static final _imageCropper = ImageCropper();
 
+  static bool isSupportedWebImage(XFile file) {
+    final name = file.name.toLowerCase();
+    return name.endsWith('.jpg') ||
+        name.endsWith('.jpeg') ||
+        name.endsWith('.png') ||
+        name.endsWith('.webp');
+  }
+
   static Future<XFile?> openCamera([
     ImageSource source = ImageSource.camera,
   ]) async {
-    final XFile? capturedFile = await _imagePicker.pickImage(
+    final XFile? pickedFile = await _imagePicker.pickImage(
       source: source,
       imageQuality: 75,
       maxHeight: 720,
       maxWidth: 720,
     );
-    if (capturedFile == null) return null;
-    return await _cropImage(capturedFile);
+
+    if (pickedFile == null) return null;
+
+    if (kIsWeb && !isSupportedWebImage(pickedFile)) {
+      Get.snackbar(
+        "Unsupported format",
+        "Please upload a JPG or PNG image on web.",
+      );
+      return null;
+    }
+
+    if (kIsWeb) {
+      return pickedFile;
+    }
+
+    try {
+      final XFile? cropped = await _cropImage(pickedFile);
+      return cropped ?? pickedFile;
+    } catch (e) {
+      debugPrint('Crop failed: $e');
+      return pickedFile;
+    }
   }
 
   static Future<XFile?> selectImage([
@@ -104,9 +133,7 @@ abstract class MediaService {
 
     // On Mobile, we can safely use the File path
     var croppedFile = await _imageCropper.cropImage(
-        sourcePath: xFile.path,
-        compressQuality: 75
-    );
+        sourcePath: xFile.path, compressQuality: 75);
 
     if (croppedFile == null) return null;
 

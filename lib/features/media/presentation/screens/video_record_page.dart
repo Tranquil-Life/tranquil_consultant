@@ -471,7 +471,19 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
                             },
                           )
                         else
-                          CameraPreview(_cameraController),
+                          if(isLargeScreen(context))
+                             Container(
+                              height: 600,
+                              width: displayWidth(context),
+                              child: CameraPreview(_cameraController),
+                            )
+                          else
+                             Container(
+                              height: 300,
+                              width: displayWidth(context),
+                              child: CameraPreview(_cameraController),
+                            ),
+                          // CameraPreview(_cameraController),
                         SizedBox(height: 24),
                         if (!inVideoPlayerState)
                           //The recorder controller icons

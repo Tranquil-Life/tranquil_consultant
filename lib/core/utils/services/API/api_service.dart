@@ -1,5 +1,9 @@
+import 'dart:io';
+
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
+import 'package:http_parser/http_parser.dart';
 
 import 'package:tl_consultant/core/constants/end_points.dart';
 import 'package:tl_consultant/core/errors/api_error.dart';
@@ -183,6 +187,24 @@ class ApiService {
       return errorString;
     } else {
       return jsonResponse['message'].toString();
+    }
+  }
+
+  // Inside your Repository or API Provider
+  Future<MultipartFile> _handleFile(dynamic fileData, String fileName) async {
+    if (kIsWeb) {
+      // For Web: fileData is Uint8List
+      return MultipartFile.fromBytes(
+        fileData as Uint8List,
+        filename: '$fileName.jpg',
+        contentType: MediaType('image', 'jpeg'),
+      );
+    } else {
+      // For Mobile: fileData is File
+      return await MultipartFile.fromFile(
+        (fileData as File).path,
+        filename: '$fileName.jpg',
+      );
     }
   }
 }

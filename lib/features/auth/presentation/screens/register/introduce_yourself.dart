@@ -55,7 +55,7 @@ class _IntroduceYourselfPageState extends State<IntroduceYourselfPage> {
       body: Padding(
           padding: EdgeInsets.only(left: 24, right: 24, top: 24),
           child: SingleChildScrollView(
-            child: Column(
+            child: Obx(()=>Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
@@ -179,13 +179,13 @@ class _IntroduceYourselfPageState extends State<IntroduceYourselfPage> {
                 ),
                 Obx(() => CustomButton(
                     onPressed: (authController.profilePic.value.isEmpty &&
-                            authController.introVideo.value.isEmpty)
+                        authController.introVideo.value.isEmpty)
                         ? null
                         : () {
-                            Get.toNamed(Routes.DOCUSIGN);
+                      Get.toNamed(Routes.DOCUSIGN);
 
-                            // authController.signUp();
-                          },
+                      // authController.signUp();
+                    },
                     text: "Complete sign up")),
                 SizedBox(
                   height: 40,
@@ -216,7 +216,7 @@ class _IntroduceYourselfPageState extends State<IntroduceYourselfPage> {
                   ),
                 ),
               ],
-            ),
+            )),
           )),
     );
   }

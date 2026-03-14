@@ -145,8 +145,10 @@ class AuthController extends GetxController {
         }
 
         AppData.isSignedIn = true;
-
         await updateFcmToken();
+
+        // Give the app a frame to ensure storage is updated
+        await Future.delayed(Duration.zero);
 
         if (kIsWeb) {
           navigatorKey.currentState
@@ -191,7 +193,7 @@ class AuthController extends GetxController {
       // Sends the current token to the endpoint
       await sendTokenToEndpoint(fcmToken);
 
-      print("updated");
+      debugPrint("updated fcm token: $fcmToken");
     }
   }
 
