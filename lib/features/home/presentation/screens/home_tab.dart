@@ -21,6 +21,7 @@ import 'package:tl_consultant/features/consultation/domain/entities/client.dart'
 import 'package:tl_consultant/features/consultation/domain/entities/meeting.dart';
 import 'package:tl_consultant/features/consultation/presentation/controllers/meetings_controller.dart';
 import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
+import 'package:tl_consultant/features/home/presentation/controllers/event_controller.dart';
 import 'package:tl_consultant/features/home/presentation/widgets/events_section.dart';
 import 'package:tl_consultant/features/home/presentation/widgets/explore_perks_widget.dart';
 import 'package:tl_consultant/features/home/presentation/widgets/large_screen_header.dart';
@@ -43,11 +44,12 @@ class HomeTab extends StatefulWidget {
 }
 
 class _HomeTabState extends State<HomeTab> {
+  final activityController = ActivityController();
   final dashboardController = DashboardController.instance;
   final profileController = ProfileController.instance;
-  final activityController = ActivityController();
   final meetingsController = MeetingsController.instance;
   final chatController = ChatController.instance;
+  final eventsController = EventsController.instance;
 
   @override
   void initState() {
@@ -97,7 +99,8 @@ class _HomeTabState extends State<HomeTab> {
                                           style: TextStyle(
                                               color: ColorPalette.grey[600],
                                               fontSize: AppFonts.largeSize,
-                                              fontFamily: AppFonts.mulishSemiBold
+                                              fontFamily:
+                                                  AppFonts.mulishSemiBold
                                               // fontSize: isSmallScreen(context)
                                               //     ? 16
                                               //     : 22,
@@ -106,17 +109,17 @@ class _HomeTabState extends State<HomeTab> {
                                               //     : FontWeight.w700
                                               ),
                                         ),
-                                        Text(
-                                          "See all",
-                                          style: TextStyle(
-                                            color: ColorPalette.green,
-                                            fontSize: AppFonts.baseSize,
-                                            // fontSize: isSmallScreen(context)
-                                            //     ? 14
-                                            //     : 18,
-                                            fontFamily: AppFonts.mulishBold,
-                                          ),
-                                        ),
+                                        // Text(
+                                        //   "See all",
+                                        //   style: TextStyle(
+                                        //     color: ColorPalette.green,
+                                        //     fontSize: AppFonts.baseSize,
+                                        //     // fontSize: isSmallScreen(context)
+                                        //     //     ? 14
+                                        //     //     : 18,
+                                        //     fontFamily: AppFonts.mulishBold,
+                                        //   ),
+                                        // ),
                                       ],
                                     ),
                                     SizedBox(height: 12),
@@ -191,27 +194,32 @@ class _HomeTabState extends State<HomeTab> {
                                           style: TextStyle(
                                               color: ColorPalette.grey[600],
                                               fontSize: AppFonts.largeSize,
-                                              fontFamily: AppFonts.mulishSemiBold
+                                              fontFamily:
+                                                  AppFonts.mulishSemiBold
 
                                               // fontWeight: isSmallScreen(context)
                                               //     ? FontWeight.w600
                                               //     : FontWeight.w700
                                               ),
                                         ),
-                                        Text(
-                                          "See all",
-                                          style: TextStyle(
-                                              // fontSize: isSmallScreen(context)
-                                              //     ? 14
-                                              //     : 18,
-                                              color: ColorPalette.green,
-                                              fontSize: AppFonts.baseSize,
-                                              // fontSize: isSmallScreen(context)
-                                              //     ? 14
-                                              //     : 18,
-                                              fontFamily: AppFonts.mulishBold,
-                                              fontWeight: FontWeight.w600),
-                                        ),
+                                        eventsController.events.isEmpty
+                                            ? SizedBox.shrink()
+                                            : Text(
+                                                "See all",
+                                                style: TextStyle(
+                                                    // fontSize: isSmallScreen(context)
+                                                    //     ? 14
+                                                    //     : 18,
+                                                    color: ColorPalette.green,
+                                                    fontSize: AppFonts.baseSize,
+                                                    // fontSize: isSmallScreen(context)
+                                                    //     ? 14
+                                                    //     : 18,
+                                                    fontFamily:
+                                                        AppFonts.mulishBold,
+                                                    fontWeight:
+                                                        FontWeight.w600),
+                                              ),
                                       ],
                                     ),
                                     SizedBox(height: 12),

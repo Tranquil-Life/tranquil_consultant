@@ -18,7 +18,7 @@ class _EventsSectionState extends State<EventsSection> {
 
   final ValueNotifier<DateTime> _timeNotifier = ValueNotifier(DateTime.now());
 
-  getEvents() async {
+  void getEvents() {
     //..
   }
 
