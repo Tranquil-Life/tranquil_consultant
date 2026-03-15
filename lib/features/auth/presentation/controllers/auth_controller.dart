@@ -139,14 +139,6 @@ class AuthController extends GetxController {
         userDataStore.user['meetings_count'] = data['data']['meetings_count'];
         userDataStore.user['clients_count'] = data['data']['clients_count'];
 
-        User user = UserModel.fromJson(userDataStore.user);
-        if (kDebugMode) {
-          // print(user.toJson());
-          print("stripe_account_id: 1: ${user.stripeAccountId!}");
-          print("stripe_account_id: 2: $stripeAccountId");
-
-        }
-
         AppData.isSignedIn = true;
         await updateFcmToken();
 

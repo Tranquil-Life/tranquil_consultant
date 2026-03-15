@@ -172,6 +172,7 @@ class DashboardController extends GetxController {
     try {
       //Using backend reverse coding
       final geo = await reverseGeocodeViaBackend(lat: lat, lng: lng);
+      print("Reverse geocode result: $geo");
 
       final c = normalizeCountry(_clean(geo['country']?.toString()));
       final s = _clean(geo['state']?.toString());
@@ -405,5 +406,25 @@ class DashboardController extends GetxController {
       debugPrint("Notif permission failed: $e");
       debugPrint("$st");
     }
+  }
+
+  void restoreLocationFromStorage() {
+    final user = userDataStore.user;
+    if (user != null && user['location'] != null) {
+      // location is stored as "United States/Texas"
+      String fullLocation = user['location'];
+      if (fullLocation.contains('/')) {
+        List<String> parts = fullLocation.split('/');
+        country.value = parts[0];
+        state.value = parts[1];
+        print("Restored location: country=${country.value}, state=${state.value}");
+      }
+    }
+  }
+
+  @override
+  void onInit() {
+    restoreLocationFromStorage();
+    super.onInit();
   }
 }

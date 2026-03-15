@@ -39,15 +39,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   String pageTitle() {
     User user = UserModel.fromJson(userDataStore.user);
-    // if (user.firstName.isEmpty ||
-    //     user.bio.isEmpty ||
-    //     user.specialties!.isEmpty ||
-    //     user.videoIntroUrl!.isEmpty ||
-    //     profileController.qualifications.isEmpty) {
-    //   return "Complete your profile";
-    // } else {
-    //   return "Edit your profile";
-    // }
+    if (user.firstName.isEmpty ||
+        user.bio.isEmpty ||
+        user.specialties == null ||
+        user.videoIntroUrl == null ||
+        dashboardController.qualifications.isEmpty) {
+      return "Complete your profile";
+    } else {
+      return "Edit your profile";
+    }
 
     return "Complete your profile";
   }
