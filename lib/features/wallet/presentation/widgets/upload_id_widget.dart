@@ -7,6 +7,7 @@ import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/theme/fonts.dart';
 import 'package:tl_consultant/core/utils/helpers/svg_elements.dart';
 import 'package:tl_consultant/features/wallet/presentation/controllers/earnings_controller.dart';
+import 'package:tl_consultant/features/wallet/presentation/widgets/id_upload_box.dart';
 
 class UploadIdWidget extends StatelessWidget {
   final EarningsController earningsController;
@@ -47,20 +48,20 @@ class UploadIdWidget extends StatelessWidget {
               child: GestureDetector(
                 onTap: onSnapFrontOfID,
                 // Wrap in Obx so it updates when bytes change
-                child: Obx(() => _uploadBox(
-                      label: "Front",
-                      decodedImage: earningsController.decodedFrontImage.value,
-                    )),
+                child: Obx(() => uploadBox(
+                    label: "Front",
+                    decodedImage: earningsController.decodedFrontImage.value,
+                    context: context)),
               ),
             ),
             const SizedBox(width: 8),
             Expanded(
               child: GestureDetector(
                 onTap: onSnapBackOfID,
-                child:  Obx(() => _uploadBox(
-                  label: "Back",
-                  decodedImage: earningsController.decodedBackImage.value,
-                )),
+                child: Obx(() => uploadBox(
+                    label: "Back",
+                    decodedImage: earningsController.decodedBackImage.value,
+                    context: context)),
               ),
             ),
           ],
@@ -68,51 +69,6 @@ class UploadIdWidget extends StatelessWidget {
         const SizedBox(height: 12),
         _changeTypeButton(),
       ],
-    );
-  }
-
-// Update the _uploadBox definition:
-  Widget _uploadBox({
-    required String label,
-    required ui.Image? decodedImage, // Change parameter to ui.Image
-  }) {
-    return Container(
-      height: 100,
-      clipBehavior: Clip.antiAlias,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8.0),
-        border: Border.all(width: 1, color: ColorPalette.grey[800]!),
-      ),
-      // Use RawImage instead of Image.memory or Image.network
-      child: decodedImage == null
-          ? _placeholder(label)
-          :
-      RawImage(
-              image: decodedImage,
-              fit: BoxFit.cover,
-              width: double.infinity,
-              height: double.infinity,
-            ),
-    );
-  }
-
-  Widget _placeholder(String label) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SvgPicture.asset(
-            SvgElements.svgImageIcon,
-            colorFilter:
-                ColorFilter.mode(ColorPalette.grey[800]!, BlendMode.srcIn),
-            height: 30,
-            width: 30,
-          ),
-          const SizedBox(height: 4),
-          Text(label, style: TextStyle(fontSize: 12)),
-        ],
-      ),
     );
   }
 
