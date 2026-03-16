@@ -90,6 +90,7 @@ class EarningsController extends GetxController {
 
   RxString nextPageToken = "".obs;
   RxBool isLoading = false.obs;
+  RxBool creatingAccount = false.obs;
 
   // Rx<ExternalAccounts> externalAccounts = ExternalAccounts(data: []).obs;
   Rx<StripeAccountModel> stripeAccountModel = StripeAccountModel().obs;
@@ -209,6 +210,8 @@ class EarningsController extends GetxController {
       parsedDate = inputFormat.parse(dobTEC.text);
     }
 
+    creatingAccount.value = true;
+
     CreateStripeAccount createStripeAccount = CreateStripeAccount(
         email: beneficiaryEmailTEC.text,
         phone: beneficiaryPhoneTEC.text,
@@ -240,14 +243,7 @@ class EarningsController extends GetxController {
         // backOfID: backIdPath.value.isEmpty ? null : File(backIdPath.value),
         acceptedTOS: acceptedTOS.value);
 
-//     // 1. Generate the map and store it
-//     final accountMap = createStripeAccount.toJson();
-//
-// // 2. Modify that specific map instance
-//     accountMap.removeWhere((k, v) => k == "front" || k == "back");
-//
-// // 3. Print the modified map
-//     debugPrint("Create stripe account: ${createStripeAccount.toJson()}");
+    print(createStripeAccount.toJson());
 
     Either either = await repo.createStripeAccount(params: createStripeAccount);
     either.fold((l) {
@@ -263,6 +259,8 @@ class EarningsController extends GetxController {
 
       CustomSnackBar.successSnackBar(body: "Stripe account created successfully");
     });
+
+    creatingAccount.value = false;
   }
 
   Future<double> getBalance() async {

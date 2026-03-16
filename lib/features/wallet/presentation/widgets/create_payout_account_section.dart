@@ -62,8 +62,8 @@ class CreatePayoutAccountSection extends StatelessWidget {
               activeColor: ColorPalette.green,
               value: earningsController.isSaved.value,
               onChanged: (value) {
-                if(!earningsController.isSaved.value && stripeAccountId != null){
-                  earningsController.createStripePayout();
+                if(!earningsController.isSaved.value && stripeAccountId == null){
+                  // earningsController.createStripePayout();
                 } else if(!earningsController.isSaved.value && stripeAccountId != null){
                   earningsController.updateStripePayout();
                 }

@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/global/buttons.dart';
 import 'package:tl_consultant/core/global/custom_app_bar.dart';
+import 'package:tl_consultant/core/global/custom_text.dart';
 import 'package:tl_consultant/core/global/unfocus_bg.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/utils/routes/app_pages.dart';
@@ -38,12 +39,10 @@ class _WithdrawalInfoPageState extends State<WithdrawalInfoPage> {
   @override
   void initState() {
     formatCurrency = NumberFormat.currency(
-        locale: dashboardController.country.value.toLowerCase() ==
-                "nigeria"
+        locale: dashboardController.country.value.toLowerCase() == "nigeria"
             ? "en_NG"
             : "en_US",
-        symbol: dashboardController.country.value.toLowerCase() ==
-                "nigeria"
+        symbol: dashboardController.country.value.toLowerCase() == "nigeria"
             ? '₦'
             : "\$");
 
@@ -62,20 +61,18 @@ class _WithdrawalInfoPageState extends State<WithdrawalInfoPage> {
           hideBackButton: false,
           centerTitle: false,
           title: withdrawFundsTitle,
-          onBackPressed: () async{
-            if(!kIsWeb){
+          onBackPressed: () async {
+            if (!kIsWeb) {
               Get.back();
-
-            }else{
+            } else {
               if (Get.key.currentState?.canPop() ?? false) {
                 Get.back();
               } else {
-                Get.offAllNamed(Routes.DASHBOARD);// fallback route
+                Get.offAllNamed(Routes.DASHBOARD); // fallback route
                 await Future.delayed(const Duration(milliseconds: 500));
                 dashboardController.currentIndex.value = 3;
               }
             }
-
           },
         ),
         body: Padding(
@@ -114,14 +111,20 @@ class _WithdrawalInfoPageState extends State<WithdrawalInfoPage> {
                       earningsController: earningsController)
                 else
                   ShowCurrentPayoutAccount(),
-
                 if (stripeAccountId == null)
-                CustomButton(
-                    onPressed: () {
-                      earningsController.createStripePayout();
-                      setState(() {});
-                    },
-                    text: "Create payout account")
+                  Obx(()=> CustomButton(
+                      onPressed: () {
+                        earningsController.createStripePayout();
+                        setState(() {});
+                      },
+                      child: earningsController.creatingAccount.value
+                          ? Center(
+                          child: CircularProgressIndicator(
+                            color: ColorPalette.white,
+                          ))
+                          : CustomText(
+                          text: "Create payout account",
+                          color: ColorPalette.white)))
                 else
                   CustomButton(
                       onPressed: () {
