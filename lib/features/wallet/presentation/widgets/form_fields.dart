@@ -51,6 +51,7 @@ CustomFormField beneficiaryNameField(
     horContentPadding: 12,
     hint: "enter full name",
     hintColor: ColorPalette.grey.shade800,
+    onTap: onTap,
     suffix: GestureDetector(
       onTap: onTap,
       child: const Icon(Icons.keyboard_arrow_right),
@@ -112,6 +113,7 @@ CustomFormField beneficiaryAddressField(
     horContentPadding: 12,
     hint: "enter beneficiary address",
     hintColor: ColorPalette.grey.shade800,
+    onTap: onTap,
     suffix: GestureDetector(
       onTap: onTap,
       child: const Icon(Icons.keyboard_arrow_right),
