@@ -1,8 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:js_util' as js_util;
-import 'dart:html' as html;
+
+import 'package:tl_consultant/core/utils/js_utils_stub.dart'
+if (dart.library.js_util) 'dart:js_util' as js_util;
+import 'package:tl_consultant/core/utils/html_stub.dart'
+if (dart.library.html) 'dart:html' as html;
+
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 import 'package:dartz/dartz.dart';

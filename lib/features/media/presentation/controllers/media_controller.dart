@@ -20,8 +20,8 @@ import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 import 'package:tl_consultant/features/profile/domain/entities/user.dart';
 import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:video_player/video_player.dart';
-import 'dart:html' as html;
-import 'dart:typed_data';
+import 'package:tl_consultant/core/utils/html_stub.dart'
+if (dart.library.html) 'dart:html' as html;
 
 class MediaController extends GetxController {
   static MediaController get instance => Get.find();
@@ -215,6 +215,11 @@ class MediaController extends GetxController {
   /// Picks an image (web) and uploads to Firebase Storage.
   /// Returns the download URL.
   static Future<Uint8List?> pickImageBytesWeb() async {
+    if (!kIsWeb) {
+      // Return null or throw an error if this is called on Mobile
+      return null;
+    }
+
     final uploadInput = html.FileUploadInputElement()..accept = 'image/*';
     uploadInput.click();
 
