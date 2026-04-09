@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tl_consultant/core/global/custom_snackbar.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/theme/fonts.dart';
 import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
@@ -70,9 +71,12 @@ class IntroMediaSection extends StatelessWidget {
                   mediaController.resetUploadVars();
 
                   if (kIsWeb) {
-                    mediaController.recordAndDownload(context);
+                    CustomSnackBar.neutralSnackBar("is Web");
+                    // mediaController.recordAndDownload(context);
                   } else {
-                    Get.to(() => const VideoRecordingPage());
+                    CustomSnackBar.neutralSnackBar("is mobile");
+
+                    // Get.to(() => const VideoRecordingPage());
                   }
                 },
                 child: Text(
