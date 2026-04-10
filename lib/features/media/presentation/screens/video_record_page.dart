@@ -161,6 +161,8 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
     setState(() {
       isRecording = true;
       inVideoPlayerState = false;
+      _videoPlayerFuture = null;
+      _currentPosition = 0.0;
     });
 
     animationController.duration = recordingDuration;
@@ -168,39 +170,24 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
     animationController.forward();
 
     _autoStopTimer?.cancel();
-    _autoStopTimer = Timer(recordingDuration, () async {
-      if (!mounted ||
-          !isRecording ||
-          _isStoppingRecording ||
-          _didFinishRecording) {
-        return;
-      }
-      await stopRecording(fromAutoStop: true);
+    _autoStopTimer = Timer(recordingDuration, () {
+      stopRecording(); // same handler as stop button
     });
   }
 
-  Future<void> stopRecording({bool fromAutoStop = false}) async {
+  Future<void> stopRecording() async {
     if (!isRecording || _isStoppingRecording || _didFinishRecording) return;
 
     _isStoppingRecording = true;
+    _didFinishRecording = true;
     _autoStopTimer?.cancel();
 
     try {
-      if (!fromAutoStop && !_cameraController.value.isRecordingVideo) {
-        if (mounted) {
-          setState(() {
-            isRecording = false;
-          });
-        }
-        animationController.reset();
-        return;
-      }
-
-      _didFinishRecording = true;
-
-      video = await _cameraController.stopVideoRecording();
+      final recordedVideo = await _cameraController.stopVideoRecording();
 
       if (!mounted) return;
+
+      video = recordedVideo;
 
       setState(() {
         isRecording = false;
@@ -208,14 +195,18 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
         _videoPlayerFuture = initVideoPlayer();
       });
 
+      animationController.stop();
       animationController.reset();
     } catch (e) {
       debugPrint("stopRecording error: $e");
-      if (mounted) {
-        setState(() {
-          isRecording = false;
-        });
-      }
+
+      if (!mounted) return;
+
+      setState(() {
+        isRecording = false;
+      });
+
+      animationController.stop();
       animationController.reset();
     } finally {
       _isStoppingRecording = false;
