@@ -152,6 +152,8 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
     if (isRecording || _isStoppingRecording) return;
 
     _didFinishRecording = false;
+    _videoPlayerFuture = null;
+    _currentPosition = 0.0;
 
     await _cameraController.prepareForVideoRecording();
     await _cameraController.startVideoRecording();
@@ -161,8 +163,6 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
     setState(() {
       isRecording = true;
       inVideoPlayerState = false;
-      _videoPlayerFuture = null;
-      _currentPosition = 0.0;
     });
 
     animationController.duration = recordingDuration;
@@ -170,9 +170,89 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
     animationController.forward();
 
     _autoStopTimer?.cancel();
-    _autoStopTimer = Timer(recordingDuration, () {
-      stopRecording(); // same handler as stop button
+    _autoStopTimer = Timer(recordingDuration, () async {
+      if (!mounted || !isRecording || _isStoppingRecording || _didFinishRecording) {
+        return;
+      }
+      await autoStopRecordingOnly();
     });
+  }
+
+  Future<void> autoStopRecordingOnly() async {
+    if (!isRecording || _isStoppingRecording || _didFinishRecording) return;
+
+    _isStoppingRecording = true;
+    _didFinishRecording = true;
+    _autoStopTimer?.cancel();
+
+    try {
+      video = await _cameraController.stopVideoRecording();
+
+      if (!mounted) return;
+
+      setState(() {
+        isRecording = false;
+        inVideoPlayerState = false; // stay on recording screen
+      });
+
+      animationController.stop();
+      animationController.reset();
+
+      debugPrint('Auto-stopped video path: ${video.path}');
+    } catch (e) {
+      debugPrint("autoStopRecordingOnly error: $e");
+
+      if (!mounted) return;
+
+      setState(() {
+        isRecording = false;
+      });
+
+      animationController.stop();
+      animationController.reset();
+    } finally {
+      _isStoppingRecording = false;
+    }
+  }
+
+  Future<void> stopRecordingAndOpenPlayer() async {
+    if (_isStoppingRecording) return;
+
+    _autoStopTimer?.cancel();
+
+    try {
+      if (isRecording && !_didFinishRecording) {
+        _isStoppingRecording = true;
+        _didFinishRecording = true;
+
+        video = await _cameraController.stopVideoRecording();
+      }
+
+      if (!mounted) return;
+      if (video.path.isEmpty) return;
+
+      setState(() {
+        isRecording = false;
+        inVideoPlayerState = true;
+        _videoPlayerFuture = initVideoPlayer();
+      });
+
+      animationController.stop();
+      animationController.reset();
+    } catch (e) {
+      debugPrint("stopRecordingAndOpenPlayer error: $e");
+
+      if (!mounted) return;
+
+      setState(() {
+        isRecording = false;
+      });
+
+      animationController.stop();
+      animationController.reset();
+    } finally {
+      _isStoppingRecording = false;
+    }
   }
 
   Future<void> stopRecording() async {
@@ -578,7 +658,7 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
                         Expanded(
                             flex: 1,
                             child: GestureDetector(
-                              onTap: () => stopRecording(),
+                              onTap: () => stopRecordingAndOpenPlayer(),
                               child: Wrap(
                                 children: [
                                   Container(
