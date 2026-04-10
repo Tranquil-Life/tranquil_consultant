@@ -49,15 +49,27 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
 
   String previousRoute = '';
 
+  bool _isStoppingRecording = false;
+  bool _isMobileWebDevice = false;
+  bool _didInitCamera = false;
+
   @override
   void initState() {
+    super.initState();
     previousRoute = Get.previousRoute;
-
     mediaController.uploadProgress.value = 0.0;
     initAnimation();
-    initCamera();
+  }
 
-    super.initState();
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (!_didInitCamera) {
+      _isMobileWebDevice = isMobileWeb(context);
+      _didInitCamera = true;
+      initCamera();
+    }
   }
 
   @override
@@ -69,7 +81,7 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
     super.dispose();
   }
 
-  initAnimation() {
+  void initAnimation() {
     // Initialize AnimationController for 1 minute (60 seconds)
     animationController = AnimationController(
       vsync: this,
@@ -92,107 +104,142 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
     final cameras = await availableCameras();
 
     if (cameras.isEmpty) {
-      print("No cameras found");
+      debugPrint("No cameras found");
       return;
     }
 
     CameraController? tempController;
+    ResolutionPreset resolution = ResolutionPreset.low;
 
     try {
-      // We define 'selectedCamera' here to avoid confusion
       final selectedCamera = cameras.firstWhere(
-        (camera) => camera.lensDirection == CameraLensDirection.front,
+            (camera) => camera.lensDirection == CameraLensDirection.front,
         orElse: () => cameras.first,
       );
 
-      tempController = CameraController(selectedCamera, ResolutionPreset.max,
-          enableAudio: true);
+      resolution = _isMobileWebDevice
+          ? ResolutionPreset.low
+          : ResolutionPreset.max;
+
+      tempController = CameraController(
+        selectedCamera,
+        resolution,
+        enableAudio: true,
+      );
     } catch (e) {
-      tempController = CameraController(cameras.first, ResolutionPreset.max,
-          enableAudio: true);
+      tempController = CameraController(
+        cameras.first,
+        resolution,
+        enableAudio: true,
+      );
     }
 
     _cameraController = tempController;
 
-    // REMOVE THE OLD LINE HERE - It was using the undefined 'front' variable
-    // _cameraController = CameraController(front, ...);
-
-    await _cameraController.initialize().then((_) {
+    try {
+      await _cameraController.initialize();
       if (!mounted) return;
-      setState(() {});
-    }).catchError((Object e) {
-      if (e is CameraException) {
-        // Handle errors...
-      }
-    });
-
-    setState(() => _isLoading = false);
-  }
-
-  Future<void> startRecording() async {
-    if (!isRecording) {
-      await _cameraController.prepareForVideoRecording();
-      await _cameraController.startVideoRecording();
-      setState(() => isRecording = true);
-      inVideoPlayerState = false;
-
-      animationController.reset();
-      animationController.forward();
-    }
-
-    await Future.delayed(const Duration(minutes: 1)); // Simulate task duration
-
-    if (isRecording) {
-      video = await _cameraController.stopVideoRecording(); // Returns an XFile
-      setState(() => isRecording = false);
-
-      animationController.reset();
-      inVideoPlayerState = true;
-
-      setupVideoPlayer();
-
-      print('Video saved at: ${video.path}');
+      setState(() => _isLoading = false);
+    } catch (e) {
+      debugPrint("Camera init error: $e");
+      if (!mounted) return;
+      setState(() => _isLoading = false);
     }
   }
 
-  Future stopRecording() async {
-    if (isRecording) {
-      video = await _cameraController.stopVideoRecording();
-
-      setState(() => isRecording = false);
-      animationController.reset();
-      inVideoPlayerState = true;
-
-      // Logic for Video Player initialization
-      setupVideoPlayer();
-
-      // Safe Printing for both platforms
-      if (kIsWeb) {
-        debugPrint('Web Blob URL: ${video.path}');
-      } else {
-        // ONLY use File() here because we know we are on Mobile
-        File videoFile = File(video.path);
-        debugPrint('Mobile File Path: ${videoFile.path}');
-      }
-    }
-  }
-
-  /// Video Player related functions
-  ///Old
-  // Future initVideoPlayer() async {
-  //   _videoPlayerController = VideoPlayerController.file(File(video.path))
-  //     ..addListener(() {
-  //       setState(() {
-  //         _currentPosition =
-  //             _videoPlayerController!.value.position.inMilliseconds.toDouble();
-  //       });
-  //     });
-  //   await _videoPlayerController?.initialize();
-  //   await _videoPlayerController?.setLooping(true);
-  //   await _videoPlayerController?.play();
+  /// -------- OLD RECORDING LOGIC (for reference): 04/09/2026 --------
+  // Future<void> startRecording() async {
+  //   if (!isRecording) {
+  //     await _cameraController.prepareForVideoRecording();
+  //     await _cameraController.startVideoRecording();
+  //     setState(() => isRecording = true);
+  //     inVideoPlayerState = false;
+  //
+  //     animationController.reset();
+  //     animationController.forward();
+  //   }
+  //
+  //   await Future.delayed(const Duration(minutes: 1)); // Simulate task duration
+  //
+  //   if (isRecording) {
+  //     video = await _cameraController.stopVideoRecording(); // Returns an XFile
+  //     setState(() => isRecording = false);
+  //
+  //     animationController.reset();
+  //     inVideoPlayerState = true;
+  //
+  //     setupVideoPlayer();
+  //
+  //     print('Video saved at: ${video.path}');
+  //   }
+  // }
+  //
+  // Future stopRecording() async {
+  //   if (isRecording) {
+  //     video = await _cameraController.stopVideoRecording();
+  //
+  //     setState(() => isRecording = false);
+  //     animationController.reset();
+  //     inVideoPlayerState = true;
+  //
+  //     // Logic for Video Player initialization
+  //     setupVideoPlayer();
+  //
+  //     // Safe Printing for both platforms
+  //     if (kIsWeb) {
+  //       debugPrint('Web Blob URL: ${video.path}');
+  //     } else {
+  //       // ONLY use File() here because we know we are on Mobile
+  //       File videoFile = File(video.path);
+  //       debugPrint('Mobile File Path: ${videoFile.path}');
+  //     }
+  //   }
   // }
 
-  ///NEW
+  Future<void> startRecording() async {
+    if (isRecording || _isStoppingRecording) return;
+
+    await _cameraController.prepareForVideoRecording();
+    await _cameraController.startVideoRecording();
+
+    if (!mounted) return;
+    setState(() {
+      isRecording = true;
+      inVideoPlayerState = false;
+    });
+
+    animationController.reset();
+    animationController.forward();
+  }
+
+  Future<void> stopRecording() async {
+    if (!isRecording || _isStoppingRecording) return;
+    _isStoppingRecording = true;
+
+    try {
+      video = await _cameraController.stopVideoRecording();
+
+      if (!mounted) return;
+      setState(() {
+        isRecording = false;
+        inVideoPlayerState = !kIsWeb; // optionally skip preview on web
+      });
+
+      animationController.reset();
+
+      if (!kIsWeb) {
+        setupVideoPlayer();
+      }
+    } catch (e) {
+      debugPrint("stopRecording error: $e");
+      if (mounted) {
+        setState(() => isRecording = false);
+      }
+    } finally {
+      _isStoppingRecording = false;
+    }
+  }
+
   Future<void> initVideoPlayer() async {
     // 1. Create the controller instance first
     if (_videoPlayerController != null) {
@@ -490,17 +537,6 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              // Container(
-                              //   height: 40,
-                              //   width: 40,
-                              //   padding: EdgeInsets.all(12),
-                              //   decoration: BoxDecoration(
-                              //       border: Border.all(
-                              //           width: 1, color: ColorPalette.green),
-                              //       borderRadius: BorderRadius.circular(100)),
-                              //   child:
-                              //       SvgPicture.asset(SvgElements.svgPlayIcon),
-                              // ),
                               Expanded(child: Container()),
                               Expanded(
                                 flex: 3,

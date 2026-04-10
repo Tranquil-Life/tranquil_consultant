@@ -80,19 +80,22 @@ class _IntroduceYourselfPageState extends State<IntroduceYourselfPage> {
                 VideoRecordOption(
                   authController: authController,
                   onTap: () async {
-                    // setState(() {
-                    //   selectedOption = video;
-                    // });
-                    //
-                    // mediaController.resetUploadVars();
+                    setState(() {
+                      selectedOption = video;
+                    });
 
-                    // await Future.delayed(Duration(seconds: 1));
-                    // Get.to(() => const VideoRecordingPage());
-                    if(kIsWeb){
-                      CustomSnackBar.neutralSnackBar("This is web");
-                    }else{
-                      CustomSnackBar.neutralSnackBar("This is mobile");
-                    }
+                    mediaController.resetUploadVars();
+
+                    await Future.delayed(Duration(seconds: 1));
+                    Get.to(() => const VideoRecordingPage());
+
+                    ///----------------------
+
+                    // if(kIsWeb){
+                    //   CustomSnackBar.neutralSnackBar("This is web");
+                    // }else{
+                    //   CustomSnackBar.neutralSnackBar("This is mobile");
+                    // }
                   },
                   selected: selectedOption == video ? true : false,
                 ),

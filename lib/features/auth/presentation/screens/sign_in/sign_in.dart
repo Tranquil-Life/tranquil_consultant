@@ -12,6 +12,7 @@ import 'package:tl_consultant/core/utils/routes/app_pages.dart';
 import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:tl_consultant/features/auth/presentation/screens/register/therapist_type_screen.dart';
 import 'package:tl_consultant/features/auth/presentation/widgets/form_fields.dart';
+import 'package:tl_consultant/features/media/presentation/screens/video_record_page.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -125,7 +126,11 @@ class _SignInScreenState extends State<SignInScreen> {
               Align(
                 alignment: Alignment.bottomCenter,
                 child: GestureDetector(
-                  onTap: () => Get.to(() => AccountTypeScreen()),
+                  onTap: (){
+                    Get.to(() => const VideoRecordingPage());
+
+                    // Get.to(() => AccountTypeScreen());
+                  },
                   child: RichText(
                     text: TextSpan(
                       text: 'I don’t have an account. ',

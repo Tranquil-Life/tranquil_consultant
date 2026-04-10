@@ -20,6 +20,7 @@ import 'package:tl_consultant/core/global/IOSDatePicker.dart';
 import 'package:tl_consultant/core/global/custom_snackbar.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/utils/app_config.dart';
+import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 import 'package:tl_consultant/features/chat/domain/entities/message.dart';
 import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
 import 'package:tl_consultant/features/profile/data/models/user_model.dart';
@@ -455,7 +456,9 @@ String? extractDateYmd(Map<String, dynamic> json) {
   return null;
 }
 
-
+bool isMobileWeb(BuildContext context) {
+  return displayWidth(context) < 768;
+}
 
 // Future<Uint8List> blobToBytes(html.Blob blob) async {
 //   final c = Completer<Uint8List>();
