@@ -1,11 +1,13 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tl_consultant/core/global/buttons.dart';
 import 'package:tl_consultant/core/global/custom_app_bar.dart';
 import 'package:tl_consultant/core/constants/constants.dart';
+import 'package:tl_consultant/core/global/custom_snackbar.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/theme/fonts.dart';
 import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
@@ -78,14 +80,19 @@ class _IntroduceYourselfPageState extends State<IntroduceYourselfPage> {
                 VideoRecordOption(
                   authController: authController,
                   onTap: () async {
-                    setState(() {
-                      selectedOption = video;
-                    });
+                    // setState(() {
+                    //   selectedOption = video;
+                    // });
+                    //
+                    // mediaController.resetUploadVars();
 
-                    mediaController.resetUploadVars();
-
-                    await Future.delayed(Duration(seconds: 1));
-                    Get.to(() => const VideoRecordingPage());
+                    // await Future.delayed(Duration(seconds: 1));
+                    // Get.to(() => const VideoRecordingPage());
+                    if(kIsWeb){
+                      CustomSnackBar.neutralSnackBar("This is web");
+                    }else{
+                      CustomSnackBar.neutralSnackBar("This is mobile");
+                    }
                   },
                   selected: selectedOption == video ? true : false,
                 ),
