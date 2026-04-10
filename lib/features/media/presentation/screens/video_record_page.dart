@@ -14,10 +14,7 @@ import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 import 'package:tl_consultant/core/utils/helpers/svg_elements.dart';
 import 'package:tl_consultant/core/utils/routes/app_pages.dart';
 import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';
-import 'package:tl_consultant/features/auth/presentation/widgets/means_of_id_field.dart';
 import 'package:tl_consultant/features/media/presentation/controllers/media_controller.dart';
-import 'package:tl_consultant/features/profile/data/models/user_model.dart';
-import 'package:tl_consultant/features/profile/data/repos/user_data_store.dart';
 import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:video_player/video_player.dart';
 
@@ -75,6 +72,12 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
     }
   }
 
+
+  Duration get recordingDuration =>
+      _isMobileWebDevice
+          ? const Duration(seconds: 20)
+          : const Duration(minutes: 1);
+
   @override
   void dispose() {
     _autoStopTimer?.cancel();
@@ -88,7 +91,7 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
     // Initialize AnimationController for 1 minute (60 seconds)
     animationController = AnimationController(
       vsync: this,
-      duration: const Duration(minutes: 1), // 1 minute duration
+      duration: recordingDuration
     );
 
     // Create a Tween to animate progress from 0.0 to 1.0
@@ -150,55 +153,6 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
     }
   }
 
-  /// -------- OLD RECORDING LOGIC (for reference): 04/09/2026 --------
-  // Future<void> startRecording() async {
-  //   if (!isRecording) {
-  //     await _cameraController.prepareForVideoRecording();
-  //     await _cameraController.startVideoRecording();
-  //     setState(() => isRecording = true);
-  //     inVideoPlayerState = false;
-  //
-  //     animationController.reset();
-  //     animationController.forward();
-  //   }
-  //
-  //   await Future.delayed(const Duration(minutes: 1)); // Simulate task duration
-  //
-  //   if (isRecording) {
-  //     video = await _cameraController.stopVideoRecording(); // Returns an XFile
-  //     setState(() => isRecording = false);
-  //
-  //     animationController.reset();
-  //     inVideoPlayerState = true;
-  //
-  //     setupVideoPlayer();
-  //
-  //     print('Video saved at: ${video.path}');
-  //   }
-  // }
-  //
-  // Future stopRecording() async {
-  //   if (isRecording) {
-  //     video = await _cameraController.stopVideoRecording();
-  //
-  //     setState(() => isRecording = false);
-  //     animationController.reset();
-  //     inVideoPlayerState = true;
-  //
-  //     // Logic for Video Player initialization
-  //     setupVideoPlayer();
-  //
-  //     // Safe Printing for both platforms
-  //     if (kIsWeb) {
-  //       debugPrint('Web Blob URL: ${video.path}');
-  //     } else {
-  //       // ONLY use File() here because we know we are on Mobile
-  //       File videoFile = File(video.path);
-  //       debugPrint('Mobile File Path: ${videoFile.path}');
-  //     }
-  //   }
-  // }
-
   Future<void> startRecording() async {
     if (isRecording || _isStoppingRecording) return;
 
@@ -218,7 +172,7 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
     animationController.forward();
 
     _autoStopTimer?.cancel();
-    _autoStopTimer = Timer(const Duration(minutes: 1), () async {
+    _autoStopTimer = Timer(recordingDuration, () async {
       if (!mounted || !isRecording || _isStoppingRecording || _didFinishRecording) {
         return;
       }
@@ -266,42 +220,6 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
       _isStoppingRecording = false;
     }
   }
-
-  // Future<void> stopRecording({bool fromAutoStop = false}) async {
-  //   if (!isRecording || _isStoppingRecording || _didFinishRecording) return;
-  //
-  //   _isStoppingRecording = true;
-  //   _didFinishRecording = true;
-  //   _autoStopTimer?.cancel();
-  //
-  //   try {
-  //     if (!_cameraController.value.isRecordingVideo) {
-  //       _isStoppingRecording = false;
-  //       return;
-  //     }
-  //
-  //     video = await _cameraController.stopVideoRecording();
-  //
-  //     if (!mounted) return;
-  //
-  //     setState(() {
-  //       isRecording = false;
-  //       inVideoPlayerState = true;
-  //       _videoPlayerFuture = initVideoPlayer();
-  //     });
-  //
-  //     animationController.reset();
-  //   } catch (e) {
-  //     debugPrint("stopRecording error: $e");
-  //     if (mounted) {
-  //       setState(() {
-  //         isRecording = false;
-  //       });
-  //     }
-  //   } finally {
-  //     _isStoppingRecording = false;
-  //   }
-  // }
 
   Future<void> initVideoPlayer() async {
     // 1. Create the controller instance first

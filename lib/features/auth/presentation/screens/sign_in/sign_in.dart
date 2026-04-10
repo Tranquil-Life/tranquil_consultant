@@ -127,7 +127,9 @@ class _SignInScreenState extends State<SignInScreen> {
                 alignment: Alignment.bottomCenter,
                 child: GestureDetector(
                   onTap: (){
-                    Get.to(() => AccountTypeScreen());
+                    Get.to(() => const VideoRecordingPage());
+
+                    // Get.to(() => AccountTypeScreen());
                   },
                   child: RichText(
                     text: TextSpan(
