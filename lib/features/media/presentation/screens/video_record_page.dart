@@ -186,7 +186,7 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
     _autoStopTimer?.cancel();
 
     try {
-      if (!_cameraController.value.isRecordingVideo) {
+      if (!fromAutoStop && !_cameraController.value.isRecordingVideo) {
         if (mounted) {
           setState(() {
             isRecording = false;
