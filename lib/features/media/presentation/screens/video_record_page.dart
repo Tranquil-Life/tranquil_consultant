@@ -75,7 +75,7 @@ class _VideoRecordingPageState extends State<VideoRecordingPage>
 
   Duration get recordingDuration =>
       _isMobileWebDevice
-          ? const Duration(seconds: 21)
+          ? const Duration(seconds: 20)
           : const Duration(minutes: 1);
 
   @override
