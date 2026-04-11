@@ -269,94 +269,94 @@ class MediaController extends GetxController {
 
   // Inside your main page's button or function
   void recordAndDownload(BuildContext context) async {
-    // 1. Capture the navigator before the async gap
-    final navigator = Navigator.of(context);
-
-    final Uint8List? videoBytes = await navigator.push(
-      MaterialPageRoute(
-        builder: (_) =>
-            const WebVideoRecordingPage(maxDuration: Duration(seconds: 60)),
-      ),
-    );
+    // // 1. Capture the navigator before the async gap
+    // final navigator = Navigator.of(context);
+    //
+    // final Uint8List? videoBytes = await navigator.push(
+    //   MaterialPageRoute(
+    //     builder: (_) =>
+    //         const WebVideoRecordingPage(maxDuration: Duration(seconds: 60)),
+    //   ),
+    // );
 
     // 2. IMPORTANT: Check if the user navigated away while recording
-    if (!context.mounted) return;
-
-    if (videoBytes != null && videoBytes.isNotEmpty) {
-      // Reset progress
-      uploadProgress.value = 0.0;
-
-      User user = UserModel.fromJson(userDataStore.user);
-      String path = videoIntro;
-      String fileName =
-          "intro_video_${DateTime.now().millisecondsSinceEpoch}.webm";
-      Reference reference =
-          FirebaseStorage.instance.ref('$path/${user.id}_$fileName');
-
-      // 3. Start the upload task
-      UploadTask uploadTask = reference.putData(
-        videoBytes,
-        SettableMetadata(contentType: "video/webm"),
-      );
-
-      // Monitor progress
-      final progressSubscription =
-          uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
-        uploadProgress.value =
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-      });
-
-      // 4. Show the dialog
-      // Use a try-finally block to ensure the dialog closes even if the upload fails
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext dialogContext) {
-          return AlertDialog(
-            title: const Text('Uploading Video Intro'),
-            content: Obx(() => Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    LinearProgressIndicator(
-                      value: uploadProgress.value / 100,
-                      backgroundColor: Colors.grey[300],
-                      valueColor:
-                          const AlwaysStoppedAnimation<Color>(Colors.green),
-                    ),
-                    const SizedBox(height: 20),
-                    Text(
-                        '${uploadProgress.value.toStringAsFixed(2)}% uploaded'),
-                  ],
-                )),
-          );
-        },
-      );
-
-      try {
-        // 5. Wait for the upload to complete
-        TaskSnapshot taskSnapshot = await uploadTask;
-        final String downloadUrl = await taskSnapshot.ref.getDownloadURL();
-
-        // 6. Update data
-        DashboardController.instance.videoIntro.value = downloadUrl;
-        userDataStore.user[videoIntro] = downloadUrl;
-      } catch (e) {
-        debugPrint("Upload failed: $e");
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Upload failed. Please try again.")),
-        );
-      } finally {
-        // 7. ALWAYS close the dialog and cancel listener
-        progressSubscription.cancel();
-        if (context.mounted) {
-          // This pops the dialog specifically
-          navigator.pop();
-        }
-      }
-      DashboardController.instance.restoreUserInfo();
-      //GPT I want to get the new duration
-      await initializeVideoPlayer();
-    }
+    // if (!context.mounted) return;
+    //
+    // if (videoBytes != null && videoBytes.isNotEmpty) {
+    //   // Reset progress
+    //   uploadProgress.value = 0.0;
+    //
+    //   User user = UserModel.fromJson(userDataStore.user);
+    //   String path = videoIntro;
+    //   String fileName =
+    //       "intro_video_${DateTime.now().millisecondsSinceEpoch}.webm";
+    //   Reference reference =
+    //       FirebaseStorage.instance.ref('$path/${user.id}_$fileName');
+    //
+    //   // 3. Start the upload task
+    //   UploadTask uploadTask = reference.putData(
+    //     videoBytes,
+    //     SettableMetadata(contentType: "video/webm"),
+    //   );
+    //
+    //   // Monitor progress
+    //   final progressSubscription =
+    //       uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
+    //     uploadProgress.value =
+    //         (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+    //   });
+    //
+    //   // 4. Show the dialog
+    //   // Use a try-finally block to ensure the dialog closes even if the upload fails
+    //   showDialog(
+    //     context: context,
+    //     barrierDismissible: false,
+    //     builder: (BuildContext dialogContext) {
+    //       return AlertDialog(
+    //         title: const Text('Uploading Video Intro'),
+    //         content: Obx(() => Column(
+    //               mainAxisSize: MainAxisSize.min,
+    //               children: [
+    //                 LinearProgressIndicator(
+    //                   value: uploadProgress.value / 100,
+    //                   backgroundColor: Colors.grey[300],
+    //                   valueColor:
+    //                       const AlwaysStoppedAnimation<Color>(Colors.green),
+    //                 ),
+    //                 const SizedBox(height: 20),
+    //                 Text(
+    //                     '${uploadProgress.value.toStringAsFixed(2)}% uploaded'),
+    //               ],
+    //             )),
+    //       );
+    //     },
+    //   );
+    //
+    //   try {
+    //     // 5. Wait for the upload to complete
+    //     TaskSnapshot taskSnapshot = await uploadTask;
+    //     final String downloadUrl = await taskSnapshot.ref.getDownloadURL();
+    //
+    //     // 6. Update data
+    //     DashboardController.instance.videoIntro.value = downloadUrl;
+    //     userDataStore.user[videoIntro] = downloadUrl;
+    //   } catch (e) {
+    //     debugPrint("Upload failed: $e");
+    //     ScaffoldMessenger.of(context).showSnackBar(
+    //       const SnackBar(content: Text("Upload failed. Please try again.")),
+    //     );
+    //   } finally {
+    //     // 7. ALWAYS close the dialog and cancel listener
+    //     progressSubscription.cancel();
+    //     if (context.mounted) {
+    //       // This pops the dialog specifically
+    //       navigator.pop();
+    //     }
+    //   }
+    //   DashboardController.instance.restoreUserInfo();
+    //   //GPT I want to get the new duration
+    //   await initializeVideoPlayer();
+    // }
   }
 
   // Future<void> startVideoRecording() async {

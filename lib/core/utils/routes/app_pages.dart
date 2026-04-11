@@ -100,7 +100,7 @@ class AppPages {
     GetPage(name: Routes.SETTINGS, page: () => SettingsScreen()),
     GetPage(
       name: Routes.WEB_RECORD,
-      page: () => const WebVideoRecordingPage(maxDuration: Duration()),
+      page: () => const WebVideoRecordingPage(),
     ),
 
   ];

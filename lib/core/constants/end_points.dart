@@ -4,7 +4,8 @@ import 'package:tl_consultant/core/utils/app_config.dart';
 const staging = 'https://tranquil-api-staging-205081a15c84.herokuapp.com';
 const production = 'https://tranquil-api.herokuapp.com';
 const exchangeHost = "https://v6.exchangerate-api.com/v6";
-const baseUrl = '$production/api/'; //Currently in production, change to staging only for testing
+const baseUrl =
+    '$production/api/'; //Currently in production, change to staging only for testing
 const countriesNowBaseUrl = "https://countriesnow.space/api/v0.1/";
 const mapPlacesBaseUrl =
     "https://maps.googleapis.com/maps/api/place/textsearch/json";
@@ -28,7 +29,8 @@ abstract class AuthEndPoints {
   static const updatePassword = '$consultant/resetPassword';
 
   //Get docusign
-  static const getDocusignUrl = '$consultant/agreements/{applicationId}/signing-url';
+  static const getDocusignUrl =
+      '$consultant/agreements/{applicationId}/signing-url';
 }
 
 abstract class ProfileEndPoints {
@@ -96,6 +98,9 @@ abstract class JournalEndPoints {
 
 abstract class MediaEndpoints {
   static const uploadFile = '$consultant/uploadFile';
+
+  static String webVideoRecordUrl({required String username}) =>
+      'https://tl-web-videochat.netlify.app/?pageType=video-recording&userName=$username';
 }
 
 abstract class ChatEndPoints {
@@ -108,7 +113,7 @@ abstract class ChatEndPoints {
 
   static String webVideoCallUrl(
           {required String room, required String token}) =>
-      'https://tl-web-videochat.netlify.app/?room=$room&token=$token';
+      'https://tl-web-videochat.netlify.app/?pageType=video-call&$room=$room&token=$token';
 
   static String getRecentMessages({required int chatId}) =>
       'client/get-recent-messages/$chatId';

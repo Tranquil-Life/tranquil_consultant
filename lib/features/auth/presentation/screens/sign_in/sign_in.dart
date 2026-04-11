@@ -13,6 +13,7 @@ import 'package:tl_consultant/features/auth/presentation/controllers/auth_contro
 import 'package:tl_consultant/features/auth/presentation/screens/register/therapist_type_screen.dart';
 import 'package:tl_consultant/features/auth/presentation/widgets/form_fields.dart';
 import 'package:tl_consultant/features/media/presentation/screens/video_record_page.dart';
+import 'package:tl_consultant/features/media/presentation/screens/web_video_recording_page.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -126,9 +127,17 @@ class _SignInScreenState extends State<SignInScreen> {
               Align(
                 alignment: Alignment.bottomCenter,
                 child: GestureDetector(
-                  onTap: (){
-                    Get.to(() => const VideoRecordingPage());
+                  onTap: () async {
+                    final result = await Get.toNamed(
+                      Routes.WEB_RECORD,
+                      arguments: {
+                        'username': 'Ayomideeee',
+                      },
+                    );
 
+                    if (result != null && result.isNotEmpty) {
+                      debugPrint('Returned video URL: $result');
+                    }
                     // Get.to(() => AccountTypeScreen());
                   },
                   child: RichText(
