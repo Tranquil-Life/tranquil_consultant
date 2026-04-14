@@ -32,16 +32,19 @@ class SmallScreenHeader extends StatelessWidget {
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Obx(()=>Container(
-              width: _diameter,
-              height: _diameter,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: ColorPalette.grey[100],
-              ),
-              clipBehavior: Clip.hardEdge,
-              child: UserAvatar(size: _diameter, imageUrl: dashboardController.profilePic.value),
-            )),
+            GestureDetector(
+              onTap: ()=> Get.toNamed(Routes.PROFILE),
+              child: Obx(()=>Container(
+                width: _diameter,
+                height: _diameter,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: ColorPalette.grey[100],
+                ),
+                clipBehavior: Clip.hardEdge,
+                child: UserAvatar(size: _diameter, imageUrl: dashboardController.profilePic.value),
+              )),
+            ),
             SizedBox(width: 12),
             Column(
               crossAxisAlignment:

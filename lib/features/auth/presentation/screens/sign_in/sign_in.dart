@@ -128,17 +128,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 alignment: Alignment.bottomCenter,
                 child: GestureDetector(
                   onTap: () async {
-                    final result = await Get.toNamed(
-                      Routes.WEB_RECORD,
-                      arguments: {
-                        'username': 'Ayomideeee',
-                      },
-                    );
-
-                    if (result != null && result.isNotEmpty) {
-                      debugPrint('Returned video URL: $result');
-                    }
-                    // Get.to(() => AccountTypeScreen());
+                    Get.to(() => AccountTypeScreen());
                   },
                   child: RichText(
                     text: TextSpan(

@@ -57,176 +57,181 @@ class _IntroduceYourselfPageState extends State<IntroduceYourselfPage> {
       body: Padding(
           padding: EdgeInsets.only(left: 24, right: 24, top: 24),
           child: SingleChildScrollView(
-            child: Obx(()=>Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Introduce yourself",
-                  style: TextStyle(
-                    color: ColorPalette.black,
-                    fontSize: 24,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                SizedBox(height: 8),
-                Text(
-                  "Complete your profile by taking the following steps",
-                  style: TextStyle(
-                      fontSize: AppFonts.defaultSize,
-                      fontWeight: FontWeight.w400,
-                      color: ColorPalette.grey.shade500),
-                ),
-                SizedBox(height: 40),
-                VideoRecordOption(
-                  authController: authController,
-                  onTap: () async {
-                    setState(() {
-                      selectedOption = video;
-                    });
-
-                    mediaController.resetUploadVars();
-
-                    await Future.delayed(Duration(seconds: 1));
-                    Get.to(() => const VideoRecordingPage());
-
-                    ///----------------------
-
-                    // if(kIsWeb){
-                    //   CustomSnackBar.neutralSnackBar("This is web");
-                    // }else{
-                    //   CustomSnackBar.neutralSnackBar("This is mobile");
-                    // }
-                  },
-                  selected: selectedOption == video ? true : false,
-                ),
-                if (authController.introVideo.value.isNotEmpty)
-                  TextButton(
-                      style: TextButton.styleFrom(
-                        padding: EdgeInsets.zero,
-                        alignment: Alignment.centerLeft,
+            child: Obx(() => Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Introduce yourself",
+                      style: TextStyle(
+                        color: ColorPalette.black,
+                        fontSize: 24,
+                        fontWeight: FontWeight.w500,
                       ),
-                      onPressed: () {
-                        showDialog(
-                            context: context,
-                            builder: (_) {
-                              return AlertDialog(
-                                content: VideoPlayerWidget(
-                                    videoUrl: authController.introVideo.value),
-                              );
-                            });
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      "Complete your profile by taking the following steps",
+                      style: TextStyle(
+                          fontSize: AppFonts.defaultSize,
+                          fontWeight: FontWeight.w400,
+                          color: ColorPalette.grey.shade500),
+                    ),
+                    SizedBox(height: 40),
+                    VideoRecordOption(
+                      authController: authController,
+                      onTap: () async {
+                        setState(() {
+                          selectedOption = video;
+                        });
+
+                        mediaController.resetUploadVars();
+
+                        final result = await Get.toNamed(
+                          Routes.WEB_RECORD,
+                          arguments: {
+                            'username': ""
+                                "${authController.params.firstName} "
+                                "${authController.params.lastName}",
+                          },
+                        );
+
+                        if (result != null && result.isNotEmpty) {
+                          authController.introVideo.value = result;
+                          debugPrint('Returned video URL: $result');
+                        }
                       },
-                      child: Text(
-                        "Play video",
-                        style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w400,
-                            decoration: TextDecoration.underline,
-                            color: ColorPalette.green),
-                      )),
-                SizedBox(height: 24),
-                PictureUploadOption(
-                  authController: authController,
-                  selected: selectedOption == picture ? true : false,
-                  onTap: () async {
-                    setState(() {
-                      selectedOption = picture;
-                    });
-
-                    await Future.delayed(Duration(seconds: 1));
-                    XFile? file = await MediaService.selectImage(ImageSource.gallery);
-
-                    if (file != null) {
-                      await mediaController.uploadFile(
-                          file, // Now matches the XFile parameter type
-                          profileImage,
-                          authController
-                      );
-                    }
-                  },
-                ),
-                if (authController.profilePic.value.isNotEmpty)
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
+                      selected: selectedOption == video ? true : false,
+                    ),
+                    if (authController.introVideo.value.isNotEmpty)
                       TextButton(
                           style: TextButton.styleFrom(
                             padding: EdgeInsets.zero,
                             alignment: Alignment.centerLeft,
                           ),
                           onPressed: () {
-                            Get.to(ProfilePreviewPage(
-                                image: authController.profilePic.value));
+                            showDialog(
+                                context: context,
+                                builder: (_) {
+                                  return AlertDialog(
+                                    backgroundColor: Colors.white,
+                                    content: VideoPlayerWidget(
+                                        videoUrl:
+                                            authController.introVideo.value),
+                                  );
+                                });
                           },
                           child: Text(
-                            "Profile preview",
+                            "Play video",
                             style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w400,
                                 decoration: TextDecoration.underline,
                                 color: ColorPalette.green),
                           )),
-                      SizedBox(width: 4),
-                      GestureDetector(
-                        child: Icon(
-                          Icons.info_rounded,
-                          size: 20,
-                        ),
-                        onTap: () {
-                          showDialog(
-                              context: context,
-                              builder: (_) {
-                                return AlertDialog(
-                                    backgroundColor: Colors.white,
-                                    content: Text(
-                                        "This is what the clients see when they view your profile"));
-                              });
-                        },
-                      )
-                    ],
-                  ),
-                SizedBox(
-                  height: displayHeight(context) / 10,
-                ),
-                Obx(() => CustomButton(
-                    onPressed: (authController.profilePic.value.isEmpty &&
-                        authController.introVideo.value.isEmpty)
-                        ? null
-                        : () {
-                      Get.toNamed(Routes.DOCUSIGN);
+                    SizedBox(height: 24),
+                    PictureUploadOption(
+                      authController: authController,
+                      selected: selectedOption == picture ? true : false,
+                      onTap: () async {
+                        setState(() {
+                          selectedOption = picture;
+                        });
 
-                      // authController.signUp();
-                    },
-                    text: "Complete sign up")),
-                SizedBox(
-                  height: 40,
-                ),
-                GestureDetector(
-                  onTap: () {
-                    //..
-                  },
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: RichText(
-                      text: TextSpan(
-                        text: 'I have an account. ',
-                        children: const [
-                          TextSpan(
-                            text: 'Sign me in...',
+                        await Future.delayed(Duration(seconds: 1));
+                        XFile? file =
+                            await MediaService.selectImage(ImageSource.gallery);
+
+                        if (file != null) {
+                          await mediaController.uploadFile(
+                              file, // Now matches the XFile parameter type
+                              profileImage,
+                              authController);
+                        }
+                      },
+                    ),
+                    if (authController.profilePic.value.isNotEmpty)
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          TextButton(
+                              style: TextButton.styleFrom(
+                                padding: EdgeInsets.zero,
+                                alignment: Alignment.centerLeft,
+                              ),
+                              onPressed: () {
+                                Get.to(ProfilePreviewPage(
+                                    image: authController.profilePic.value));
+                              },
+                              child: Text(
+                                "Profile preview",
+                                style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w400,
+                                    decoration: TextDecoration.underline,
+                                    color: ColorPalette.green),
+                              )),
+                          SizedBox(width: 4),
+                          GestureDetector(
+                            child: Icon(
+                              Icons.info_rounded,
+                              size: 20,
+                            ),
+                            onTap: () {
+                              showDialog(
+                                  context: context,
+                                  builder: (_) {
+                                    return AlertDialog(
+                                        backgroundColor: Colors.white,
+                                        content: Text(
+                                            "This is what the clients see when they view your profile"));
+                                  });
+                            },
+                          )
+                        ],
+                      ),
+                    SizedBox(
+                      height: displayHeight(context) / 10,
+                    ),
+                    Obx(() => CustomButton(
+                        onPressed: (authController.profilePic.value.isEmpty &&
+                                authController.introVideo.value.isEmpty)
+                            ? null
+                            : () {
+                                Get.toNamed(Routes.DOCUSIGN);
+
+                                // authController.signUp();
+                              },
+                        text: "Complete sign up")),
+                    SizedBox(
+                      height: 40,
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        //..
+                      },
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: RichText(
+                          text: TextSpan(
+                            text: 'I have an account. ',
+                            children: const [
+                              TextSpan(
+                                text: 'Sign me in...',
+                                style: TextStyle(
+                                    color: ColorPalette.green,
+                                    fontFamily: AppFonts.josefinSansRegular),
+                              ),
+                            ],
                             style: TextStyle(
-                                color: ColorPalette.green,
+                                color: ColorPalette.grey.shade300,
                                 fontFamily: AppFonts.josefinSansRegular),
                           ),
-                        ],
-                        style: TextStyle(
-                            color: ColorPalette.grey.shade300,
-                            fontFamily: AppFonts.josefinSansRegular),
+                          textAlign: TextAlign.center,
+                        ),
                       ),
-                      textAlign: TextAlign.center,
                     ),
-                  ),
-                ),
-              ],
-            )),
+                  ],
+                )),
           )),
     );
   }
