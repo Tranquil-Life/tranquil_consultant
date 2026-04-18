@@ -45,11 +45,19 @@ class _WebVideoRecordingPageState extends State<WebVideoRecordingPage> {
       if (event is html.MessageEvent) {
         final data = event.data;
 
-        if (data is Map && data['type'] == 'VIDEO_UPLOAD_SUCCESS') {
+        if (data is Map && data['type'] == 'SIGNING_COMPLETE') {
           final videoUrl = data['videoUrl'];
+          final photoUrl = data['photoUrl'];
+
+          print("Received from web:");
+          print("videoUrl: $videoUrl");
+          print("photoUrl: $photoUrl");
 
           if (videoUrl != null && videoUrl.toString().isNotEmpty) {
-            Get.back(result: videoUrl.toString());
+            Get.back(result: {
+              "videoUrl": videoUrl.toString(),
+              "photoUrl": photoUrl?.toString() ?? "",
+            });
           }
         }
       }
