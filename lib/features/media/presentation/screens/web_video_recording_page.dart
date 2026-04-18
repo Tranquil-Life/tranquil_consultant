@@ -3,6 +3,7 @@ import 'dart:ui_web' as ui;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tl_consultant/core/constants/end_points.dart';
+import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';
 
 class WebVideoRecordingPage extends StatefulWidget {
   const WebVideoRecordingPage({super.key});
@@ -12,6 +13,8 @@ class WebVideoRecordingPage extends StatefulWidget {
 }
 
 class _WebVideoRecordingPageState extends State<WebVideoRecordingPage> {
+  final authController = AuthController.instance;
+
   late html.EventListener _listener;
   late html.IFrameElement _iframe;
   late String _viewType;
@@ -53,11 +56,17 @@ class _WebVideoRecordingPageState extends State<WebVideoRecordingPage> {
           print("videoUrl: $videoUrl");
           print("photoUrl: $photoUrl");
 
-          if (videoUrl != null && videoUrl.toString().isNotEmpty) {
-            Get.back(result: {
-              "videoUrl": videoUrl.toString(),
-              "photoUrl": photoUrl?.toString() ?? "",
-            });
+          if (videoUrl != null && videoUrl.toString().isNotEmpty && photoUrl != null && photoUrl.toString().isNotEmpty) {
+            // authController.introVideo.value = videoUrl.toString();
+            // authController.profilePic.value = photoUrl.toString();
+
+            debugPrint("Video URL: ${authController.introVideo.value}");
+            debugPrint("Photo URL: ${authController.profilePic.value}");
+
+            // Get.back(result: {
+            //   "videoUrl": videoUrl.toString(),
+            //   "photoUrl": photoUrl?.toString() ?? "",
+            // });
           }
         }
       }
