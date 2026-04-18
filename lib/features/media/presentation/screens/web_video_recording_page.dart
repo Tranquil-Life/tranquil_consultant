@@ -87,9 +87,9 @@ class _WebVideoRecordingPageState extends State<WebVideoRecordingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Record Video'),
-      ),
+      // appBar: AppBar(
+      //   title: const Text('Record Video'),
+      // ),
       body: HtmlElementView(viewType: _viewType),
     );
   }
