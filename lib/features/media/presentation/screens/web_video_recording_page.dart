@@ -56,7 +56,10 @@ class _WebVideoRecordingPageState extends State<WebVideoRecordingPage> {
           print("videoUrl: $videoUrl");
           print("photoUrl: $photoUrl");
 
-          if (videoUrl != null && videoUrl.toString().isNotEmpty && photoUrl != null && photoUrl.toString().isNotEmpty) {
+          if (videoUrl != null &&
+              videoUrl.toString().isNotEmpty &&
+              photoUrl != null &&
+              photoUrl.toString().isNotEmpty) {
             // authController.introVideo.value = videoUrl.toString();
             // authController.profilePic.value = photoUrl.toString();
 

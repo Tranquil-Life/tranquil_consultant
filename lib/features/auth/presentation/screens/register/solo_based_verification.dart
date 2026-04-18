@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -183,8 +184,19 @@ class _SoloBasedVerificationState extends State<SoloBasedVerification> {
                   Spacer(),
                   if (verificationState() == true)
                     CustomButton(
-                        onPressed: () {
-                          Get.toNamed(Routes.INTRODUCE_YOURSELF);
+                        onPressed: () async{
+                          if(kIsWeb){
+                            await Get.toNamed(
+                              Routes.WEB_RECORD,
+                              arguments: {
+                                'username': ""
+                                    "${authController.params.firstName} "
+                                    "${authController.params.lastName}",
+                              },
+                            );
+                          }else{
+                            Get.toNamed(Routes.INTRODUCE_YOURSELF);
+                          }
                         },
                         text: "Proceed to account creation"),
                   SizedBox(height: 40),

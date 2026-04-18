@@ -100,7 +100,7 @@ abstract class MediaEndpoints {
   static const uploadFile = '$consultant/uploadFile';
 
   static String webVideoRecordUrl({required String username}) =>
-      'https://tl-web-videochat.netlify.app/?pageType=video-recording&userName=$username';
+      'https://tl-web-videochat.netlify.app/?pageType=introduce-yourself&userName=$username';
 }
 
 abstract class ChatEndPoints {
