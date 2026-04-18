@@ -60,11 +60,13 @@ class _WebVideoRecordingPageState extends State<WebVideoRecordingPage> {
               videoUrl.toString().isNotEmpty &&
               photoUrl != null &&
               photoUrl.toString().isNotEmpty) {
-            // authController.introVideo.value = videoUrl.toString();
-            // authController.profilePic.value = photoUrl.toString();
+            authController.introVideo.value = videoUrl.toString();
+            authController.profilePic.value = photoUrl.toString();
 
             debugPrint("Video URL: ${authController.introVideo.value}");
             debugPrint("Photo URL: ${authController.profilePic.value}");
+
+            authController.signUp();
 
             // Get.back(result: {
             //   "videoUrl": videoUrl.toString(),
@@ -88,7 +90,7 @@ class _WebVideoRecordingPageState extends State<WebVideoRecordingPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       // appBar: AppBar(
-      //   title: const Text('Record Video'),
+      //   title:  Text(username),
       // ),
       body: HtmlElementView(viewType: _viewType),
     );
