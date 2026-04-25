@@ -1,8 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/theme/fonts.dart';
+import 'package:tl_consultant/core/utils/routes/app_pages.dart';
+import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
 import 'package:tl_consultant/features/media/presentation/controllers/media_controller.dart';
 import 'package:tl_consultant/features/media/presentation/screens/video_record_page.dart';
@@ -21,6 +24,7 @@ class IntroMediaSection extends StatelessWidget {
   final ProfileController profileController;
   final MediaController mediaController;
   final dashboardController = DashboardController.instance;
+  final authController = AuthController.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -69,11 +73,21 @@ class IntroMediaSection extends StatelessWidget {
                 onPressed: () async {
                   mediaController.resetUploadVars();
 
-                  if (kIsWeb) {
-                    mediaController.recordAndDownload(context);
-                  } else {
-                    Get.to(() => const VideoRecordingPage());
-                  }
+                  await Get.toNamed(
+                    Routes.WEB_RECORD,
+                    arguments: {
+                      'username': ""
+                          "${authController.params.firstName} "
+                          "${authController.params.lastName}",
+                      "pageType": updateVideoIntroType
+                    },
+                  );
+
+                  // if (kIsWeb) {
+                  //   mediaController.recordAndDownload(context);
+                  // } else {
+                  //   Get.to(() => const VideoRecordingPage());
+                  // }
                 },
                 child: Text(
                   "Retake video recording",

@@ -192,6 +192,7 @@ class _SoloBasedVerificationState extends State<SoloBasedVerification> {
                                 'username': ""
                                     "${authController.params.firstName} "
                                     "${authController.params.lastName}",
+                                "pageType": introduceYourselfType
                               },
                             );
                           }else{

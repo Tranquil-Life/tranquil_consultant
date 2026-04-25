@@ -44,7 +44,8 @@ const client = "client";
 
 int myId = UserModel.fromJson(userDataStore.user).id!;
 String authToken = UserModel.fromJson(userDataStore.user).authToken!;
-String? stripeAccountId = UserModel.fromJson(userDataStore.user).stripeAccountId;
+String? stripeAccountId =
+    UserModel.fromJson(userDataStore.user).stripeAccountId;
 
 const String payout = "payout";
 const String transfer = "transfer";
@@ -63,8 +64,10 @@ const videoIntro = "video_intro";
 const grid = "grid";
 const list = "list";
 
-const noInputBio = "No bio available. Please add a short description about yourself.";
-const hintBio = "I am a licensed mental health therapist with a decade of experience. I help clients overcome various challenges and enhance their well-being. I apply various therapy modalities to ensure my clients receive the best treatment and care. I offers a safe, supportive, and collaborative space for my clients where they can grow and thrive.";
+const noInputBio =
+    "No bio available. Please add a short description about yourself.";
+const hintBio =
+    "I am a licensed mental health therapist with a decade of experience. I help clients overcome various challenges and enhance their well-being. I apply various therapy modalities to ensure my clients receive the best treatment and care. I offers a safe, supportive, and collaborative space for my clients where they can grow and thrive.";
 
 const successfulUploadMsg = "Upload successful";
 const compressingVideoMsg = "Compressing video...";
@@ -119,8 +122,10 @@ const video = "video";
 const picture = "picture";
 
 const verifyIdentityTitle = "Verify your identity";
-const agencyVerifyIdentityMsg = "Confirm your affiliation with our partner agency by entering the verification code supplied by your organization. This will ensure a smooth and secure connection between you and Tranquil Life";
-const contactAgencyForCodeMsg = "It seems the code you used is incorrect. Please check the code and try again to make sure it is correct. If the issue persists, contact your clinic or reach out to our team at ";
+const agencyVerifyIdentityMsg =
+    "Confirm your affiliation with our partner agency by entering the verification code supplied by your organization. This will ensure a smooth and secure connection between you and Tranquil Life";
+const contactAgencyForCodeMsg =
+    "It seems the code you used is incorrect. Please check the code and try again to make sure it is correct. If the issue persists, contact your clinic or reach out to our team at ";
 const verifyFailedMsg = "Verification failed";
 const verifySuccessMsg = "Verification confirmed";
 
@@ -130,12 +135,15 @@ const lastName = "last_name";
 const phoneNumber = "phone_number";
 const avatarUrl = "avatar_url";
 
-const verificationCodeMsg = "Check your email or spam for the verification code";
+const verificationCodeMsg =
+    "Check your email or spam for the verification code";
 const withdrawFundsTitle = "Withdraw funds";
-const withdrawFundsDesc = "Enter your details to receive payment to your local account";
+const withdrawFundsDesc =
+    "Enter your details to receive payment to your local account";
 const notConnectedAccountMsg = "No connected account found for this user.";
 
-const String sentryDSN = "https://ffcc9ccf78c403bfe74b17a7ed1b4d1c@o4508213507588096.ingest.us.sentry.io/4510109029498880";
+const String sentryDSN =
+    "https://ffcc9ccf78c403bfe74b17a7ed1b4d1c@o4508213507588096.ingest.us.sentry.io/4510109029498880";
 
 //Settings
 
@@ -145,7 +153,7 @@ var settings = <String, List<Map<String, dynamic>>>{
       "prefix": SvgElements.svgShareIcon,
       "label": "Invite friends",
       "suffix": SvgElements.svgArrowRight,
-      "onTap": (){}
+      "onTap": () {}
     },
     {
       "prefix": SvgElements.svgAboutUs,
@@ -173,7 +181,7 @@ var settings = <String, List<Map<String, dynamic>>>{
       "prefix": SvgElements.svgManagePwd,
       "label": "Manage password",
       "suffix": SvgElements.svgArrowRight,
-      "onTap": (){
+      "onTap": () {
         Get.toNamed(Routes.FORGOT_PASSWORD);
       }
     },
@@ -188,8 +196,7 @@ var settings = <String, List<Map<String, dynamic>>>{
       "prefix": SvgElements.svgContactUs,
       "label": "Contact us",
       "suffix": SvgElements.svgArrowRight,
-      "onTap": (){
-      }
+      "onTap": () {}
     },
     {
       "prefix": SvgElements.svgFeedback,
@@ -205,6 +212,13 @@ var settings = <String, List<Map<String, dynamic>>>{
 };
 
 final GlobalKey<ScaffoldMessengerState> rootMessengerKey =
-GlobalKey<ScaffoldMessengerState>();
+    GlobalKey<ScaffoldMessengerState>();
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
+//web-view page types
+const videoCallType = "video-call";
+const introduceYourselfType = "introduce-yourself";
+const recordVideoType = "record-video";
+const docuSignType = "docusign";
+const updateVideoIntroType = "update-video-intro";

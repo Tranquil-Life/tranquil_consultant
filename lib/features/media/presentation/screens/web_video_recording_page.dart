@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tl_consultant/core/constants/end_points.dart';
 import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';
+import 'package:tl_consultant/features/dashboard/presentation/controllers/dashboard_controller.dart';
+import 'package:tl_consultant/features/media/presentation/controllers/media_controller.dart';
 
 class WebVideoRecordingPage extends StatefulWidget {
   const WebVideoRecordingPage({super.key});
@@ -14,11 +16,14 @@ class WebVideoRecordingPage extends StatefulWidget {
 
 class _WebVideoRecordingPageState extends State<WebVideoRecordingPage> {
   final authController = AuthController.instance;
+  final dashboardController = DashboardController.instance;
+  final mediaController = MediaController.instance;
 
   late html.EventListener _listener;
   late html.IFrameElement _iframe;
   late String _viewType;
   late String username;
+  late String pageType;
   late String pageUrl;
 
   @override
@@ -27,7 +32,9 @@ class _WebVideoRecordingPageState extends State<WebVideoRecordingPage> {
 
     final args = Get.arguments as Map?;
     username = (args?['username'] ?? 'anonymous').toString();
-    pageUrl = MediaEndpoints.webVideoRecordUrl(username: username);
+    pageType = args!['pageType'].toString();
+    pageUrl = MediaEndpoints.webVideoRecordUrl(
+        username: username, pageType: pageType);
 
     _viewType = 'web-video-record-${DateTime.now().millisecondsSinceEpoch}';
 
@@ -44,7 +51,7 @@ class _WebVideoRecordingPageState extends State<WebVideoRecordingPage> {
       (int viewId) => _iframe,
     );
 
-    _listener = (event) {
+    _listener = (event) async{
       if (event is html.MessageEvent) {
         final data = event.data;
 
@@ -73,6 +80,15 @@ class _WebVideoRecordingPageState extends State<WebVideoRecordingPage> {
             //   "photoUrl": photoUrl?.toString() ?? "",
             // });
           }
+        } else if (data is Map && data['type'] == "VIDEO_UPLOAD_SUCCESS") {
+          print("Received video upload success message from web");
+
+          final videoUrl = data['videoUrl'];
+          print("Received video URL from web: $videoUrl");
+          dashboardController.videoIntro.value = videoUrl.toString();
+          await mediaController.initializeVideoPlayer();
+
+          Get.back();
         }
       }
     };
