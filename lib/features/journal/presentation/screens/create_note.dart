@@ -181,7 +181,16 @@ class _CreateNoteState extends State<CreateNote> {
                                       if (notesController
                                               .bodyController.selection !=
                                           null) {
-                                        openTextOptionsDialog(context);
+                                        openTextOptionsDialog(
+                                          context,
+                                          onApply: (option) {
+                                            if (option == TextFormatOption.bold) {
+                                              toggleBold();
+                                            } else if (option == TextFormatOption.italic) {
+                                              toggleItalic();
+                                            }
+                                          },
+                                        );;
                                       } else {
                                         CustomSnackBar.neutralSnackBar(
                                             title: "Highlight a text",
@@ -215,6 +224,49 @@ class _CreateNoteState extends State<CreateNote> {
             )),
       ),
     );
+  }
+
+  void applyStyle({
+    required String startTag,
+    required String endTag,
+  }) {
+    final text = notesController.bodyController.text;
+    final selection = notesController.bodyController.selection;
+
+    if (!selection.isValid || selection.isCollapsed) {
+      CustomSnackBar.neutralSnackBar(
+        title: "Highlight a text",
+        "Highlight the text you want to format",
+      );
+      return;
+    }
+
+    final start = selection.start;
+    final end = selection.end;
+    final selectedText = text.substring(start, end);
+
+    final formattedText = '$startTag$selectedText$endTag';
+    final newText = text.replaceRange(start, end, formattedText);
+
+    notesController.bodyController.value =
+        notesController.bodyController.value.copyWith(
+          text: newText,
+          selection: TextSelection.collapsed(
+            offset: start + formattedText.length,
+          ),
+        );
+
+    setState(() {
+      inPreviewMode = true;
+    });
+  }
+
+  void toggleBold() {
+    applyStyle(startTag: '**', endTag: '**');
+  }
+
+  void toggleItalic() {
+    applyStyle(startTag: '_', endTag: '_');
   }
 
   editOptionItem(String icon, {double? width, Color? color}) {

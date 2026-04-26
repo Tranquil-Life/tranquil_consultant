@@ -68,36 +68,45 @@ class CustomFormField extends StatelessWidget {
       inputFormatters: inputFormatter,
       onFieldSubmitted: onFieldSubmitted,
       decoration: InputDecoration(
-          errorText: errorText,
-          hintText: hint,
-          hintStyle: TextStyle(
-              fontSize: isSmallScreen(context) ? AppFonts.defaultSize : AppFonts.baseSize,
-              fontWeight: FontWeight.w400,
-              color: hintColor ?? ColorPalette.grey[200]),
-          errorStyle: const TextStyle(color: ColorPalette.white, fontSize: 14),
-          fillColor: Colors.white,
-          border: InputBorder.none,
-          focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8.0),
-              borderSide:
-                  BorderSide(width: 1, color: ColorPalette.grey.shade900)),
-          enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8.0),
-              borderSide:
-                  BorderSide(width: 1, color: ColorPalette.grey.shade900)),
-          focusedErrorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8.0),
-              borderSide: const BorderSide(width: 1, color: ColorPalette.red)),
-          errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8.0),
-              borderSide: const BorderSide(width: 1, color: ColorPalette.red)),
-          filled: true,
-          contentPadding: EdgeInsets.symmetric(
-              vertical: verContentPadding ?? 22.0,
-              horizontal: horContentPadding ?? 16.0),
-          floatingLabelBehavior: FloatingLabelBehavior.always,
-          suffixIcon: suffix,
-          prefix: prefix),
+        errorText: errorText,
+        hintText: hint,
+        hintStyle: TextStyle(
+          fontSize:
+              isSmallScreen(context) ? AppFonts.defaultSize : AppFonts.baseSize,
+          fontWeight: FontWeight.w400,
+          color: hintColor ?? ColorPalette.grey[200],
+        ),
+        errorStyle: const TextStyle(
+          color: ColorPalette.red,
+          fontSize: 14,
+        ),
+        errorMaxLines: 2,
+        fillColor: Colors.white,
+        border: InputBorder.none,
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0),
+          borderSide: BorderSide(width: 1, color: ColorPalette.grey.shade900),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0),
+          borderSide: BorderSide(width: 1, color: ColorPalette.grey.shade900),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0),
+          borderSide: const BorderSide(width: 1, color: ColorPalette.red),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0),
+          borderSide: const BorderSide(width: 1, color: ColorPalette.red),
+        ),
+        filled: true,
+        contentPadding: EdgeInsets.symmetric(
+          vertical: verContentPadding ?? 22.0,
+          horizontal: horContentPadding ?? 16.0,
+        ),
+        suffixIcon: suffix,
+        prefix: prefix,
+      ),
       maxLines: maxLines ?? 1,
       maxLength: maxLength,
     );

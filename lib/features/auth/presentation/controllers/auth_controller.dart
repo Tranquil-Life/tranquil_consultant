@@ -230,48 +230,129 @@ class AuthController extends GetxController {
     }
   }
 
-  String? signInValidation() {
-    if (emailTEC.text.isEmpty) {
+  String? validateEmail() {
+    final email = emailTEC.text.trim();
+
+    if (email.isEmpty) {
       emailIsValid.value = false;
       return 'Email address is required';
-    } else if (params.password.isEmpty) {
-      passwordIsValid.value = false;
-      return 'Password is required';
-    } else if (emailTEC.text.isEmpty && params.password.isEmpty) {
-      return 'Both fields are required';
     }
-    emailIsValid.value = true;
-    passwordIsValid.value = true;
 
+    final emailRegex = RegExp(
+      r'^[\w\.-]+@([\w-]+\.)+[\w-]{2,}$',
+    );
+
+    if (!emailRegex.hasMatch(email)) {
+      emailIsValid.value = false;
+      return 'Enter a valid email address';
+    }
+
+    emailIsValid.value = true;
     return null;
   }
 
+  // String? signInValidation() {
+  //   if (emailTEC.text.isEmpty) {
+  //     emailIsValid.value = false;
+  //     return 'Email address is required';
+  //   } else if (params.password.isEmpty) {
+  //     passwordIsValid.value = false;
+  //     return 'Password is required';
+  //   } else if (emailTEC.text.isEmpty && params.password.isEmpty) {
+  //     return 'Both fields are required';
+  //   }
+  //   emailIsValid.value = true;
+  //   passwordIsValid.value = true;
+  //
+  //   return null;
+  // }
+
+  // String? validatePassword() {
+  //   if (params.password.isEmpty) {
+  //     _resetPasswordCriteria();
+  //     return 'Password is required';
+  //   }
+  //
+  //   isLengthValid.value =
+  //       params.password.length > 8 && !params.password.contains(' ');
+  //   hasSpecialChar.value =
+  //       RegExp(r'[!@#%^&*(),.?":{}|<>]').hasMatch(params.password);
+  //   hasDigit.value = RegExp(r'\d').hasMatch(params.password);
+  //   hasLetter.value = RegExp(r'[a-zA-Z]').hasMatch(params.password);
+  //   isPasswordsMatching.value = params.password == confirmPasswordTEC.text;
+  //
+  //   return isAllPwdCriteriaMet ? null : 'Password does not meet criteria';
+  // }
+  //
+  // String? validatePasswordMatch() {
+  //   if (params.password.isEmpty || confirmPasswordTEC.text.isEmpty) {
+  //     isPasswordsMatching.value = false;
+  //     return '';
+  //   }
+  //
+  //   if (params.password != confirmPasswordTEC.text) {
+  //     isPasswordsMatching.value = false;
+  //     return '';
+  //   }
+  //
+  //   isPasswordsMatching.value = true;
+  //   return null;
+  // }
+
+  // bool get isAllPwdCriteriaMet =>
+  //     isLengthValid.value &&
+  //         hasSpecialChar.value &&
+  //         hasDigit.value &&
+  //         hasLetter.value &&
+  //         isPasswordsMatching.value;
+
   String? validatePassword() {
-    if (params.password.isEmpty) {
+    final password = params.password;
+
+    if (password.isEmpty) {
       _resetPasswordCriteria();
       return 'Password is required';
     }
 
-    isLengthValid.value =
-        params.password.length > 8 && !params.password.contains(' ');
-    hasSpecialChar.value =
-        RegExp(r'[!@#%^&*(),.?":{}|<>]').hasMatch(params.password);
-    hasDigit.value = RegExp(r'\d').hasMatch(params.password);
-    hasLetter.value = RegExp(r'[a-zA-Z]').hasMatch(params.password);
-    isPasswordsMatching.value = params.password == confirmPasswordTEC.text;
+    if (password.contains(' ')) {
+      return 'Password must not contain spaces';
+    }
 
-    return isAllPwdCriteriaMet ? null : 'Password does not meet criteria';
+    if (password.length < 8) {
+      return 'Password must be at least 8 characters';
+    }
+
+    if (!RegExp(r'[a-zA-Z]').hasMatch(password)) {
+      return 'Password must contain at least one letter';
+    }
+
+    if (!RegExp(r'\d').hasMatch(password)) {
+      return 'Password must contain at least one number';
+    }
+
+    if (!RegExp(r'[!@#%^&*(),.?":{}|<>]').hasMatch(password)) {
+      return 'Password must contain at least one special character';
+    }
+
+    // update your reactive UI (optional but good)
+    isLengthValid.value = true;
+    hasLetter.value = true;
+    hasDigit.value = true;
+    hasSpecialChar.value = true;
+    isPasswordsMatching.value = password == confirmPasswordTEC.text;
+
+    return null;
   }
 
   String? validatePasswordMatch() {
-    if (params.password.isEmpty || confirmPasswordTEC.text.isEmpty) {
+    if (confirmPasswordTEC.text.isEmpty) {
       isPasswordsMatching.value = false;
-      return '';
+      return 'Confirm password is required';
     }
 
     if (params.password != confirmPasswordTEC.text) {
       isPasswordsMatching.value = false;
-      return '';
+      return 'Passwords do not match';
     }
 
     isPasswordsMatching.value = true;
@@ -292,7 +373,6 @@ class AuthController extends GetxController {
 
     return updated;
   }
-
 
   Future<String> getDocusignUrl() async {
     String? url;

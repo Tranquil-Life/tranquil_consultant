@@ -26,6 +26,8 @@ class _RegisterState extends State<Register> {
   final authController = AuthController.instance;
   final verificationController = VerificationController.instance;
 
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     return UnFocusWidget(
@@ -40,112 +42,113 @@ class _RegisterState extends State<Register> {
           child: Padding(
             padding: EdgeInsets.only(left: 24, right: 24, top: 24),
             child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Enter your details",
-                    style: TextStyle(
-                      color: ColorPalette.black,
-                      fontSize: 24,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    "Put your details in the form below to continue your registration",
-                    style: TextStyle(
-                        fontSize: AppFonts.defaultSize,
-                        fontWeight: FontWeight.w400,
-                        color: ColorPalette.grey.shade500),
-                  ),
-                  SizedBox(height: 40),
-                  Text(
-                    'Email',
-                    style: TextStyle(color: ColorPalette.grey[600]),
-                  ),
-                  SizedBox(height: 8),
-                  emailFormField(authController),
-                  SizedBox(height: 12),
-                  Text(
-                    'Phone number',
-                    style: TextStyle(color: ColorPalette.grey[600]),
-                  ),
-                  SizedBox(height: 8),
-                  phoneField(authController),
-                  Text(
-                    'Password',
-                    style: TextStyle(color: ColorPalette.grey[600]),
-                  ),
-                  SizedBox(height: 8),
-                  Obx(() => passwordField(authController)),
-                  SizedBox(height: 12),
-                  Text(
-                    'Confirm password',
-                    style: TextStyle(color: ColorPalette.grey[600]),
-                  ),
-                  SizedBox(height: 8),
-                  Obx(() => confirmPwdField(authController)),
-                  SizedBox(
-                    height: displayHeight(context) / 10,
-                  ),
-                  Obx(() => CustomButton(
-                        onPressed: () async {
-                          if (authController.selectedType.value == solo) {
-                            var sent = await verificationController
-                                .requestVerificationToken(
-                                    email: authController.emailTEC.text);
+              child: Form(
+                  key: formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Enter your details",
+                        style: TextStyle(
+                          color: ColorPalette.black,
+                          fontSize: 24,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        "Put your details in the form below to continue your registration",
+                        style: TextStyle(
+                            fontSize: AppFonts.defaultSize,
+                            fontWeight: FontWeight.w400,
+                            color: ColorPalette.grey.shade500),
+                      ),
+                      SizedBox(height: 40),
+                      Text(
+                        'Email',
+                        style: TextStyle(color: ColorPalette.grey[600]),
+                      ),
+                      SizedBox(height: 8),
+                      emailFormField(authController),
+                      SizedBox(height: 12),
+                      Text(
+                        'Phone number',
+                        style: TextStyle(color: ColorPalette.grey[600]),
+                      ),
+                      SizedBox(height: 8),
+                      phoneField(authController),
+                      Text(
+                        'Password',
+                        style: TextStyle(color: ColorPalette.grey[600]),
+                      ),
+                      SizedBox(height: 8),
+                      Obx(() => passwordField(authController)),
+                      SizedBox(height: 12),
+                      Text(
+                        'Confirm password',
+                        style: TextStyle(color: ColorPalette.grey[600]),
+                      ),
+                      SizedBox(height: 8),
+                      Obx(() => confirmPwdField(authController)),
+                      SizedBox(
+                        height: displayHeight(context) / 10,
+                      ),
+                      Obx(() => CustomButton(
+                            onPressed: () async {
+                              if (!formKey.currentState!.validate()) return;
 
-                            if (sent) {
-                              Get.toNamed(Routes.SIGN_UP_1);
+                              if (authController.selectedType.value == solo) {
+                                var sent = await verificationController
+                                    .requestVerificationToken(
+                                  email: authController.emailTEC.text,
+                                );
 
-                              // Get.to(SoloBasedVerification());
-                            }
-                          } else {
-                            Get.to(AgencyBasedVerification());
-                          }
+                                if (sent) {
+                                  Get.toNamed(Routes.SIGN_UP_1);
+                                }
+                              }
+                            },
+                            child: verificationController.requesting.value
+                                ? CircularProgressIndicator(
+                                    color: ColorPalette.white)
+                                : Text(
+                                    "Continue",
+                                    style: TextStyle(color: ColorPalette.white),
+                                  ),
+                          )),
+                      const SizedBox(
+                        height: 40,
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          //To Sign in page
                         },
-                        child: verificationController.requesting.value
-                            ? CircularProgressIndicator(
-                                color: ColorPalette.white)
-                            : Text(
-                                "Continue",
-                                style: TextStyle(color: ColorPalette.white),
-                              ),
-                      )),
-                  const SizedBox(
-                    height: 40,
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      //To Sign in page
-                    },
-                    child: Align(
-                      alignment: Alignment.center,
-                      child: RichText(
-                        text: TextSpan(
-                          text: 'I have an account. ',
-                          children: const [
-                            TextSpan(
-                              text: 'Sign me in...',
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: RichText(
+                            text: TextSpan(
+                              text: 'I have an account. ',
+                              children: const [
+                                TextSpan(
+                                  text: 'Sign me in...',
+                                  style: TextStyle(
+                                      color: ColorPalette.green,
+                                      fontFamily: AppFonts.josefinSansRegular),
+                                ),
+                              ],
                               style: TextStyle(
-                                  color: ColorPalette.green,
+                                  color: ColorPalette.grey.shade300,
                                   fontFamily: AppFonts.josefinSansRegular),
                             ),
-                          ],
-                          style: TextStyle(
-                              color: ColorPalette.grey.shade300,
-                              fontFamily: AppFonts.josefinSansRegular),
+                            textAlign: TextAlign.center,
+                          ),
                         ),
-                        textAlign: TextAlign.center,
                       ),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 40,
-                  ),
-                ],
-              ),
+                      const SizedBox(
+                        height: 40,
+                      ),
+                    ],
+                  )),
             ),
           ),
         ),

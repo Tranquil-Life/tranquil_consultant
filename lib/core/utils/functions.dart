@@ -179,26 +179,48 @@ Future<Map<String, dynamic>> getCurrLocation() async {
 }
 
 List<TextSpan> parseNoteText(String text) {
-  RegExp regExpBold = RegExp(r'\*\*(.*?)\*\*');
-  RegExp regExpItalic = RegExp(r'\b_(.*?)_\b');
-  List<TextSpan> spans = [];
-  List<String> words = text.split(' ');
+  final List<TextSpan> spans = [];
 
-  for (String word in words) {
-    if (regExpBold.hasMatch(word)) {
+  final RegExp exp = RegExp(r'(\*\*.*?\*\*|_.*?_)');
+
+  int start = 0;
+
+  for (final match in exp.allMatches(text)) {
+    // Add normal text before match
+    if (match.start > start) {
       spans.add(TextSpan(
-        text: "${word.replaceAll('**', '')} ",
+        text: text.substring(start, match.start),
+      ));
+    }
+
+    final matchText = match.group(0)!;
+
+    // BOLD
+    if (matchText.startsWith('**')) {
+      spans.add(TextSpan(
+        text: matchText.substring(2, matchText.length - 2), // removes **
         style: const TextStyle(fontWeight: FontWeight.bold),
       ));
-    } else if (regExpItalic.hasMatch(word)) {
+    }
+
+    // ITALIC
+    else if (matchText.startsWith('_')) {
       spans.add(TextSpan(
-        text: "${word.replaceAll('_', '')} ",
+        text: matchText.substring(1, matchText.length - 1), // removes _
         style: const TextStyle(fontStyle: FontStyle.italic),
       ));
-    } else {
-      spans.add(TextSpan(text: '$word '));
     }
+
+    start = match.end;
   }
+
+  // Remaining normal text
+  if (start < text.length) {
+    spans.add(TextSpan(
+      text: text.substring(start),
+    ));
+  }
+
   return spans;
 }
 

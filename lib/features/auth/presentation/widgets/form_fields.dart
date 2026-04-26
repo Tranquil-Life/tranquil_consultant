@@ -10,30 +10,22 @@ import 'package:tl_consultant/features/auth/data/repos/reg_data_store.dart';
 import 'package:tl_consultant/features/auth/presentation/controllers/auth_controller.dart';
 
 //email field
-CustomFormField emailFormField(AuthController authController,
-    {Function(String)? onChanged}){
+CustomFormField emailFormField(
+    AuthController authController, {
+      Function(String)? onChanged,
+    }) {
   return CustomFormField(
     verContentPadding: 11.5,
     horContentPadding: 12,
-    hint: 'enter email address',
+    hint: 'Enter email address',
     textEditingController: authController.emailTEC,
     textInputType: TextInputType.emailAddress,
-    validator: (_)=>authController.signInValidation(),
-    onChanged: onChanged ?? (value){
-      registrationDataStore.setField(email, value.toString());
-      authController.signInValidation();
-    }
-
-    // validator: (val) {
-    //   if (val!.isEmpty) {
-    //     return 'Please input your email';
-    //   }
-    //   if (!Validator.isEmail(val)) {
-    //     return 'Please input a valid email address';
-    //   }
-    //
-    //   return null;
-    // },
+    validator: (_) => authController.validateEmail(),
+    onChanged: onChanged ??
+            (value) {
+          registrationDataStore.setField(email, value.trim());
+          authController.validateEmail();
+        },
   );
 }
 
@@ -110,7 +102,7 @@ CustomFormField passwordField(AuthController authController){
       authController.params.password = text;
       authController.validatePassword();
 
-      authController.signInValidation();
+      // authController.signInValidation();
 
     },
   );

@@ -6,8 +6,12 @@ import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 import 'package:tl_consultant/core/utils/helpers/svg_elements.dart';
 import 'package:tl_consultant/features/journal/presentation/controllers/notes_controller.dart';
 
+enum TextFormatOption { bold, italic }
+
 class TextOptionsDialog extends StatefulWidget {
-  const TextOptionsDialog({super.key});
+  const TextOptionsDialog({super.key, required this.onApply});
+
+  final Function(TextFormatOption option) onApply;
 
   @override
   State<TextOptionsDialog> createState() => _TextOptionsDialogState();
@@ -20,6 +24,7 @@ class _TextOptionsDialogState extends State<TextOptionsDialog> {
   bool _isBold = false;
 
   String formatTextIcon = SvgElements.svgFormatTextIcon;
+
   //format text options var
   String italicsIcon = SvgElements.svgItalicsIcon;
   String boldIcon = SvgElements.svgBoldIcon;
@@ -210,13 +215,12 @@ class _TextOptionsDialogState extends State<TextOptionsDialog> {
                           ),
                           onPressed: () {
                             if (_isBold) {
-                              toggleBold();
+                              widget.onApply(TextFormatOption.bold);
                             } else if (_isItalic) {
-                              toggleItalic();
+                              widget.onApply(TextFormatOption.italic);
                             }
 
                             Get.back();
-                            // Functionality for the second button
                           },
                           child: const Text(
                             'Apply option',
@@ -275,10 +279,15 @@ class _TextOptionsDialogState extends State<TextOptionsDialog> {
   }
 }
 
-openTextOptionsDialog(BuildContext context) {
+void openTextOptionsDialog(
+    BuildContext context, {
+      required Function(TextFormatOption option) onApply,
+    }) {
   showDialog(
     context: context,
     builder: (_) => AlertDialog(
-        contentPadding: EdgeInsets.zero, content: TextOptionsDialog()),
+      contentPadding: EdgeInsets.zero,
+      content: TextOptionsDialog(onApply: onApply),
+    ),
   );
 }
