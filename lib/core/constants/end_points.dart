@@ -5,7 +5,7 @@ const staging = 'https://tranquil-api-staging-205081a15c84.herokuapp.com';
 const production = 'https://tranquil-api.herokuapp.com';
 const exchangeHost = "https://v6.exchangerate-api.com/v6";
 const baseUrl =
-    '$production/api/'; //Currently in production, change to staging only for testing
+    '$staging/api/';
 const countriesNowBaseUrl = "https://countriesnow.space/api/v0.1/";
 const mapPlacesBaseUrl =
     "https://maps.googleapis.com/maps/api/place/textsearch/json";
@@ -31,6 +31,10 @@ abstract class AuthEndPoints {
   //Get docusign
   static const getDocusignUrl =
       '$consultant/agreements/{applicationId}/signing-url';
+
+  //therapist application
+  static String therapistApplication = '$consultant/apply';
+  static String validateApprovalToken = '$consultant/therapist-applications/validate-token';
 }
 
 abstract class ProfileEndPoints {
@@ -152,3 +156,4 @@ abstract class GoogleMapsEndpoints {
   static String reverseGeocode({required double lat, required double lng}) =>
       "$consultant/reverse-geocode?lat=$lat&lng=$lng";
 }
+

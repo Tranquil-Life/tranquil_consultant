@@ -128,7 +128,11 @@ class _SignInScreenState extends State<SignInScreen> {
                 alignment: Alignment.bottomCenter,
                 child: GestureDetector(
                   onTap: () async {
-                    Get.to(() => AccountTypeScreen());
+                    Get.toNamed(
+                      Routes.VERIFY_ELIGIBILITY,
+                    );
+
+                    // Get.to(() => AccountTypeScreen());
                   },
                   child: RichText(
                     text: TextSpan(

@@ -222,3 +222,21 @@ const introduceYourselfType = "introduce-yourself";
 const recordVideoType = "record-video";
 const docuSignType = "docusign";
 const updateVideoIntroType = "update-video-intro";
+
+final professions = [
+  'Licensed Professional Counselor (LPC)',
+  'Licensed Clinical Social Worker (LCSW)',
+  'Licensed Marriage & Family Therapist (LMFT)',
+  'Psychologist',
+  'Psychiatrist',
+  'Mental Health Counselor',
+  'Other',
+];
+
+final states = [
+  'Texas',
+  'California',
+  'Florida',
+  'New York',
+  'Georgia',
+];

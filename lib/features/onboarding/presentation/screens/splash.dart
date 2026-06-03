@@ -20,8 +20,15 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   void initState() {
+    super.initState();
+
+    if (Uri.base.fragment.startsWith('/create-password')) {
+      return;
+    }
+
     Future.delayed(const Duration(seconds: 3), () async {
-      final bool isUserOnboarded = await onboardingController.checkOnboardingStatus();
+      final bool isUserOnboarded =
+      await onboardingController.checkOnboardingStatus();
 
       if (isUserOnboarded) {
         onboardingController.checkAuthStatus();
@@ -29,8 +36,6 @@ class _SplashScreenState extends State<SplashScreen> {
         Get.toNamed(Routes.ONBOARDING);
       }
     });
-
-    super.initState();
   }
 
   @override

@@ -93,7 +93,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 alignment: Alignment.bottomCenter,
                 child: GestureDetector(
                   onTap: () {
-                    Get.offNamed(Routes.SIGN_IN);
+                    // Get.offNamed(Routes.SIGN_IN);
                   },
                   child: RichText(
                     text: TextSpan(

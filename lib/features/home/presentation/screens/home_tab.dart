@@ -15,6 +15,7 @@ import 'package:tl_consultant/core/utils/helpers/size_helper.dart';
 import 'package:tl_consultant/core/utils/helpers/svg_elements.dart';
 import 'package:tl_consultant/core/utils/routes/app_pages.dart';
 import 'package:tl_consultant/features/activity/presentation/controllers/activity_controller.dart';
+import 'package:tl_consultant/features/auth/presentation/screens/register/therapist_type_screen.dart';
 import 'package:tl_consultant/features/chat/presentation/controllers/chat_controller.dart';
 import 'package:tl_consultant/features/chat/presentation/widgets/dialogs/rate_consultation_dialog.dart';
 import 'package:tl_consultant/features/consultation/domain/entities/client.dart';
@@ -24,9 +25,11 @@ import 'package:tl_consultant/features/dashboard/presentation/controllers/dashbo
 import 'package:tl_consultant/features/home/presentation/controllers/event_controller.dart';
 import 'package:tl_consultant/features/home/presentation/widgets/events_section.dart';
 import 'package:tl_consultant/features/home/presentation/widgets/explore_perks_widget.dart';
+import 'package:tl_consultant/features/home/presentation/widgets/guest_header_widget.dart';
 import 'package:tl_consultant/features/home/presentation/widgets/large_screen_header.dart';
 import 'package:tl_consultant/features/home/presentation/widgets/no_meetings.dart';
 import 'package:tl_consultant/features/home/presentation/widgets/small_screen_header.dart';
+import 'package:tl_consultant/features/onboarding/presentation/controllers/onboarding_controller.dart';
 import 'package:tl_consultant/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:tl_consultant/features/profile/presentation/screens/edit_profile.dart';
 
@@ -50,6 +53,7 @@ class _HomeTabState extends State<HomeTab> {
   final meetingsController = MeetingsController.instance;
   final chatController = ChatController.instance;
   final eventsController = EventsController.instance;
+  final onboardingController = OnboardingController.instance;
 
   @override
   void initState() {
@@ -58,6 +62,34 @@ class _HomeTabState extends State<HomeTab> {
     chatController.getChatInfo();
     chatController.loadRecentMessages();
     chatController.initializePusher(channel: chatController.chatChannel.value);
+  }
+
+  Widget headerWidget() {
+    if (onboardingController.notLoggedIn.value) {
+      return Column(
+        children: [
+          GuestHeaderWidget(
+            onSignIn: () {
+              Get.toNamed('/login');
+            },
+            onApply: () {
+              Get.toNamed('/verify-eligibility');
+            },
+          ),
+
+          isSmallScreen(context) ? SizedBox(height: 16) : SizedBox.shrink(),
+        ],
+      );
+    } else {
+      return Column(
+        children: [
+          isSmallScreen(context)
+              ? SmallScreenHeader(activityController: activityController)
+              : LargeScreenHeader(activityController: activityController),
+          const SizedBox(height: 45),
+        ],
+      );
+    }
   }
 
   @override
@@ -79,12 +111,8 @@ class _HomeTabState extends State<HomeTab> {
                             24),
                         child: Column(
                           children: [
-                            isSmallScreen(context)
-                                ? SmallScreenHeader(
-                                    activityController: activityController)
-                                : LargeScreenHeader(
-                                    activityController: activityController),
-                            const SizedBox(height: 45),
+                            headerWidget(),
+
                             Padding(
                                 padding: EdgeInsets.only(
                                     right: isSmallScreen(context) ? 0 : 24),
@@ -135,21 +163,74 @@ class _HomeTabState extends State<HomeTab> {
                                     const SizedBox(height: 12),
                                     ConstrainedBox(
                                         constraints: BoxConstraints(
-                                            maxWidth: displayWidth(context)
-
-                                            // isSmallScreen(context)
-                                            //     ? displayWidth(context)
-                                            //     : displayWidth(context) / 1.4
-
-                                            ),
+                                            maxWidth: displayWidth(context)),
                                         child: CustomButton(
                                           onPressed: () async {
-                                            var isEmpty =
-                                                await checkForEmptyProfileInfo();
-                                            if (isEmpty) {
-                                              Get.toNamed(Routes.EDIT_PROFILE);
+                                            if (OnboardingController
+                                                .instance.notLoggedIn.value) {
+                                              Get.dialog(
+                                                AlertDialog(
+                                                  backgroundColor: ColorPalette.white,
+                                                  title: const Text(
+                                                    'Join Tranquil Life Pro',
+                                                  ),
+                                                  content: const Text(
+                                                    'Create an account to set your availability and begin receiving client requests. Already have an account? Sign in to continue.',
+                                                  ),
+                                                  actions: [
+                                                    TextButton(
+                                                      onPressed: () => Get.back(),
+                                                      child: const Text(
+                                                        'Not Now',
+                                                        style: TextStyle(
+                                                          color: ColorPalette.red,
+                                                        ),
+                                                      ),
+                                                    ),
+
+                                                    TextButton(
+                                                      onPressed: () {
+                                                        Get.back();
+                                                        Get.toNamed(Routes.SIGN_IN);
+                                                      },
+                                                      child: const Text(
+                                                        'Sign In',
+                                                        style: TextStyle(
+                                                          color: ColorPalette.green,
+                                                          fontWeight: FontWeight.w600,
+                                                        ),
+                                                      ),
+                                                    ),
+
+                                                    ElevatedButton(
+                                                      style: ElevatedButton.styleFrom(
+                                                        backgroundColor: ColorPalette.green,
+                                                      ),
+                                                      onPressed: () {
+                                                        Get.back();
+                                                        Get.toNamed(
+                                                          Routes.VERIFY_ELIGIBILITY,
+                                                        );
+                                                      },
+                                                      child: const Text(
+                                                        'Apply Now',
+                                                        style: TextStyle(
+                                                          color: ColorPalette.white,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              );
                                             } else {
-                                              Get.toNamed(Routes.EDIT_SLOTS);
+                                              var isEmpty =
+                                                  await checkForEmptyProfileInfo();
+                                              if (isEmpty) {
+                                                Get.toNamed(
+                                                    Routes.EDIT_PROFILE);
+                                              } else {
+                                                Get.toNamed(Routes.EDIT_SLOTS);
+                                              }
                                             }
                                           },
                                           showBorder: true,

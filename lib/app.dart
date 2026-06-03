@@ -1,4 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
@@ -44,10 +45,16 @@ class _AppState extends State<App> {
       future: initFirebase,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
+          final fragment = Uri.base.fragment;
+
+          final initialRoute = fragment.startsWith('/create-password')
+              ? Routes.CREATE_PASSWORD
+              : Routes.SPLASH_SCREEN;
+
           return GetMaterialApp(
             navigatorKey: navigatorKey,
             scaffoldMessengerKey: rootMessengerKey,
-            initialRoute: Routes.SPLASH_SCREEN,
+            initialRoute: initialRoute,
             title: AppConfig.appName,
             debugShowCheckedModeBanner: false,
             // unknownRoute: GetPage(

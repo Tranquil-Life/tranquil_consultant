@@ -29,8 +29,8 @@ class UpdatePasswordPage extends StatelessWidget {
 
       if (updated) {
         await Future.delayed(Duration(seconds: 2));
-
-        Get.toNamed(Routes.SIGN_IN);
+        //
+        // Get.toNamed(Routes.SIGN_IN);
       }
     }
   }
@@ -116,7 +116,7 @@ class UpdatePasswordPage extends StatelessWidget {
                 alignment: Alignment.bottomCenter,
                 child: GestureDetector(
                   onTap: () {
-                    Get.offNamed(Routes.SIGN_IN);
+                    // Get.offNamed(Routes.SIGN_IN);
                   },
                   child: RichText(
                     text: TextSpan(

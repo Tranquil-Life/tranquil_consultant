@@ -24,13 +24,13 @@ class SettingsController extends GetxController {
       DashboardController().clearAllData();
       await getStore.clearAllData();
 
-      Get.offAllNamed(Routes.SIGN_IN);
+      // Get.offAllNamed(Routes.SIGN_IN);
     }, (r) async {
       DashboardController().clearAllData();
       await getStore.clearAllData();
       //TODO: Test the above by signing out. => storage.erase();
 
-      Get.offAllNamed(Routes.SIGN_IN);
+      // Get.offAllNamed(Routes.SIGN_IN);
     });
   }
 }

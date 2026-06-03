@@ -16,13 +16,16 @@ class OnboardingController extends GetxController {
   AuthRepoImpl authRepo = AuthRepoImpl();
   User? client;
 
+  RxBool notLoggedIn = true.obs;
+
+  bool get isUpdatePasswordRoute {
+    if (!kIsWeb) return false;
+    return Uri.base.fragment.startsWith('/create-password');
+  }
+
   Future<bool> checkOnboardingStatus() async {
     final userOnboarded = storage.read("onboarded");
-    if (userOnboarded == null) {
-      return false;
-    } else {
-      return userOnboarded!;
-    }
+    return userOnboarded == true;
   }
 
   void saveOnboardedStatus() async {
@@ -30,20 +33,30 @@ class OnboardingController extends GetxController {
   }
 
   Future checkAuthStatus() async {
+    if (isUpdatePasswordRoute) {
+      return;
+    }
+
     Either either = await authRepo.isAuthenticated();
+
     either.fold((l) async {
-      Get.offAllNamed(Routes.SIGN_IN);
+      notLoggedIn.value = true;
+
+      navigatorKey.currentState?.pushNamedAndRemoveUntil(
+        Routes.DASHBOARD,
+            (_) => false,
+      );
     }, (r) async {
-      userDataStore.user['email_verified_at'] = r['data']['email_verified_at'];
+      notLoggedIn.value = false;
+
+      userDataStore.user['email_verified_at'] =
+      r['data']['email_verified_at'];
 
       if (kIsWeb) {
-        navigatorKey.currentState
-            ?.pushNamedAndRemoveUntil(Routes.DASHBOARD, (_) => false);
-
-        // Navigator.of(context).pushNamedAndRemoveUntil(
-        //   Routes.DASHBOARD,
-        //       (route) => false,
-        // );
+        navigatorKey.currentState?.pushNamedAndRemoveUntil(
+          Routes.DASHBOARD,
+              (_) => false,
+        );
       } else {
         Get.offAllNamed(Routes.DASHBOARD);
       }

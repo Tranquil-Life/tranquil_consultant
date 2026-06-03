@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:tl_consultant/core/domain/query_params.dart';
 import 'package:tl_consultant/core/errors/api_error.dart';
 import 'package:tl_consultant/core/utils/services/API/api_service.dart';
+import 'package:tl_consultant/features/auth/data/models/therapist_application_model.dart';
 
 abstract class AuthRepo<T, F extends QueryParams> extends ApiService {
   AuthRepo();
@@ -19,5 +20,6 @@ abstract class AuthRepo<T, F extends QueryParams> extends ApiService {
   Future<Either<ApiError, dynamic>> verifyResetToken(String token);
   Future<Either<ApiError, dynamic>> updatePassword({required String token, required String password});
   Future<Either<ApiError, dynamic>> getDocusignUrl({required String email, required String name});
+  Future<Either<ApiError, dynamic>> createTherapistApplication({required TherapistApplication application});
 
 }

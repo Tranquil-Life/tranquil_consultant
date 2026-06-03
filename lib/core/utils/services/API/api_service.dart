@@ -71,10 +71,14 @@ class ApiService {
     }
   }
 
-
   Future<Either<ApiError, dynamic>> postReq(String subPath,
       {dynamic body}) async {
     String url = baseUrl + subPath;
+
+    print("POST Request URL: $url");
+
+    // String url = Uri.parse(baseUrl).resolve(subPath).toString();
+
     final headers = getHeaders();
     Response<dynamic> response;
 

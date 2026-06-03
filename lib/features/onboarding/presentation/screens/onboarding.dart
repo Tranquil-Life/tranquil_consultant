@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tl_consultant/core/constants/constants.dart';
 import 'package:tl_consultant/core/global/buttons.dart';
 import 'package:tl_consultant/core/theme/colors.dart';
 import 'package:tl_consultant/core/theme/fonts.dart';
+import 'package:tl_consultant/core/utils/routes/app_pages.dart';
 import 'package:tl_consultant/features/auth/presentation/screens/sign_in/sign_in.dart';
 import 'package:tl_consultant/features/onboarding/presentation/controllers/onboarding_controller.dart';
 
@@ -128,7 +130,11 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                               _goToPage(page + 1);
                             } else {
                               onboardingController.saveOnboardedStatus();
-                              Get.offAll(SignInScreen());
+
+                              navigatorKey.currentState
+                                  ?.pushNamedAndRemoveUntil(Routes.DASHBOARD, (_) => false);
+
+                              // Get.offAll(SignInScreen());
                             }
                           });
                         },

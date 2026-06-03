@@ -3,9 +3,11 @@ library app_pages;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tl_consultant/features/activity/presentation/screens/notifications.dart';
+import 'package:tl_consultant/features/auth/presentation/screens/create_password_page.dart';
 import 'package:tl_consultant/features/auth/presentation/screens/forgot_password_page.dart';
 import 'package:tl_consultant/features/auth/presentation/screens/profile_preview_page.dart';
 import 'package:tl_consultant/features/auth/presentation/screens/register/introduce_yourself.dart';
+import 'package:tl_consultant/features/auth/presentation/screens/register/verify_eligibility.dart';
 import 'package:tl_consultant/features/auth/presentation/screens/sign_in/sign_in.dart';
 import 'package:tl_consultant/features/auth/presentation/screens/sign_up/docusign_page.dart';
 import 'package:tl_consultant/features/auth/presentation/screens/sign_up/sign_up_0.dart';
@@ -40,18 +42,19 @@ class AppPages {
   static final pages = [
     GetPage(name: Routes.SPLASH_SCREEN, page: () => SplashScreen()),
     GetPage(name: Routes.ONBOARDING, page: () => const OnBoardingScreen()),
-    GetPage(name: Routes.SIGN_UP_0, page: () => SignUpScreen0()),
     GetPage(name: Routes.SIGN_UP_1, page: () => SignUpScreen1()),
-    GetPage(name: Routes.SIGN_UP_2, page: () => SignUpScreen2()),
     GetPage(name: Routes.DOCUSIGN, page: () => DocusignPage()),
     GetPage(name: Routes.SIGN_IN, page: () => SignInScreen()),
     GetPage(
         name: Routes.INTRODUCE_YOURSELF, page: () => IntroduceYourselfPage()),
+    GetPage(
+        name: Routes.VERIFY_ELIGIBILITY, page: () => VerifyEligibility()),
     GetPage(name: Routes.PROFILE_PREVIEW, page: () => ProfilePreviewPage()),
     GetPage(
         name: Routes.VERIFY_RESET_ACCOUNT,
         page: () => VerifyResetAccountPage()),
     GetPage(name: Routes.FORGOT_PASSWORD, page: () => ForgotPasswordPage()),
+    GetPage(name: Routes.CREATE_PASSWORD, page: () => CreatePasswordPage()),
     GetPage(name: Routes.UPDATE_PASSWORD, page: () => UpdatePasswordPage()),
     GetPage(name: Routes.DASHBOARD, page: () => const Dashboard()),
     GetPage(name: Routes.EDIT_SLOTS, page: () => EditSlots()),

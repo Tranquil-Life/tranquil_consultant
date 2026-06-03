@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
 class PulsingWidget extends StatefulWidget {
-  const PulsingWidget({Key? key, required this.child}) : super(key: key);
+  const PulsingWidget({super.key, required this.child});
 
   final Widget child;
 

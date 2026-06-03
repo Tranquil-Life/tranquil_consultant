@@ -37,13 +37,6 @@ class _DashboardState extends State<Dashboard> {
 
   bool _pushedEditProfile = false;
 
-  void profileCompletionCheck() async {
-    var isEmpty = await checkForEmptyProfileInfo();
-    if (isEmpty) {
-      Get.toNamed(Routes.EDIT_PROFILE);
-    }
-  }
-
   @override
   void initState() {
     super.initState();
@@ -52,11 +45,12 @@ class _DashboardState extends State<Dashboard> {
       await dashboardController.getMyLocationInfoCached(force: false);
       dashboardController.restoreUserInfo();
 
-      final isEmpty = await checkForEmptyProfileInfo();
-      if (isEmpty && !_pushedEditProfile) {
-        _pushedEditProfile = true;
-        Get.toNamed(Routes.EDIT_PROFILE);
-      }
+      ///CHECK IF FOR EMPTY PROFILE INFO - Only push to edit profile if the user is logging in for the first time or has not completed their profile. This is determined by checking if the profile info is empty and if we have already pushed to the edit profile screen during this session.
+      // final isEmpty = await checkForEmptyProfileInfo();
+      // if (isEmpty && !_pushedEditProfile) {
+      //   _pushedEditProfile = true;
+      //   Get.toNamed(Routes.EDIT_PROFILE);
+      // }
     });
 
     setStatusBarBrightness(true);
@@ -73,25 +67,31 @@ class _DashboardState extends State<Dashboard> {
 
     final now = DateTimeExtension.now;
 
-    // reset first (important)
     dashboardController.currentMeetingCount.value = 0;
     dashboardController.currentMeetingId.value = 0;
     meetingsController.currentMeeting.value = null;
+    client = null;
 
     for (final meeting in meetingsController.meetings) {
       meeting.setIsExpired(now);
 
+      final startAt = meeting.startAt;
+      final endAt = meeting.endAt;
+
       final isOngoing =
           !meeting.isExpired &&
-              (meeting.startAt.isBefore(now) || meeting.startAt.isAtSameMomentAs(now)) &&
-              (meeting.endAt.isAfter(now) || meeting.endAt.isAtSameMomentAs(now));
+              !startAt.isAfter(now) &&
+              !endAt.isBefore(now);
 
       if (isOngoing) {
         dashboardController.currentMeetingCount.value = 1;
         dashboardController.currentMeetingId.value = meeting.id;
+
+        // only assign if this is a proper Dart model object
         client = meeting.client;
+
         meetingsController.currentMeeting.value = meeting;
-        break; // stop after finding the current meeting
+        break;
       }
 
       //TODO: Temporary fix for testing purposes
@@ -110,63 +110,64 @@ class _DashboardState extends State<Dashboard> {
   Widget build(BuildContext context) {
     final isSmall = isSmallScreen(context);
 
-    final maxIndex = (isSmall
-            ? dashboardController.pages.length
-            : dashboardController.largePages.length) -
-        1;
-    if (dashboardController.currentIndex.value > maxIndex) {
-      dashboardController.currentIndex.value = maxIndex;
-    }
 
-    if (!isSmall && dashboardController.currentIndex.value == 2) {
-      dashboardController.currentIndex.value = 3;
-    } else if (isSmall && dashboardController.currentIndex.value == 3) {
-      dashboardController.currentIndex.value = 2;
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final maxIndex = (isSmall
+          ? dashboardController.pages.length
+          : dashboardController.largePages.length) -
+          1;
+
+      if (dashboardController.currentIndex.value > maxIndex) {
+        dashboardController.currentIndex.value = maxIndex;
+      }
+
+      if (!isSmall && dashboardController.currentIndex.value == 2) {
+        dashboardController.currentIndex.value = 3;
+      } else if (isSmall && dashboardController.currentIndex.value == 3) {
+        dashboardController.currentIndex.value = 2;
+      }
+    });
+
 
     return Obx(() {
+      final currentIndex = dashboardController.currentIndex.value;
+
       return Scaffold(
-        appBar: isSmallScreen(context)
+        appBar: isSmall
             ? PreferredSize(
-                preferredSize: Size.fromHeight(0),
-                // Completely removes AppBar height
-                child: CustomAppBar(
-                  backgroundColor: (!isSmallScreen(context) &&
-                          dashboardController.currentIndex.value == 0)
-                      ? ColorPalette.white
-                      : Colors.grey.shade100,
-                ),
-              )
+          preferredSize: const Size.fromHeight(0),
+          child: CustomAppBar(
+            backgroundColor: Colors.grey.shade100,
+          ),
+        )
             : null,
         resizeToAvoidBottomInset: false,
         backgroundColor: Colors.grey.shade100,
-        floatingActionButton: isSmallScreen(context)
+        floatingActionButton: isSmall
             ? CustomFAB(
-                onChatTap: () async {
-                  await updateDashboardMeetingInfo();
+          onChatTap: () async {
+            await updateDashboardMeetingInfo();
 
-                  if (client != null) {
-                    await chatController.getChatInfo(client: client!);
-                    await meetingsController.startMeeting();
-                  } else {
-                    CustomSnackBar.neutralSnackBar(
-                        "You have no ongoing session");
-                  }
-
-                  ///the below code is for testing purposes only
-                  // await chatController.getChatInfo(client: client!);
-                  // await meetingsController.startMeeting();
-                },
-                dbController: dashboardController,
-              )
+            if (client != null) {
+              await chatController.getChatInfo(client: client!);
+              await meetingsController.startMeeting();
+            } else {
+              CustomSnackBar.neutralSnackBar(
+                "You have no ongoing session",
+              );
+            }
+          },
+          dbController: dashboardController,
+        )
             : null,
-        floatingActionButtonLocation: isSmallScreen(context)
+        floatingActionButtonLocation: isSmall
             ? FloatingActionButtonLocation.centerDocked
             : null,
         bottomNavigationBar: bottomAppBar(context),
-        body: isSmallScreen(context)
-            ? dashboardController.pages[dashboardController.currentIndex.value]
-            : large(),      );
+        body: isSmall
+            ? dashboardController.pages[currentIndex]
+            : large(),
+      );
     });
   }
 

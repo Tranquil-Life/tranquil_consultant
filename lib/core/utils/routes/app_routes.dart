@@ -7,10 +7,9 @@ abstract class Routes {
   static const ONBOARDING = _Paths.ONBOARDING;
   static const SIGN_IN = _Paths.SIGN_IN;
   static const INTRODUCE_YOURSELF = _Paths.INTRODUCE_YOURSELF;
+  static const VERIFY_ELIGIBILITY = _Paths.VERIFY_ELIGIBILITY;
   static const PROFILE_PREVIEW = _Paths.PROFILE_PREVIEW;
-  static const SIGN_UP_0 = _Paths.SIGN_UP_0 ;
   static const SIGN_UP_1 = _Paths.SIGN_UP_1 ;
-  static const SIGN_UP_2 = _Paths.SIGN_UP_2 ;
   static const DOCUSIGN = _Paths.DOCUSIGN ;
   static const HOME_SCREEN = _Paths.HOME_SCREEN ;
   static const ACTIVITY = _Paths.ACTIVITY;
@@ -29,6 +28,7 @@ abstract class Routes {
   static const SETTINGS = _Paths.SETTINGS ;
   static const VERIFY_RESET_ACCOUNT = _Paths.VERIFY_RESET_ACCOUNT ;
   static const UPDATE_PASSWORD = _Paths.UPDATE_PASSWORD ;
+  static const CREATE_PASSWORD = _Paths.CREATE_PASSWORD ;
   static const FORGOT_PASSWORD = _Paths.FORGOT_PASSWORD ;
   static const WEB_RECORD = _Paths.WEB_RECORD ;
 }
@@ -40,10 +40,9 @@ abstract class _Paths {
   static const ONBOARDING = '/onboarding';
   static const SIGN_IN = '/sign-in';
   static const INTRODUCE_YOURSELF = '/introduce-yourself';
+  static const VERIFY_ELIGIBILITY = '/verify-eligibility';
   static const PROFILE_PREVIEW = '/PROFILE-PREVIEW';
-  static const SIGN_UP_0 = '/sign-up-0';
   static const SIGN_UP_1 = '/sign-up-1';
-  static const SIGN_UP_2 = '/sign-up-2';
   static const DOCUSIGN = '/docusign';
   static const HOME_SCREEN = '/home';
   static const ACTIVITY = '/notifications';
@@ -59,6 +58,7 @@ abstract class _Paths {
   static const EDIT_PROFILE = '/edit-profile';
   static const SETTINGS = '/settings';
   static const VERIFY_RESET_ACCOUNT = '/verify-reset-account';
+  static const CREATE_PASSWORD = '/create-password';
   static const UPDATE_PASSWORD = '/update-password';
   static const FORGOT_PASSWORD = '/forgot-password';
   static const WEB_VIDEO_CALL = '/web-video-call';
