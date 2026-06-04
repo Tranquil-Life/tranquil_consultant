@@ -53,7 +53,7 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
       return;
     }
 
-    await authController.validateInvitationToken(urlToken);
+    await verificationController.validateInvitationToken(urlToken);
   }
 
   @override

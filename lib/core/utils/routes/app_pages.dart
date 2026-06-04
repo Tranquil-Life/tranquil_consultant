@@ -40,9 +40,9 @@ class AppPages {
   // static const INITIAL = Routes.SPLASH_SCREEN;
 
   static final pages = [
+    GetPage(name: Routes.SIGN_UP_1, page: () => SignUpScreen1()),
     GetPage(name: Routes.SPLASH_SCREEN, page: () => SplashScreen()),
     GetPage(name: Routes.ONBOARDING, page: () => const OnBoardingScreen()),
-    GetPage(name: Routes.SIGN_UP_1, page: () => SignUpScreen1()),
     GetPage(name: Routes.DOCUSIGN, page: () => DocusignPage()),
     GetPage(name: Routes.SIGN_IN, page: () => SignInScreen()),
     GetPage(
@@ -50,6 +50,7 @@ class AppPages {
     GetPage(
         name: Routes.VERIFY_ELIGIBILITY, page: () => VerifyEligibility()),
     GetPage(name: Routes.PROFILE_PREVIEW, page: () => ProfilePreviewPage()),
+
     GetPage(
         name: Routes.VERIFY_RESET_ACCOUNT,
         page: () => VerifyResetAccountPage()),

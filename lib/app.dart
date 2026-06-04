@@ -61,6 +61,10 @@ class _AppState extends State<App> {
           debugPrint('INITIAL ROUTE: $initialRoute');
 
           return GetMaterialApp(
+            routingCallback: (routing) {
+              print('Current: ${routing?.current}');
+              print('Previous: ${routing?.previous}');
+            },
             navigatorKey: navigatorKey,
             scaffoldMessengerKey: rootMessengerKey,
             initialRoute: initialRoute,

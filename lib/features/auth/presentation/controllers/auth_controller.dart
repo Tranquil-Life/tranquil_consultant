@@ -442,8 +442,6 @@ class AuthController extends GetxController {
     super.onClose();
   }
 
-  Future<void> validateInvitationToken(String urlToken) async {
 
-  }
 
 }

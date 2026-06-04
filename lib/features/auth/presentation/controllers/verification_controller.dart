@@ -184,4 +184,20 @@ class VerificationController extends GetxController {
       isLoading.value = false;
     });
   }
+
+  Future<void> validateInvitationToken(String urlToken) async {
+    print("Validating token: $urlToken");
+    // Either either = await authRepo.validateApprovalToken(urlToken);
+    //
+    // either.fold((l) {
+    //   isLoading.value = false;
+    //   CustomSnackBar.errorSnackBar(l.message.toString());
+    // }, (r) {
+    //   Map<String, dynamic> data = r;
+    //   firstName.value = data['first_name'] ?? '';
+    //   email.value = data['email'] ?? '';
+    //   token.value = urlToken;
+    //   isLoading.value = false;
+    // });
+  }
 }
