@@ -9,6 +9,7 @@ import 'package:tl_consultant/core/utils/functions.dart';
 import 'package:tl_consultant/core/utils/routes/app_pages.dart';
 import 'package:tl_consultant/core/utils/routes/bindings/controllers_binding.dart';
 import 'package:tl_consultant/features/auth/presentation/screens/create_password_page.dart';
+import 'package:tl_consultant/features/onboarding/presentation/screens/splash.dart';
 
 import 'core/constants/constants.dart';
 import 'main.dart';
@@ -42,88 +43,50 @@ class _AppState extends State<App> {
 
   @override
   Widget build(BuildContext context) {
-    // return FutureBuilder(
-    //   future: initFirebase,
-    //   builder: (context, snapshot) {
-    //     if (snapshot.connectionState == ConnectionState.done) {
-    //       final fragment = Uri.base.fragment;
-    //       final routePath = fragment.split('?').first;
-    //
-    //
-    //       // final initialRoute = routePath == Routes.CREATE_PASSWORD
-    //       //     ? Routes.CREATE_PASSWORD
-    //       //     : Routes.SPLASH_SCREEN;
-    //       final initialRoute = Routes.CREATE_PASSWORD;
-    //
-    //
-    //       debugPrint('FULL URL: ${Uri.base}');
-    //       debugPrint('FRAGMENT: $fragment');
-    //       debugPrint('ROUTE PATH: $routePath');
-    //       debugPrint('CREATE PASSWORD ROUTE: ${Routes.CREATE_PASSWORD}');
-    //       debugPrint('INITIAL ROUTE: $initialRoute');
-    //
-    //       return GetMaterialApp(
-    //         routingCallback: (routing) {
-    //           print('Current: ${routing?.current}');
-    //           print('Previous: ${routing?.previous}');
-    //         },
-    //         navigatorKey: navigatorKey,
-    //         scaffoldMessengerKey: rootMessengerKey,
-    //         initialRoute: initialRoute,
-    //         title: AppConfig.appName,
-    //         debugShowCheckedModeBanner: false,
-    //         // unknownRoute: GetPage(
-    //         //   name: '/notfound',
-    //         //   page: () =>
-    //         //       const Scaffold(body: Center(child: Text("Page Not Found"))),
-    //         // ),
-    //         theme: ThemeData(
-    //           scaffoldBackgroundColor: ColorPalette.white,
-    //           primarySwatch: Colors.green,
-    //           fontFamily: AppFonts.mulishRegular,
-    //         ),
-    //         getPages: AppPages.pages,
-    //       );
-    //     }
-    //
-    //     // You can return a loading screen while waiting
-    //     return const MaterialApp(
-    //       home: Scaffold(
-    //         body: Center(child: CircularProgressIndicator()),
-    //       ),
-    //     );
-    //   },
-    // );
-
     final fragment = Uri.base.fragment;
     final routePath = fragment.split('?').first;
-
 
     final initialRoute = routePath == Routes.CREATE_PASSWORD
         ? Routes.CREATE_PASSWORD
         : Routes.SPLASH_SCREEN;
 
-    return GetMaterialApp(
-      routingCallback: (routing) {
-        debugPrint('Current: ${routing?.current}');
-        debugPrint('Previous: ${routing?.previous}');
-      },
-      navigatorKey: navigatorKey,
-      scaffoldMessengerKey: rootMessengerKey,
-      initialRoute: initialRoute,
-      title: AppConfig.appName,
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        scaffoldBackgroundColor: ColorPalette.white,
-        primarySwatch: Colors.green,
-        fontFamily: AppFonts.mulishRegular,
-      ),
-      getPages: [
-        GetPage(
-          name: Routes.CREATE_PASSWORD,
-          page: () => const CreatePasswordPage(),
-        ),
-      ],
-    );
+    return FutureBuilder(
+        future: initFirebase,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            return GetMaterialApp(
+              routingCallback: (routing) {
+                debugPrint('Current: ${routing?.current}');
+                debugPrint('Previous: ${routing?.previous}');
+              },
+              navigatorKey: navigatorKey,
+              scaffoldMessengerKey: rootMessengerKey,
+              initialRoute: initialRoute,
+              title: AppConfig.appName,
+              debugShowCheckedModeBanner: false,
+              theme: ThemeData(
+                scaffoldBackgroundColor: ColorPalette.white,
+                primarySwatch: Colors.green,
+                fontFamily: AppFonts.mulishRegular,
+              ),
+              getPages: [
+                GetPage(
+                  name: Routes.CREATE_PASSWORD,
+                  page: () => const CreatePasswordPage(),
+                ),
+                GetPage(
+                  name: Routes.SPLASH_SCREEN,
+                  page: () => const SplashScreen(),
+                ),
+              ],
+            );
+          } else {
+            return const MaterialApp(
+              home: Scaffold(
+                body: Center(child: CircularProgressIndicator()),
+              ),
+            );
+          }
+        });
   }
 }
