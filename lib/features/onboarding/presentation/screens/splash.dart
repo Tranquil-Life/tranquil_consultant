@@ -22,7 +22,7 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
 
-    if (Uri.base.fragment.startsWith('/create-password')) {
+    if (Uri.base.fragment.startsWith(Routes.CREATE_PASSWORD)) {
       return;
     }
 

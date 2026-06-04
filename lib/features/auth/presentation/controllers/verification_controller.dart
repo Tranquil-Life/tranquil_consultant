@@ -171,33 +171,32 @@ class VerificationController extends GetxController {
     });
   }
 
-  Future validateApprovalToken() async{
-    Either either = await authRepo.validateApprovalToken(verificationToken.value);
+  Future<bool> validateInvitationToken(String enteredToken) async {
+    isLoading.value = true;
+    errorMessage.value = '';
 
-    either.fold((l) {
+    Either either = await authRepo.validateInvitationToken(enteredToken);
+
+    return either.fold((l) {
       isLoading.value = false;
-      CustomSnackBar.errorSnackBar(l.message.toString());
+      errorMessage.value = l.message.toString();
+
+      CustomSnackBar.errorSnackBar(
+        l.message.toString(),
+      );
+
+      return false;
     }, (r) {
       Map<String, dynamic> data = r;
+
       firstName.value = data['first_name'] ?? '';
       email.value = data['email'] ?? '';
-      isLoading.value = false;
-    });
-  }
+      token.value = enteredToken;
 
-  Future<void> validateInvitationToken(String urlToken) async {
-    print("Validating token: $urlToken");
-    // Either either = await authRepo.validateApprovalToken(urlToken);
-    //
-    // either.fold((l) {
-    //   isLoading.value = false;
-    //   CustomSnackBar.errorSnackBar(l.message.toString());
-    // }, (r) {
-    //   Map<String, dynamic> data = r;
-    //   firstName.value = data['first_name'] ?? '';
-    //   email.value = data['email'] ?? '';
-    //   token.value = urlToken;
-    //   isLoading.value = false;
-    // });
+      isLoading.value = false;
+      errorMessage.value = '';
+
+      return true;
+    });
   }
 }

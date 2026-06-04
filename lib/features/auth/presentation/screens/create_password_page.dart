@@ -17,6 +17,7 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
 
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
+  final tokenController = TextEditingController();
 
   bool obscurePassword = true;
   bool obscureConfirmPassword = true;
@@ -41,28 +42,27 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
   bool get canActivate =>
       hasMinLength && hasNumber && hasLetter && hasSpecial && passwordsMatch;
 
-  Future<void> validateToken() async {
-    final routeUri = Uri.parse(Uri.base.fragment);
-    final urlToken = routeUri.queryParameters['token'];
+  bool tokenValidated = false;
 
-    debugPrint('RAW FRAGMENT: ${Uri.base.fragment}');
-    debugPrint('TOKEN FOUND: $urlToken');
+  Future<void> validateEnteredToken() async {
+    final enteredToken = tokenController.text.trim();
 
-    if (urlToken == null || urlToken.isEmpty) {
-      verificationController.isLoading.value = false;
-      verificationController.errorMessage.value = 'Invalid invitation link.';
+    if (enteredToken.isEmpty) {
+      verificationController.errorMessage.value =
+          'Please enter your invitation code.';
       return;
     }
 
-    verificationController.verificationToken.value = urlToken;
+    verificationController.verificationToken.value = enteredToken;
 
-    await verificationController.validateInvitationToken(urlToken);
-  }
+    final valid =
+        await verificationController.validateInvitationToken(enteredToken);
 
-  @override
-  void initState() {
-    validateToken();
-    super.initState();
+    if (valid) {
+      setState(() {
+        tokenValidated = true;
+      });
+    }
   }
 
   @override
@@ -75,8 +75,91 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
   @override
   Widget build(BuildContext context) {
     final isWeb = MediaQuery.of(context).size.width > 700;
-
-    print("verification token: ${verificationController.verificationToken.value}");
+    if (!tokenValidated) {
+      return Scaffold(
+        backgroundColor: Colors.white,
+        body: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(24),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxWidth: isWeb ? 650 : double.infinity,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Verify invitation',
+                      style: TextStyle(
+                        fontSize: 36,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xff1F2937),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Enter the invitation code sent to your email to continue setting up your Tranquil Life Pro account.',
+                      style: TextStyle(
+                        fontSize: 18,
+                        height: 1.6,
+                        color: Color(0xff6B7280),
+                      ),
+                    ),
+                    const SizedBox(height: 36),
+                    TextFormField(
+                      controller: tokenController,
+                      decoration: InputDecoration(
+                        hintText: 'Enter invitation code',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 56,
+                      child: ElevatedButton(
+                        onPressed: validateEnteredToken,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: ColorPalette.green,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: const Text(
+                          'Validate Code',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 28),
+                    Center(
+                      child: GestureDetector(
+                        onTap: () {
+                          // Get.toNamed(Routes.SIGN_IN);
+                        },
+                        child: const Text(
+                          'I have an account. Sign me in...',
+                          style: TextStyle(
+                            color: ColorPalette.green,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -96,24 +179,24 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                         text: TextSpan(
                           children: [
                             TextSpan(
-                              text: 'Welcome, ${verificationController.verificationToken.value}',
+                              text: 'Congratulations!',
                               style: TextStyle(
                                 fontSize: 36,
                                 fontWeight: FontWeight.w700,
                                 color: Color(0xff1F2937),
                               ),
                             ),
+                            // TextSpan(
+                            //   text:
+                            //       '${verificationController.firstName.value}!',
+                            //   style: TextStyle(
+                            //     fontSize: 36,
+                            //     fontWeight: FontWeight.w700,
+                            //     color: ColorPalette.green,
+                            //   ),
+                            // ),
                             TextSpan(
-                              text:
-                                  '${verificationController.firstName.value}!',
-                              style: TextStyle(
-                                fontSize: 36,
-                                fontWeight: FontWeight.w700,
-                                color: ColorPalette.green,
-                              ),
-                            ),
-                            TextSpan(
-                              text: ' 👋',
+                              text: ' 🎊',
                               style: TextStyle(
                                 fontSize: 36,
                               ),
@@ -149,6 +232,7 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                     obscureText: obscurePassword,
                     decoration: InputDecoration(
                       hintText: 'Password',
+                      hintStyle: TextStyle(color: ColorPalette.grey),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -202,6 +286,7 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                     obscureText: obscureConfirmPassword,
                     decoration: InputDecoration(
                       hintText: 'Confirm Password',
+                      hintStyle: TextStyle(color: ColorPalette.grey),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),

@@ -34,7 +34,7 @@ abstract class AuthEndPoints {
 
   //therapist application
   static String therapistApplication = '$consultant/apply';
-  static String validateApprovalToken = '$consultant/therapist-applications/validate-token';
+  static String validateInvitationToken = '$consultant/therapist-applications/validate-token';
 }
 
 abstract class ProfileEndPoints {
