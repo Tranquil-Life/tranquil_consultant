@@ -42,11 +42,9 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
       hasMinLength && hasNumber && hasLetter && hasSpecial && passwordsMatch;
 
   Future<void> validateToken() async {
-    final routeUri = Uri.parse(Uri.base.fragment);
-    final urlToken = routeUri.queryParameters['token'];
+    final urlToken = Get.parameters['token'];
 
-    debugPrint('RAW FRAGMENT: ${Uri.base.fragment}');
-    debugPrint('TOKEN FOUND: $urlToken');
+    debugPrint('GETX TOKEN: $urlToken');
 
     if (urlToken == null || urlToken.isEmpty) {
       verificationController.isLoading.value = false;
@@ -55,8 +53,7 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
     }
 
     verificationController.verificationToken.value = urlToken;
-
-    await verificationController.validateInvitationToken(urlToken);
+    verificationController.validateInvitationToken(urlToken);
   }
 
   @override
