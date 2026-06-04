@@ -164,7 +164,7 @@ class AuthRepoImpl extends AuthRepo {
   }
 
   Future<Either> validateInvitationToken(String value) async {
-    var request = {"token": value};
+    var request = {"code": value};
 
     return await catchSocketException(
             () => postReq(AuthEndPoints.validateInvitationToken, body: request))
