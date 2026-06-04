@@ -49,9 +49,10 @@ class _AppState extends State<App> {
           final routePath = fragment.split('?').first;
 
 
-          final initialRoute = routePath == Routes.CREATE_PASSWORD
-              ? Routes.CREATE_PASSWORD
-              : Routes.SPLASH_SCREEN;
+          // final initialRoute = routePath == Routes.CREATE_PASSWORD
+          //     ? Routes.CREATE_PASSWORD
+          //     : Routes.SPLASH_SCREEN;
+          final initialRoute = Routes.CREATE_PASSWORD;
 
 
           debugPrint('FULL URL: ${Uri.base}');
