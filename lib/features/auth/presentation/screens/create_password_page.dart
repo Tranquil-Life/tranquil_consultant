@@ -45,13 +45,16 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
     final routeUri = Uri.parse(Uri.base.fragment);
     final urlToken = routeUri.queryParameters['token'];
 
+    debugPrint('RAW FRAGMENT: ${Uri.base.fragment}');
+    debugPrint('TOKEN FOUND: $urlToken');
+
     if (urlToken == null || urlToken.isEmpty) {
-      setState(() {
-        verificationController.isLoading.value = false;
-        verificationController.errorMessage.value = 'Invalid invitation link.';
-      });
+      verificationController.isLoading.value = false;
+      verificationController.errorMessage.value = 'Invalid invitation link.';
       return;
     }
+
+    verificationController.verificationToken.value = urlToken;
 
     await verificationController.validateInvitationToken(urlToken);
   }
@@ -73,6 +76,8 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
   Widget build(BuildContext context) {
     final isWeb = MediaQuery.of(context).size.width > 700;
 
+    print("verification token: ${verificationController.verificationToken.value}");
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -91,7 +96,7 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                         text: TextSpan(
                           children: [
                             TextSpan(
-                              text: 'Welcome, ',
+                              text: 'Welcome, ${verificationController.verificationToken.value}',
                               style: TextStyle(
                                 fontSize: 36,
                                 fontWeight: FontWeight.w700,
