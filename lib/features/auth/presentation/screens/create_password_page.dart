@@ -179,24 +179,24 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                         text: TextSpan(
                           children: [
                             TextSpan(
-                              text: 'Congratulations!',
+                              text: 'Welcome, ',
                               style: TextStyle(
                                 fontSize: 36,
                                 fontWeight: FontWeight.w700,
                                 color: Color(0xff1F2937),
                               ),
                             ),
-                            // TextSpan(
-                            //   text:
-                            //       '${verificationController.firstName.value}!',
-                            //   style: TextStyle(
-                            //     fontSize: 36,
-                            //     fontWeight: FontWeight.w700,
-                            //     color: ColorPalette.green,
-                            //   ),
-                            // ),
                             TextSpan(
-                              text: ' 🎊',
+                              text:
+                                  '${verificationController.firstName.value}!',
+                              style: TextStyle(
+                                fontSize: 36,
+                                fontWeight: FontWeight.w700,
+                                color: ColorPalette.green,
+                              ),
+                            ),
+                            TextSpan(
+                              text: ' 👋',
                               style: TextStyle(
                                 fontSize: 36,
                               ),
@@ -232,7 +232,6 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                     obscureText: obscurePassword,
                     decoration: InputDecoration(
                       hintText: 'Password',
-                      hintStyle: TextStyle(color: ColorPalette.grey),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -286,7 +285,6 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                     obscureText: obscureConfirmPassword,
                     decoration: InputDecoration(
                       hintText: 'Confirm Password',
-                      hintStyle: TextStyle(color: ColorPalette.grey),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),

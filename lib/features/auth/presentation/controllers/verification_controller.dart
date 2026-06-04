@@ -187,7 +187,7 @@ class VerificationController extends GetxController {
 
       return false;
     }, (r) {
-      Map<String, dynamic> data = r;
+      Map<String, dynamic> data = r['data'];
 
       firstName.value = data['first_name'] ?? '';
       email.value = data['email'] ?? '';
