@@ -41,7 +41,7 @@ class AppPages {
 
   static final pages = [
     GetPage(name: Routes.SIGN_UP_1, page: () => SignUpScreen1()),
-    GetPage(name: Routes.SPLASH_SCREEN, page: () => SplashScreen()),
+    // GetPage(name: Routes.SPLASH_SCREEN, page: () => SplashScreen()),
     GetPage(name: Routes.ONBOARDING, page: () => const OnBoardingScreen()),
     GetPage(name: Routes.DOCUSIGN, page: () => DocusignPage()),
     GetPage(name: Routes.SIGN_IN, page: () => SignInScreen()),
@@ -55,7 +55,7 @@ class AppPages {
         name: Routes.VERIFY_RESET_ACCOUNT,
         page: () => VerifyResetAccountPage()),
     GetPage(name: Routes.FORGOT_PASSWORD, page: () => ForgotPasswordPage()),
-    GetPage(name: Routes.CREATE_PASSWORD, page: () => CreatePasswordPage()),
+    // GetPage(name: Routes.CREATE_PASSWORD, page: () => CreatePasswordPage()),
     GetPage(name: Routes.UPDATE_PASSWORD, page: () => UpdatePasswordPage()),
     GetPage(name: Routes.DASHBOARD, page: () => const Dashboard()),
     GetPage(name: Routes.EDIT_SLOTS, page: () => EditSlots()),

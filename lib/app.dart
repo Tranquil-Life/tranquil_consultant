@@ -78,6 +78,7 @@ class _AppState extends State<App> {
                   name: Routes.SPLASH_SCREEN,
                   page: () => const SplashScreen(),
                 ),
+                ...AppPages.pages,
               ],
             );
           } else {
