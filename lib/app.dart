@@ -46,10 +46,19 @@ class _AppState extends State<App> {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           final fragment = Uri.base.fragment;
+          final routePath = fragment.split('?').first;
 
-          final initialRoute = fragment.startsWith('/create-password')
+
+          final initialRoute = routePath == Routes.CREATE_PASSWORD
               ? Routes.CREATE_PASSWORD
               : Routes.SPLASH_SCREEN;
+
+
+          debugPrint('FULL URL: ${Uri.base}');
+          debugPrint('FRAGMENT: $fragment');
+          debugPrint('ROUTE PATH: $routePath');
+          debugPrint('CREATE PASSWORD ROUTE: ${Routes.CREATE_PASSWORD}');
+          debugPrint('INITIAL ROUTE: $initialRoute');
 
           return GetMaterialApp(
             navigatorKey: navigatorKey,
